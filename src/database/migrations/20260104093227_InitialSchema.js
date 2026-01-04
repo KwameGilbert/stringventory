@@ -144,7 +144,7 @@ export const up = async (knex) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.uuid('expenseCategoryId').references('id').inTable('expenseCategories').notNullable();
     table.string('name').notNullable();
-    table.decimal('amount').
+    table.decimal('amount').notNullable();
     table.enum('status', ['pending', 'paid', 'cancelled']).defaultTo('pending');
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
@@ -172,9 +172,9 @@ export const up = async (knex) => {
     table.date('orderDate').notNullable();
     table.enum('status', ['pending', 'paid', 'shipped', 'delivered', 'cancelled']).defaultTo('pending');
     table.enum('paymentMethod', ['cash', 'card', 'online']).notNullable();
-    table.integer('subtotal').notNullable();
-    table.integer('discountTotal').defaultTo(0);
-    table.integer('totalAmount').notNullable();
+    table.decimal('subtotal').notNullable();
+    table.decimal('discountTotal').defaultTo(0);
+    table.decimal('totalAmount').notNullable();
     table.uuid('createdById').references('id').inTable('users').notNullable();
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
@@ -185,8 +185,8 @@ export const up = async (knex) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.uuid('productId').references('id').inTable('products').notNullable();
     table.uuid('batchId').references('id').inTable('batches').notNullable();
-    table.integer('costPrice').notNullable();
-    table.integer('sellingPrice').notNullable();
+    table.decimal('costPrice').notNullable();
+    table.decimal('sellingPrice').notNullable();
     table.integer('quantityReceived').notNullable();
     table.date('expiryDate');
     table.timestamp('createdAt').defaultTo(knex.fn.now());
@@ -224,9 +224,9 @@ export const up = async (knex) => {
     table.uuid('orderId').references('id').inTable('orders').notNullable();
     table.uuid('productId').references('id').inTable('products').notNullable();
     table.integer('quantity').notNullable();
-    table.integer('unitPrice').notNullable();
-    table.integer('discount').defaultTo(0);
-    table.integer('totalAmount').notNullable();
+    table.decimal('unitPrice').notNullable();
+    table.decimal('discount').defaultTo(0);
+    table.decimal('totalAmount').notNullable();
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
@@ -236,7 +236,7 @@ export const up = async (knex) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.uuid('orderId').references('id').inTable('orders').notNullable();
     table.enum('paymentMethod', ['cash', 'card', 'online']).notNullable();
-    table.integer('amount').notNullable();
+    table.decimal('amount').notNullable();
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
@@ -246,7 +246,7 @@ export const up = async (knex) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.uuid('orderId').references('id').inTable('orders').notNullable();
     table.uuid('discountId').references('id').inTable('discounts').notNullable();
-    table.integer('discountValue').notNullable();
+    table.decimal('discountValue').notNullable();
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
@@ -256,7 +256,7 @@ export const up = async (knex) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.uuid('inventoryEntryId').references('id').inTable('inventoryEntries').notNullable();
     table.integer('quantity').notNullable();
-    table.enum('movementType', ['IN', 'OUT', 'ADJUSTMENT']).notNullable();
+    table.enum('movementType', ['in', 'out', 'adjustment']).notNullable();
     table.uuid('referenceId').references('id').inTable('orders');
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
