@@ -43,8 +43,10 @@ const Header = () => {
 
             {/* Currency Dropdown */}
             {showCurrencyDropdown && (
-              <div className="absolute top-full mt-2 right-0 w-32 bg-white border border-gray-200 
-                            rounded-lg shadow-lg overflow-hidden z-50">
+              <div
+                className="absolute top-full mt-2 right-0 w-32 bg-white border border-gray-200 
+                            rounded-lg shadow-lg overflow-hidden z-50"
+              >
                 {currencies.map((curr) => (
                   <button
                     key={curr}
@@ -53,7 +55,11 @@ const Header = () => {
                       setShowCurrencyDropdown(false);
                     }}
                     className={`w-full px-4 py-2 text-left hover:bg-emerald-50 transition-colors
-                              ${curr === currency ? "bg-emerald-50 text-emerald-600 font-medium" : "text-gray-700"}`}
+                              ${
+                                curr === currency
+                                  ? "bg-emerald-50 text-emerald-600 font-medium"
+                                  : "text-gray-700"
+                              }`}
                   >
                     {curr}
                   </button>
@@ -100,9 +106,11 @@ const Header = () => {
           <button className="relative p-2 hover:bg-gray-100 rounded-lg transition-all">
             <Bell className="w-5 h-5 text-gray-600" />
             {notificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white 
+              <span
+                className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white 
                              text-xs font-bold rounded-full flex items-center justify-center 
-                             shadow-lg">
+                             shadow-lg"
+              >
                 {notificationCount}
               </span>
             )}

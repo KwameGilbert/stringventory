@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/(dashboards)/Dashboard/Dashboard";
 import Header from "./components/admin/layout/Header";
 import Sidebar from "./components/admin/layout/Siderbar";
+import Footer from "./components/admin/layout/Footer";
 import Login from "./pages/login/Login";
 
 function App() {
@@ -25,11 +26,14 @@ function App() {
                 <Header />
 
                 {/* Page Content */}
-                <main className="pt-20 px-6 py-6">
+                <main className="pt-20 px-6 py-6 pb-20 min-h-screen">
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                   </Routes>
                 </main>
+
+                {/* Footer */}
+                <Footer />
               </div>
             </div>
           }
