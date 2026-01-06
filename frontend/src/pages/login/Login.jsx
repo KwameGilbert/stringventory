@@ -49,6 +49,9 @@ export default function Login() {
     e.preventDefault();
     // Add login logic here
     console.log("Login:", { email, password, rememberMe });
+    
+    // Navigate to dashboard
+    window.location.href = "/dashboard/";
   };
 
   // Handle forgot password - Step 1: Send OTP
@@ -173,23 +176,21 @@ export default function Login() {
             </linearGradient>
           </defs>
           
-          {/* Animated waves */}
+          {/* Static waves */}
           <path
             d="M0,400 C320,200 640,600 960,400 C1280,200 1440,400 1440,400 L1440,800 L0,800 Z"
             fill="url(#gradient1)"
-            className="animate-wave"
           />
           <path
             d="M0,500 C360,300 720,700 1080,500 C1320,350 1440,500 1440,500 L1440,800 L0,800 Z"
             fill="url(#gradient2)"
-            className="animate-wave-slow"
           />
         </svg>
         
         {/* Decorative circles */}
-        <div className="absolute top-20 left-20 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute top-40 right-20 w-72 h-72 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+        <div className="absolute top-40 right-20 w-72 h-72 bg-teal-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+        <div className="absolute bottom-20 left-1/2 w-72 h-72 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
       </div>
 
       {/* Login Form */}
