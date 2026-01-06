@@ -45,34 +45,34 @@ const Sidebar = () => {
       id: "inventory",
       label: "Inventory Management",
       items: [
-        { icon: FolderTree, label: "Categories", path: "/admin/categories" },
-        { icon: Package, label: "Products", path: "/admin/products" },
-        { icon: ClipboardList, label: "Inventory", path: "/admin/inventory" },
+        { icon: FolderTree, label: "Categories", path: "/dashboard/categories" },
+        { icon: Package, label: "Products", path: "/dashboard/products" },
+        { icon: ClipboardList, label: "Inventory", path: "/dashboard/inventory" },
       ],
     },
     {
       id: "sales",
       label: "Sales & Orders",
       items: [
-        { icon: ShoppingCart, label: "Orders", path: "/admin/orders" },
-        { icon: Users, label: "Customers", path: "/admin/customers" },
+        { icon: ShoppingCart, label: "Orders", path: "/dashboard/orders" },
+        { icon: Users, label: "Customers", path: "/dashboard/customers" },
       ],
     },
     {
       id: "analytics",
       label: "Analytics",
       items: [
-        { icon: DollarSign, label: "Expenses", path: "/admin/expenses" },
-        { icon: BarChart3, label: "Reports", path: "/admin/reports" },
+        { icon: DollarSign, label: "Expenses", path: "/dashboard/expenses" },
+        { icon: BarChart3, label: "Reports", path: "/dashboard/reports" },
       ],
     },
     {
       id: "system",
       label: "System",
       items: [
-        { icon: UserCog, label: "Users", path: "/admin/users" },
-        { icon: MessageSquare, label: "Messaging", path: "/admin/messaging" },
-        { icon: Settings, label: "Settings", path: "/admin/settings" },
+        { icon: UserCog, label: "Users", path: "/dashboard/users" },
+        { icon: MessageSquare, label: "Messaging", path: "/dashboard/messaging" },
+        { icon: Settings, label: "Settings", path: "/dashboard/settings" },
       ],
     },
   ];
@@ -225,7 +225,8 @@ const Sidebar = () => {
         ${!isOpen && "flex justify-center"}
       `}
       >
-        <div
+        <a
+          href="/dashboard/profile"
           className={`
           flex items-center gap-3 cursor-pointer
           hover:bg-slate-700/50 p-2 rounded-xl transition-all duration-300
@@ -246,7 +247,7 @@ const Sidebar = () => {
               </p>
             </div>
           )}
-        </div>
+        </a>
       </div>
     </aside>
   );
