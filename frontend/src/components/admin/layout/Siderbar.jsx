@@ -17,6 +17,7 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const { themeColors } = useTheme();
@@ -159,9 +160,9 @@ const Sidebar = () => {
                   {section.items.map((item, index) => {
                     const Icon = item.icon;
                     return (
-                      <a
+                      <Link
                         key={index}
-                        href={item.path}
+                        to={item.path}
                         className={`
                           flex items-center gap-4 px-4 py-3 rounded-xl
                           transition-all duration-300 group relative
@@ -210,7 +211,7 @@ const Sidebar = () => {
                             ></div>
                           </div>
                         )}
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>
@@ -227,8 +228,8 @@ const Sidebar = () => {
         ${!isOpen && "flex justify-center"}
       `}
       >
-        <a
-          href="/dashboard/profile"
+        <Link
+          to="/dashboard/profile"
           className={`
           flex items-center gap-3 cursor-pointer
           hover:bg-slate-700/50 p-2 rounded-xl transition-all duration-300
@@ -249,7 +250,7 @@ const Sidebar = () => {
               </p>
             </div>
           )}
-        </a>
+        </Link>
       </div>
     </aside>
   );

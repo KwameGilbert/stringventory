@@ -1,0 +1,5 @@
+[
+  { "name": "Cash", "value": 45, "color": "#0ea5e9" },
+  { "name": "Card", "value": 35, "color": "#6366f1" },
+  { "name": "Transfer", "value": 20, "color": "#f43f5e" }
+]
