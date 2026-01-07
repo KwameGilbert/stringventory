@@ -1,6 +1,10 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import Dashboard from "./pages/dashboards/Dashboard/Dashboard";
 import Categories from "./pages/dashboards/Categories/Categories";
+import CreateCategory from "./pages/dashboards/Categories/CreateCategory";
+import EditCategory from "./pages/dashboards/Categories/EditCategory";
+import ViewCategory from "./pages/dashboards/Categories/ViewCategory";
 import Products from "./pages/dashboards/products/Products";
 import Inventory from "./pages/dashboards/Inventory/Inventory";
 import Orders from "./pages/dashboards/Orders/Orders";
@@ -19,7 +23,8 @@ import Login from "./pages/login/Login";
 
 function App() {
   return (
-    <Router>
+    <ThemeProvider>
+      <Router>
       <Routes>
         {/* Login Route - No Layout */}
         <Route path="/" element={<Login />} />
@@ -42,6 +47,9 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/categories" element={<Categories />} />
+                    <Route path="/categories/new" element={<CreateCategory />} />
+                    <Route path="/categories/:id" element={<ViewCategory />} />
+                    <Route path="/categories/:id/edit" element={<EditCategory />} />
                     <Route path="/products" element={<Products />} />
                     <Route path="/inventory" element={<Inventory />} />
                     <Route path="/orders" element={<Orders />} />
@@ -64,6 +72,7 @@ function App() {
         />
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 }
 

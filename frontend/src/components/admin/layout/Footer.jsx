@@ -1,4 +1,7 @@
+import { useTheme } from "../../../contexts/ThemeContext";
+
 const Footer = () => {
+  const { themeColors } = useTheme();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -17,7 +20,7 @@ const Footer = () => {
               href="https://stringtech.co.uk/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+              className={`${themeColors.textColor} ${themeColors.textHover} font-medium transition-colors`}
             >
               StringTech
             </a>

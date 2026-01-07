@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "title": "Gross Revenue",
+    "value": "GH₵0.00",
+    "change": "12.5% vs last month",
+    "trend": "up",
+    "color": "emerald",
+    "icon": "DollarSign"
+  },
+  {
+    "id": 2,
+    "title": "Total Expenses",
+    "value": "GH₵1,230,000.00",
+    "change": "3.2% vs last month",
+    "trend": "down",
+    "color": "orange",
+    "icon": "Activity"
+  },
+  {
+    "id": 3,
+    "title": "Total Refunds",
+    "value": "GH₵0.00",
+    "change": "0.0% vs last month",
+    "trend": "neutral",
+    "color": "red",
+    "icon": "ArrowLeftRight"
+  },
+  {
+    "id": 4,
+    "title": "Net Revenue",
+    "value": "GH₵1,230,000.00",
+    "change": "8.4% vs last month",
+    "trend": "up",
+    "color": "emerald",
+    "icon": "TrendingUp"
+  },
+  {
+    "id": 5,
+    "title": "Total Orders",
+    "value": "0",
+    "change": "15.3% vs last month",
+    "trend": "up",
+    "color": "blue",
+    "icon": "ShoppingCart"
+  },
+  {
+    "id": 6,
+    "title": "Total Stock (Units)",
+    "value": "722",
+    "change": "",
+    "trend": "neutral",
+    "color": "slate",
+    "icon": "Package"
+  },
+  {
+    "id": 7,
+    "title": "Inventory Value",
+    "value": "GH₵4,841.50",
+    "change": "",
+    "trend": "neutral",
+    "color": "slate",
+    "icon": "DollarSign"
+  },
+  {
+    "id": 8,
+    "title": "Low Stock Alert",
+    "value": "12",
+    "change": "Needs Attention",
+    "trend": "alert",
+    "color": "red",
+    "icon": "AlertTriangle"
+  }
+]

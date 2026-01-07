@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useTheme } from "../../../contexts/ThemeContext";
 import {
   LayoutDashboard,
   FolderTree,
@@ -16,8 +17,10 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
+  const { themeColors } = useTheme();
   const [isOpen, setIsOpen] = useState(true);
   const [expandedSections, setExpandedSections] = useState(["overview"]);
 
@@ -80,9 +83,9 @@ const Sidebar = () => {
   return (
     <aside
       className={`
-        fixed left-0 top-0 h-screen bg-gradient-to-b from-slate-800 to-slate-900
+        fixed left-0 top-0 h-screen ${themeColors.sidebarBg}
         text-white transition-all duration-300 ease-in-out z-50 flex flex-col
-        ${isOpen ? "w-72" : "w-28"}
+        ${isOpen ? "w-72" : "w-20"}
       `}
     >
       {/* Header */}
@@ -90,8 +93,8 @@ const Sidebar = () => {
         <div
           className={`flex items-center gap-3 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
         >
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-            <Package className="w-6 h-6 text-emerald-300" />
+          <div className={`${themeColors.logoGradient} w-10 h-10 rounded-xl flex items-center justify-center shadow-lg`}>
+            <Package className={`w-6 h-6 ${themeColors.logoIcon}`} />
           </div>
           {isOpen && (
             <span className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
@@ -157,16 +160,16 @@ const Sidebar = () => {
                   {section.items.map((item, index) => {
                     const Icon = item.icon;
                     return (
-                      <a
+                      <Link
                         key={index}
-                        href={item.path}
+                        to={item.path}
                         className={`
                           flex items-center gap-4 px-4 py-3 rounded-xl
                           transition-all duration-300 group relative
-                          ${
+                           ${
                             item.active
-                              ? "bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30"
-                              : "hover:bg-slate-700/50 hover:translate-x-1"
+                              ? `${themeColors.activeMenuGradient} ${themeColors.activeMenuShadow}`
+                              : `${themeColors.menuHoverBg} hover:translate-x-1`
                           }
                           ${!isOpen && "justify-center"}
                         `}
@@ -175,7 +178,7 @@ const Sidebar = () => {
                           className={`w-5 h-5 flex-shrink-0 ${
                             item.active
                               ? "text-white"
-                              : "text-slate-300 group-hover:text-emerald-400"
+                              : `text-slate-300 ${themeColors.menuHoverText}`
                           }`}
                         />
 
@@ -208,7 +211,7 @@ const Sidebar = () => {
                             ></div>
                           </div>
                         )}
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>
@@ -225,15 +228,15 @@ const Sidebar = () => {
         ${!isOpen && "flex justify-center"}
       `}
       >
-        <a
-          href="/dashboard/profile"
+        <Link
+          to="/dashboard/profile"
           className={`
           flex items-center gap-3 cursor-pointer
           hover:bg-slate-700/50 p-2 rounded-xl transition-all duration-300
           ${!isOpen && "justify-center"}
         `}
         >
-          <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+          <div className={`${themeColors.profileGradient} w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg`}>
             <span className="text-sm font-bold text-white">SA</span>
           </div>
 
@@ -247,7 +250,7 @@ const Sidebar = () => {
               </p>
             </div>
           )}
-        </a>
+        </Link>
       </div>
     </aside>
   );
