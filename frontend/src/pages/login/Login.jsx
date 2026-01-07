@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useTheme } from "../../contexts/ThemeContext";
+
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { ForgotPasswordModal, SuccessAlert } from "../../components/auth";
 
 export default function Login() {
-  const { themeColors } = useTheme();
+
   // Login form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,169 +31,140 @@ export default function Login() {
   };
 
   return (
-    <div className={`min-h-screen relative overflow-hidden ${themeColors.pageGradient}`}>
-      {/* Static Curved Pattern Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <svg
-          className="absolute bottom-0 left-0 w-full h-full"
-          viewBox="0 0 1440 800"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.05" />
-            </linearGradient>
-            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.05" />
-            </linearGradient>
-          </defs>
-          
-          {/* Static waves */}
-          <path
-            d="M0,400 C320,200 640,600 960,400 C1280,200 1440,400 1440,400 L1440,800 L0,800 Z"
-            fill="url(#gradient1)"
-          />
-          <path
-            d="M0,500 C360,300 720,700 1080,500 C1320,350 1440,500 1440,500 L1440,800 L0,800 Z"
-            fill="url(#gradient2)"
-          />
-        </svg>
-        
-        {/* Decorative circles using theme colors */}
-        <div className={`absolute top-20 left-20 w-72 h-72 ${themeColors.decorativeCircle1} rounded-full mix-blend-multiply filter blur-3xl opacity-20`}></div>
-        <div className={`absolute top-40 right-20 w-72 h-72 ${themeColors.decorativeCircle2} rounded-full mix-blend-multiply filter blur-3xl opacity-20`}></div>
-        <div className={`absolute bottom-20 left-1/2 w-72 h-72 ${themeColors.decorativeCircle3} rounded-full mix-blend-multiply filter blur-3xl opacity-20`}></div>
-      </div>
-
-      {/* Login Form */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          {/* Logo/Brand */}
-          <div className="text-center mb-8 animate-fade-in">
-            <h1 className={`text-4xl font-bold ${themeColors.logoGradient} bg-clip-text text-transparent`}>
-              StringVentory
-            </h1>
-            <p className="text-gray-600 mt-2">Welcome back! Please sign in to continue</p>
+    <div className="min-h-screen flex w-full bg-slate-50">
+      {/* Left Side - Form Section */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
+        <div className="w-full max-w-md space-y-8">
+          {/* Header */}
+          <div className="space-y-2">
+             <div className="h-4 w-4 bg-cyan-300 mb-6"></div> {/* Logo Placeholder Square */}
+            <h1 className="text-3xl font-bold text-gray-900">Login</h1>
+            <p className="text-gray-500 text-sm">See your growth and get support!</p>
           </div>
 
-          {/* Login Card */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/50 animate-slide-up">
-            <form onSubmit={handleLogin} className="space-y-6">
+          {/* Social Login */}
+          <button
+            type="button"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors bg-white text-sm font-medium text-gray-700"
+          >
+            Sign in with google
+            <span className="text-lg font-bold text-blue-500">G</span> {/* Simple G representation */}
+          </button>
+
+          {/* Form */}
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-4">
               {/* Email Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Email*
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className={`w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
-                             ${themeColors.focusRing} focus:border-transparent transition-all outline-none
-                             bg-white/50 backdrop-blur-sm`}
+                    placeholder="Enter your email"
+                    className="w-full px-4 py-3 bg-gray-100 border-none rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all outline-none"
                     required
                   />
                 </div>
               </div>
 
               {/* Password Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Password*
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    className={`w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 
-                             ${themeColors.focusRing} focus:border-transparent transition-all outline-none
-                             bg-white/50 backdrop-blur-sm`}
+                    placeholder="minimum 8 characters"
+                    className="w-full px-4 py-3 bg-gray-100 border-none rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-slate-900 focus:bg-white transition-all outline-none"
                     required
+                    minLength={8}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
-
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className={`w-4 h-4 ${themeColors.textColor} border-gray-300 rounded ${themeColors.focusRing}`}
-                  />
-                  <span className="text-sm text-gray-700">Remember me</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => setShowForgotPasswordModal(true)}
-                  className={`text-sm ${themeColors.textColor} ${themeColors.textHover} font-medium transition-colors`}
-                >
-                  Forgot password?
-                </button>
-              </div>
-
-              {/* Login Button */}
-              <button
-                type="submit"
-                className={`w-full ${themeColors.buttonGradient} text-white py-3 px-4 
-                         rounded-lg font-medium ${themeColors.buttonHover} 
-                         transform hover:scale-[1.02] transition-all duration-200 shadow-lg 
-                         hover:shadow-xl`}
-              >
-                Sign In
-              </button>
-            </form>
-
-            {/* Contact Admin Message */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
-                <span className="text-gray-900 font-medium">Contact admin to be added.</span>
-              </p>
             </div>
-          </div>
 
-          {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-xs text-gray-500">
-              Developed by{" "}
-              <a
-                href="https://stringtech.co.uk/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${themeColors.textColor} ${themeColors.textHover} font-medium transition-colors`}
+            {/* Remember & Forgot */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 text-slate-900 border-gray-300 rounded focus:ring-slate-900"
+                />
+                <span className="text-sm text-gray-600">Remember me</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowForgotPasswordModal(true)}
+                className="text-sm font-medium text-slate-900 hover:underline"
               >
-                StringTech
-              </a>
+                Forgot password?
+              </button>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full py-3 px-4 bg-[#1e1b4b] hover:bg-[#1e1b4b]/90 text-white rounded-full font-medium transition-colors shadow-lg shadow-indigo-500/20"
+            >
+              Login
+            </button>
+
+            {/* Footer Text */}
+            <p className="text-center text-sm text-gray-600">
+              Not regestered yet?{" "}
+              <span className="font-medium text-slate-900 cursor-pointer hover:underline">
+                Create a new account
+              </span>
             </p>
-          </div>
+          </form>
         </div>
       </div>
 
-      {/* Forgot Password Modal */}
+      {/* Right Side - Illustration Section */}
+      <div className="hidden lg:flex w-1/2 bg-slate-50 items-center justify-center p-12 relative overflow-hidden">
+        {/* Background Decorative Elements - simulating the isometric feel */}
+        <div className="absolute inset-0">
+             {/* We can add a subtle pattern or gradient here if needed */}
+        </div>
+        
+        {/* Illustration Container */}
+        <div className="relative w-full max-w-lg aspect-square">
+            {/* 
+                Since we don't have the exact illustration asset, 
+                we'll use a placeholder or a simple CSS composition to represent 'Inventory/Analytics' 
+                or just a clean placeholder div for now. 
+            */}
+            <img 
+                src="/assets/login_img.png" 
+                alt="Login Illustration"
+                className="w-full h-full object-contain"
+            />
+        </div>
+      </div>
+
+      {/* Modals */}
       <ForgotPasswordModal
         isOpen={showForgotPasswordModal}
         onClose={() => setShowForgotPasswordModal(false)}
         onSuccess={handleForgotPasswordSuccess}
       />
 
-      {/* Success Alert */}
       <SuccessAlert
         isOpen={showSuccessAlert}
         title="Success!"
@@ -201,36 +172,6 @@ export default function Login() {
         onClose={() => setShowSuccessAlert(false)}
         autoCloseDelay={3000}
       />
-
-      {/* Custom Animations */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes scale-in {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-        
-        .animate-slide-up {
-          animation: slide-up 0.5s ease-out;
-        }
-        
-        .animate-scale-in {
-          animation: scale-in 0.3s ease-out;
-        }
-      `}</style>
     </div>
   );
 }

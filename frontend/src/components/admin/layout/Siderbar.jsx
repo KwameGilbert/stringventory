@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
+import { useLocation, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   FolderTree,
@@ -17,31 +18,25 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const { themeColors } = useTheme();
   const [isOpen, setIsOpen] = useState(true);
-  const [expandedSections, setExpandedSections] = useState(["overview"]);
+
+  const location = useLocation();
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
   };
 
-  const toggleSection = (sectionId) => {
-    setExpandedSections((prev) =>
-      prev.includes(sectionId)
-        ? prev.filter((id) => id !== sectionId)
-        : [...prev, sectionId]
-    );
-  };
+
 
   const menuSections = [
     {
       id: "overview",
       label: "Overview",
       items: [
-        { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/", active: true },
+        { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/" },
       ],
     },
     {
@@ -83,133 +78,107 @@ const Sidebar = () => {
   return (
     <aside
       className={`
-        fixed left-0 top-0 h-screen ${themeColors.sidebarBg}
-        text-white transition-all duration-300 ease-in-out z-50 flex flex-col
-        ${isOpen ? "w-72" : "w-20"}
+        fixed left-0 top-0 h-screen ${themeColors.sidebarBg} border-r border-gray-800
+        text-gray-400 transition-all duration-300 ease-in-out z-50 flex flex-col
+        ${isOpen ? "w-64" : "w-20"}
       `}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-6 border-b border-slate-700/50">
+      <div className="flex items-center justify-between px-6 py-6 border-b border-gray-800">
         <div
           className={`flex items-center gap-3 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
         >
-          <div className={`${themeColors.logoGradient} w-10 h-10 rounded-xl flex items-center justify-center shadow-lg`}>
-            <Package className={`w-6 h-6 ${themeColors.logoIcon}`} />
+          <div className={`${themeColors.bgPrimary} w-8 h-8 rounded-lg flex items-center justify-center shadow-lg`}>
+            <Package className="w-5 h-5 text-white" />
           </div>
           {isOpen && (
-            <span className="text-2xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">
-              WholeSys
+            <span className="text-xl font-bold text-white">
+              Stringventory
             </span>
           )}
         </div>
 
         {/* Toggle Button */}
+        {/* Only show if sidebar is closed to re-open, or rely on a trigger elsewhere. 
+            For now keeping inline toggle but minimal. */}
         <button
           onClick={toggleSidebar}
           className={`
-            p-2 rounded-lg border border-slate-600 hover:bg-slate-700 
-            transition-all duration-300 hover:border-emerald-400
+            p-1 rounded bg-gray-50 hover:bg-gray-100 text-gray-500
+            transition-all duration-300 transform
             ${!isOpen && "ml-auto"}
           `}
-          aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
         >
-          {isOpen ? (
-            <ChevronLeft className="w-5 h-5" />
-          ) : (
-            <ChevronRight className="w-5 h-5" />
-          )}
+           {isOpen ? <ChevronLeft size={16}/> : <ChevronRight size={16}/>}
         </button>
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto">
-        <div className="space-y-4">
+      <nav className="flex-1 px-4 py-6 overflow-y-auto custom-scrollbar">
+        <div className="space-y-6">
           {menuSections.map((section) => {
-            const isExpanded = expandedSections.includes(section.id);
-            
+
             return (
               <div key={section.id}>
-                {/* Section Header */}
-                {isOpen ? (
-                  <button
-                    onClick={() => toggleSection(section.id)}
-                    className="w-full flex items-center justify-between px-4 py-2 text-slate-400 
-                             hover:text-white transition-colors group text-md font-medium"
-                  >
-                    <span>{section.label}</span>
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-200 ${
-                        isExpanded ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                ) : (
-                  <div className="h-1 bg-slate-700/50 rounded-full mx-2 my-3" />
-                )}
+                {/* Section Header - Only show label if open */}
+                 {isOpen && (
+                    <div className="px-2 mb-2">
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                            {section.label}
+                        </p>
+                    </div>
+                 )}
 
                 {/* Section Items */}
-                <div
-                  className={`space-y-1 overflow-hidden transition-all duration-300 ${
-                    isOpen
-                      ? isExpanded
-                        ? "max-h-96 opacity-100"
-                        : "max-h-0 opacity-0"
-                      : "max-h-96 opacity-100"
-                  }`}
-                >
+                <div className="space-y-1">
                   {section.items.map((item, index) => {
                     const Icon = item.icon;
+                    // Exact match for dashboard, startsWith for others to handle sub-routes
+                    const isActive = item.path === "/dashboard/" 
+                        ? location.pathname === "/dashboard/"
+                        : location.pathname.startsWith(item.path);
+
                     return (
                       <Link
                         key={index}
                         to={item.path}
                         className={`
-                          flex items-center gap-4 px-4 py-3 rounded-xl
-                          transition-all duration-300 group relative
+                          flex items-center gap-3 px-3 py-2.5 rounded-lg
+                          transition-all duration-200 group relative
                            ${
-                            item.active
-                              ? `${themeColors.activeMenuGradient} ${themeColors.activeMenuShadow}`
-                              : `${themeColors.menuHoverBg} hover:translate-x-1`
+                            isActive
+                              ? `${themeColors.activeMenuGradient} text-white shadow-lg`
+                              : `${themeColors.menuHoverText} ${themeColors.menuHoverBg} text-gray-400`
                           }
-                          ${!isOpen && "justify-center"}
+                          ${!isOpen && "justify-center px-2"}
                         `}
                       >
                         <Icon
-                          className={`w-5 h-5 flex-shrink-0 ${
-                            item.active
-                              ? "text-white"
-                              : `text-slate-300 ${themeColors.menuHoverText}`
+                          className={`w-[18px] h-[18px] flex-shrink-0 ${
+                            isActive ? "text-white" : "text-gray-400 group-hover:text-white"
                           }`}
                         />
 
                         {isOpen && (
-                          <span
-                            className={`font-medium text-md ${
-                              item.active ? "text-white" : "text-slate-200"
-                            }`}
-                          >
+                          <span className="text-sm">
                             {item.label}
                           </span>
                         )}
 
                         {/* Tooltip for collapsed state */}
                         {!isOpen && (
-                          <div
-                            className="
-                            absolute left-full ml-2 px-3 py-2 bg-slate-800 rounded-lg
+                          <div className="
+                            absolute left-14 px-2 py-1 bg-gray-900 text-white text-xs rounded
                             opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                            transition-all duration-200 whitespace-nowrap shadow-xl
-                            border border-slate-700 z-50
-                          "
-                          >
-                            <span className="text-sm font-medium">
-                              {item.label}
-                            </span>
-                            <div
-                              className="absolute right-full top-1/2 -translate-y-1/2 
-                              border-8 border-transparent border-r-slate-800"
-                            ></div>
+                            transition-all duration-200 whitespace-nowrap z-50
+                          ">
+                             {item.label}
                           </div>
+                        )}
+                        
+                        {/* Active Indicator Strip (Optional styling choice) */}
+                        {isActive && !isOpen && (
+                            <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 ${themeColors.bgPrimary} rounded-r-md`} />
                         )}
                       </Link>
                     );
@@ -222,34 +191,33 @@ const Sidebar = () => {
       </nav>
 
       {/* User Profile */}
-      <div
-        className={`
-        border-t border-slate-700/50 p-4
-        ${!isOpen && "flex justify-center"}
-      `}
-      >
+      <div className="border-t border-gray-800 p-4">
         <Link
           to="/dashboard/profile"
           className={`
           flex items-center gap-3 cursor-pointer
-          hover:bg-slate-700/50 p-2 rounded-xl transition-all duration-300
+          ${themeColors.menuHoverBg} p-2 rounded-xl transition-all duration-200
           ${!isOpen && "justify-center"}
         `}
         >
-          <div className={`${themeColors.profileGradient} w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg`}>
-            <span className="text-sm font-bold text-white">SA</span>
-          </div>
+            <img 
+                src="https://ui-avatars.com/api/?name=Dibbendo&background=random" 
+                alt="Profile" 
+                className="w-9 h-9 rounded-full border-2 border-gray-700"
+            />
 
           {isOpen && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
-                Super Admin
+              <p className="text-sm font-semibold text-gray-200 truncate">
+                Dibbendo
               </p>
-              <p className="text-xs text-slate-400 truncate">
-                admin@wholesys.com
+              <p className="text-xs text-gray-500 truncate">
+                Admin
               </p>
             </div>
           )}
+          
+          {isOpen && <ChevronRight size={16} className="text-gray-500"/>}
         </Link>
       </div>
     </aside>

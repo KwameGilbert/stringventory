@@ -14,15 +14,15 @@ const CategoryGrid = ({ categories, onToggleStatus }) => {
   const { themeColors } = useTheme();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
       {categories.map((category) => {
         const IconComponent = IconMap[category.icon] || Package;
         const isActive = category.status === 'active';
         
         return (
-          <div key={category.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow relative group">
-            <div className="flex justify-between items-start mb-6">
-              <div className={`w-14 h-14 rounded-2xl ${themeColors.bgPrimary} bg-opacity-10 flex items-center justify-center`}>
+          <div key={category.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 hover:shadow-md transition-shadow relative group">
+            <div className="flex justify-between items-start mb-2">
+              <div className={`w-10 h-10 rounded-2xl bg-gray-200 bg-opacity-10 flex items-center justify-center`}>
                  <IconComponent className={themeColors.text} size={28} />
               </div>
               
@@ -41,10 +41,10 @@ const CategoryGrid = ({ categories, onToggleStatus }) => {
               </div>
             </div>
 
-            <h3 className="text-lg font-bold text-gray-900 mb-2">{category.name}</h3>
-            <p className="text-sm text-gray-500 mb-6 h-10 line-clamp-2 leading-relaxed">{category.description}</p>
+            <h3 className="text-lg font-bold text-gray-900">{category.name}</h3>
+            <p className="text-sm text-gray-500 h-10 line-clamp-2 leading-relaxed">{category.description}</p>
 
-            <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+            <div className="flex items-center justify-between pt-2 border-t border-gray-50">
               <span className="text-xs font-medium text-gray-400">{category.productsCount} products</span>
               
               <button 

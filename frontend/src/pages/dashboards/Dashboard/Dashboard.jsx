@@ -7,19 +7,19 @@ import ExpiringProducts from "../../../components/admin/Dashboard/ExpiringProduc
 
 export default function Dashboard(){
     return(
-        <div className="space-y-6 pb-8">
+        <div className="space-y-8 pb-8">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-500">Welcome back! Here's your business overview.</p>
+                <h1 className="text-2xl font-bold text-gray-900">Morning, Dibbendo!</h1>
+                <p className="text-gray-500 mt-1">Here's what's happening with your store today.</p>
             </div>
             
             {/* Key Stats Row */}
             <DashboardStat />
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[400px]">
-                <div className="lg:col-span-2 h-full">
+            {/* Charts Row - Increased height to match visual prominence */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 min-h-[450px]">
+                <div className="xl:col-span-2 h-full">
                     <RevenueChart />
                 </div>
                 <div className="h-full">
@@ -28,7 +28,7 @@ export default function Dashboard(){
             </div>
 
             {/* Bottom Lists Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[400px]">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <TopProducts />
                 <LowStockList />
                 <ExpiringProducts />

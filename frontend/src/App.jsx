@@ -19,6 +19,7 @@ import Profile from "./pages/dashboards/Profile/Profile";
 import Header from "./components/admin/layout/Header";
 import Sidebar from "./components/admin/layout/Siderbar";
 import Footer from "./components/admin/layout/Footer";
+import DashboardLayout from "./components/admin/layout/DashboardLayout";
 import Login from "./pages/login/Login";
 
 function App() {
@@ -33,17 +34,7 @@ function App() {
         <Route
           path="/dashboard/*"
           element={
-            <div className="flex min-h-screen bg-gray-50">
-              {/* Sidebar */}
-              <Sidebar />
-
-              {/* Main Content Area */}
-              <div className="flex-1 ml-72">
-                {/* Header */}
-                <Header />
-
-                {/* Page Content */}
-                <main className="pt-20 px-6 py-6 pb-20 min-h-screen">
+            <DashboardLayout>
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/categories" element={<Categories />} />
@@ -62,12 +53,7 @@ function App() {
                     <Route path="/notifications" element={<Notifications />} />
                     <Route path="/profile" element={<Profile />} />
                   </Routes>
-                </main>
-
-                {/* Footer */}
-                <Footer />
-              </div>
-            </div>
+            </DashboardLayout>
           }
         />
       </Routes>

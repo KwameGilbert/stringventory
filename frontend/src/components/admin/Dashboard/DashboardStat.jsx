@@ -54,71 +54,60 @@ const DashboardStat = () => {
       {stats.map((stat, index) => {
         const Icon = iconMap[stat.icon] || Activity;
         
-        // Determine color classes based on stat.color or defaulting to theme
-        let borderColor = "";
-        let iconBg = "";
-        let iconColor = "";
+        // Define color schemes based on stat name or color prop for Propay look
+        // We will stick to a clean white card with specific icon backgrounds
+        
+        let iconBg = "bg-gray-100";
+        let iconColor = "text-gray-600";
 
-        // Map data colors to Tailwind classes or use Theme Context
-        switch (stat.color) {
-          case "emerald":
-            borderColor = "border-l-sky-500";
-            iconBg = "bg-sky-50";
-            iconColor = "text-sky-600";
-            break;
-          case "orange":
-            borderColor = "border-l-rose-500";
-            iconBg = "bg-rose-50";
-            iconColor = "text-rose-600";
-            break;
-          case "red":
-            borderColor = "border-l-red-500";
-            iconBg = "bg-red-50";
-            iconColor = "text-red-600";
-            break;
-          case "blue":
-            borderColor = "border-l-indigo-500";
-            iconBg = "bg-indigo-50";
-            iconColor = "text-indigo-600";
-            break;
-          case "slate":
-          default:
-            borderColor = "border-l-slate-500";
-            iconBg = "bg-slate-50";
-            iconColor = "text-slate-600";
-            break;
+
+        // Custom styling logic can go here based on stat.color
+        if (stat.color === 'emerald') {
+             iconBg = "bg-purple-100";
+             iconColor = "text-purple-600";
+        } else if (stat.color === 'orange') {
+             iconBg = "bg-orange-100";
+             iconColor = "text-orange-600";
+        } else if (stat.color === 'blue') {
+             iconBg = "bg-blue-100";
+             iconColor = "text-blue-600";
+        } else if (stat.color === 'red') {
+             iconBg = "bg-red-100";
+             iconColor = "text-red-600";
         }
 
-        // Determine trend color
-        const trendColor = 
-          stat.trend === "up" ? "text-emerald-600" : 
-          stat.trend === "down" ? "text-red-600" : 
-          stat.trend === "alert" ? "text-red-600 font-bold" :
-          "text-gray-500";
+        const isTrendUp = stat.trend === "up";
+        const trendTextColor = isTrendUp ? "text-emerald-500" : "text-rose-500";
 
         return (
           <div
-            key={stat.id || index} // Use ID if available
-            className={`bg-white rounded-xl shadow-sm border-l-4 ${borderColor} p-4 transition-transform hover:scale-[1.02]`}
+            key={stat.id || index}
+            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
           >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">
-                  {stat.title}
-                </p>
-                <h3 className="text-lg font-bold text-gray-900">
-                  {stat.value}
-                </h3>
-                {stat.change && (
-                  <div className="flex items-center gap-1 text-xs">
-                    <TrendingUp className={`w-3 h-3 ${stat.trend === "down" ? "rotate-90" : ""}`} />
-                    <span className={trendColor}>{stat.change}</span>
+            <div className="flex flex-col h-full justify-between gap-4">
+               {/* Header: Icon + Title */}
+               <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${iconBg} bg-opacity-50`}>
+                        <Icon className={`w-5 h-5 ${iconColor}`} />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-500">{stat.title}</span>
+               </div>
+               
+               {/* Main Value */}
+               <div>
+                    <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
+               </div>
+
+               {/* Footer: Trend */}
+               {stat.change && (
+                  <div className="flex items-center gap-2 text-xs font-medium">
+                    <span className={`flex items-center gap-1 ${trendTextColor}`}>
+                        <TrendingUp className={`w-3 h-3 ${!isTrendUp ? 'rotate-180' : ''}`} />
+                        {stat.change}
+                    </span>
+                    <span className="text-gray-400">today</span>
                   </div>
-                )}
-              </div>
-              <div className={`p-3 rounded-lg ${iconBg}`}>
-                <Icon className={`w-4 h-4 ${iconColor}`} />
-              </div>
+               )}
             </div>
           </div>
         );
