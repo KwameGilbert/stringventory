@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useTheme } from "../../../contexts/ThemeContext";
 import { Search, ChevronDown, Calendar, Bell } from "lucide-react";
 
 const Header = () => {
+  const { themeColors } = useTheme();
   const [currency, setCurrency] = useState("GHS");
   const [startDate, setStartDate] = useState("2025-07-12");
   const [endDate, setEndDate] = useState("2026-01-06");
@@ -20,9 +22,9 @@ const Header = () => {
             <input
               type="text"
               placeholder="Search..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg 
-                       text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 
-                       focus:ring-emerald-500 focus:border-transparent transition-all"
+              className={`w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg 
+                       text-gray-700 placeholder-gray-400 focus:outline-none 
+                       ${themeColors.focusRing} focus:border-transparent transition-all`}
             />
           </div>
         </div>
@@ -33,9 +35,9 @@ const Header = () => {
           <div className="relative">
             <button
               onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 
+              className={`flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 
                        rounded-lg hover:bg-gray-50 transition-all focus:outline-none 
-                       focus:ring-2 focus:ring-emerald-500"
+                       ${themeColors.focusRing}`}
             >
               <span className="font-medium text-gray-700">₵ {currency}</span>
               <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -57,7 +59,7 @@ const Header = () => {
                     className={`w-full px-4 py-2 text-left hover:bg-emerald-50 transition-colors
                               ${
                                 curr === currency
-                                  ? "bg-emerald-50 text-emerald-600 font-medium"
+                                  ? `${themeColors.selectionBg} ${themeColors.selectionText} font-medium`
                                   : "text-gray-700"
                               }`}
                   >
@@ -75,9 +77,9 @@ const Header = () => {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
-                       text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 
-                       focus:border-transparent transition-all w-40"
+              className={`pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
+                       text-gray-700 focus:outline-none ${themeColors.focusRing} 
+                       focus:border-transparent transition-all w-40`}
             />
           </div>
 
@@ -91,9 +93,9 @@ const Header = () => {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
-                       text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 
-                       focus:border-transparent transition-all w-40"
+              className={`pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
+                       text-gray-700 focus:outline-none ${themeColors.focusRing} 
+                       focus:border-transparent transition-all w-40`}
             />
           </div>
 

@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import Dashboard from "./pages/dashboards/Dashboard/Dashboard";
 import Categories from "./pages/dashboards/Categories/Categories";
 import Products from "./pages/dashboards/products/Products";
@@ -19,7 +20,8 @@ import Login from "./pages/login/Login";
 
 function App() {
   return (
-    <Router>
+    <ThemeProvider>
+      <Router>
       <Routes>
         {/* Login Route - No Layout */}
         <Route path="/" element={<Login />} />
@@ -64,6 +66,7 @@ function App() {
         />
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 }
 
