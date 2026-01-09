@@ -1,6 +1,6 @@
 [
   {
-    "id": 1,
+    "id": "cat-uuid-001",
     "name": "Beverages",
     "description": "Soft drinks, juices, and water",
     "productsCount": 8,
@@ -8,7 +8,7 @@
     "icon": "CupSoda"
   },
   {
-    "id": 2,
+    "id": "cat-uuid-002",
     "name": "Snacks",
     "description": "Chips, cookies, and confectionery",
     "productsCount": 6,
@@ -16,7 +16,7 @@
     "icon": "Cookie"
   },
   {
-    "id": 3,
+    "id": "cat-uuid-003",
     "name": "Dairy",
     "description": "Milk, cheese, and yogurt",
     "productsCount": 4,
@@ -24,7 +24,7 @@
     "icon": "Milk"
   },
   {
-    "id": 4,
+    "id": "cat-uuid-004",
     "name": "Canned Goods",
     "description": "Canned vegetables and fruits",
     "productsCount": 5,
@@ -32,7 +32,7 @@
     "icon": "Bean"
   },
   {
-    "id": 5,
+    "id": "cat-uuid-005",
     "name": "Cleaning Supplies",
     "description": "Detergents and sanitizers",
     "productsCount": 3,

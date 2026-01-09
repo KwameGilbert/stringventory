@@ -1,0 +1,44 @@
+[
+  {
+    "id": "uom-uuid-001",
+    "name": "Kilogram",
+    "abbreviation": "kg",
+    "isActive": true
+  },
+  {
+    "id": "uom-uuid-002",
+    "name": "Liter",
+    "abbreviation": "L",
+    "isActive": true
+  },
+  {
+    "id": "uom-uuid-003",
+    "name": "Piece",
+    "abbreviation": "pcs",
+    "isActive": true
+  },
+  {
+    "id": "uom-uuid-004",
+    "name": "Box",
+    "abbreviation": "box",
+    "isActive": true
+  },
+  {
+    "id": "uom-uuid-005",
+    "name": "Pack",
+    "abbreviation": "pk",
+    "isActive": true
+  },
+  {
+    "id": "uom-uuid-006",
+    "name": "Carton",
+    "abbreviation": "ctn",
+    "isActive": true
+  },
+  {
+    "id": "uom-uuid-007",
+    "name": "Crate",
+    "abbreviation": "crt",
+    "isActive": true
+  }
+]

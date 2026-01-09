@@ -6,10 +6,23 @@ import CreateCategory from "./pages/dashboards/Categories/CreateCategory";
 import EditCategory from "./pages/dashboards/Categories/EditCategory";
 import ViewCategory from "./pages/dashboards/Categories/ViewCategory";
 import Products from "./pages/dashboards/products/Products";
-import Inventory from "./pages/dashboards/Inventory/Inventory";
+import CreateProduct from "./pages/dashboards/products/CreateProduct";
+import EditProduct from "./pages/dashboards/products/EditProduct";
+import ViewProduct from "./pages/dashboards/products/ViewProduct";
+import Inventory from "./pages/dashboards/inventory/Inventory";
+import AddInventory from "./pages/dashboards/inventory/AddInventory";
+import ViewInventory from "./pages/dashboards/inventory/ViewInventory";
 import Orders from "./pages/dashboards/Orders/Orders";
+import ViewOrder from "./pages/dashboards/Orders/ViewOrder";
+import CreateOrder from "./pages/dashboards/Orders/CreateOrder";
 import Customers from "./pages/dashboards/Customers/Customers";
+import ViewCustomer from "./pages/dashboards/Customers/ViewCustomer";
+import CreateCustomer from "./pages/dashboards/Customers/CreateCustomer";
 import Expenses from "./pages/dashboards/Expenses/Expenses";
+import AddExpense from "./pages/dashboards/Expenses/AddExpense";
+import ViewExpense from "./pages/dashboards/Expenses/ViewExpense";
+import EditExpense from "./pages/dashboards/Expenses/EditExpense";
+import ExpenseCategories from "./pages/dashboards/Expenses/ExpenseCategories";
 import Reports from "./pages/dashboards/Reports/Reports";
 import Users from "./pages/dashboards/Users/Users";
 import Messaging from "./pages/dashboards/Messaging/Messaging";
@@ -42,10 +55,23 @@ function App() {
                     <Route path="/categories/:id" element={<ViewCategory />} />
                     <Route path="/categories/:id/edit" element={<EditCategory />} />
                     <Route path="/products" element={<Products />} />
+                    <Route path="/products/new" element={<CreateProduct />} />
+                    <Route path="/products/:id" element={<ViewProduct />} />
+                    <Route path="/products/:id/edit" element={<EditProduct />} />
                     <Route path="/inventory" element={<Inventory />} />
+                    <Route path="/inventory/new" element={<AddInventory />} />
+                    <Route path="/inventory/:id" element={<ViewInventory />} />
                     <Route path="/orders" element={<Orders />} />
+                    <Route path="/orders/new" element={<CreateOrder />} />
+                    <Route path="/orders/:id" element={<ViewOrder />} />
                     <Route path="/customers" element={<Customers />} />
+                    <Route path="/customers/new" element={<CreateCustomer />} />
+                    <Route path="/customers/:id" element={<ViewCustomer />} />
                     <Route path="/expenses" element={<Expenses />} />
+                    <Route path="/expenses/new" element={<AddExpense />} />
+                    <Route path="/expenses/:id" element={<ViewExpense />} />
+                    <Route path="/expenses/:id/edit" element={<EditExpense />} />
+                    <Route path="/expenses/categories" element={<ExpenseCategories />} />
                     <Route path="/reports" element={<Reports />} />
                     <Route path="/users" element={<Users />} />
                     <Route path="/messaging" element={<Messaging />} />
@@ -63,3 +89,4 @@ function App() {
 }
 
 export default App;
+

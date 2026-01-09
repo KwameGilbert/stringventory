@@ -1,0 +1,26 @@
+[
+  {
+    "id": "pm-uuid-001",
+    "name": "Cash",
+    "description": "Physical cash payment",
+    "isActive": true
+  },
+  {
+    "id": "pm-uuid-002",
+    "name": "Bank Transfer",
+    "description": "Direct bank deposit or transfer",
+    "isActive": true
+  },
+  {
+    "id": "pm-uuid-003",
+    "name": "Mobile Money",
+    "description": "MTN MoMo, Vodafone Cash, etc.",
+    "isActive": true
+  },
+  {
+    "id": "pm-uuid-004",
+    "name": "Cheque",
+    "description": "Bank cheque",
+    "isActive": true
+  }
+]

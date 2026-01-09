@@ -1,0 +1,54 @@
+{
+  "inventoryValuation": [
+    { "id": 1, "productName": "Palm Oil (5L)", "category": "Oils & Fats", "quantity": 150, "unitCost": 45.00, "totalValue": 6750.00, "lastUpdated": "2024-01-15" },
+    { "id": 2, "productName": "Rice (25kg)", "category": "Grains", "quantity": 200, "unitCost": 120.00, "totalValue": 24000.00, "lastUpdated": "2024-01-14" },
+    { "id": 3, "productName": "Sugar (50kg)", "category": "Sweeteners", "quantity": 80, "unitCost": 250.00, "totalValue": 20000.00, "lastUpdated": "2024-01-13" },
+    { "id": 4, "productName": "Flour (25kg)", "category": "Grains", "quantity": 120, "unitCost": 95.00, "totalValue": 11400.00, "lastUpdated": "2024-01-12" },
+    { "id": 5, "productName": "Cooking Oil (20L)", "category": "Oils & Fats", "quantity": 60, "unitCost": 180.00, "totalValue": 10800.00, "lastUpdated": "2024-01-11" },
+    { "id": 6, "productName": "Salt (25kg)", "category": "Seasonings", "quantity": 100, "unitCost": 35.00, "totalValue": 3500.00, "lastUpdated": "2024-01-10" },
+    { "id": 7, "productName": "Tomato Paste (Carton)", "category": "Canned Goods", "quantity": 45, "unitCost": 280.00, "totalValue": 12600.00, "lastUpdated": "2024-01-09" },
+    { "id": 8, "productName": "Milk Powder (5kg)", "category": "Dairy", "quantity": 70, "unitCost": 150.00, "totalValue": 10500.00, "lastUpdated": "2024-01-08" }
+  ],
+  "expiryWastage": [
+    { "id": 1, "productName": "Yogurt (500ml)", "batchNumber": "YOG-2024-001", "expiryDate": "2024-01-20", "daysRemaining": 5, "quantity": 50, "status": "critical", "estimatedLoss": 750.00 },
+    { "id": 2, "productName": "Fresh Milk (1L)", "batchNumber": "MLK-2024-015", "expiryDate": "2024-01-25", "daysRemaining": 10, "quantity": 30, "status": "warning", "estimatedLoss": 450.00 },
+    { "id": 3, "productName": "Bread Loaves", "batchNumber": "BRD-2024-089", "expiryDate": "2024-01-18", "daysRemaining": 3, "quantity": 25, "status": "critical", "estimatedLoss": 125.00 },
+    { "id": 4, "productName": "Cheese (500g)", "batchNumber": "CHS-2024-007", "expiryDate": "2024-02-01", "daysRemaining": 17, "quantity": 20, "status": "safe", "estimatedLoss": 0 },
+    { "id": 5, "productName": "Butter (250g)", "batchNumber": "BTR-2024-022", "expiryDate": "2024-01-28", "daysRemaining": 13, "quantity": 40, "status": "warning", "estimatedLoss": 320.00 },
+    { "id": 6, "productName": "Eggs (Crate)", "batchNumber": "EGG-2024-156", "expiryDate": "2024-01-22", "daysRemaining": 7, "quantity": 15, "status": "warning", "estimatedLoss": 225.00 }
+  ],
+  "profitPerProduct": [
+    { "id": 1, "productName": "Palm Oil (5L)", "unitsSold": 320, "revenue": 22400.00, "cost": 14400.00, "profit": 8000.00, "margin": 35.7 },
+    { "id": 2, "productName": "Rice (25kg)", "unitsSold": 180, "revenue": 27000.00, "cost": 21600.00, "profit": 5400.00, "margin": 20.0 },
+    { "id": 3, "productName": "Sugar (50kg)", "unitsSold": 95, "revenue": 28500.00, "cost": 23750.00, "profit": 4750.00, "margin": 16.7 },
+    { "id": 4, "productName": "Flour (25kg)", "unitsSold": 150, "revenue": 18000.00, "cost": 14250.00, "profit": 3750.00, "margin": 20.8 },
+    { "id": 5, "productName": "Cooking Oil (20L)", "unitsSold": 85, "revenue": 18700.00, "cost": 15300.00, "profit": 3400.00, "margin": 18.2 },
+    { "id": 6, "productName": "Tomato Paste", "unitsSold": 120, "revenue": 42000.00, "cost": 33600.00, "profit": 8400.00, "margin": 20.0 },
+    { "id": 7, "productName": "Milk Powder", "unitsSold": 65, "revenue": 11700.00, "cost": 9750.00, "profit": 1950.00, "margin": 16.7 },
+    { "id": 8, "productName": "Salt (25kg)", "unitsSold": 200, "revenue": 10000.00, "cost": 7000.00, "profit": 3000.00, "margin": 30.0 }
+  ],
+  "monthlyRevenueExpenses": [
+    { "month": "Jan 2024", "revenue": 125000, "expenses": 85000, "profit": 40000 },
+    { "month": "Feb 2024", "revenue": 138000, "expenses": 92000, "profit": 46000 },
+    { "month": "Mar 2024", "revenue": 142000, "expenses": 88000, "profit": 54000 },
+    { "month": "Apr 2024", "revenue": 156000, "expenses": 95000, "profit": 61000 },
+    { "month": "May 2024", "revenue": 148000, "expenses": 91000, "profit": 57000 },
+    { "month": "Jun 2024", "revenue": 165000, "expenses": 98000, "profit": 67000 },
+    { "month": "Jul 2024", "revenue": 172000, "expenses": 102000, "profit": 70000 },
+    { "month": "Aug 2024", "revenue": 168000, "expenses": 99000, "profit": 69000 },
+    { "month": "Sep 2024", "revenue": 175000, "expenses": 105000, "profit": 70000 },
+    { "month": "Oct 2024", "revenue": 182000, "expenses": 108000, "profit": 74000 },
+    { "month": "Nov 2024", "revenue": 195000, "expenses": 115000, "profit": 80000 },
+    { "month": "Dec 2024", "revenue": 210000, "expenses": 125000, "profit": 85000 }
+  ],
+  "customerPerformance": [
+    { "id": 1, "customerName": "Kwame's Mini Mart", "totalOrders": 45, "totalSpent": 125000.00, "avgOrderValue": 2777.78, "lastOrder": "2024-01-14", "status": "active" },
+    { "id": 2, "customerName": "Accra Fresh Foods", "totalOrders": 38, "totalSpent": 98500.00, "avgOrderValue": 2592.11, "lastOrder": "2024-01-13", "status": "active" },
+    { "id": 3, "customerName": "Golden Groceries", "totalOrders": 32, "totalSpent": 87200.00, "avgOrderValue": 2725.00, "lastOrder": "2024-01-10", "status": "active" },
+    { "id": 4, "customerName": "City Supermarket", "totalOrders": 28, "totalSpent": 156000.00, "avgOrderValue": 5571.43, "lastOrder": "2024-01-15", "status": "active" },
+    { "id": 5, "customerName": "Village Store", "totalOrders": 22, "totalSpent": 45600.00, "avgOrderValue": 2072.73, "lastOrder": "2024-01-08", "status": "inactive" },
+    { "id": 6, "customerName": "East Side Provisions", "totalOrders": 35, "totalSpent": 92300.00, "avgOrderValue": 2637.14, "lastOrder": "2024-01-12", "status": "active" },
+    { "id": 7, "customerName": "Quick Shop Ghana", "totalOrders": 19, "totalSpent": 38500.00, "avgOrderValue": 2026.32, "lastOrder": "2023-12-20", "status": "inactive" },
+    { "id": 8, "customerName": "Premium Retailers", "totalOrders": 52, "totalSpent": 185000.00, "avgOrderValue": 3557.69, "lastOrder": "2024-01-14", "status": "active" }
+  ]
+}

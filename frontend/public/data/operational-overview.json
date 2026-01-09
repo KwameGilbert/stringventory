@@ -1,0 +1,22 @@
+{
+  "totalOrders": {
+    "value": 1247,
+    "change": 8.4,
+    "trend": "up"
+  },
+  "stockOnHand": {
+    "units": 8450,
+    "value": 234500,
+    "change": -2.1,
+    "trend": "down"
+  },
+  "lowStockAlerts": {
+    "count": 12,
+    "critical": 3
+  },
+  "expiringStock": {
+    "next30Days": 8,
+    "next60Days": 15,
+    "next90Days": 24
+  }
+}

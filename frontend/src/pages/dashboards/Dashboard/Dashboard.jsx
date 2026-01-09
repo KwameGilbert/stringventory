@@ -1,38 +1,44 @@
-import DashboardStat from "../../../components/admin/Dashboard/DashboardStat";
+import { useState } from "react";
+import DashboardHeader from "../../../components/admin/Dashboard/DashboardHeader";
+import FinancialOverview from "../../../components/admin/Dashboard/FinancialOverview";
+import OperationalOverview from "../../../components/admin/Dashboard/OperationalOverview";
 import RevenueChart from "../../../components/admin/Dashboard/RevenueChart";
 import PaymentDistribution from "../../../components/admin/Dashboard/PaymentDistribution";
 import TopProducts from "../../../components/admin/Dashboard/TopProducts";
-import LowStockList from "../../../components/admin/Dashboard/LowStockList";
-import ExpiringProducts from "../../../components/admin/Dashboard/ExpiringProducts";
 
-export default function Dashboard(){
-    return(
-        <div className="space-y-8 pb-8">
-            {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900">Morning, Dibbendo!</h1>
-                <p className="text-gray-500 mt-1">Here's what's happening with your store today.</p>
-            </div>
-            
-            {/* Key Stats Row */}
-            <DashboardStat />
+export default function Dashboard() {
+  const [dateRange, setDateRange] = useState("30days");
 
-            {/* Charts Row - Increased height to match visual prominence */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 min-h-[450px]">
-                <div className="xl:col-span-2 h-full">
-                    <RevenueChart />
-                </div>
-                <div className="h-full">
-                    <PaymentDistribution />
-                </div>
-            </div>
+  return (
+    <div className="space-y-6 pb-8">
+      {/* Header with Date Filter */}
+      <DashboardHeader dateRange={dateRange} setDateRange={setDateRange} />
 
-            {/* Bottom Lists Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <TopProducts />
-                <LowStockList />
-                <ExpiringProducts />
-            </div>
+      {/* Financial Overview */}
+      <FinancialOverview dateRange={dateRange} />
+
+      {/* Operational Overview */}
+      <OperationalOverview dateRange={dateRange} />
+
+      {/* Performance Insights Section */}
+      <div className="space-y-3">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Performance Insights</h2>
+        
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <div className="xl:col-span-2">
+            <RevenueChart dateRange={dateRange} />
+          </div>
+          <div>
+            <PaymentDistribution dateRange={dateRange} />
+          </div>
         </div>
-    )
+
+        {/* Top Products */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TopProducts dateRange={dateRange} />
+        </div>
+      </div>
+    </div>
+  );
 }

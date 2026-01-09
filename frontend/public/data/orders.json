@@ -1,0 +1,152 @@
+[
+  {
+    "id": "ORD-2024-001",
+    "customer": {
+      "name": "John Mensah",
+      "email": "john.mensah@email.com",
+      "phone": "+233 24 123 4567"
+    },
+    "orderDate": "2024-01-15T10:30:00",
+    "items": [
+      { "productId": 1, "productName": "Coca-Cola Classic", "quantity": 24, "unitPrice": 5.00 },
+      { "productId": 2, "productName": "Fanta Orange", "quantity": 12, "unitPrice": 4.50 }
+    ],
+    "subtotal": 174.00,
+    "discount": 10.00,
+    "tax": 16.40,
+    "total": 180.40,
+    "paymentMethod": "Mobile Money",
+    "status": "fulfilled"
+  },
+  {
+    "id": "ORD-2024-002",
+    "customer": {
+      "name": "Akua Serwaa",
+      "email": "akua.s@email.com",
+      "phone": "+233 50 987 6543"
+    },
+    "orderDate": "2024-01-15T14:45:00",
+    "items": [
+      { "productId": 3, "productName": "Peak Milk 400g", "quantity": 10, "unitPrice": 15.00 },
+      { "productId": 6, "productName": "Milo 400g", "quantity": 5, "unitPrice": 32.00 }
+    ],
+    "subtotal": 310.00,
+    "discount": 0,
+    "tax": 31.00,
+    "total": 341.00,
+    "paymentMethod": "Cash",
+    "status": "fulfilled"
+  },
+  {
+    "id": "ORD-2024-003",
+    "customer": {
+      "name": "Kwame Asante",
+      "email": "k.asante@email.com",
+      "phone": "+233 27 456 7890"
+    },
+    "orderDate": "2024-01-16T09:15:00",
+    "items": [
+      { "productId": 7, "productName": "Indomie Noodles", "quantity": 50, "unitPrice": 3.50 },
+      { "productId": 4, "productName": "Digestive Biscuits", "quantity": 20, "unitPrice": 12.00 }
+    ],
+    "subtotal": 415.00,
+    "discount": 25.00,
+    "tax": 39.00,
+    "total": 429.00,
+    "paymentMethod": "Bank Transfer",
+    "status": "pending"
+  },
+  {
+    "id": "ORD-2024-004",
+    "customer": {
+      "name": "Ama Darko",
+      "email": "ama.darko@email.com",
+      "phone": "+233 54 321 0987"
+    },
+    "orderDate": "2024-01-16T11:30:00",
+    "items": [
+      { "productId": 5, "productName": "Sprite", "quantity": 36, "unitPrice": 5.00 }
+    ],
+    "subtotal": 180.00,
+    "discount": 0,
+    "tax": 18.00,
+    "total": 198.00,
+    "paymentMethod": "Card",
+    "status": "fulfilled"
+  },
+  {
+    "id": "ORD-2024-005",
+    "customer": {
+      "name": "Kofi Boateng",
+      "email": "kofi.b@email.com",
+      "phone": "+233 20 111 2222"
+    },
+    "orderDate": "2024-01-17T08:00:00",
+    "items": [
+      { "productId": 8, "productName": "Golden Morn 450g", "quantity": 15, "unitPrice": 22.00 },
+      { "productId": 3, "productName": "Peak Milk 400g", "quantity": 8, "unitPrice": 15.00 }
+    ],
+    "subtotal": 450.00,
+    "discount": 20.00,
+    "tax": 43.00,
+    "total": 473.00,
+    "paymentMethod": "Mobile Money",
+    "status": "pending"
+  },
+  {
+    "id": "ORD-2024-006",
+    "customer": {
+      "name": "Efua Owusu",
+      "email": "efua.o@email.com",
+      "phone": "+233 24 555 6666"
+    },
+    "orderDate": "2024-01-17T15:20:00",
+    "items": [
+      { "productId": 1, "productName": "Coca-Cola Classic", "quantity": 48, "unitPrice": 5.00 }
+    ],
+    "subtotal": 240.00,
+    "discount": 15.00,
+    "tax": 22.50,
+    "total": 247.50,
+    "paymentMethod": "Cash",
+    "status": "cancelled"
+  },
+  {
+    "id": "ORD-2024-007",
+    "customer": {
+      "name": "Yaw Mensah",
+      "email": "yaw.m@email.com",
+      "phone": "+233 50 777 8888"
+    },
+    "orderDate": "2024-01-18T10:45:00",
+    "items": [
+      { "productId": 2, "productName": "Fanta Orange", "quantity": 24, "unitPrice": 4.50 },
+      { "productId": 5, "productName": "Sprite", "quantity": 24, "unitPrice": 5.00 },
+      { "productId": 1, "productName": "Coca-Cola Classic", "quantity": 24, "unitPrice": 5.00 }
+    ],
+    "subtotal": 348.00,
+    "discount": 30.00,
+    "tax": 31.80,
+    "total": 349.80,
+    "paymentMethod": "Card",
+    "status": "fulfilled"
+  },
+  {
+    "id": "ORD-2024-008",
+    "customer": {
+      "name": "Abena Frimpong",
+      "email": "abena.f@email.com",
+      "phone": "+233 27 999 0000"
+    },
+    "orderDate": "2024-01-18T14:00:00",
+    "items": [
+      { "productId": 6, "productName": "Milo 400g", "quantity": 8, "unitPrice": 32.00 }
+    ],
+    "subtotal": 256.00,
+    "discount": 0,
+    "tax": 25.60,
+    "total": 281.60,
+    "paymentMethod": "Mobile Money",
+    "status": "refunded"
+  }
+]

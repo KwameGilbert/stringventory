@@ -1,7 +1,42 @@
 [
-  { "name": "Lay's Classic Chips 200g", "sold": 71, "revenue": "GH₵1,562.00" },
-  { "name": "Pepsi 500ml", "sold": 81, "revenue": "GH₵1,417.50" },
-  { "name": "Cheddar Cheese 500g", "sold": 50, "revenue": "GH₵900.00" },
-  { "name": "Floor Cleaner 2L", "sold": 62, "revenue": "GH₵806.00" },
-  { "name": "Energy Drink 250ml", "sold": 56, "revenue": "GH₵784.00" }
+  {
+    "id": 1,
+    "name": "Coca-Cola Classic",
+    "category": "Beverages",
+    "revenue": 12500,
+    "volume": 850,
+    "image": null
+  },
+  {
+    "id": 2,
+    "name": "Fanta Orange",
+    "category": "Beverages",
+    "revenue": 9800,
+    "volume": 720,
+    "image": null
+  },
+  {
+    "id": 3,
+    "name": "Sprite",
+    "category": "Beverages",
+    "revenue": 8200,
+    "volume": 680,
+    "image": null
+  },
+  {
+    "id": 4,
+    "name": "Peak Milk",
+    "category": "Dairy",
+    "revenue": 7500,
+    "volume": 450,
+    "image": null
+  },
+  {
+    "id": 5,
+    "name": "Digestive Biscuits",
+    "category": "Snacks",
+    "revenue": 6800,
+    "volume": 520,
+    "image": null
+  }
 ]

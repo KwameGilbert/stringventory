@@ -1,0 +1,22 @@
+{
+  "grossRevenue": {
+    "value": 125840,
+    "change": 12.5,
+    "trend": "up"
+  },
+  "totalExpenses": {
+    "value": 34250,
+    "change": 5.2,
+    "trend": "up"
+  },
+  "totalRefunds": {
+    "value": 2180,
+    "change": -8.3,
+    "trend": "down"
+  },
+  "netRevenue": {
+    "value": 89410,
+    "change": 15.8,
+    "trend": "up"
+  }
+}

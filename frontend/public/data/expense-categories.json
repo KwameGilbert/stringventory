@@ -1,0 +1,86 @@
+[
+  {
+    "id": "exp-cat-uuid-001",
+    "name": "Salary",
+    "description": "Employee wages and compensation",
+    "color": "#3B82F6",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-002",
+    "name": "Fuel",
+    "description": "Vehicle and generator fuel costs",
+    "color": "#F59E0B",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-003",
+    "name": "Rent",
+    "description": "Office and warehouse rental payments",
+    "color": "#8B5CF6",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-004",
+    "name": "Utilities",
+    "description": "Electricity, water, and other utilities",
+    "color": "#10B981",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-005",
+    "name": "Maintenance",
+    "description": "Equipment repairs and upkeep",
+    "color": "#EF4444",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-006",
+    "name": "Transport",
+    "description": "Delivery and logistics costs",
+    "color": "#06B6D4",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-007",
+    "name": "Office Supplies",
+    "description": "Stationery and office materials",
+    "color": "#EC4899",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-008",
+    "name": "Marketing",
+    "description": "Advertising and promotional expenses",
+    "color": "#F97316",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-009",
+    "name": "Loading",
+    "description": "Loading and unloading labor costs",
+    "color": "#6366F1",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-010",
+    "name": "Internet",
+    "description": "Internet and communication costs",
+    "color": "#14B8A6",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-011",
+    "name": "Taxes",
+    "description": "Government taxes and levies",
+    "color": "#64748B",
+    "status": "active"
+  },
+  {
+    "id": "exp-cat-uuid-012",
+    "name": "Other",
+    "description": "Miscellaneous expenses",
+    "color": "#9CA3AF",
+    "status": "active"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sup-uuid-001",
+    "name": "Global Distributors Ltd",
+    "phone": "+233 20 123 4567",
+    "email": "sales@globaldist.com",
+    "address": "12 Industrial Area, Accra",
+    "isActive": true
+  },
+  {
+    "id": "sup-uuid-002",
+    "name": "Fresh Foods Supply",
+    "phone": "+233 24 987 6543",
+    "email": "orders@freshfoods.com",
+    "address": "Kumasi Market Road",
+    "isActive": true
+  },
+  {
+    "id": "sup-uuid-003",
+    "name": "Tech World Imports",
+    "phone": "+233 50 111 2222",
+    "email": "info@techworld.com",
+    "address": "Circle, Accra",
+    "isActive": true
+  }
+]
