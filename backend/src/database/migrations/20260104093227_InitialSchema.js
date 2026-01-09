@@ -318,6 +318,107 @@ export const up = async (knex) => {
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
 
+  // AUTH SESSIONS (depends on: users)
+  await knex.schema.createTable('authSessions', function (table) {
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+
+    table.uuid('userId')
+      .references('id')
+      .inTable('users')
+      .onDelete('CASCADE')
+      .onUpdate('CASCADE')
+      .notNullable();
+
+    table.string('fingerprintHash', 255).notNullable(); // hashed device fingerprint
+    table.string('ipAddress', 50);
+    table.string('userAgent', 500);
+
+    table.boolean('rememberMe').defaultTo(false);
+
+    table.timestamp('lastUsedAt').defaultTo(knex.fn.now());
+    table.timestamp('expiresAt').notNullable();
+    table.timestamp('revokedAt').nullable();
+
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+    table.timestamp('updatedAt').defaultTo(knex.fn.now());
+
+    table.index(['userId']);
+    table.index(['expiresAt']);
+  });
+
+  // REFRESH TOKENS (depends on: authSessions)
+  await knex.schema.createTable('refreshTokens', function (table) {
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+
+    table.uuid('sessionId')
+      .references('id')
+      .inTable('authSessions')
+      .onDelete('CASCADE')
+      .onUpdate('CASCADE')
+      .notNullable();
+
+    table.string('tokenHash', 255).notNullable(); // hash of refresh token
+    table.timestamp('expiresAt').notNullable();
+    table.timestamp('revokedAt').nullable();
+    table.timestamp('rotatedAt').nullable();
+
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+
+    table.unique(['tokenHash']);
+    table.index(['sessionId']);
+  });
+
+  // LOGIN ATTEMPTS (depends on: users)
+  await knex.schema.createTable('loginAttempts', function (table) {
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+
+    table.uuid('userId')
+      .references('id')
+      .inTable('users')
+      .onDelete('SET NULL')
+      .onUpdate('CASCADE')
+      .nullable();
+
+    table.string('identifier', 255).notNullable(); // email/username attempted
+    table.string('ipAddress', 50);
+    table.string('userAgent', 500);
+
+    table.boolean('success').notNullable();
+    table.string('failureReason', 100).nullable(); // invalid_password, locked, etc.
+
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+
+    table.index(['identifier']);
+    table.index(['ipAddress']);
+  });
+
+  // AUDIT LOGS (depends on: users)
+  await knex.schema.createTable('auditLogs', function (table) {
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+
+    table.uuid('userId')
+      .references('id')
+      .inTable('users')
+      .onDelete('SET NULL')
+      .onUpdate('CASCADE')
+      .nullable();
+
+    table.string('eventType', 100).notNullable();
+    // e.g. login_success, login_failure, token_refresh, session_revoked,
+    // password_changed, mfa_enabled, permission_changed
+
+    table.string('ipAddress', 50);
+    table.string('userAgent', 500);
+
+    table.uuid('sessionId').nullable();
+    table.json('metadata').nullable();
+
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+
+    table.index(['eventType']);
+    table.index(['userId']);
+  });
+
   // ============================================
   // TIER 4: Tables that depend on TIER 3
   // ============================================
@@ -446,6 +547,10 @@ export const down = async (knex) => {
   await knex.schema.dropTableIfExists('orderItems');
 
   // TIER 3
+  await knex.schema.dropTableIfExists('auditLogs');
+  await knex.schema.dropTableIfExists('loginAttempts');
+  await knex.schema.dropTableIfExists('refreshTokens');
+  await knex.schema.dropTableIfExists('authSessions');
   await knex.schema.dropTableIfExists('notifications');
   await knex.schema.dropTableIfExists('messageRecipients');
   await knex.schema.dropTableIfExists('inventoryEntries');
