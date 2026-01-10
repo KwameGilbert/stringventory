@@ -6,7 +6,8 @@ import {
   Shield, 
   ShieldCheck, 
   ShieldAlert, 
-  User 
+  User,
+  Eye
 } from "lucide-react";
 
 export default function UserList({ users, onEdit, onDelete }) {
@@ -98,6 +99,15 @@ export default function UserList({ users, onEdit, onDelete }) {
                   
                   {activeMenu === user.id && (
                     <div className="absolute right-8 top-8 z-10 w-36 bg-white rounded-lg shadow-lg border border-gray-100 py-1 animate-in fade-in zoom-in-95 duration-100 origin-top-right">
+                       <button
+                        onClick={() => {
+                          const win = window.open(`/dashboard/users/${user.id}`, '_self');
+                          win.focus();
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                        <Eye size={14} /> View
+                      </button>
                       <button
                         onClick={() => {
                           onEdit(user);

@@ -1,44 +1,48 @@
 import { useState } from "react";
 import DashboardHeader from "../../../components/admin/Dashboard/DashboardHeader";
-import FinancialOverview from "../../../components/admin/Dashboard/FinancialOverview";
-import OperationalOverview from "../../../components/admin/Dashboard/OperationalOverview";
-import RevenueChart from "../../../components/admin/Dashboard/RevenueChart";
+import KPICards from "../../../components/admin/Dashboard/KPICards";
+import SalesExpensesChart from "../../../components/admin/Dashboard/SalesExpensesChart";
+import TopProductsChart from "../../../components/admin/Dashboard/TopProductsChart";
 import PaymentDistribution from "../../../components/admin/Dashboard/PaymentDistribution";
-import TopProducts from "../../../components/admin/Dashboard/TopProducts";
+import QuickLists from "../../../components/admin/Dashboard/QuickLists";
 
 export default function Dashboard() {
   const [dateRange, setDateRange] = useState("30days");
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-6 pb-8 animate-fade-in">
       {/* Header with Date Filter */}
       <DashboardHeader dateRange={dateRange} setDateRange={setDateRange} />
 
-      {/* Financial Overview */}
-      <FinancialOverview dateRange={dateRange} />
+      {/* KPI Cards Section */}
+      <KPICards dateRange={dateRange} />
 
-      {/* Operational Overview */}
-      <OperationalOverview dateRange={dateRange} />
-
-      {/* Performance Insights Section */}
+      {/* Charts Section */}
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Performance Insights</h2>
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          Performance Insights
+        </h2>
         
-        {/* Charts Row */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Sales & Expenses Trend - 2 columns */}
           <div className="xl:col-span-2">
-            <RevenueChart dateRange={dateRange} />
+            <SalesExpensesChart dateRange={dateRange} />
           </div>
+          
+          {/* Payment Distribution - 1 column */}
           <div>
             <PaymentDistribution dateRange={dateRange} />
           </div>
         </div>
 
-        {/* Top Products */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <TopProducts dateRange={dateRange} />
+        {/* Top Products Chart - Full Width */}
+        <div className="grid grid-cols-1 gap-6">
+          <TopProductsChart dateRange={dateRange} />
         </div>
       </div>
+
+      {/* Quick Access Lists */}
+      <QuickLists />
     </div>
   );
 }

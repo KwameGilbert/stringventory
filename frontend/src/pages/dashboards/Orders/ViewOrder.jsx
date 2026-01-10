@@ -42,13 +42,22 @@ export default function ViewOrder() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/data/orders.json');
-        const found = response.data.find(o => o.id === id);
-        if (found) setOrder(found);
+        const [ordersRes, itemsRes] = await Promise.all([
+          axios.get('/data/orders.json'),
+          axios.get('/data/order-items.json')
+        ]);
+        
+        const found = ordersRes.data.find(o => o.id === id);
+        if (found) {
+          setOrder(found);
+          const orderItems = itemsRes.data.filter(item => item.orderId === id);
+          setItems(orderItems);
+        }
       } catch (error) {
         console.error("Error fetching order", error);
       }
@@ -57,9 +66,9 @@ export default function ViewOrder() {
   }, [id]);
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 2,
     }).format(value);
   };
@@ -158,11 +167,11 @@ export default function ViewOrder() {
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5 text-gray-500" />
                 <h3 className="font-semibold text-gray-900">Order Items</h3>
-                <span className="text-xs text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">{order.items.length} products</span>
+                <span className="text-xs text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">{items.length} products</span>
               </div>
             </div>
             <div className="divide-y divide-gray-50">
-              {order.items.map((item, index) => (
+              {items.map((item, index) => (
                 <div key={index} className="px-6 py-4 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0">
                     <Package className="w-5 h-5 text-gray-400" />
@@ -172,7 +181,7 @@ export default function ViewOrder() {
                     <p className="text-sm text-gray-400">Qty: {item.quantity} × {formatCurrency(item.unitPrice)}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900">{formatCurrency(item.quantity * item.unitPrice)}</p>
+                    <p className="font-semibold text-gray-900">{formatCurrency(item.subtotal)}</p>
                   </div>
                 </div>
               ))}
@@ -184,18 +193,18 @@ export default function ViewOrder() {
                 <span className="text-gray-500">Subtotal</span>
                 <span className="text-gray-900">{formatCurrency(order.subtotal)}</span>
               </div>
-              {order.discount > 0 && (
+              {order.discountAmount > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 flex items-center gap-1">
                     <Percent size={12} />
                     Discount
                   </span>
-                  <span className="text-emerald-600">-{formatCurrency(order.discount)}</span>
+                  <span className="text-emerald-600">-{formatCurrency(order.discountAmount)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Tax</span>
-                <span className="text-gray-900">{formatCurrency(order.tax)}</span>
+                <span className="text-gray-900">{formatCurrency(order.taxAmount || 0)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
                 <span className="text-gray-900">Total</span>
@@ -251,7 +260,7 @@ export default function ViewOrder() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Payment Method</p>
-                  <p className="font-medium text-gray-900">{order.paymentMethod}</p>
+                  <p className="font-medium text-gray-900 capitalize">{order.paymentMethod.replace('_', ' ')}</p>
                 </div>
               </div>
 

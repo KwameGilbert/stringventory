@@ -3,7 +3,7 @@
     "id": 1,
     "name": "Coca-Cola Classic",
     "category": "Beverages",
-    "revenue": 12500,
+    "revenue": 125000,
     "volume": 850,
     "image": null
   },
@@ -11,7 +11,7 @@
     "id": 2,
     "name": "Fanta Orange",
     "category": "Beverages",
-    "revenue": 9800,
+    "revenue": 98000,
     "volume": 720,
     "image": null
   },
@@ -19,7 +19,7 @@
     "id": 3,
     "name": "Sprite",
     "category": "Beverages",
-    "revenue": 8200,
+    "revenue": 82000,
     "volume": 680,
     "image": null
   },
@@ -27,7 +27,7 @@
     "id": 4,
     "name": "Peak Milk",
     "category": "Dairy",
-    "revenue": 7500,
+    "revenue": 75000,
     "volume": 450,
     "image": null
   },
@@ -35,8 +35,32 @@
     "id": 5,
     "name": "Digestive Biscuits",
     "category": "Snacks",
-    "revenue": 6800,
+    "revenue": 68000,
     "volume": 520,
+    "image": null
+  },
+  {
+    "id": 6,
+    "name": "Milo 400g",
+    "category": "Beverages",
+    "revenue": 62000,
+    "volume": 480,
+    "image": null
+  },
+  {
+    "id": 7,
+    "name": "Indomie Noodles",
+    "category": "Snacks",
+    "revenue": 55000,
+    "volume": 920,
+    "image": null
+  },
+  {
+    "id": 8,
+    "name": "Golden Morn",
+    "category": "Cereals",
+    "revenue": 48000,
+    "volume": 380,
     "image": null
   }
 ]

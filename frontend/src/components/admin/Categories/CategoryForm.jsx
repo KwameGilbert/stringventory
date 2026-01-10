@@ -11,10 +11,24 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
     image: null,
     ...initialData,
   });
+  const [imagePreview, setImagePreview] = useState(initialData.image || null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData((prev) => ({ ...prev, image: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -85,8 +99,8 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
               <div className="flex items-start gap-4">
                 {/* Image Preview */}
                 <div className="w-20 h-20 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                  {formData.image ? (
-                    <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <Image className="w-6 h-6 text-gray-400" />
                   )}
@@ -102,7 +116,12 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                       </span>
                     </div>
                     <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 2MB</p>
-                    <input type="file" className="hidden" accept="image/*" />
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
                   </label>
                 </div>
               </div>

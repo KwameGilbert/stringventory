@@ -1,0 +1,12 @@
+[
+  { "id": "perm-001", "name": "user.view", "description": "View users list and profiles" },
+  { "id": "perm-002", "name": "user.create", "description": "Create new users" },
+  { "id": "perm-003", "name": "user.edit", "description": "Edit existing users" },
+  { "id": "perm-004", "name": "user.delete", "description": "Delete/Deactivate users" },
+  { "id": "perm-005", "name": "inventory.view", "description": "View inventory levels" },
+  { "id": "perm-006", "name": "inventory.manage", "description": "Add or adjust stock" },
+  { "id": "perm-007", "name": "order.view", "description": "View orders" },
+  { "id": "perm-008", "name": "order.process", "description": "Process and fulfill orders" },
+  { "id": "perm-009", "name": "report.view", "description": "View financial reports" },
+  { "id": "perm-010", "name": "settings.manage", "description": "Manage system settings" }
+]

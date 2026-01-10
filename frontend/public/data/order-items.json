@@ -1,0 +1,102 @@
+[
+  {
+    "id": "oi-001",
+    "orderId": "ORD-001",
+    "productId": "prod-uuid-001",
+    "productName": "Coca-Cola Classic",
+    "sku": "SKU-CC-330",
+    "quantity": 24,
+    "unitPrice": 5.00,
+    "subtotal": 120.00
+  },
+  {
+    "id": "oi-002",
+    "orderId": "ORD-001",
+    "productId": "prod-uuid-002",
+    "productName": "Digestive Biscuits",
+    "sku": "SKU-DB-200",
+    "quantity": 10,
+    "unitPrice": 12.00,
+    "subtotal": 120.00
+  },
+  {
+    "id": "oi-003",
+    "orderId": "ORD-001",
+    "productId": "prod-uuid-005",
+    "productName": "Fanta Orange",
+    "sku": "SKU-FO-330",
+    "quantity": 2,
+    "unitPrice": 4.50,
+    "subtotal": 9.00
+  },
+  {
+    "id": "oi-004",
+    "orderId": "ORD-002",
+    "productId": "prod-uuid-003",
+    "productName": "Fresh Milk 1L",
+    "sku": "SKU-FM-1000",
+    "quantity": 20,
+    "unitPrice": 15.00,
+    "subtotal": 300.00
+  },
+  {
+    "id": "oi-005",
+    "orderId": "ORD-002",
+    "productId": "prod-uuid-007",
+    "productName": "Greek Yogurt",
+    "sku": "SKU-GY-500",
+    "quantity": 10,
+    "unitPrice": 18.00,
+    "subtotal": 180.00
+  },
+  {
+    "id": "oi-006",
+    "orderId": "ORD-003",
+    "productId": "prod-uuid-004",
+    "productName": "Roasted Coffee Beans",
+    "sku": "SKU-CF-500",
+    "quantity": 12,
+    "unitPrice": 65.00,
+    "subtotal": 780.00
+  },
+  {
+    "id": "oi-007",
+    "orderId": "ORD-003",
+    "productId": "prod-uuid-008",
+    "productName": "Sprite Lemon-Lime",
+    "sku": "SKU-SP-330",
+    "quantity": 10,
+    "unitPrice": 4.80,
+    "subtotal": 48.00
+  },
+  {
+    "id": "oi-008",
+    "orderId": "ORD-004",
+    "productId": "prod-uuid-001",
+    "productName": "Coca-Cola Classic",
+    "sku": "SKU-CC-330",
+    "quantity": 48,
+    "unitPrice": 5.00,
+    "subtotal": 240.00
+  },
+  {
+    "id": "oi-009",
+    "orderId": "ORD-004",
+    "productId": "prod-uuid-002",
+    "productName": "Digestive Biscuits",
+    "sku": "SKU-DB-200",
+    "quantity": 8,
+    "unitPrice": 12.00,
+    "subtotal": 96.00
+  },
+  {
+    "id": "oi-010",
+    "orderId": "ORD-005",
+    "productId": "prod-uuid-003",
+    "productName": "Fresh Milk 1L",
+    "sku": "SKU-FM-1000",
+    "quantity": 10,
+    "unitPrice": 15.00,
+    "subtotal": 150.00
+  }
+]

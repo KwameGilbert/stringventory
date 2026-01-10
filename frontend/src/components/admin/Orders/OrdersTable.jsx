@@ -11,6 +11,24 @@ const statusConfig = {
     text: "text-amber-700",
     icon: Clock,
   },
+  processing: {
+    label: "Processing",
+    bg: "bg-blue-100",
+    text: "text-blue-700",
+    icon: RotateCcw,
+  },
+  shipped: {
+    label: "Shipped",
+    bg: "bg-purple-100",
+    text: "text-purple-700",
+    icon: CheckCircle,
+  },
+  delivered: {
+    label: "Delivered",
+    bg: "bg-emerald-100",
+    text: "text-emerald-700",
+    icon: CheckCircle,
+  },
   fulfilled: {
     label: "Fulfilled",
     bg: "bg-emerald-100",
@@ -22,12 +40,6 @@ const statusConfig = {
     bg: "bg-rose-100",
     text: "text-rose-700",
     icon: XCircle,
-  },
-  refunded: {
-    label: "Refunded",
-    bg: "bg-purple-100",
-    text: "text-purple-700",
-    icon: RotateCcw,
   },
 };
 
@@ -43,9 +55,9 @@ const OrdersTable = ({ orders }) => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 2,
     }).format(value);
   };
@@ -103,14 +115,13 @@ const OrdersTable = ({ orders }) => {
             {paginatedOrders.map((order) => {
               const status = statusConfig[order.status] || statusConfig.pending;
               const StatusIcon = status.icon;
-              const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
 
               return (
                 <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                   {/* Order ID */}
                   <td className="px-4 py-3">
                     <span className="font-mono text-sm font-medium text-gray-900 bg-gray-100 px-2 py-1 rounded">
-                      {order.id}
+                      {order.orderNumber}
                     </span>
                   </td>
 
@@ -137,22 +148,21 @@ const OrdersTable = ({ orders }) => {
 
                   {/* Items Count */}
                   <td className="px-4 py-3 text-center">
-                    <span className="text-sm font-medium text-gray-900">{totalItems}</span>
-                    <span className="text-xs text-gray-400 ml-1">items</span>
+                    <span className="text-sm font-medium text-gray-900">-</span>
                   </td>
 
                   {/* Total */}
                   <td className="px-4 py-3 text-right">
                     <span className="text-sm font-bold text-gray-900">{formatCurrency(order.total)}</span>
-                    {order.discount > 0 && (
-                      <p className="text-xs text-emerald-600">-{formatCurrency(order.discount)} discount</p>
+                    {order.discountAmount > 0 && (
+                      <p className="text-xs text-emerald-600">-{formatCurrency(order.discountAmount)} discount</p>
                     )}
                   </td>
 
                   {/* Payment Method */}
                   <td className="px-4 py-3 text-center">
-                    <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
-                      {order.paymentMethod}
+                    <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full capitalize">
+                      {order.paymentMethod.replace('_', ' ')}
                     </span>
                   </td>
 

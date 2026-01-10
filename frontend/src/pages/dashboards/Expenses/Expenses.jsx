@@ -12,23 +12,8 @@ export default function Expenses() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [expensesRes, categoriesRes, pmRes] = await Promise.all([
-          axios.get("/data/expenses.json"),
-          axios.get("/data/expense-categories.json"),
-          axios.get("/data/payment-methods.json")
-        ]);
-        
-        const fetchedExpenses = expensesRes.data;
-        const fetchedCategories = categoriesRes.data;
-        const fetchedPaymentMethods = pmRes.data;
-
-        const mappedExpenses = fetchedExpenses.map(expense => ({
-          ...expense,
-          category: fetchedCategories.find(c => c.id === expense.expenseCategoryId)?.name || "Unknown",
-          paymentMethod: fetchedPaymentMethods.find(p => p.id === expense.paymentMethodId)?.name || "Unknown"
-        }));
-
-        setExpenses(mappedExpenses);
+        const response = await axios.get("/data/expenses.json");
+        setExpenses(response.data);
       } catch (error) {
         console.error("Error loading expenses", error);
       } finally {
@@ -48,15 +33,16 @@ export default function Expenses() {
 
   // Calculate stats
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const recurringExpenses = expenses.filter(e => e.isRecurring).reduce((sum, e) => sum + e.amount, 0);
-  const oneTimeExpenses = expenses.filter(e => !e.isRecurring).reduce((sum, e) => sum + e.amount, 0);
+  const paidExpenses = expenses.filter(e => e.status === 'paid').reduce((sum, e) => sum + e.amount, 0);
+  const pendingExpenses = expenses.filter(e => e.status === 'pending').reduce((sum, e) => sum + e.amount, 0);
 
   // Filter expenses
   const filteredExpenses = expenses.filter((expense) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-      expense.category.toLowerCase().includes(searchLower) ||
-      expense.reference.toLowerCase().includes(searchLower) ||
+      expense.name.toLowerCase().includes(searchLower) ||
+      expense.categoryName.toLowerCase().includes(searchLower) ||
+      expense.paymentMethod.toLowerCase().includes(searchLower) ||
       (expense.notes && expense.notes.toLowerCase().includes(searchLower))
     );
   });
@@ -81,8 +67,8 @@ export default function Expenses() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         totalExpenses={totalExpenses}
-        recurringExpenses={recurringExpenses}
-        oneTimeExpenses={oneTimeExpenses}
+        paidExpenses={paidExpenses}
+        pendingExpenses={pendingExpenses}
       />
 
       <ExpensesTable 

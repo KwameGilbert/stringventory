@@ -58,8 +58,8 @@ const PaymentDistribution = ({ dateRange }) => {
         <h3 className="font-semibold text-gray-900">Revenue by Payment</h3>
       </div>
 
-      <div className="flex-1 relative w-full min-h-[200px] flex items-center justify-center">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1 relative w-full" style={{ minHeight: '240px' }}>
+        <ResponsiveContainer width="100%" height={240}>
           <PieChart>
             <Pie
               data={data}

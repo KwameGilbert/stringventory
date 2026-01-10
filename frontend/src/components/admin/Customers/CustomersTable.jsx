@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Eye, MessageSquare, ChevronLeft, ChevronRight, Users, Phone, Mail, MapPin } from "lucide-react";
+import { Eye, Edit2, MessageSquare, ChevronLeft, ChevronRight, Users, Phone, Mail, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import SendMessageModal from "./SendMessageModal";
 
 const ITEMS_PER_PAGE = 8;
 
 const CustomersTable = ({ customers }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [messageModal, setMessageModal] = useState({ isOpen: false, customer: null });
 
   const totalPages = Math.ceil(customers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -16,9 +18,9 @@ const CustomersTable = ({ customers }) => {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 0,
     }).format(value);
   };
@@ -83,7 +85,13 @@ const CustomersTable = ({ customers }) => {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">{customer.name}</p>
-                      <p className="text-xs text-gray-400">{customer.businessName}</p>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        customer.status === 'active' 
+                          ? 'bg-emerald-100 text-emerald-700' 
+                          : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {customer.status === 'active' ? 'Active' : 'Inactive'}
+                      </span>
                     </div>
                   </div>
                 </td>
@@ -125,13 +133,24 @@ const CustomersTable = ({ customers }) => {
                   <div className="flex items-center justify-end gap-1">
                     <Link
                       to={`/dashboard/customers/${customer.id}`}
-                      className="px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1"
+                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                      title="View"
                     >
-                      <Eye size={14} />
-                      View
+                      <Eye size={16} />
                     </Link>
-                    <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1 border border-blue-200">
-                      <MessageSquare size={14} />
+                    <Link
+                      to={`/dashboard/customers/${customer.id}/edit`}
+                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                      title="Edit"
+                    >
+                      <Edit2 size={16} />
+                    </Link>
+                    <button 
+                      onClick={() => setMessageModal({ isOpen: true, customer })}
+                      className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+                      title="Send Message"
+                    >
+                      <MessageSquare size={16} />
                     </button>
                   </div>
                 </td>
@@ -183,6 +202,13 @@ const CustomersTable = ({ customers }) => {
           </div>
         )}
       </div>
+
+      {/* Message Modal */}
+      <SendMessageModal
+        isOpen={messageModal.isOpen}
+        onClose={() => setMessageModal({ isOpen: false, customer: null })}
+        customer={messageModal.customer}
+      />
     </div>
   );
 };

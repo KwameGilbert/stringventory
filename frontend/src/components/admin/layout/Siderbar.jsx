@@ -19,6 +19,7 @@ import {
   LogOut,
   Bell,
   Tag,
+  FileText,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -34,6 +35,7 @@ const Sidebar = () => {
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/" },
     { icon: FolderTree, label: "Categories", path: "/dashboard/categories" },
     { icon: Package, label: "Products", path: "/dashboard/products" },
+    { icon: FileText, label: "Purchases", path: "/dashboard/purchases" },
     { icon: ClipboardList, label: "Stock Management", path: "/dashboard/inventory" },
     { icon: ShoppingCart, label: "Orders", path: "/dashboard/orders" },
     { icon: Users, label: "Customers", path: "/dashboard/customers" },

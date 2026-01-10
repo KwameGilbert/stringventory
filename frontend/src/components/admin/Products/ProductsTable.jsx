@@ -41,8 +41,11 @@ const ProductsTable = ({ products, onDelete }) => {
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Code</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">SKU</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Supplier</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Cost</th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
               <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
               <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
               <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
@@ -67,23 +70,42 @@ const ProductsTable = ({ products, onDelete }) => {
                       <div className="min-w-0">
                         <Link 
                           to={`/dashboard/products/${product.id}`}
-                          className="font-medium text-gray-900 hover:text-blue-600 transition-colors text-sm"
+                          className="font-medium text-gray-900 hover:text-blue-600 transition-colors text-sm block"
                         >
                           {product.name}
                         </Link>
-                        <p className="text-xs text-gray-400 capitalize">{product.unitOfMeasure}</p>
+                        <p className="text-xs text-gray-400 font-mono">{product.code}</p>
                       </div>
                     </div>
                   </td>
                   
-                  {/* Product Code */}
+                  {/* SKU */}
                   <td className="px-4 py-3">
-                    <span className="text-xs text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">{product.code}</span>
+                    <span className="text-xs text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">{product.sku || "—"}</span>
                   </td>
                   
                   {/* Category */}
                   <td className="px-4 py-3">
                     <span className="text-sm text-gray-600">{product.category}</span>
+                  </td>
+                  
+                  {/* Supplier */}
+                  <td className="px-4 py-3">
+                    <span className="text-sm text-gray-600">{product.supplier || "—"}</span>
+                  </td>
+                  
+                  {/* Cost Price */}
+                  <td className="px-4 py-3 text-right">
+                    <span className="text-sm text-gray-900 font-medium">
+                      GH₵{product.costPrice ? product.costPrice.toFixed(2) : "0.00"}
+                    </span>
+                  </td>
+                  
+                  {/* Selling Price */}
+                  <td className="px-4 py-3 text-right">
+                    <span className="text-sm text-gray-900 font-semibold">
+                      GH₵{product.sellingPrice ? product.sellingPrice.toFixed(2) : "0.00"}
+                    </span>
                   </td>
                   
                   {/* Stock Level */}

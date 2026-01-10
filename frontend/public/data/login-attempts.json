@@ -1,0 +1,34 @@
+[
+  {
+    "id": "login-001",
+    "userId": "user-uuid-001",
+    "timestamp": "2024-01-15T10:30:00",
+    "status": "success",
+    "ipAddress": "192.168.1.5",
+    "device": "Chrome on Windows"
+  },
+  {
+    "id": "login-002",
+    "userId": "user-uuid-001",
+    "timestamp": "2024-01-14T09:00:00",
+    "status": "success",
+    "ipAddress": "192.168.1.5",
+    "device": "Chrome on Windows"
+  },
+  {
+    "id": "login-003",
+    "userId": "user-uuid-001",
+    "timestamp": "2024-01-13T18:45:00",
+    "status": "failed",
+    "ipAddress": "192.168.1.5",
+    "device": "Chrome on Windows"
+  },
+  {
+    "id": "login-004",
+    "userId": "user-uuid-002",
+    "timestamp": "2024-01-14T15:45:00",
+    "status": "success",
+    "ipAddress": "192.168.1.8",
+    "device": "Firefox on Mac"
+  }
+]

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "pi-001",
+    "purchaseId": "pur-001",
+    "productId": "prod-uuid-001",
+    "productName": "Coca-Cola Classic",
+    "supplierId": "sup-uuid-001",
+    "quantity": 100,
+    "unitCost": 3.50,
+    "sellingPrice": 5.00,
+    "expiryDate": "2025-06-30",
+    "subtotal": 350.00
+  },
+  {
+    "id": "pi-002",
+    "purchaseId": "pur-001",
+    "productId": "prod-uuid-005",
+    "productName": "Fanta Orange",
+    "supplierId": "sup-uuid-001",
+    "quantity": 150,
+    "unitCost": 3.00,
+    "sellingPrice": 4.50,
+    "expiryDate": "2025-07-15",
+    "subtotal": 450.00
+  },
+  {
+    "id": "pi-003",
+    "purchaseId": "pur-002",
+    "productId": "prod-uuid-003",
+    "productName": "Fresh Milk 1L",
+    "supplierId": "sup-uuid-002",
+    "quantity": 80,
+    "unitCost": 10.00,
+    "sellingPrice": 15.00,
+    "expiryDate": "2025-01-25",
+    "subtotal": 800.00
+  },
+  {
+    "id": "pi-004",
+    "purchaseId": "pur-002",
+    "productId": "prod-uuid-007",
+    "productName": "Greek Yogurt",
+    "supplierId": "sup-uuid-002",
+    "quantity": 60,
+    "unitCost": 12.00,
+    "sellingPrice": 18.00,
+    "expiryDate": "2025-02-10",
+    "subtotal": 720.00
+  },
+  {
+    "id": "pi-005",
+    "purchaseId": "pur-003",
+    "productId": "prod-uuid-004",
+    "productName": "Roasted Coffee Beans",
+    "supplierId": "sup-uuid-001",
+    "quantity": 50,
+    "unitCost": 45.00,
+    "sellingPrice": 65.00,
+    "expiryDate": "2026-01-05",
+    "subtotal": 2250.00
+  },
+  {
+    "id": "pi-006",
+    "purchaseId": "pur-004",
+    "productId": "prod-uuid-002",
+    "productName": "Digestive Biscuits",
+    "supplierId": "sup-uuid-001",
+    "quantity": 120,
+    "unitCost": 8.00,
+    "sellingPrice": 12.00,
+    "expiryDate": "2025-08-20",
+    "subtotal": 960.00
+  }
+]

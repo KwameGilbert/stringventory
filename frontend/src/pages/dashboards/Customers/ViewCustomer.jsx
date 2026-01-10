@@ -19,7 +19,7 @@ export default function ViewCustomer() {
           axios.get('/data/customers.json'),
           axios.get('/data/orders.json')
         ]);
-        const found = customersRes.data.find(c => c.id === parseInt(id));
+        const found = customersRes.data.find(c => c.id === id); // Compare as string
         if (found) {
           setCustomer(found);
           // Filter orders for this customer (by name match for mock data)
@@ -36,9 +36,9 @@ export default function ViewCustomer() {
   }, [id]);
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 2,
     }).format(value);
   };
@@ -96,8 +96,6 @@ export default function ViewCustomer() {
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">{customer.name}</h1>
                 <div className="flex items-center gap-2 mt-1">
-                  <Building2 size={14} className="text-gray-400" />
-                  <span className="text-gray-500">{customer.businessName}</span>
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                     customer.status === 'active' 
                       ? 'bg-emerald-100 text-emerald-700' 
@@ -110,10 +108,13 @@ export default function ViewCustomer() {
             </div>
             
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-medium text-sm">
+              <Link
+                to={`/dashboard/customers/${id}/edit`}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-medium text-sm"
+              >
                 <Edit2 size={16} />
                 Edit
-              </button>
+              </Link>
               <button className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
                 <Trash2 size={16} />
                 Delete
@@ -247,7 +248,7 @@ export default function ViewCustomer() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Customer Since</p>
-                  <p className="text-sm font-medium text-gray-900">{formatDate(customer.joinedDate)}</p>
+                  <p className="text-sm font-medium text-gray-900">{formatDate(customer.createdAt)}</p>
                 </div>
               </div>
 
@@ -257,7 +258,7 @@ export default function ViewCustomer() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Last Order</p>
-                  <p className="text-sm font-medium text-gray-900">{formatDate(customer.lastOrderDate)}</p>
+                  <p className="text-sm font-medium text-gray-900">{customer.lastOrderDate ? formatDate(customer.lastOrderDate) : 'No orders yet'}</p>
                 </div>
               </div>
             </div>

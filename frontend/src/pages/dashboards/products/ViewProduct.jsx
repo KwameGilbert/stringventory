@@ -11,9 +11,27 @@ export default function ViewProduct() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/products.json");
-        const found = response.data.find((p) => p.id === parseInt(id));
-        if (found) setProduct(found);
+        const [productsRes, categoriesRes, suppliersRes, uomsRes] = await Promise.all([
+          axios.get("/data/products.json"),
+          axios.get("/data/categories.json"),
+          axios.get("/data/suppliers.json"),
+          axios.get("/data/unit-of-measurements.json")
+        ]);
+        
+        const found = productsRes.data.find((p) => p.id === id); // Compare as string, not parseInt
+        if (found) {
+          // Add related data
+          const category = categoriesRes.data.find(c => c.id === found.categoryId);
+          const supplier = suppliersRes.data.find(s => s.id === found.supplierId);
+          const uom = uomsRes.data.find(u => u.id === found.unitOfMeasurementId);
+          
+          setProduct({
+            ...found,
+            category: category?.name || "Unknown",
+            supplier: supplier?.name || "Unknown",
+            unitOfMeasure: uom?.name || "N/A"
+          });
+        }
       } catch (error) {
         console.error("Error fetching product", error);
       }

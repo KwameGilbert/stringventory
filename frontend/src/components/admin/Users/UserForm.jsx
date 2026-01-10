@@ -1,31 +1,35 @@
-import { useState, useEffect } from "react";
-import { X, User, Mail, Shield, CheckCircle, Phone } from "lucide-react";
+import { useState } from "react";
+import { X, User, Mail, Shield, CheckCircle, Phone, ShieldCheck, Lock } from "lucide-react";
 
 export default function UserForm({ user, roles = [], onClose, onSubmit }) {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    role_id: "",
-    isActive: true
-  });
-
-  useEffect(() => {
+  const [formData, setFormData] = useState(() => {
+    // Initialize state from props to avoid cascading renders
     if (user) {
-      setFormData({
+      return {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
         phone: user.phone || "",
         role_id: user.role_id,
-        isActive: user.isActive
-      });
-    } else if (roles.length > 0) {
-      // Set default role if creating new user
-      setFormData(prev => ({ ...prev, role_id: roles[roles.length - 1].id }));
+        isActive: user.isActive,
+        mfaEnabled: user.mfaEnabled || false,
+        password: ""
+      };
     }
-  }, [user, roles]);
+    // Default state for new user
+    return {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      role_id: roles.length > 0 ? roles[roles.length - 1].id : "",
+      isActive: true,
+      mfaEnabled: false,
+      password: ""
+    };
+  });
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -92,6 +96,23 @@ export default function UserForm({ user, roles = [], onClose, onSubmit }) {
             </div>
           </div>
 
+          {!user && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <input
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Phone</label>
             <div className="relative">
@@ -107,6 +128,7 @@ export default function UserForm({ user, roles = [], onClose, onSubmit }) {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
+             {/* Role & Status (Existing) */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Role</label>
               <div className="relative">
@@ -138,6 +160,26 @@ export default function UserForm({ user, roles = [], onClose, onSubmit }) {
                 </select>
               </div>
             </div>
+          </div>
+
+          {/* MFA Toggle */}
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+             <div className="flex items-center gap-3">
+               <ShieldCheck className="text-gray-400" size={20} />
+               <div>
+                 <p className="text-sm font-medium text-gray-900">Two-Factor Authentication</p>
+                 <p className="text-xs text-gray-500">Add an extra layer of security</p>
+               </div>
+             </div>
+             <label className="relative inline-flex items-center cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={formData.mfaEnabled} 
+                onChange={(e) => setFormData({...formData, mfaEnabled: e.target.checked})}
+                className="sr-only peer" 
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+            </label>
           </div>
 
           <div className="pt-4 flex gap-3">

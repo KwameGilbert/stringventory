@@ -34,48 +34,51 @@ const CategoryGrid = ({ categories, onToggleStatus }) => {
             key={category.id} 
             className="bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group"
           >
-            {/* Card Header with Icon */}
-            <div className={`${colors.light} px-5 py-4 border-b border-gray-100`}>
-              <div className="flex justify-between items-start">
-                <div className={`
-                  w-12 h-12 rounded-xl bg-gradient-to-br ${colors.bg} 
-                  flex items-center justify-center shadow-lg ${colors.shadow}
-                `}>
-                  <IconComponent className="text-white" size={24} />
+            {/* Card Header with Image */}
+            <div className="relative h-40 overflow-hidden bg-gray-100">
+              {category.image ? (
+                <img 
+                  src={category.image} 
+                  alt={category.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              ) : (
+                <div className={`w-full h-full bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
+                  <IconComponent className="text-white" size={48} />
                 </div>
+              )}
+              
+              {/* Actions Menu - Positioned over image */}
+              <div className="absolute top-3 right-3">
+                <button 
+                  onClick={() => setActiveMenu(activeMenu === category.id ? null : category.id)}
+                  className="p-1.5 text-white bg-black/20 backdrop-blur-sm hover:bg-black/40 rounded-lg transition-colors"
+                >
+                  <MoreVertical size={18} />
+                </button>
                 
-                {/* Actions Menu */}
-                <div className="relative">
-                  <button 
-                    onClick={() => setActiveMenu(activeMenu === category.id ? null : category.id)}
-                    className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-white/80 rounded-lg transition-colors"
-                  >
-                    <MoreVertical size={18} />
-                  </button>
-                  
-                  {activeMenu === category.id && (
-                    <div className="absolute right-0 top-8 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 min-w-[140px] z-10">
-                      <Link 
-                        to={`/dashboard/categories/${category.id}`}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                      >
-                        <Eye size={16} />
-                        View
-                      </Link>
-                      <Link 
-                        to={`/dashboard/categories/${category.id}/edit`}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                      >
-                        <Edit2 size={16} />
-                        Edit
-                      </Link>
-                      <button className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors w-full">
-                        <Trash2 size={16} />
-                        Delete
-                      </button>
-                    </div>
-                  )}
-                </div>
+                {activeMenu === category.id && (
+                  <div className="absolute right-0 top-10 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 min-w-[140px] z-10">
+                    <Link 
+                      to={`/dashboard/categories/${category.id}`}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <Eye size={16} />
+                      View
+                    </Link>
+                    <Link 
+                      to={`/dashboard/categories/${category.id}/edit`}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <Edit2 size={16} />
+                      Edit
+                    </Link>
+                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors w-full">
+                      <Trash2 size={16} />
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 

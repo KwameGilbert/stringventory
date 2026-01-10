@@ -5,7 +5,8 @@
     "description": "Soft drinks, juices, and water",
     "productsCount": 8,
     "status": "active",
-    "icon": "CupSoda"
+    "icon": "CupSoda",
+    "image": "https://images.unsplash.com/photo-1437418747212-8d9709afab22?w=400&h=400&fit=crop"
   },
   {
     "id": "cat-uuid-002",
@@ -13,7 +14,8 @@
     "description": "Chips, cookies, and confectionery",
     "productsCount": 6,
     "status": "active",
-    "icon": "Cookie"
+    "icon": "Cookie",
+    "image": "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400&h=400&fit=crop"
   },
   {
     "id": "cat-uuid-003",
@@ -21,7 +23,8 @@
     "description": "Milk, cheese, and yogurt",
     "productsCount": 4,
     "status": "active",
-    "icon": "Milk"
+    "icon": "Milk",
+    "image": "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400&h=400&fit=crop"
   },
   {
     "id": "cat-uuid-004",
@@ -29,14 +32,16 @@
     "description": "Canned vegetables and fruits",
     "productsCount": 5,
     "status": "active",
-    "icon": "Bean"
+    "icon": "Bean",
+    "image": "https://images.unsplash.com/photo-1586201375761-83865001759c?w=400&h=400&fit=crop"
   },
   {
     "id": "cat-uuid-005",
     "name": "Cleaning Supplies",
     "description": "Detergents and sanitizers",
-    "productsCount": 3,
+    "productsCount": 0,
     "status": "inactive",
-    "icon": "Sparkles"
+    "icon": "Sparkles",
+    "image": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=400&h=400&fit=crop"
   }
 ]

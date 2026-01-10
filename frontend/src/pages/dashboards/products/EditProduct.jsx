@@ -12,7 +12,7 @@ export default function EditProduct() {
     const fetchData = async () => {
       try {
         const response = await axios.get("/data/products.json");
-        const product = response.data.find((p) => p.id === parseInt(id));
+        const product = response.data.find((p) => p.id === id); // Compare as string, not parseInt
         if (product) {
           setData(product);
         }

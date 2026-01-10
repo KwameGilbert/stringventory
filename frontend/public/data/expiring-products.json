@@ -1,10 +1,42 @@
-{
-  "summary": {
-    "days30": 1,
-    "days60": 1,
-    "days90": 1
+[
+  {
+    "id": 1,
+    "productName": "Coca-Cola Classic Batch #234",
+    "batchNumber": "BATCH-234",
+    "daysUntilExpiry": 15,
+    "quantity": 48,
+    "expiryDate": "2026-01-25"
   },
-  "items": [
-    { "name": "Tomato Sauce 400g", "expiryDate": "2026-01-10", "daysLeft": 3 }
-  ]
-}
+  {
+    "id": 2,
+    "productName": "Peak Milk 400g Batch #156",
+    "batchNumber": "BATCH-156",
+    "daysUntilExpiry": 22,
+    "quantity": 36,
+    "expiryDate": "2026-02-01"
+  },
+  {
+    "id": 3,
+    "productName": "Milo 400g Batch #189",
+    "batchNumber": "BATCH-189",
+    "daysUntilExpiry": 30,
+    "quantity": 24,
+    "expiryDate": "2026-02-09"
+  },
+  {
+    "id": 4,
+    "productName": "Indomie Noodles Batch #301",
+    "batchNumber": "BATCH-301",
+    "daysUntilExpiry": 45,
+    "quantity": 120,
+    "expiryDate": "2026-02-24"
+  },
+  {
+    "id": 5,
+    "productName": "Golden Morn Batch #267",
+    "batchNumber": "BATCH-267",
+    "daysUntilExpiry": 60,
+    "quantity": 18,
+    "expiryDate": "2026-03-11"
+  }
+]

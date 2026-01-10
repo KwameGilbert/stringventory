@@ -1,152 +1,137 @@
 [
   {
-    "id": "ORD-2024-001",
+    "id": "ORD-001",
+    "orderNumber": "ORD-2025-001",
+    "customerId": "cust-001",
     "customer": {
-      "name": "John Mensah",
-      "email": "john.mensah@email.com",
-      "phone": "+233 24 123 4567"
+      "name": "Kwame Mensah",
+      "email": "kwame.mensah@email.com",
+      "phone": "+233 24 123 4567",
+      "address": "123 Oxford Street, Accra"
     },
-    "orderDate": "2024-01-15T10:30:00",
-    "items": [
-      { "productId": 1, "productName": "Coca-Cola Classic", "quantity": 24, "unitPrice": 5.00 },
-      { "productId": 2, "productName": "Fanta Orange", "quantity": 12, "unitPrice": 4.50 }
-    ],
-    "subtotal": 174.00,
-    "discount": 10.00,
-    "tax": 16.40,
-    "total": 180.40,
-    "paymentMethod": "Mobile Money",
-    "status": "fulfilled"
+    "orderDate": "2025-01-08T10:30:00Z",
+    "status": "delivered",
+    "paymentMethod": "mobile_money",
+    "paymentStatus": "paid",
+    "subtotal": 250.00,
+    "discountAmount": 25.00,
+    "discountType": "percentage",
+    "discountValue": 10,
+    "taxAmount": 0.00,
+    "total": 225.00,
+    "deliveryAddress": "123 Oxford Street, Accra",
+    "deliveryDate": "2025-01-09",
+    "notes": "Customer requested morning delivery",
+    "createdBy": "John Doe",
+    "createdAt": "2025-01-08T10:30:00Z",
+    "updatedAt": "2025-01-09T14:20:00Z"
   },
   {
-    "id": "ORD-2024-002",
+    "id": "ORD-002",
+    "orderNumber": "ORD-2025-002",
+    "customerId": "cust-002",
     "customer": {
-      "name": "Akua Serwaa",
-      "email": "akua.s@email.com",
-      "phone": "+233 50 987 6543"
+      "name": "Ama Asante",
+      "email": "ama.asante@email.com",
+      "phone": "+233 50 987 6543",
+      "address": "45 Ring Road, Kumasi"
     },
-    "orderDate": "2024-01-15T14:45:00",
-    "items": [
-      { "productId": 3, "productName": "Peak Milk 400g", "quantity": 10, "unitPrice": 15.00 },
-      { "productId": 6, "productName": "Milo 400g", "quantity": 5, "unitPrice": 32.00 }
-    ],
-    "subtotal": 310.00,
-    "discount": 0,
-    "tax": 31.00,
-    "total": 341.00,
-    "paymentMethod": "Cash",
-    "status": "fulfilled"
-  },
-  {
-    "id": "ORD-2024-003",
-    "customer": {
-      "name": "Kwame Asante",
-      "email": "k.asante@email.com",
-      "phone": "+233 27 456 7890"
-    },
-    "orderDate": "2024-01-16T09:15:00",
-    "items": [
-      { "productId": 7, "productName": "Indomie Noodles", "quantity": 50, "unitPrice": 3.50 },
-      { "productId": 4, "productName": "Digestive Biscuits", "quantity": 20, "unitPrice": 12.00 }
-    ],
-    "subtotal": 415.00,
-    "discount": 25.00,
-    "tax": 39.00,
-    "total": 429.00,
-    "paymentMethod": "Bank Transfer",
-    "status": "pending"
-  },
-  {
-    "id": "ORD-2024-004",
-    "customer": {
-      "name": "Ama Darko",
-      "email": "ama.darko@email.com",
-      "phone": "+233 54 321 0987"
-    },
-    "orderDate": "2024-01-16T11:30:00",
-    "items": [
-      { "productId": 5, "productName": "Sprite", "quantity": 36, "unitPrice": 5.00 }
-    ],
-    "subtotal": 180.00,
-    "discount": 0,
-    "tax": 18.00,
-    "total": 198.00,
-    "paymentMethod": "Card",
-    "status": "fulfilled"
-  },
-  {
-    "id": "ORD-2024-005",
-    "customer": {
-      "name": "Kofi Boateng",
-      "email": "kofi.b@email.com",
-      "phone": "+233 20 111 2222"
-    },
-    "orderDate": "2024-01-17T08:00:00",
-    "items": [
-      { "productId": 8, "productName": "Golden Morn 450g", "quantity": 15, "unitPrice": 22.00 },
-      { "productId": 3, "productName": "Peak Milk 400g", "quantity": 8, "unitPrice": 15.00 }
-    ],
+    "orderDate": "2025-01-09T14:15:00Z",
+    "status": "processing",
+    "paymentMethod": "cash",
+    "paymentStatus": "paid",
     "subtotal": 450.00,
-    "discount": 20.00,
-    "tax": 43.00,
-    "total": 473.00,
-    "paymentMethod": "Mobile Money",
-    "status": "pending"
+    "discountAmount": 0.00,
+    "discountType": null,
+    "discountValue": 0,
+    "taxAmount": 0.00,
+    "total": 450.00,
+    "deliveryAddress": "45 Ring Road, Kumasi",
+    "deliveryDate": "2025-01-11",
+    "notes": null,
+    "createdBy": "Jane Smith",
+    "createdAt": "2025-01-09T14:15:00Z",
+    "updatedAt": "2025-01-09T14:30:00Z"
   },
   {
-    "id": "ORD-2024-006",
+    "id": "ORD-003",
+    "orderNumber": "ORD-2025-003",
+    "customerId": "cust-003",
     "customer": {
-      "name": "Efua Owusu",
-      "email": "efua.o@email.com",
-      "phone": "+233 24 555 6666"
+      "name": "Kofi Owusu",
+      "email": "kofi.owusu@email.com",
+      "phone": "+233 24 555 1234",
+      "address": "78 Independence Avenue, Accra"
     },
-    "orderDate": "2024-01-17T15:20:00",
-    "items": [
-      { "productId": 1, "productName": "Coca-Cola Classic", "quantity": 48, "unitPrice": 5.00 }
-    ],
-    "subtotal": 240.00,
-    "discount": 15.00,
-    "tax": 22.50,
-    "total": 247.50,
-    "paymentMethod": "Cash",
-    "status": "cancelled"
+    "orderDate": "2025-01-10T09:00:00Z",
+    "status": "pending",
+    "paymentMethod": "credit",
+    "paymentStatus": "pending",
+    "subtotal": 820.00,
+    "discountAmount": 50.00,
+    "discountType": "fixed",
+    "discountValue": 50,
+    "taxAmount": 0.00,
+    "total": 770.00,
+    "deliveryAddress": "78 Independence Avenue, Accra",
+    "deliveryDate": "2025-01-12",
+    "notes": "Business customer - credit terms 30 days",
+    "createdBy": "John Doe",
+    "createdAt": "2025-01-10T09:00:00Z",
+    "updatedAt": "2025-01-10T09:00:00Z"
   },
   {
-    "id": "ORD-2024-007",
+    "id": "ORD-004",
+    "orderNumber": "ORD-2025-004",
+    "customerId": "cust-001",
     "customer": {
-      "name": "Yaw Mensah",
-      "email": "yaw.m@email.com",
-      "phone": "+233 50 777 8888"
+      "name": "Kwame Mensah",
+      "email": "kwame.mensah@email.com",
+      "phone": "+233 24 123 4567",
+      "address": "123 Oxford Street, Accra"
     },
-    "orderDate": "2024-01-18T10:45:00",
-    "items": [
-      { "productId": 2, "productName": "Fanta Orange", "quantity": 24, "unitPrice": 4.50 },
-      { "productId": 5, "productName": "Sprite", "quantity": 24, "unitPrice": 5.00 },
-      { "productId": 1, "productName": "Coca-Cola Classic", "quantity": 24, "unitPrice": 5.00 }
-    ],
-    "subtotal": 348.00,
-    "discount": 30.00,
-    "tax": 31.80,
-    "total": 349.80,
-    "paymentMethod": "Card",
-    "status": "fulfilled"
+    "orderDate": "2025-01-10T11:45:00Z",
+    "status": "shipped",
+    "paymentMethod": "card",
+    "paymentStatus": "paid",
+    "subtotal": 320.00,
+    "discountAmount": 0.00,
+    "discountType": null,
+    "discountValue": 0,
+    "taxAmount": 0.00,
+    "total": 320.00,
+    "deliveryAddress": "123 Oxford Street, Accra",
+    "deliveryDate": "2025-01-11",
+    "notes": null,
+    "createdBy": "Jane Smith",
+    "createdAt": "2025-01-10T11:45:00Z",
+    "updatedAt": "2025-01-10T13:00:00Z"
   },
   {
-    "id": "ORD-2024-008",
+    "id": "ORD-005",
+    "orderNumber": "ORD-2025-005",
+    "customerId": "cust-004",
     "customer": {
-      "name": "Abena Frimpong",
-      "email": "abena.f@email.com",
-      "phone": "+233 27 999 0000"
+      "name": "Abena Boateng",
+      "email": "abena.boateng@email.com",
+      "phone": "+233 27 444 7890",
+      "address": "12 Castle Road, Cape Coast"
     },
-    "orderDate": "2024-01-18T14:00:00",
-    "items": [
-      { "productId": 6, "productName": "Milo 400g", "quantity": 8, "unitPrice": 32.00 }
-    ],
-    "subtotal": 256.00,
-    "discount": 0,
-    "tax": 25.60,
-    "total": 281.60,
-    "paymentMethod": "Mobile Money",
-    "status": "refunded"
+    "orderDate": "2025-01-10T15:20:00Z",
+    "status": "cancelled",
+    "paymentMethod": "cash",
+    "paymentStatus": "refunded",
+    "subtotal": 150.00,
+    "discountAmount": 0.00,
+    "discountType": null,
+    "discountValue": 0,
+    "taxAmount": 0.00,
+    "total": 150.00,
+    "deliveryAddress": "12 Castle Road, Cape Coast",
+    "deliveryDate": null,
+    "notes": "Customer cancelled - requested refund",
+    "createdBy": "John Doe",
+    "createdAt": "2025-01-10T15:20:00Z",
+    "updatedAt": "2025-01-10T16:00:00Z"
   }
 ]

@@ -15,19 +15,22 @@ export default function Products() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes, uomsRes] = await Promise.all([
+        const [productsRes, categoriesRes, suppliersRes, uomsRes] = await Promise.all([
           axios.get("/data/products.json"),
           axios.get("/data/categories.json"),
+          axios.get("/data/suppliers.json"),
           axios.get("/data/unit-of-measurements.json")
         ]);
         
         const fetchedProducts = productsRes.data;
         const fetchedCategories = categoriesRes.data;
+        const fetchedSuppliers = suppliersRes.data;
         const fetchedUoms = uomsRes.data;
 
         const mappedProducts = fetchedProducts.map(product => ({
           ...product,
           category: fetchedCategories.find(c => c.id === product.categoryId)?.name || "Unknown",
+          supplier: fetchedSuppliers.find(s => s.id === product.supplierId)?.name || "Unknown",
           unitOfMeasure: fetchedUoms.find(u => u.id === product.unitOfMeasurementId)?.abbreviation || "N/A"
         }));
 
@@ -52,7 +55,8 @@ export default function Products() {
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.code.toLowerCase().includes(searchQuery.toLowerCase());
+      product.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (product.sku && product.sku.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory =
       !categoryFilter || product.category === categoryFilter;
     return matchesSearch && matchesCategory;

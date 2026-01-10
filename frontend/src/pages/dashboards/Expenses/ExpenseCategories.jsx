@@ -9,7 +9,7 @@ export default function ExpenseCategories() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [formData, setFormData] = useState({ name: "", description: "", color: "#3B82F6" });
+  const [formData, setFormData] = useState({ name: "", description: "" });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,10 +33,10 @@ export default function ExpenseCategories() {
   const handleOpenModal = (category = null) => {
     if (category) {
       setEditingCategory(category);
-      setFormData({ name: category.name, description: category.description, color: category.color });
+      setFormData({ name: category.name, description: category.description });
     } else {
       setEditingCategory(null);
-      setFormData({ name: "", description: "", color: "#3B82F6" });
+      setFormData({ name: "", description: "" });
     }
     setShowModal(true);
   };
@@ -44,7 +44,16 @@ export default function ExpenseCategories() {
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingCategory(null);
-    setFormData({ name: "", description: "", color: "#3B82F6" });
+    setFormData({ name: "", description: "" });
+  };
+
+  const handleToggleStatus = (id) => {
+    setCategories(categories.map(cat => 
+      cat.id === id 
+        ? { ...cat, status: cat.status === 'active' ? 'inactive' : 'active' }
+        : cat
+    ));
+    showSuccess("Category status updated");
   };
 
   const handleSubmit = (e) => {
@@ -78,10 +87,7 @@ export default function ExpenseCategories() {
     }
   };
 
-  const colorOptions = [
-    "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", 
-    "#EC4899", "#06B6D4", "#F97316", "#6366F1", "#14B8A6"
-  ];
+
 
   if (loading) {
     return (
@@ -144,36 +150,46 @@ export default function ExpenseCategories() {
             className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between mb-3">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: `${category.color}20` }}
-              >
-                <Tag size={20} style={{ color: category.color }} />
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center">
+                <Tag size={20} className="text-white" />
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleOpenModal(category)}
                   className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Edit"
                 >
                   <Edit2 size={14} />
                 </button>
                 <button
                   onClick={() => handleDelete(category.id)}
                   className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                  title="Delete"
                 >
                   <Trash2 size={14} />
                 </button>
               </div>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
-            <p className="text-sm text-gray-500 line-clamp-2">{category.description}</p>
-            <div className="mt-3 flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: category.color }}
-              ></div>
-              <span className="text-xs text-gray-400 uppercase">{category.status}</span>
+            <p className="text-sm text-gray-500 line-clamp-2 mb-3">{category.description}</p>
+            <div className="flex items-center justify-between">
+              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                category.status === 'active' 
+                  ? 'bg-emerald-100 text-emerald-700' 
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
+                {category.status === 'active' ? 'Active' : 'Inactive'}
+              </span>
+              <button
+                onClick={() => handleToggleStatus(category.id)}
+                className="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                {category.status === 'active' ? 'Deactivate' : 'Activate'}
+              </button>
             </div>
+            {category.expenseCount > 0 && (
+              <p className="text-xs text-gray-400 mt-2">{category.expenseCount} expenses</p>
+            )}
           </div>
         ))}
       </div>
@@ -231,22 +247,7 @@ export default function ExpenseCategories() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Color</label>
-                <div className="flex flex-wrap gap-2">
-                  {colorOptions.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, color })}
-                      className={`w-8 h-8 rounded-lg border-2 transition-all ${
-                        formData.color === color ? "border-gray-900 scale-110" : "border-transparent"
-                      }`}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
-                </div>
-              </div>
+
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                 <button
