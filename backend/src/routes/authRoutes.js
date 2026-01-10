@@ -4,43 +4,125 @@ import { authSchemas } from '../validators/schemas.js';
 import { validateBody } from '../middlewares/validate.js';
 import { authenticate } from '../middlewares/auth.js';
 import { authRateLimiter } from '../middlewares/rateLimiter.js';
+import {
+  deviceFingerprint,
+  advancedLoginLimiter,
+  logSuccessfulLogin,
+} from '../middlewares/index.js';
 
 const router = Router();
 
 /**
  * @route POST /auth/register
- * @desc Register a new user
+ * @desc Register a new user with optional session creation
  * @access Public
  */
 router.post(
   '/register',
-  authRateLimiter,
+  deviceFingerprint, // Extract device info
+  authRateLimiter, // Express rate limiter
   validateBody(authSchemas.register),
   AuthController.register
 );
 
 /**
  * @route POST /auth/login
- * @desc Login user
+ * @desc Enhanced login with session management
  * @access Public
  */
 router.post(
   '/login',
+  deviceFingerprint, // Extract device info
+  authRateLimiter, // Express rate limiter (10/15min)
+  advancedLoginLimiter, // DB-backed rate limiter + account lockout
+  validateBody(authSchemas.login),
+  AuthController.login,
+  logSuccessfulLogin // Log successful attempt (post-login)
+);
+
+/**
+ * @route POST /auth/login/legacy
+ * @desc Legacy login without session (backwards compatible)
+ * @access Public
+ */
+router.post(
+  '/login/legacy',
   authRateLimiter,
   validateBody(authSchemas.login),
-  AuthController.login
+  AuthController.loginLegacy
 );
 
 /**
  * @route POST /auth/refresh
- * @desc Refresh access token
+ * @desc Refresh access token with rotation
  * @access Public
  */
 router.post(
   '/refresh',
+  deviceFingerprint, // Extract device info for audit
   validateBody(authSchemas.refreshToken),
   AuthController.refreshToken
 );
+
+/**
+ * @route POST /auth/refresh/legacy
+ * @desc Legacy refresh token (backwards compatible)
+ * @access Public
+ */
+router.post(
+  '/refresh/legacy',
+  validateBody(authSchemas.refreshToken),
+  AuthController.refreshTokenLegacy
+);
+
+/**
+ * @route POST /auth/logout
+ * @desc Logout from current session (or legacy token blacklist)
+ * @access Private
+ */
+router.post('/logout', authenticate, AuthController.logout);
+
+/**
+ * @route POST /auth/logout-all
+ * @desc Logout from all sessions (all devices)
+ * @access Private
+ */
+router.post('/logout-all', authenticate, AuthController.logoutAll);
+
+/**
+ * @route POST /auth/logout-others
+ * @desc Logout from other sessions (keep current)
+ * @access Private
+ */
+router.post('/logout-others', authenticate, AuthController.logoutOthers);
+
+/**
+ * @route GET /auth/sessions
+ * @desc Get user's active sessions
+ * @access Private
+ */
+router.get('/sessions', authenticate, AuthController.getSessions);
+
+/**
+ * @route DELETE /auth/sessions/:sessionId
+ * @desc Revoke a specific session
+ * @access Private
+ */
+router.delete('/sessions/:sessionId', authenticate, AuthController.revokeSession);
+
+/**
+ * @route GET /auth/login-history
+ * @desc Get login attempt history
+ * @access Private
+ */
+router.get('/login-history', authenticate, AuthController.getLoginHistory);
+
+/**
+ * @route GET /auth/audit-logs
+ * @desc Get security audit logs
+ * @access Private
+ */
+router.get('/audit-logs', authenticate, AuthController.getAuditLogs);
 
 /**
  * @route GET /auth/verify-email
@@ -115,12 +197,5 @@ router.post(
   validateBody(authSchemas.resetPassword),
   AuthController.resetPassword
 );
-
-/**
- * @route POST /auth/logout
- * @desc Logout user (blacklist token)
- * @access Private
- */
-router.post('/logout', authenticate, AuthController.logout);
 
 export default router;
