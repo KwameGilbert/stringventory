@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { MessageSquare, Clock, Send, Users } from "lucide-react";
-import CustomerSelector from "../../../components/admin/Messaging/CustomerSelector";
-import Composer from "../../../components/admin/Messaging/Composer";
-import MessageHistory from "../../../components/admin/Messaging/MessageHistory";
-import MessageDetails from "../../../components/admin/Messaging/MessageDetails";
-import { showSuccess, showLoading, closeLoading } from "../../../utils/alerts";
+import CustomerSelector from "./CustomerSelector";
+import Composer from "./Composer";
+import MessageHistory from "./MessageHistory";
+import MessageDetails from "./MessageDetails";
 
 export default function Messaging() {
   const [activeTab, setActiveTab] = useState("compose");
@@ -14,18 +13,10 @@ export default function Messaging() {
   const [selectedMessage, setSelectedMessage] = useState(null); // For details modal
 
   useEffect(() => {
-    // Reusing customer data logic or fetching from customers.json
-    const fetchCustomers = async () => {
-      try {
-        const response = await axios.get("/data/customers.json");
-        setCustomers(response.data);
-      } catch (error) {
-        console.error("Error loading customers", error);
-        // Fallback or retry with reports.json as seen in previous version if needed, 
-        // but let's stick to the standard customers.json I saw in the file list.
-      }
-    };
-    fetchCustomers();
+    // Load customers for the selector
+    axios.get("/data/customers.json")
+      .then(res => setCustomers(res.data))
+      .catch(err => console.error("Error loading customers", err));
   }, []);
 
   const handleSelectCustomer = (id) => {
@@ -43,24 +34,21 @@ export default function Messaging() {
   };
 
   const handleSendMessage = (messageBody) => {
-    showLoading("Sending messages...");
-    setTimeout(() => {
-      closeLoading();
-      console.log("Message sent:", messageBody);
-      showSuccess(`Successfully sent to ${selectedCustomerIds.length} customers`);
-      // In a real app, we would POST to an API here
-      setSelectedCustomerIds([]);
-      setActiveTab("history");
-    }, 1500);
+    // Mock send logic
+    alert(`Sending message to ${selectedCustomerIds.length} recipients:\n\n${messageBody}`);
+    // In a real app, we would POST to an API here
+    // Then clear selection or switch to history
+    setSelectedCustomerIds([]);
+    setActiveTab("history");
   };
 
   return (
-    <div className="pb-8 animate-fade-in h-[calc(100vh-140px)] flex flex-col">
+    <div className="p-8 max-w-[1600px] mx-auto h-[calc(100vh-64px)] flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Messaging Center</h1>
-          <p className="text-gray-500 text-sm">Manage SMS and Email campaigns</p>
+          <p className="text-gray-500 mt-1">Manage SMS and Email campaigns</p>
         </div>
         
         {/* Tabs */}
@@ -93,8 +81,8 @@ export default function Messaging() {
       {/* Content */}
       <div className="flex-1 min-h-0">
         {activeTab === "compose" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-            <div className="lg:col-span-1 h-full">
+          <div className="grid grid-cols-12 gap-6 h-full">
+            <div className="col-span-4 h-full">
               <CustomerSelector 
                 customers={customers} 
                 selectedIds={selectedCustomerIds}
@@ -102,7 +90,7 @@ export default function Messaging() {
                 onSelectAll={handleSelectAll}
               />
             </div>
-            <div className="lg:col-span-2 h-full">
+            <div className="col-span-8 h-full">
               <Composer 
                 recipientCount={selectedCustomerIds.length} 
                 onSend={handleSendMessage} 

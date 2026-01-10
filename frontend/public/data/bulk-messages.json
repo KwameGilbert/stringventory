@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "subject": "New Winter Collection",
+    "body": "Hello! Our new winter collection is now available. Visit our store to check out the latest trends.",
+    "type": "SMS",
+    "recipientCount": 150,
+    "successCount": 142,
+    "failureCount": 8,
+    "status": "Sent",
+    "createdAt": "2024-01-05T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "subject": "Flash Sale Alert",
+    "body": "Flash Sale! Get 50% off on selected items for the next 24 hours only.",
+    "type": "Email",
+    "recipientCount": 500,
+    "successCount": 480,
+    "failureCount": 20,
+    "status": "Sent",
+    "createdAt": "2024-01-08T14:30:00Z"
+  },
+  {
+    "id": 3,
+    "subject": "Holiday Hours",
+    "body": "Please note our special holiday opening hours. We will be open from 10am to 8pm.",
+    "type": "SMS",
+    "recipientCount": 200,
+    "successCount": 0,
+    "failureCount": 0,
+    "status": "Draft",
+    "createdAt": "2024-01-10T09:00:00Z"
+  }
+]
