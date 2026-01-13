@@ -3,6 +3,7 @@ import DashboardHeader from "../../../components/admin/Dashboard/DashboardHeader
 import KPICards from "../../../components/admin/Dashboard/KPICards";
 import SalesExpensesChart from "../../../components/admin/Dashboard/SalesExpensesChart";
 import TopProductsChart from "../../../components/admin/Dashboard/TopProductsChart";
+import TopCustomers from "../../../components/admin/Dashboard/TopCustomers";
 import PaymentDistribution from "../../../components/admin/Dashboard/PaymentDistribution";
 import QuickLists from "../../../components/admin/Dashboard/QuickLists";
 
@@ -35,9 +36,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Top Products Chart - Full Width */}
-        <div className="grid grid-cols-1 gap-6">
+        {/* Top Products & Top Customers - 2 columns */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <TopProductsChart dateRange={dateRange} />
+          <TopCustomers dateRange={dateRange} />
         </div>
       </div>
 
