@@ -1,8 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { ForgotPasswordModal, SuccessAlert } from "../../components/auth";
 
 export default function Login() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   // Login form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,10 +19,14 @@ export default function Login() {
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
   // Handle login
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Login:", { email, password, rememberMe });
-    window.location.href = "/dashboard/";
+    try {
+      await login(email, password);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login failed", error);
+    }
   };
 
   // Handle forgot password success

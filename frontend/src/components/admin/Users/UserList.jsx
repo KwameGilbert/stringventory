@@ -119,6 +119,16 @@ export default function UserList({ users, onEdit, onDelete }) {
                       </button>
                       <button
                         onClick={() => {
+                          // Allow parent to handle navigation or direct nav here
+                          // Since we don't have navigate prop here, window.location is a quick fix or we pass navigate
+                          window.location.href = `/dashboard/users/${user.id}/permissions`;
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                      >
+                         <ShieldCheck size={14} /> Permissions
+                      </button>
+                      <button
+                        onClick={() => {
                           onDelete(user.id);
                           setActiveMenu(null);
                         }}

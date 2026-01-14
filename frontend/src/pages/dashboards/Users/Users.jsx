@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Plus, Search, Filter } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import UserList from "../../../components/admin/Users/UserList";
-import UserForm from "../../../components/admin/Users/UserForm";
 import ActivityLogs from "../../../components/admin/Users/ActivityLogs";
 import { showSuccess, confirmDelete } from "../../../utils/alerts";
+import { PERMISSIONS } from "../../../constants/permissions";
 
 export default function Users() {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [logs, setLogs] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
@@ -28,11 +28,20 @@ export default function Users() {
         const fetchedRoles = rolesRes.data;
         const fetchedLogs = logsRes.data;
 
-        // Map role names to users for easier display
-        const mappedUsers = fetchedUsers.map(user => ({
-          ...user,
-          roleName: fetchedRoles.find(r => r.id === user.role_id)?.name || "Unknown"
-        }));
+        // Mock permission data assignment for existing users if missing
+        const usersWithPermissions = fetchedUsers.map(user => {
+             // Assign some default permissions based on their old role_id for demo purposes
+             let defaultPerms = [];
+             const role = fetchedRoles.find(r => r.id === user.role_id);
+             if (role?.name === 'Administrator') defaultPerms = Object.keys(PERMISSIONS);
+             if (role?.name === 'Sales') defaultPerms = ["VIEW_DASHBOARD", "VIEW_PRODUCTS", "VIEW_ORDERS"];
+
+             return {
+                 ...user,
+                 roleName: role?.name || "User",
+                 permissions: user.permissions || defaultPerms
+             };
+        });
 
         // Map user names to logs
         const mappedLogs = fetchedLogs.map(log => {
@@ -43,7 +52,7 @@ export default function Users() {
           };
         });
 
-        setUsers(mappedUsers);
+        setUsers(usersWithPermissions);
         setRoles(fetchedRoles);
         setLogs(mappedLogs);
       } catch (error) {
@@ -55,13 +64,11 @@ export default function Users() {
   }, []);
 
   const handleAddUser = () => {
-    setEditingUser(null);
-    setShowModal(true);
+    navigate("/dashboard/users/new");
   };
 
   const handleEditUser = (user) => {
-    setEditingUser(user);
-    setShowModal(true);
+    navigate(`/dashboard/users/${user.id}/edit`);
   };
 
   const handleDeleteUser = async (id) => {
@@ -72,27 +79,7 @@ export default function Users() {
     }
   };
 
-  const handleSubmit = (userData) => {
-    const roleName = roles.find(r => r.id === userData.role_id)?.name || "Unknown";
-    
-    if (editingUser) {
-      setUsers(users.map(u => u.id === editingUser.id ? { ...u, ...userData, roleName } : u));
-      showSuccess("User updated successfully");
-    } else {
-      const newUser = {
-        id: crypto.randomUUID(),
-        ...userData,
-        roleName,
-        lastLoginAt: null,
-        emailVerified: false,
-        mfaEnabled: false,
-        avatar: `https://ui-avatars.com/api/?name=${userData.firstName}+${userData.lastName}&background=random&color=fff`
-      };
-      setUsers([newUser, ...users]);
-      showSuccess("User created successfully");
-    }
-    setShowModal(false);
-  };
+
 
   const filteredUsers = users.filter(user => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
@@ -159,14 +146,6 @@ export default function Users() {
         </div>
       </div>
 
-      {showModal && (
-        <UserForm 
-          user={editingUser} 
-          roles={roles}
-          onClose={() => setShowModal(false)} 
-          onSubmit={handleSubmit} 
-        />
-      )}
     </div>
   );
 }
