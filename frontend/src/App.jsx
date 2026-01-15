@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Dashboard from "./pages/dashboards/Dashboard/Dashboard";
 import Categories from "./pages/dashboards/Categories/Categories";

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext.js";
 import { PERMISSIONS } from "../../../constants/permissions";
 import { useLocation, Link } from "react-router-dom";
 import {
@@ -156,14 +156,14 @@ const Sidebar = () => {
       {isOpen && (
         <div className="px-3 py-3 border-t border-slate-800">
           <div className="flex items-center gap-2">
-            <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-all duration-200">
+            <Link to="/dashboard/notifications" className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-all duration-200">
               <Bell className="w-4 h-4" />
               <span className="text-xs">Notifications</span>
-            </button>
-            <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white hover:text-white transition-all duration-200">
+            </Link>
+            <Link to="/" className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white hover:text-white transition-all duration-200">
               <LogOut className="w-4 h-4" />
               <span className="text-xs">Logout</span>
-            </button>
+            </Link>
           </div>
         </div>
       )}
@@ -171,7 +171,7 @@ const Sidebar = () => {
       {/* User Profile */}
       <div className="border-t border-slate-800 p-3">
         <Link
-          to="/dashboard/profile"
+          to="/dashboard/settings"
           className={`
             flex items-center gap-3 p-2.5 rounded-xl
             bg-slate-800/50 hover:bg-slate-800 transition-all duration-200
