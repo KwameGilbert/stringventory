@@ -14,7 +14,7 @@ const Header = () => {
   const currencies = ["GHS", "GBP", "USD", "EUR"];
 
   return (
-    <header className="fixed top-0 right-0 left-0 bg-white border-b border-gray-200 z-40 ml-72">
+    <header className="fixed top-0 right-0 left-0 bg-white border-b border-gray-200 z-40 ml-64">
       <div className="flex items-center justify-between px-6 py-4">
         {/* Search Bar */}
         <div className="flex-1 max-w-md">

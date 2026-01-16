@@ -1,38 +1,48 @@
-import DashboardStat from "../../../components/admin/Dashboard/DashboardStat";
-import RevenueChart from "../../../components/admin/Dashboard/RevenueChart";
+import { useState } from "react";
+import DashboardHeader from "../../../components/admin/Dashboard/DashboardHeader";
+import KPICards from "../../../components/admin/Dashboard/KPICards";
+import SalesExpensesChart from "../../../components/admin/Dashboard/SalesExpensesChart";
+import TopProductsChart from "../../../components/admin/Dashboard/TopProductsChart";
 import PaymentDistribution from "../../../components/admin/Dashboard/PaymentDistribution";
-import TopProducts from "../../../components/admin/Dashboard/TopProducts";
-import LowStockList from "../../../components/admin/Dashboard/LowStockList";
-import ExpiringProducts from "../../../components/admin/Dashboard/ExpiringProducts";
+import QuickLists from "../../../components/admin/Dashboard/QuickLists";
 
-export default function Dashboard(){
-    return(
-        <div className="space-y-6 pb-8">
-            {/* Header */}
-            <div>
-                <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <p className="text-gray-500">Welcome back! Here's your business overview.</p>
-            </div>
-            
-            {/* Key Stats Row */}
-            <DashboardStat />
+export default function Dashboard() {
+  const [dateRange, setDateRange] = useState("30days");
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[400px]">
-                <div className="lg:col-span-2 h-full">
-                    <RevenueChart />
-                </div>
-                <div className="h-full">
-                    <PaymentDistribution />
-                </div>
-            </div>
+  return (
+    <div className="space-y-6 pb-8 animate-fade-in">
+      {/* Header with Date Filter */}
+      <DashboardHeader dateRange={dateRange} setDateRange={setDateRange} />
 
-            {/* Bottom Lists Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[400px]">
-                <TopProducts />
-                <LowStockList />
-                <ExpiringProducts />
-            </div>
+      {/* KPI Cards Section */}
+      <KPICards dateRange={dateRange} />
+
+      {/* Charts Section */}
+      <div className="space-y-3">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          Performance Insights
+        </h2>
+        
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Sales & Expenses Trend - 2 columns */}
+          <div className="xl:col-span-2">
+            <SalesExpensesChart dateRange={dateRange} />
+          </div>
+          
+          {/* Payment Distribution - 1 column */}
+          <div>
+            <PaymentDistribution dateRange={dateRange} />
+          </div>
         </div>
-    )
+
+        {/* Top Products Chart - Full Width */}
+        <div className="grid grid-cols-1 gap-6">
+          <TopProductsChart dateRange={dateRange} />
+        </div>
+      </div>
+
+      {/* Quick Access Lists */}
+      <QuickLists />
+    </div>
+  );
 }

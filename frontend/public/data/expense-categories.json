@@ -1,0 +1,74 @@
+[
+  {
+    "id": "exp-cat-001",
+    "name": "Office Supplies",
+    "description": "Stationery, office equipment, and general supplies",
+    "status": "active",
+    "expenseCount": 12,
+    "createdAt": "2024-10-15T10:00:00Z",
+    "updatedAt": "2025-01-05T14:20:00Z"
+  },
+  {
+    "id": "exp-cat-002",
+    "name": "Utilities",
+    "description": "Electricity, water, internet, and phone bills",
+    "status": "active",
+    "expenseCount": 8,
+    "createdAt": "2024-10-15T10:00:00Z",
+    "updatedAt": "2024-12-20T09:30:00Z"
+  },
+  {
+    "id": "exp-cat-003",
+    "name": "Transportation",
+    "description": "Fuel, vehicle maintenance, and transportation costs",
+    "status": "active",
+    "expenseCount": 15,
+    "createdAt": "2024-10-15T10:00:00Z",
+    "updatedAt": "2025-01-08T11:00:00Z"
+  },
+  {
+    "id": "exp-cat-004",
+    "name": "Rent",
+    "description": "Office and warehouse rental payments",
+    "status": "active",
+    "expenseCount": 3,
+    "createdAt": "2024-10-15T10:00:00Z",
+    "updatedAt": "2025-01-01T08:00:00Z"
+  },
+  {
+    "id": "exp-cat-005",
+    "name": "Salaries & Wages",
+    "description": "Employee salaries, wages, and bonuses",
+    "status": "active",
+    "expenseCount": 5,
+    "createdAt": "2024-10-15T10:00:00Z",
+    "updatedAt": "2024-12-31T16:00:00Z"
+  },
+  {
+    "id": "exp-cat-006",
+    "name": "Marketing",
+    "description": "Advertising, promotions, and marketing campaigns",
+    "status": "active",
+    "expenseCount": 7,
+    "createdAt": "2024-10-15T10:00:00Z",
+    "updatedAt": "2025-01-09T13:45:00Z"
+  },
+  {
+    "id": "exp-cat-007",
+    "name": "Professional Fees",
+    "description": "Legal, accounting, and consulting services",
+    "status": "inactive",
+    "expenseCount": 2,
+    "createdAt": "2024-10-15T10:00:00Z",
+    "updatedAt": "2024-11-10T10:00:00Z"
+  },
+  {
+    "id": "exp-cat-008",
+    "name": "Maintenance & Repairs",
+    "description": "Building and equipment maintenance costs",
+    "status": "active",
+    "expenseCount": 9,
+    "createdAt": "2024-10-15T10:00:00Z",
+    "updatedAt": "2025-01-07T15:20:00Z"
+  }
+]

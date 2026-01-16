@@ -1,0 +1,50 @@
+[
+  {
+    "id": "pur-001",
+    "waybillNumber": "WB-2024-001",
+    "supplierId": "sup-uuid-001",
+    "supplierName": "Global Distributors Ltd",
+    "purchaseDate": "2024-12-15",
+    "totalAmount": 25500.00,
+    "status": "received",
+    "createdBy": "John Doe",
+    "notes": "Bulk order for beverages",
+    "createdAt": "2024-12-15T10:30:00Z"
+  },
+  {
+    "id": "pur-002",
+    "waybillNumber": "WB-2024-002",
+    "supplierId": "sup-uuid-002",
+    "supplierName": "Fresh Foods Supply",
+    "purchaseDate": "2024-12-20",
+    "totalAmount": 18200.00,
+    "status": "partial",
+    "createdBy": "Jane Smith",
+    "notes": "Dairy and snacks restock",
+    "createdAt": "2024-12-20T14:15:00Z"
+  },
+  {
+    "id": "pur-003",
+    "waybillNumber": "WB-2025-001",
+    "supplierId": "sup-uuid-001",
+    "supplierName": "Global Distributors Ltd",
+    "purchaseDate": "2025-01-05",
+    "totalAmount": 32000.00,
+    "status": "pending",
+    "createdBy": "John Doe",
+    "notes": "New year stock replenishment",
+    "createdAt": "2025-01-05T09:00:00Z"
+  },
+  {
+    "id": "pur-004",
+    "waybillNumber": "WB-2025-002",
+    "supplierId": "sup-uuid-002",
+    "supplierName": "Fresh Foods Supply",
+    "purchaseDate": "2025-01-08",
+    "totalAmount": 15600.00,
+    "status": "pending",
+    "createdBy": "Jane Smith",
+    "notes": "Urgent restock - low inventory items",
+    "createdAt": "2025-01-08T11:30:00Z"
+  }
+]

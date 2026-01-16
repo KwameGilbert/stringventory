@@ -20,6 +20,45 @@ const iconMap = {
   AlertTriangle,
 };
 
+// Define gradient schemes for cards
+const colorSchemes = {
+  emerald: {
+    gradient: "bg-gradient-to-br from-emerald-50 to-teal-50",
+    iconBg: "bg-gradient-to-br from-emerald-400 to-teal-500",
+    iconShadow: "shadow-emerald-200",
+    border: "border-emerald-100",
+    iconColor: "text-white",
+  },
+  purple: {
+    gradient: "bg-gradient-to-br from-purple-50 to-violet-50",
+    iconBg: "bg-gradient-to-br from-purple-400 to-violet-500",
+    iconShadow: "shadow-purple-200",
+    border: "border-purple-100",
+    iconColor: "text-white",
+  },
+  orange: {
+    gradient: "bg-gradient-to-br from-orange-50 to-amber-50",
+    iconBg: "bg-gradient-to-br from-orange-400 to-amber-500",
+    iconShadow: "shadow-orange-200",
+    border: "border-orange-100",
+    iconColor: "text-white",
+  },
+  blue: {
+    gradient: "bg-gradient-to-br from-blue-50 to-cyan-50",
+    iconBg: "bg-gradient-to-br from-blue-400 to-cyan-500",
+    iconShadow: "shadow-blue-200",
+    border: "border-blue-100",
+    iconColor: "text-white",
+  },
+  red: {
+    gradient: "bg-gradient-to-br from-rose-50 to-pink-50",
+    iconBg: "bg-gradient-to-br from-rose-400 to-pink-500",
+    iconShadow: "shadow-rose-200",
+    border: "border-rose-100",
+    iconColor: "text-white",
+  },
+};
+
 const DashboardStat = () => {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,83 +81,77 @@ const DashboardStat = () => {
   }, []);
 
   if (loading) {
-    return <div className="p-4 text-gray-500">Loading stats...</div>;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 animate-pulse">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
+              <div className="h-4 bg-gray-200 rounded w-20"></div>
+            </div>
+            <div className="h-8 bg-gray-200 rounded w-24 mb-3"></div>
+            <div className="h-3 bg-gray-200 rounded w-16"></div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">{error}</div>;
+    return <div className="p-4 text-red-500 bg-red-50 rounded-xl">{error}</div>;
   }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {stats.map((stat, index) => {
         const Icon = iconMap[stat.icon] || Activity;
-        
-        // Determine color classes based on stat.color or defaulting to theme
-        let borderColor = "";
-        let iconBg = "";
-        let iconColor = "";
-
-        // Map data colors to Tailwind classes or use Theme Context
-        switch (stat.color) {
-          case "emerald":
-            borderColor = "border-l-sky-500";
-            iconBg = "bg-sky-50";
-            iconColor = "text-sky-600";
-            break;
-          case "orange":
-            borderColor = "border-l-rose-500";
-            iconBg = "bg-rose-50";
-            iconColor = "text-rose-600";
-            break;
-          case "red":
-            borderColor = "border-l-red-500";
-            iconBg = "bg-red-50";
-            iconColor = "text-red-600";
-            break;
-          case "blue":
-            borderColor = "border-l-indigo-500";
-            iconBg = "bg-indigo-50";
-            iconColor = "text-indigo-600";
-            break;
-          case "slate":
-          default:
-            borderColor = "border-l-slate-500";
-            iconBg = "bg-slate-50";
-            iconColor = "text-slate-600";
-            break;
-        }
-
-        // Determine trend color
-        const trendColor = 
-          stat.trend === "up" ? "text-emerald-600" : 
-          stat.trend === "down" ? "text-red-600" : 
-          stat.trend === "alert" ? "text-red-600 font-bold" :
-          "text-gray-500";
+        const colors = colorSchemes[stat.color] || colorSchemes.blue;
+        const isTrendUp = stat.trend === "up";
 
         return (
           <div
-            key={stat.id || index} // Use ID if available
-            className={`bg-white rounded-xl shadow-sm border-l-4 ${borderColor} p-4 transition-transform hover:scale-[1.02]`}
+            key={stat.id || index}
+            className={`
+              bg-white rounded-xl p-4 
+              border border-gray-100 shadow-sm
+              hover-lift cursor-pointer
+              opacity-0 animate-slide-up
+            `}
+            style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'forwards' }}
           >
-            <div className="flex justify-between items-start">
+            <div className="flex flex-col h-full justify-between gap-4">
+              {/* Header: Icon + Title */}
+              <div className="flex items-center gap-3">
+                <div className={`
+                  p-3 rounded-xl ${colors.iconBg} 
+                  shadow-lg ${colors.iconShadow}
+                `}>
+                  <Icon className={`w-5 h-5 ${colors.iconColor}`} />
+                </div>
+                <span className="text-sm font-semibold text-gray-500">{stat.title}</span>
+              </div>
+              
+              {/* Main Value */}
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">
-                  {stat.title}
-                </p>
-                <h3 className="text-lg font-bold text-gray-900">
-                  {stat.value}
-                </h3>
-                {stat.change && (
-                  <div className="flex items-center gap-1 text-xs">
-                    <TrendingUp className={`w-3 h-3 ${stat.trend === "down" ? "rotate-90" : ""}`} />
-                    <span className={trendColor}>{stat.change}</span>
-                  </div>
-                )}
+                <h3 className="text-2xl font-bold text-gray-900 animate-count-up">{stat.value}</h3>
               </div>
-              <div className={`p-3 rounded-lg ${iconBg}`}>
-                <Icon className={`w-4 h-4 ${iconColor}`} />
-              </div>
+
+              {/* Footer: Trend */}
+              {stat.change && (
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <span className={`
+                    flex items-center gap-1 px-2 py-1 rounded-full
+                    ${isTrendUp 
+                      ? "bg-emerald-100 text-emerald-600" 
+                      : "bg-rose-100 text-rose-600"
+                    }
+                  `}>
+                    <TrendingUp className={`w-3.5 h-3.5 ${!isTrendUp ? 'rotate-180' : ''}`} />
+                    {stat.change}
+                  </span>
+                  <span className="text-gray-400">vs yesterday</span>
+                </div>
+              )}
             </div>
           </div>
         );
@@ -128,3 +161,4 @@ const DashboardStat = () => {
 };
 
 export default DashboardStat;
+

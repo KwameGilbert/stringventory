@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "messageId": 1,
+    "customerId": 101,
+    "status": "Delivered",
+    "sentAt": "2024-01-05T10:01:00Z"
+  },
+  {
+    "id": 2,
+    "messageId": 1,
+    "customerId": 102,
+    "status": "Failed",
+    "sentAt": "2024-01-05T10:01:05Z"
+  },
+  {
+    "id": 3,
+    "messageId": 2,
+    "customerId": 103,
+    "status": "Opened",
+    "sentAt": "2024-01-08T14:31:00Z"
+  }
+]

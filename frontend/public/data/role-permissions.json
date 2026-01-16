@@ -1,0 +1,18 @@
+[
+  {
+    "roleId": "550e8400-e29b-41d4-a716-446655440001",
+    "permissionIds": ["perm-001", "perm-002", "perm-003", "perm-004", "perm-005", "perm-006", "perm-007", "perm-008", "perm-009", "perm-010"]
+  },
+  {
+    "roleId": "550e8400-e29b-41d4-a716-446655440002",
+    "permissionIds": ["perm-001", "perm-002", "perm-003", "perm-005", "perm-006", "perm-007", "perm-008", "perm-009"]
+  },
+  {
+    "roleId": "550e8400-e29b-41d4-a716-446655440003",
+    "permissionIds": ["perm-001", "perm-005", "perm-006", "perm-007", "perm-008"]
+  },
+  {
+    "roleId": "550e8400-e29b-41d4-a716-446655440004",
+    "permissionIds": ["perm-005", "perm-007", "perm-008"]
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "pm-001",
+    "name": "Cash",
+    "description": "Physical cash payments",
+    "status": "active"
+  },
+  {
+    "id": "pm-002",
+    "name": "Mobile Money",
+    "description": "MTN, Vodafone, AirtelTigo mobile money",
+    "status": "active"
+  },
+  {
+    "id": "pm-003",
+    "name": "Bank Transfer",
+    "description": "Direct bank transfers",
+    "status": "active"
+  },
+  {
+    "id": "pm-004",
+    "name": "Card Payment",
+    "description": "Credit/Debit card payments",
+    "status": "active"
+  },
+  {
+    "id": "pm-005",
+    "name": "Cheque",
+    "description": "Bank cheque payments",
+    "status": "active"
+  }
+]

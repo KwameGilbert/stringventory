@@ -1,0 +1,62 @@
+[
+  {
+    "id": "user-uuid-001",
+    "firstName": "Admin",
+    "lastName": "User",
+    "email": "admin@stringventory.com",
+    "role_id": "550e8400-e29b-41d4-a716-446655440001",
+    "isActive": true,
+    "lastLoginAt": "2024-01-15T10:30:00",
+    "mfaEnabled": true,
+    "emailVerified": true,
+    "avatar": "https://ui-avatars.com/api/?name=Admin+User&background=10b981&color=fff"
+  },
+  {
+    "id": "user-uuid-002",
+    "firstName": "Sarah",
+    "lastName": "Manager",
+    "email": "sarah@stringventory.com",
+    "role_id": "550e8400-e29b-41d4-a716-446655440003",
+    "isActive": true,
+    "lastLoginAt": "2024-01-14T15:45:00",
+    "mfaEnabled": false,
+    "emailVerified": true,
+    "avatar": "https://ui-avatars.com/api/?name=Sarah+Manager&background=3b82f6&color=fff"
+  },
+  {
+    "id": "user-uuid-003",
+    "firstName": "John",
+    "lastName": "Staff",
+    "email": "john@stringventory.com",
+    "role_id": "550e8400-e29b-41d4-a716-446655440004",
+    "isActive": true,
+    "lastLoginAt": "2024-01-15T09:15:00",
+    "mfaEnabled": false,
+    "emailVerified": false,
+    "avatar": "https://ui-avatars.com/api/?name=John+Staff&background=f59e0b&color=fff"
+  },
+  {
+    "id": "user-uuid-004",
+    "firstName": "Emily",
+    "lastName": "Cashier",
+    "email": "emily@stringventory.com",
+    "role_id": "550e8400-e29b-41d4-a716-446655440004",
+    "isActive": false,
+    "lastLoginAt": "2023-12-20T11:00:00",
+    "mfaEnabled": false,
+    "emailVerified": true,
+    "avatar": "https://ui-avatars.com/api/?name=Emily+Cashier&background=9ca3af&color=fff"
+  },
+  {
+    "id": "user-uuid-005",
+    "firstName": "Michael",
+    "lastName": "Admin",
+    "email": "michael@stringventory.com",
+    "role_id": "550e8400-e29b-41d4-a716-446655440002",
+    "isActive": true,
+    "lastLoginAt": "2024-01-13T14:20:00",
+    "mfaEnabled": true,
+    "emailVerified": true,
+    "avatar": "https://ui-avatars.com/api/?name=Michael+Admin&background=8b5cf6&color=fff"
+  }
+]

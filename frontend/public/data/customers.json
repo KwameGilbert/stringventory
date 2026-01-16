@@ -1,0 +1,67 @@
+[
+  {
+    "id": "cust-001",
+    "name": "Kwame Mensah",
+    "email": "kwame.mensah@email.com",
+    "phone": "+233 24 123 4567",
+    "address": "123 Oxford Street, Accra",
+    "status": "active",
+    "totalOrders": 2,
+    "totalSpent": 545.00,
+    "lastOrderDate": "2025-01-10T11:45:00Z",
+    "createdAt": "2024-11-15T10:00:00Z",
+    "notes": "Loyal customer, prefers morning deliveries"
+  },
+  {
+    "id": "cust-002",
+    "name": "Ama Asante",
+    "email": "ama.asante@email.com",
+    "phone": "+233 50 987 6543",
+    "address": "45 Ring Road, Kumasi",
+    "status": "active",
+    "totalOrders": 1,
+    "totalSpent": 450.00,
+    "lastOrderDate": "2025-01-09T14:15:00Z",
+    "createdAt": "2024-12-20T14:30:00Z",
+    "notes": null
+  },
+  {
+    "id": "cust-003",
+    "name": "Kofi Owusu",
+    "email": "kofi.owusu@email.com",
+    "phone": "+233 24 555 1234",
+    "address": "78 Independence Avenue, Accra",
+    "status": "active",
+    "totalOrders": 1,
+    "totalSpent": 770.00,
+    "lastOrderDate": "2025-01-10T09:00:00Z",
+    "createdAt": "2024-10-05T09:00:00Z",
+    "notes": "Business customer - credit terms 30 days"
+  },
+  {
+    "id": "cust-004",
+    "name": "Abena Boateng",
+    "email": "abena.boateng@email.com",
+    "phone": "+233 27 444 7890",
+    "address": "12 Castle Road, Cape Coast",
+    "status": "inactive",
+    "totalOrders": 1,
+    "totalSpent": 0.00,
+    "lastOrderDate": "2025-01-10T15:20:00Z",
+    "createdAt": "2024-09-12T11:00:00Z",
+    "notes": "Cancelled order - requested refund"
+  },
+  {
+    "id": "cust-005",
+    "name": "Yaw Boakye",
+    "email": "yaw.boakye@email.com",
+    "phone": "+233 20 888 9999",
+    "address": "90 Spintex Road, Accra",
+    "status": "active",
+    "totalOrders": 0,
+    "totalSpent": 0.00,
+    "lastOrderDate": null,
+    "createdAt": "2025-01-05T16:00:00Z",
+    "notes": "New customer - no orders yet"
+  }
+]

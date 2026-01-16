@@ -1,0 +1,29 @@
+[
+  {
+    "id": "sess-001",
+    "userId": "user-uuid-001",
+    "ipAddress": "192.168.1.5",
+    "device": "Chrome on Windows",
+    "location": "Accra, Ghana",
+    "lastActive": "2024-01-15T10:30:00",
+    "isCurrent": true
+  },
+  {
+    "id": "sess-002",
+    "userId": "user-uuid-001",
+    "ipAddress": "10.0.0.12",
+    "device": "Safari on iPhone",
+    "location": "Accra, Ghana",
+    "lastActive": "2024-01-14T20:15:00",
+    "isCurrent": false
+  },
+  {
+    "id": "sess-003",
+    "userId": "user-uuid-002",
+    "ipAddress": "192.168.1.8",
+    "device": "Firefox on Mac",
+    "location": "Kumasi, Ghana",
+    "lastActive": "2024-01-14T15:45:00",
+    "isCurrent": true
+  }
+]

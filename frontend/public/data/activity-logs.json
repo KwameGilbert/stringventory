@@ -1,0 +1,65 @@
+[
+  {
+    "id": "log-001",
+    "userId": "user-uuid-001",
+    "action": "Updated system settings",
+    "entityType": "systemSettings",
+    "entityId": null,
+    "createdAt": "2024-01-15T10:35:00",
+    "metadata": { "details": "Changed currency to GHS" }
+  },
+  {
+    "id": "log-002",
+    "userId": "user-uuid-002",
+    "action": "Added new product",
+    "entityType": "products",
+    "entityId": "prod-123",
+    "createdAt": "2024-01-15T09:45:00",
+    "metadata": { "details": "Added 'Royal Umbrella Rice 5kg'" }
+  },
+  {
+    "id": "log-003",
+    "userId": "user-uuid-003",
+    "action": "Processed order #1234",
+    "entityType": "orders",
+    "entityId": "order-1234",
+    "createdAt": "2024-01-15T09:20:00",
+    "metadata": { "details": "Order total: GHS 450.00" }
+  },
+  {
+    "id": "log-004",
+    "userId": "user-uuid-001",
+    "action": "Created user account",
+    "entityType": "users",
+    "entityId": "user-uuid-005",
+    "createdAt": "2024-01-14T16:00:00",
+    "metadata": { "details": "Created account for Michael Admin" }
+  },
+  {
+    "id": "log-005",
+    "userId": "user-uuid-005",
+    "action": "Login",
+    "entityType": "auth",
+    "entityId": null,
+    "createdAt": "2024-01-14T16:05:00",
+    "metadata": { "details": "Successful login from IP 192.168.1.5" }
+  },
+  {
+    "id": "log-006",
+    "userId": "user-uuid-002",
+    "action": "Updated stock levels",
+    "entityType": "inventory",
+    "entityId": null,
+    "createdAt": "2024-01-14T11:30:00",
+    "metadata": { "details": "Stock check completed for Category: Grains" }
+  },
+  {
+    "id": "log-007",
+    "userId": "user-uuid-004",
+    "action": "Login failed",
+    "entityType": "auth",
+    "entityId": null,
+    "createdAt": "2023-12-20T11:05:00",
+    "metadata": { "details": "Incorrect password attempt" }
+  }
+]

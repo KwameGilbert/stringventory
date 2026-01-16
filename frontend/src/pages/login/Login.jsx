@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { useTheme } from "../../contexts/ThemeContext";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { ForgotPasswordModal, SuccessAlert } from "../../components/auth";
 
 export default function Login() {
-  const { themeColors } = useTheme();
   // Login form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,10 +16,7 @@ export default function Login() {
   // Handle login
   const handleLogin = (e) => {
     e.preventDefault();
-    // Add login logic here
     console.log("Login:", { email, password, rememberMe });
-    
-    // Navigate to dashboard
     window.location.href = "/dashboard/";
   };
 
@@ -31,169 +26,177 @@ export default function Login() {
   };
 
   return (
-    <div className={`min-h-screen relative overflow-hidden ${themeColors.pageGradient}`}>
-      {/* Static Curved Pattern Background */}
-      <div className="absolute inset-0 overflow-hidden">
+    <div className="min-h-screen w-full relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #e0f7f4 0%, #b8ebe5 50%, #8dd5cc 100%)' }}>
+      {/* Static Curved Wave Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Top wave */}
         <svg
-          className="absolute bottom-0 left-0 w-full h-full"
-          viewBox="0 0 1440 800"
+          className="absolute top-0 left-0 w-full"
+          viewBox="0 0 1440 320"
           preserveAspectRatio="none"
+          style={{ height: '200px' }}
         >
-          <defs>
-            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.05" />
-            </linearGradient>
-            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.05" />
-            </linearGradient>
-          </defs>
-          
-          {/* Static waves */}
           <path
-            d="M0,400 C320,200 640,600 960,400 C1280,200 1440,400 1440,400 L1440,800 L0,800 Z"
-            fill="url(#gradient1)"
-          />
-          <path
-            d="M0,500 C360,300 720,700 1080,500 C1320,350 1440,500 1440,500 L1440,800 L0,800 Z"
-            fill="url(#gradient2)"
+            fill="rgba(255, 255, 255, 0.3)"
+            d="M0,160L48,170.7C96,181,192,203,288,192C384,181,480,139,576,128C672,117,768,139,864,160C960,181,1056,203,1152,197.3C1248,192,1344,160,1392,144L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
           />
         </svg>
-        
-        {/* Decorative circles using theme colors */}
-        <div className={`absolute top-20 left-20 w-72 h-72 ${themeColors.decorativeCircle1} rounded-full mix-blend-multiply filter blur-3xl opacity-20`}></div>
-        <div className={`absolute top-40 right-20 w-72 h-72 ${themeColors.decorativeCircle2} rounded-full mix-blend-multiply filter blur-3xl opacity-20`}></div>
-        <div className={`absolute bottom-20 left-1/2 w-72 h-72 ${themeColors.decorativeCircle3} rounded-full mix-blend-multiply filter blur-3xl opacity-20`}></div>
+
+        {/* Bottom left wave */}
+        <svg
+          className="absolute bottom-0 left-0 w-full"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+          style={{ height: '300px' }}
+        >
+          <path
+            fill="rgba(100, 200, 190, 0.4)"
+            d="M0,224L60,213.3C120,203,240,181,360,186.7C480,192,600,224,720,229.3C840,235,960,213,1080,186.7C1200,160,1320,128,1380,112L1440,96L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
+          />
+        </svg>
+
+        {/* Bottom wave overlay */}
+        <svg
+          className="absolute bottom-0 left-0 w-full"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+          style={{ height: '250px' }}
+        >
+          <path
+            fill="rgba(128, 210, 200, 0.5)"
+            d="M0,288L48,272C96,256,192,224,288,218.7C384,213,480,235,576,245.3C672,256,768,256,864,234.7C960,213,1056,171,1152,165.3C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+          />
+        </svg>
+
+        {/* Right side wave */}
+        <svg
+          className="absolute top-1/4 right-0"
+          viewBox="0 0 200 600"
+          preserveAspectRatio="none"
+          style={{ height: '60%', width: '150px' }}
+        >
+          <path
+            fill="rgba(100, 190, 180, 0.3)"
+            d="M200,0 Q100,150 200,300 Q100,450 200,600 L200,600 L200,0 Z"
+          />
+        </svg>
       </div>
 
-      {/* Login Form */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          {/* Logo/Brand */}
-          <div className="text-center mb-8 animate-fade-in">
-            <h1 className={`text-4xl font-bold ${themeColors.logoGradient} bg-clip-text text-transparent`}>
-              StringVentory
-            </h1>
-            <p className="text-gray-600 mt-2">Welcome back! Please sign in to continue</p>
-          </div>
+      {/* Content Container */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold italic text-emerald-600 mb-2">
+            StringVentory
+          </h1>
+          <p className="text-gray-600 text-sm md:text-base">
+            Welcome back! Please sign in to continue
+          </p>
+        </div>
 
-          {/* Login Card */}
-          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/50 animate-slide-up">
-            <form onSubmit={handleLogin} className="space-y-6">
-              {/* Email Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className={`w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 
-                             ${themeColors.focusRing} focus:border-transparent transition-all outline-none
-                             bg-white/50 backdrop-blur-sm`}
-                    required
-                  />
+        {/* Login Card */}
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+          <form onSubmit={handleLogin} className="space-y-5">
+            {/* Email Input */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Mail className="w-5 h-5" />
                 </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all outline-none"
+                  required
+                />
               </div>
+            </div>
 
-              {/* Password Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    className={`w-full pl-11 pr-11 py-3 border border-gray-300 rounded-lg focus:ring-2 
-                             ${themeColors.focusRing} focus:border-transparent transition-all outline-none
-                             bg-white/50 backdrop-blur-sm`}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
+            {/* Password Input */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Lock className="w-5 h-5" />
                 </div>
-              </div>
-
-              {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className={`w-4 h-4 ${themeColors.textColor} border-gray-300 rounded ${themeColors.focusRing}`}
-                  />
-                  <span className="text-sm text-gray-700">Remember me</span>
-                </label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all outline-none"
+                  required
+                  minLength={8}
+                />
                 <button
                   type="button"
-                  onClick={() => setShowForgotPasswordModal(true)}
-                  className={`text-sm ${themeColors.textColor} ${themeColors.textHover} font-medium transition-colors`}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  Forgot password?
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
-
-              {/* Login Button */}
-              <button
-                type="submit"
-                className={`w-full ${themeColors.buttonGradient} text-white py-3 px-4 
-                         rounded-lg font-medium ${themeColors.buttonHover} 
-                         transform hover:scale-[1.02] transition-all duration-200 shadow-lg 
-                         hover:shadow-xl`}
-              >
-                Sign In
-              </button>
-            </form>
-
-            {/* Contact Admin Message */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
-                <span className="text-gray-900 font-medium">Contact admin to be added.</span>
-              </p>
             </div>
-          </div>
 
-          {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-xs text-gray-500">
-              Developed by{" "}
-              <a
-                href="https://stringtech.co.uk/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${themeColors.textColor} ${themeColors.textHover} font-medium transition-colors`}
+            {/* Remember & Forgot */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 text-emerald-500 border-gray-300 rounded focus:ring-emerald-500"
+                />
+                <span className="text-sm text-gray-600">Remember me</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowForgotPasswordModal(true)}
+                className="text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:underline"
               >
-                StringTech
-              </a>
+                Forgot password?
+              </button>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg font-medium transition-all shadow-lg shadow-emerald-500/30"
+            >
+              Sign In
+            </button>
+
+            {/* Footer Text */}
+            <p className="text-center text-sm text-gray-600">
+              Don't have an account?{" "}
+              <span className="font-semibold text-gray-800 cursor-pointer hover:underline">
+                Contact admin to be added.
+              </span>
             </p>
-          </div>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center text-sm text-gray-500">
+          Developed by{" "}
+          <span className="text-emerald-600 font-medium">StringTech</span>
         </div>
       </div>
 
-      {/* Forgot Password Modal */}
+      {/* Modals */}
       <ForgotPasswordModal
         isOpen={showForgotPasswordModal}
         onClose={() => setShowForgotPasswordModal(false)}
         onSuccess={handleForgotPasswordSuccess}
       />
 
-      {/* Success Alert */}
       <SuccessAlert
         isOpen={showSuccessAlert}
         title="Success!"
@@ -201,36 +204,6 @@ export default function Login() {
         onClose={() => setShowSuccessAlert(false)}
         autoCloseDelay={3000}
       />
-
-      {/* Custom Animations */}
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes scale-in {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-        
-        .animate-slide-up {
-          animation: slide-up 0.5s ease-out;
-        }
-        
-        .animate-scale-in {
-          animation: scale-in 0.3s ease-out;
-        }
-      `}</style>
     </div>
   );
 }
