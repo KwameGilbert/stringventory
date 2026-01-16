@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
+import { useAuth } from "../../../contexts/AuthContext.js";
+import { PERMISSIONS } from "../../../constants/permissions";
 import { useLocation, Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -24,6 +26,7 @@ import {
 
 const Sidebar = () => {
   useTheme(); // Hook maintained for potential future use
+  const { user, hasPermission } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
   const location = useLocation();
 
@@ -32,20 +35,24 @@ const Sidebar = () => {
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/" },
-    { icon: FolderTree, label: "Categories", path: "/dashboard/categories" },
-    { icon: Package, label: "Products", path: "/dashboard/products" },
-    { icon: FileText, label: "Purchases", path: "/dashboard/purchases" },
-    { icon: ClipboardList, label: "Stock Management", path: "/dashboard/inventory" },
-    { icon: ShoppingCart, label: "Orders", path: "/dashboard/orders" },
-    { icon: Users, label: "Customers", path: "/dashboard/customers" },
-    { icon: Tag, label: "Expense Categories", path: "/dashboard/expenses/categories" },
-    { icon: DollarSign, label: "Expenses", path: "/dashboard/expenses" },
-    { icon: BarChart3, label: "Reports", path: "/dashboard/reports" },
-    { icon: UserCog, label: "Users", path: "/dashboard/users" },
-    { icon: MessageSquare, label: "Messaging", path: "/dashboard/messaging" },
-    { icon: Settings, label: "Settings", path: "/dashboard/settings" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/", permission: PERMISSIONS.VIEW_DASHBOARD },
+    { icon: FolderTree, label: "Categories", path: "/dashboard/categories", permission: PERMISSIONS.VIEW_PRODUCTS }, // Assuming categories part of product management
+    { icon: Package, label: "Products", path: "/dashboard/products", permission: PERMISSIONS.VIEW_PRODUCTS },
+    { icon: FileText, label: "Purchases", path: "/dashboard/purchases", permission: PERMISSIONS.VIEW_PURCHASES },
+    { icon: ClipboardList, label: "Stock Management", path: "/dashboard/inventory", permission: PERMISSIONS.VIEW_INVENTORY },
+    { icon: ShoppingCart, label: "Orders", path: "/dashboard/orders", permission: PERMISSIONS.VIEW_ORDERS },
+    { icon: Users, label: "Customers", path: "/dashboard/customers", permission: PERMISSIONS.VIEW_CUSTOMERS },
+    { icon: Tag, label: "Expense Categories", path: "/dashboard/expenses/categories", permission: PERMISSIONS.VIEW_EXPENSES },
+    { icon: DollarSign, label: "Expenses", path: "/dashboard/expenses", permission: PERMISSIONS.VIEW_EXPENSES },
+    { icon: BarChart3, label: "Reports", path: "/dashboard/reports", permission: PERMISSIONS.VIEW_REPORTS },
+    { icon: UserCog, label: "Users", path: "/dashboard/users", permission: PERMISSIONS.VIEW_USERS },
+    { icon: MessageSquare, label: "Messaging", path: "/dashboard/messaging", permission: PERMISSIONS.VIEW_MESSAGING },
+    { icon: Settings, label: "Settings", path: "/dashboard/settings", permission: PERMISSIONS.VIEW_SETTINGS },
   ];
+
+  const filteredMenuItems = menuItems.filter(item => 
+    !item.permission || hasPermission(item.permission)
+  );
 
   return (
     <aside
@@ -87,11 +94,11 @@ const Sidebar = () => {
       {/* Navigation Menu */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto custom-scrollbar">
         <div className="space-y-1">
-          {menuItems.map((item, index) => {
+          {filteredMenuItems.map((item, index) => {
             const Icon = item.icon;
             
             // Calculate active state globally
-            const matchingPaths = menuItems
+            const matchingPaths = filteredMenuItems
               .filter(i => 
                 (i.path === "/dashboard/" && location.pathname === "/dashboard/") ||
                 (i.path !== "/dashboard/" && location.pathname.startsWith(i.path))
@@ -149,14 +156,14 @@ const Sidebar = () => {
       {isOpen && (
         <div className="px-3 py-3 border-t border-slate-800">
           <div className="flex items-center gap-2">
-            <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-all duration-200">
+            <Link to="/dashboard/notifications" className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-all duration-200">
               <Bell className="w-4 h-4" />
               <span className="text-xs">Notifications</span>
-            </button>
-            <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white hover:text-white transition-all duration-200">
+            </Link>
+            <Link to="/" className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white hover:text-white transition-all duration-200">
               <LogOut className="w-4 h-4" />
               <span className="text-xs">Logout</span>
-            </button>
+            </Link>
           </div>
         </div>
       )}
@@ -164,7 +171,7 @@ const Sidebar = () => {
       {/* User Profile */}
       <div className="border-t border-slate-800 p-3">
         <Link
-          to="/dashboard/profile"
+          to="/dashboard/settings"
           className={`
             flex items-center gap-3 p-2.5 rounded-xl
             bg-slate-800/50 hover:bg-slate-800 transition-all duration-200
@@ -173,7 +180,7 @@ const Sidebar = () => {
         >
           <div className="relative">
             <img
-              src="https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff"
+              src={user?.avatar || "https://ui-avatars.com/api/?name=User&background=random"}
               alt="Profile"
               className="w-9 h-9 rounded-full ring-2 ring-slate-700"
             />
@@ -183,10 +190,10 @@ const Sidebar = () => {
           {isOpen && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">
-                Admin User
+                {user?.name || "User"}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                Administrator
+                {user?.role || "Member"}
               </p>
             </div>
           )}
