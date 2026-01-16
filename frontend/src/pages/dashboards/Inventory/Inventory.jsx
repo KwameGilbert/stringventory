@@ -5,12 +5,18 @@ import InventoryHeader from "../../../components/admin/Inventory/InventoryHeader
 import InventoryTable from "../../../components/admin/Inventory/InventoryTable";
 import { confirmDelete, showSuccess } from "../../../utils/alerts";
 
+import StockAdjustmentModal from "../../../components/admin/Inventory/StockAdjustmentModal";
+
 export default function Inventory() {
   const [inventory, setInventory] = useState([]);
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  
+  // Stock Adjustment State
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,6 +66,35 @@ export default function Inventory() {
       setInventory((prev) => prev.filter((item) => item.id !== id));
       showSuccess("Inventory entry deleted successfully");
     }
+  };
+
+  const handleOpenAdjustment = (item) => {
+    setSelectedItem(item);
+    setAdjustModalOpen(true);
+  };
+
+  const handleConfirmAdjustment = ({ itemId, type, reason, quantity, notes }) => {
+    setInventory(prev => prev.map(item => {
+      if (item.id === itemId) {
+        const newQuantity = type === 'increase' 
+          ? item.quantity + quantity 
+          : Math.max(0, item.quantity - quantity);
+        
+        // Recalculate total value based on new quantity
+        const newTotalValue = newQuantity * item.unitCost;
+
+        return {
+          ...item,
+          quantity: newQuantity,
+          totalValue: newTotalValue
+        };
+      }
+      return item;
+    }));
+
+    showSuccess(`Stock ${type}d successfully`);
+    console.log("Stock Adjustment Log:", { itemId, type, reason, quantity, notes, date: new Date().toISOString() });
+    setAdjustModalOpen(false);
   };
 
   const formatCurrency = (value) => {
@@ -152,7 +187,20 @@ export default function Inventory() {
       </div>
 
       {/* Inventory Table */}
-      <InventoryTable inventory={filteredInventory} onDelete={handleDelete} />
+      <InventoryTable 
+        inventory={filteredInventory} 
+        onDelete={handleDelete} 
+        onAdjust={handleOpenAdjustment}
+      />
+
+      {/* Adjustment Modal */}
+      <StockAdjustmentModal 
+        key={selectedItem ? selectedItem.id : 'modal'}
+        isOpen={adjustModalOpen}
+        onClose={() => setAdjustModalOpen(false)}
+        item={selectedItem}
+        onConfirm={handleConfirmAdjustment}
+      />
     </div>
   );
 }

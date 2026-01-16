@@ -1,27 +1,36 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2, Trash2, Calendar, Clock, Hash, Image } from "lucide-react";
+import { ArrowLeft, Edit2, Trash2, Calendar, Clock, Hash, Image, Package } from "lucide-react";
 import axios from "axios";
 
 export default function ViewCategory() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [category, setCategory] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('/data/categories.json');
-        const found = response.data.find(c => c.id === parseInt(id));
-        if (found) setCategory(found);
+        const found = response.data.find(c => c.id === id);
+        if (found) {
+          setCategory(found);
+        } else {
+          setError("Category not found");
+        }
       } catch (error) {
         console.error("Error fetching category", error);
+        setError("Failed to load category details");
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, [id]);
 
-  if (!category) {
+  if (loading) {
     return (
       <div className="max-w-4xl mx-auto py-8">
         <div className="bg-white rounded-xl p-8 border border-gray-100 animate-pulse">
@@ -33,6 +42,26 @@ export default function ViewCategory() {
             </div>
           </div>
           <div className="h-24 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !category) {
+    return (
+      <div className="max-w-4xl mx-auto py-8">
+        <div className="bg-white rounded-xl p-12 border border-gray-100 text-center">
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Package className="w-8 h-8 text-red-500" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-2">{error || "Category not found"}</h3>
+          <p className="text-gray-500 mb-6">The category you are looking for might have been removed or does not exist.</p>
+          <button
+            onClick={() => navigate("/dashboard/categories")}
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
+          >
+            Back to Categories
+          </button>
         </div>
       </div>
     );
