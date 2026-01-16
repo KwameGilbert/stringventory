@@ -19,14 +19,7 @@ export default function AddUser() {
     password: ""
   });
 
-  const [expandedGroups, setExpandedGroups] = useState({});
 
-  const toggleGroup = (category) => {
-    setExpandedGroups(prev => ({
-      ...prev,
-      [category]: !prev[category]
-    }));
-  };
 
   const handlePermissionChange = (permissionKey) => {
     setFormData(prev => {
