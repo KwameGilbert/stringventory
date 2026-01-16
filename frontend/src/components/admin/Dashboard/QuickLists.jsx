@@ -101,9 +101,9 @@ const QuickLists = () => {
           </div>
 
           <div className="space-y-3">
-            {recentOrders.map((order) => (
+            {recentOrders.map((order, index) => (
               <div
-                key={order.id}
+                key={order.id || `order-${index}`}
                 className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
               >
                 <div className="flex-1">
@@ -147,9 +147,9 @@ const QuickLists = () => {
           </div>
 
           <div className="space-y-3">
-            {lowStock.map((item) => (
+            {lowStock.map((item, index) => (
               <div
-                key={item.id}
+                key={item.id || `stock-${index}`}
                 className="flex items-center justify-between p-3 rounded-xl bg-red-50 hover:bg-red-100 transition-colors"
               >
                 <div className="flex-1">
@@ -189,9 +189,9 @@ const QuickLists = () => {
           </div>
 
           <div className="space-y-3">
-            {expiring.map((item) => (
+            {expiring.map((item, index) => (
               <div
-                key={item.id}
+                key={item.id || `expiring-${index}`}
                 className="flex items-center justify-between p-3 rounded-xl bg-amber-50 hover:bg-amber-100 transition-colors"
               >
                 <div className="flex-1">

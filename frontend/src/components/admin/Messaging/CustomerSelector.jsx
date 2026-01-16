@@ -64,7 +64,7 @@ export default function CustomerSelector({ customers, selectedIds, onSelect, onS
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
                   isSelected ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"
                 }`}>
-                  {customer.customerName.split(' ').map(n=>n[0]).join('').slice(0,2)}
+                  {(customer.customerName || "Unknown").split(' ').map(n=>n[0]).join('').slice(0,2)}
                 </div>
                 <div className="min-w-0">
                   <p className={`text-sm font-medium truncate ${isSelected ? "text-emerald-900" : "text-gray-900"}`}>
