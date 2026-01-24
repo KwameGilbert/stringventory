@@ -1,0 +1,74 @@
+[
+  {
+    "saleId": "TRX-001",
+    "id": "SI-001",
+    "productName": "Premium Guitar Strings",
+    "quantity": 2,
+    "unitPrice": 45.00,
+    "sku": "STR-001"
+  },
+  {
+    "saleId": "TRX-001",
+    "id": "SI-002",
+    "productName": "Guitar Tuner",
+    "quantity": 1,
+    "unitPrice": 55.00,
+    "sku": "ACC-001"
+  },
+  {
+    "saleId": "TRX-002",
+    "id": "SI-003",
+    "productName": "Keyboard Stand",
+    "quantity": 1,
+    "unitPrice": 150.00,
+    "sku": "KEY-001"
+  },
+  {
+    "saleId": "TRX-002",
+    "id": "SI-004",
+    "productName": "Piano Sustain Pedal",
+    "quantity": 3,
+    "unitPrice": 85.00,
+    "sku": "KEY-002"
+  },
+  {
+    "saleId": "TRX-002",
+    "id": "SI-005",
+    "productName": "Premium Guitar Strings",
+    "quantity": 1,
+    "unitPrice": 45.50,
+    "sku": "STR-001"
+  },
+  {
+    "saleId": "TRX-003",
+    "id": "SI-006",
+    "productName": "Violin Rosin",
+    "quantity": 1,
+    "unitPrice": 15.00,
+    "sku": "STR-002"
+  },
+   {
+    "saleId": "TRX-003",
+    "id": "SI-007",
+    "productName": "Music Stand",
+    "quantity": 1,
+    "unitPrice": 70.00,
+    "sku": "ACC-002"
+  },
+  {
+    "saleId": "TRX-004",
+    "id": "SI-008",
+    "productName": "Drum Sticks (Pair)",
+    "quantity": 1,
+    "unitPrice": 25.00,
+    "sku": "DRM-001"
+  },
+  {
+    "saleId": "TRX-005",
+    "id": "SI-009",
+    "productName": "Keyboard Stand",
+    "quantity": 8,
+    "unitPrice": 150.00,
+    "sku": "KEY-001"
+  }
+]

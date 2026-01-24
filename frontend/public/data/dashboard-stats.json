@@ -9,6 +9,15 @@
     "icon": "DollarSign"
   },
   {
+    "id": 9,
+    "title": "Daily Sales",
+    "value": "GH₵2,100.00",
+    "change": "5.0% vs yesterday",
+    "trend": "up",
+    "color": "blue",
+    "icon": "TrendingUp"
+  },
+  {
     "id": 2,
     "title": "Total Expenses",
     "value": "GH₵1,230,000.00",

@@ -21,6 +21,9 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
     name: "",
     notes: "",
     isRecurring: false,
+    recurringFrequency: "monthly",
+    recurringInterval: 1,
+    recurringEndDate: "",
     hasAttachment: false,
     status: "pending",
     ...initialData,
@@ -264,24 +267,70 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
             </div>
 
             {/* Recurring Toggle */}
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-blue-50 border border-blue-100">
-              <div className="p-2 rounded-lg bg-white border border-blue-100">
-                <RefreshCcw className="w-5 h-5 text-blue-500" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-gray-900 text-sm">Recurring Expense</p>
-                <p className="text-xs text-blue-600">Is this a repeated cost?</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="isRecurring"
-                  checked={formData.isRecurring}
-                  onChange={handleChange}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              </label>
+            <div className="rounded-xl bg-blue-50 border border-blue-100 overflow-hidden">
+                <div className="flex items-center gap-3 p-4">
+                    <div className="p-2 rounded-lg bg-white border border-blue-100">
+                        <RefreshCcw className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="font-medium text-gray-900 text-sm">Recurring Expense</p>
+                        <p className="text-xs text-blue-600">Is this a repeated cost?</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                        type="checkbox"
+                        name="isRecurring"
+                        checked={formData.isRecurring}
+                        onChange={handleChange}
+                        className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    </label>
+                </div>
+
+                {formData.isRecurring && (
+                    <div className="px-4 pb-4 pt-0 grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-blue-100 animate-fade-in mt-3">
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium text-blue-800">Frequency</label>
+                            <select
+                                name="recurringFrequency"
+                                value={formData.recurringFrequency || "monthly"}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            >
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                             <label className="text-xs font-medium text-blue-800">Interval</label>
+                             <div className="flex items-center gap-2">
+                                <span className="text-xs text-blue-600">Every</span>
+                                <input
+                                    type="number"
+                                    name="recurringInterval"
+                                    value={formData.recurringInterval || 1}
+                                    onChange={handleChange}
+                                    min="1"
+                                    className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                />
+                                <span className="text-xs text-blue-600 capitalize">{formData.recurringFrequency || "months"}(s)</span>
+                             </div>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-medium text-blue-800">End Date</label>
+                            <input
+                                type="date"
+                                name="recurringEndDate"
+                                value={formData.recurringEndDate || ""}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2 rounded-lg border border-blue-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="flex items-center justify-between text-sm text-gray-600">
         {/* Copyright */}
         <div>
-          <p>© {currentYear} WholeSys. All rights reserved.</p>
+          <p>© {currentYear} StringVentory. All rights reserved.</p>
         </div>
 
         {/* Developed by StringTech */}

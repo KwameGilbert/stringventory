@@ -1,0 +1,42 @@
+[
+  {
+    "id": "TRX-001",
+    "date": "2024-03-20 14:30",
+    "customer": "Walk-in Customer",
+    "amount": 150.00,
+    "method": "Cash",
+    "status": "Completed"
+  },
+  {
+    "id": "TRX-002",
+    "date": "2024-03-20 13:15",
+    "customer": "John Doe",
+    "amount": 450.50,
+    "method": "Mobile Money",
+    "status": "Completed"
+  },
+  {
+    "id": "TRX-003",
+    "date": "2024-03-20 11:00",
+    "customer": "Sarah Smith",
+    "amount": 85.00,
+    "method": "Card",
+    "status": "Completed"
+  },
+  {
+    "id": "TRX-004",
+    "date": "2024-03-20 10:45",
+    "customer": "Walk-in Customer",
+    "amount": 25.00,
+    "method": "Cash",
+    "status": "Completed"
+  },
+  {
+    "id": "TRX-005",
+    "date": "2024-03-20 09:30",
+    "customer": "Kwame Osei",
+    "amount": 1200.00,
+    "method": "Bank Transfer",
+    "status": "Pending"
+  }
+]

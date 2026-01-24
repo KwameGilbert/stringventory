@@ -17,11 +17,14 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
+  CornerDownLeftIcon,
   LogOut,
   Bell,
   Tag,
   FileText,
+  Store,
+  Truck,
+  Calculator,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -36,10 +39,13 @@ const Sidebar = () => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/", permission: PERMISSIONS.VIEW_DASHBOARD },
-    { icon: FolderTree, label: "Categories", path: "/dashboard/categories", permission: PERMISSIONS.VIEW_PRODUCTS }, // Assuming categories part of product management
+    { icon: FolderTree, label: "Categories", path: "/dashboard/categories", permission: PERMISSIONS.VIEW_PRODUCTS }, 
     { icon: Package, label: "Products", path: "/dashboard/products", permission: PERMISSIONS.VIEW_PRODUCTS },
     { icon: FileText, label: "Purchases", path: "/dashboard/purchases", permission: PERMISSIONS.VIEW_PURCHASES },
     { icon: ClipboardList, label: "Stock Management", path: "/dashboard/inventory", permission: PERMISSIONS.VIEW_INVENTORY },
+    { icon: Truck, label: "Suppliers", path: "/dashboard/suppliers", permission: PERMISSIONS.VIEW_SUPPLIERS },
+    { icon: Store, label: "Sales", path: "/dashboard/sales", permission: PERMISSIONS.VIEW_SALES },
+    { icon: Calculator, label: "POS", path: "/dashboard/sales/pos", permission: PERMISSIONS.VIEW_SALES },
     { icon: ShoppingCart, label: "Orders", path: "/dashboard/orders", permission: PERMISSIONS.VIEW_ORDERS },
     { icon: Users, label: "Customers", path: "/dashboard/customers", permission: PERMISSIONS.VIEW_CUSTOMERS },
     { icon: Tag, label: "Expense Categories", path: "/dashboard/expenses/categories", permission: PERMISSIONS.VIEW_EXPENSES },

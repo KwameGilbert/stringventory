@@ -1,26 +1,32 @@
 [
   {
-    "id": "sup-uuid-001",
-    "name": "Global Distributors Ltd",
-    "phone": "+233 20 123 4567",
-    "email": "sales@globaldist.com",
-    "address": "12 Industrial Area, Accra",
-    "isActive": true
+    "id": "SUP-001",
+    "name": "Global Tech Distribution",
+    "contactPerson": "Sarah Jameson",
+    "email": "sarah@globaltech.com",
+    "phone": "+233 24 998 8776",
+    "address": "123 Industria Ring Rd, Accra",
+    "status": "Active",
+    "productsCount": 15
   },
   {
-    "id": "sup-uuid-002",
-    "name": "Fresh Foods Supply",
-    "phone": "+233 24 987 6543",
-    "email": "orders@freshfoods.com",
-    "address": "Kumasi Market Road",
-    "isActive": true
+    "id": "SUP-002",
+    "name": "Prime Electronics Ltd",
+    "contactPerson": "David Osei",
+    "email": "david@primeelectronics.gh",
+    "phone": "+233 50 112 2334",
+    "address": "45 Spintex Road, Accra",
+    "status": "Active",
+    "productsCount": 8
   },
   {
-    "id": "sup-uuid-003",
-    "name": "Tech World Imports",
-    "phone": "+233 50 111 2222",
-    "email": "info@techworld.com",
-    "address": "Circle, Accra",
-    "isActive": true
+    "id": "SUP-003",
+    "name": "West African Logistics",
+    "contactPerson": "Kwame Mensah",
+    "email": "kwame@walogistics.com",
+    "phone": "+233 20 555 6666",
+    "address": "88 Harbor View, Tema",
+    "status": "Inactive",
+    "productsCount": 0
   }
 ]
