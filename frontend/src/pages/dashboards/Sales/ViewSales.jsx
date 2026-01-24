@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, Filter, Eye, RefreshCw, ArrowLeft, Download, Calendar } from "lucide-react";
+import { Search, Filter, ArrowLeft, Download, Calendar } from "lucide-react";
 import axios from "axios";
+import SalesTable from "../../../components/admin/Sales/SalesTable";
 
 export default function ViewSales() {
   const [sales, setSales] = useState([]);
@@ -32,13 +33,7 @@ export default function ViewSales() {
     return matchesSearch && matchesStatus;
   });
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+
 
   return (
     <div className="animate-fade-in pb-8">
@@ -96,85 +91,13 @@ export default function ViewSales() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        {loading ? (
-            <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-        ) : (
-            <div className="overflow-x-auto">
-            <table className="w-full">
-                <thead className="bg-gray-50/50 text-xs text-gray-500 uppercase font-semibold">
-                <tr>
-                    <th className="px-6 py-4 text-left">Transaction ID</th>
-                    <th className="px-6 py-4 text-left">Date & Time</th>
-                    <th className="px-6 py-4 text-left">Customer</th>
-                    <th className="px-6 py-4 text-left">Method</th>
-                    <th className="px-6 py-4 text-center">Status</th>
-                    <th className="px-6 py-4 text-right">Amount</th>
-                    <th className="px-6 py-4 text-center">Action</th>
-                </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                {filteredSales.length > 0 ? (
-                    filteredSales.map((sale) => (
-                        <tr key={sale.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900 font-mono">
-                            {sale.id}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
-                            {sale.date}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-900 font-medium">
-                            {sale.customer}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                            {sale.method}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                sale.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 
-                                sale.status === 'Refunded' ? 'bg-rose-100 text-rose-700' :
-                                'bg-amber-100 text-amber-700'
-                            }`}>
-                                {sale.status}
-                            </span>
-                        </td>
-                        <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
-                            {formatCurrency(sale.amount)}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                            <div className="flex items-center justify-center gap-2">
-                                <Link 
-                                    to={`/dashboard/sales/${sale.id}`}
-                                    className="text-gray-400 hover:text-blue-600 transition-colors" 
-                                    title="View Details"
-                                >
-                                    <Eye size={18} />
-                                </Link>
-                                <Link 
-                                    to={`/dashboard/sales/${sale.id}/refund`}
-                                    className="text-gray-400 hover:text-rose-600 transition-colors"
-                                    title="Process Refund"
-                                >
-                                    <RefreshCw size={18} />
-                                </Link>
-                            </div>
-                        </td>
-                        </tr>
-                    ))
-                ) : (
-                    <tr>
-                        <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
-                            No sales transactions found matching your search.
-                        </td>
-                    </tr>
-                )}
-                </tbody>
-            </table>
-            </div>
-        )}
-      </div>
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      ) : (
+        <SalesTable sales={filteredSales} />
+      )}
     </div>
   );
 }
