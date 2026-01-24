@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { DollarSign, ShoppingCart, TrendingUp, Plus, Search, Filter, Eye, ArrowRight, RefreshCw } from "lucide-react";
+import SalesTable from "../../../components/admin/Sales/SalesTable";
 
 export default function SalesMain() {
   // Mock Data for KPI
@@ -11,13 +12,19 @@ export default function SalesMain() {
   ];
 
   // Mock Data for Transactions
-  const [transactions] = useState([
-    { id: "TRX-001", date: "2024-03-20 14:30", customer: "Walk-in Customer", amount: 150.00, method: "Cash", status: "Completed" },
-    { id: "TRX-002", date: "2024-03-20 13:15", customer: "John Doe", amount: 450.50, method: "Mobile Money", status: "Completed" },
-    { id: "TRX-003", date: "2024-03-20 11:00", customer: "Sarah Smith", amount: 85.00, method: "Card", status: "Completed" },
-    { id: "TRX-004", date: "2024-03-20 10:45", customer: "Walk-in Customer", amount: 25.00, method: "Cash", status: "Completed" },
-    { id: "TRX-005", date: "2024-03-20 09:30", customer: "Kwame Osei", amount: 1200.00, method: "Bank Transfer", status: "Pending" },
-  ]);
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    // Fetch mock sales data
+    // In a real app, this would be an API call
+    fetch("/data/sales.json")
+      .then(res => res.json())
+      .then(data => {
+        // Take only the most recent 5 transactions for the dashboard
+        setTransactions(data.slice(0, 5));
+      })
+      .catch(err => console.error("Error loading sales:", err));
+  }, []);
 
   return (
     <div className="animate-fade-in pb-8">
@@ -77,67 +84,7 @@ export default function SalesMain() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50/50 text-xs text-gray-500 uppercase font-semibold">
-              <tr>
-                <th className="px-6 py-4 text-left">Transaction ID</th>
-                <th className="px-6 py-4 text-left">Date & Time</th>
-                <th className="px-6 py-4 text-left">Customer</th>
-                <th className="px-6 py-4 text-left">Method</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-right">Amount</th>
-                <th className="px-6 py-4 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {transactions.map((trx) => (
-                <tr key={trx.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900 font-mono">
-                    {trx.id}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {trx.date}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 font-medium">
-                    {trx.customer}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {trx.method}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        trx.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                    }`}>
-                        {trx.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
-                    GHS {trx.amount.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                        <Link 
-                            to={`/dashboard/sales/${trx.id}`}
-                            className="text-gray-400 hover:text-blue-600 transition-colors"
-                            title="View Details"
-                        >
-                            <Eye size={18} />
-                        </Link>
-                        <Link 
-                            to={`/dashboard/sales/${trx.id}/refund`}
-                            className="text-gray-400 hover:text-rose-600 transition-colors"
-                            title="Process Refund"
-                        >
-                            <RefreshCw size={18} />
-                        </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <SalesTable sales={transactions} showPagination={false} />
         
         <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-center">
             <Link to="/dashboard/sales/history" className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
