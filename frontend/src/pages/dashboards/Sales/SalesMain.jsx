@@ -1,29 +1,45 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { DollarSign, ShoppingCart, TrendingUp, Plus, Search, Filter, Eye, ArrowRight, RefreshCw } from "lucide-react";
-import SalesTable from "../../../components/admin/Sales/SalesTable";
+import { DollarSign, ShoppingBag, TrendingUp, Plus, Search, Filter, ArrowRight } from "lucide-react";
+// import SalesTable from "../../../components/admin/Sales/SalesTable"; // REMOVED
+import OrdersTable from "../../../components/admin/Orders/OrdersTable"; // ADDED
+import axios from "axios";
 
 export default function SalesMain() {
-  // Mock Data for KPI
-  const stats = [
-    { title: "Today's Sales", value: "GHS 2,450.00", icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { title: "Today's Orders", value: "14", icon: ShoppingCart, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "Avg. Ticket Size", value: "GHS 175.00", icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-50" },
-  ];
+  const [stats, setStats] = useState([
+    { title: "Total Revenue", value: "GHS 0.00", icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { title: "Total Orders", value: "0", icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
+    { title: "Avg. Ticket Size", value: "GHS 0.00", icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-50" },
+  ]);
 
-  // Mock Data for Transactions
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    // Fetch mock sales data
-    // In a real app, this would be an API call
-    fetch("/data/sales.json")
-      .then(res => res.json())
-      .then(data => {
-        // Take only the most recent 5 transactions for the dashboard
-        setTransactions(data.slice(0, 5));
+    // Fetch orders data instead of sales
+    axios.get("/data/orders.json")
+      .then(res => {
+        const orders = res.data;
+        
+        // Calculate Stats
+        const totalRevenue = orders
+            .filter(o => o.status !== 'cancelled' && o.status !== 'refunded')
+            .reduce((sum, o) => sum + o.total, 0);
+        const totalOrders = orders.length;
+        const avgTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+        const formatCurrency = (val) => new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS" }).format(val);
+
+        setStats([
+            { title: "Total Revenue", value: formatCurrency(totalRevenue), icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
+            { title: "Total Orders", value: totalOrders.toString(), icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
+            { title: "Avg. Ticket Size", value: formatCurrency(avgTicket), icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-50" },
+        ]);
+
+        // Use raw orders data for OrdersTable (it handles structure correctly)
+        // Just slice the most recent 5
+        setTransactions(orders.slice(0, 5));
       })
-      .catch(err => console.error("Error loading sales:", err));
+      .catch(err => console.error("Error loading orders:", err));
   }, []);
 
   return (
@@ -36,11 +52,11 @@ export default function SalesMain() {
         </div>
         
         <Link
-          to="/dashboard/sales/pos"
+          to="/dashboard/orders/new"
           className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20 font-medium"
         >
           <Plus size={18} />
-          New Sale (POS)
+          New Sale
         </Link>
       </div>
 
@@ -84,10 +100,10 @@ export default function SalesMain() {
           </div>
         </div>
 
-        <SalesTable sales={transactions} showPagination={false} />
+        <OrdersTable orders={transactions} />
         
         <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-center">
-            <Link to="/dashboard/sales/history" className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
+            <Link to="/dashboard/orders" className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
                 View All Transactions <ArrowRight size={16} />
             </Link>
         </div>

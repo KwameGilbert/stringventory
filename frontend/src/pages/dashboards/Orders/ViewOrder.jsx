@@ -166,7 +166,7 @@ export default function ViewOrder() {
         <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
           <ArrowLeft size={18} />
         </div>
-        <span className="font-medium">Back to Orders</span>
+        <span className="font-medium">Back to Sales</span>
       </button>
 
       {/* Header Card */}
@@ -240,7 +240,7 @@ export default function ViewOrder() {
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5 text-gray-500" />
-                <h3 className="font-semibold text-gray-900">Order Items</h3>
+                <h3 className="font-semibold text-gray-900">Sale Items</h3>
                 <span className="text-xs text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">{items.length} products</span>
               </div>
             </div>
@@ -385,7 +385,7 @@ export default function ViewOrder() {
           {/* Order Info */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Order Details</h3>
+              <h3 className="font-semibold text-gray-900">Sale Details</h3>
             </div>
             <div className="p-5 space-y-3">
               <div className="flex items-center gap-3">
@@ -393,7 +393,7 @@ export default function ViewOrder() {
                   <Hash className="w-3.5 h-3.5 text-gray-500" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Order ID</p>
+                  <p className="text-xs text-gray-400">Sale ID</p>
                   <p className="text-sm font-mono font-medium text-gray-900">{order.id}</p>
                 </div>
               </div>
@@ -403,7 +403,7 @@ export default function ViewOrder() {
                   <Calendar className="w-3.5 h-3.5 text-gray-500" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Order Date</p>
+                  <p className="text-xs text-gray-400">Sale Date</p>
                   <p className="text-sm font-medium text-gray-900">{formatDate(order.orderDate)}</p>
                 </div>
               </div>

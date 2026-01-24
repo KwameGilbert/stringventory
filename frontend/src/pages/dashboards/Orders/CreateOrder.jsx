@@ -148,13 +148,13 @@ export default function CreateOrder() {
         <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
           <ArrowLeft size={18} />
         </div>
-        <span className="font-medium">Back to Orders</span>
+        <span className="font-medium">Back to Sales</span>
       </button>
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Create New Order</h1>
-        <p className="text-gray-500 text-sm">Fill in the details to create a new order</p>
+        <h1 className="text-2xl font-bold text-gray-900">New Sale</h1>
+        <p className="text-gray-500 text-sm">Fill in the details to create a new sale</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -222,8 +222,8 @@ export default function CreateOrder() {
                 <ShoppingCart className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Order Items</h3>
-                <p className="text-xs text-gray-500">Add products to the order</p>
+                <h3 className="font-semibold text-gray-900">Sale Items</h3>
+                <p className="text-xs text-gray-500">Add products to the sale</p>
               </div>
             </div>
           </div>
@@ -420,7 +420,7 @@ export default function CreateOrder() {
             className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium transition-all flex items-center gap-2 text-sm shadow-lg shadow-gray-900/20"
           >
             <Save size={18} />
-            Create Order
+            Complete Sale
           </button>
         </div>
       </form>

@@ -21,8 +21,8 @@ const OrdersHeader = ({
       {/* Title Row */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
-          <p className="text-gray-500 text-sm">{totalOrders} orders</p>
+          <h1 className="text-2xl font-bold text-gray-900">Sales</h1>
+          <p className="text-gray-500 text-sm">{totalOrders} sales</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -42,7 +42,7 @@ const OrdersHeader = ({
             className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
           >
             <Plus size={16} />
-            New Order
+            New Sale
           </Link>
         </div>
       </div>
