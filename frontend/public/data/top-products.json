@@ -38,29 +38,5 @@
     "revenue": 68000,
     "volume": 520,
     "image": null
-  },
-  {
-    "id": 6,
-    "name": "Milo 400g",
-    "category": "Beverages",
-    "revenue": 62000,
-    "volume": 480,
-    "image": null
-  },
-  {
-    "id": 7,
-    "name": "Indomie Noodles",
-    "category": "Snacks",
-    "revenue": 55000,
-    "volume": 920,
-    "image": null
-  },
-  {
-    "id": 8,
-    "name": "Golden Morn",
-    "category": "Cereals",
-    "revenue": 48000,
-    "volume": 380,
-    "image": null
   }
 ]

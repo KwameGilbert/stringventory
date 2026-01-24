@@ -9,7 +9,11 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
+import { useAuth } from "../../../contexts/AuthContext";
+import { PERMISSIONS } from "../../../constants/permissions";
+
 const KPICards = ({ dateRange }) => {
+  const { user, hasPermission } = useAuth();
   const [kpis, setKpis] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,10 +21,39 @@ const KPICards = ({ dateRange }) => {
     const fetchKPIs = async () => {
       try {
         const response = await axios.get("/data/dashboard-stats.json");
-        // Get the key KPIs: Sales, Expenses, Net Revenue, Orders, Low Stock
-        const keyKPIs = response.data.filter((stat) =>
-          ["Gross Revenue", "Total Expenses", "Net Revenue", "Total Orders", "Low Stock Alert"].includes(stat.title)
+        // Get the key KPIs
+        let keyKPIs = response.data.filter((stat) =>
+          ["Daily Sales", "Gross Revenue", "Total Expenses", "Net Revenue", "Total Orders", "Low Stock Alert"].includes(stat.title)
         );
+
+        // Filter based on permissions/role
+        if (user?.role === 'Sales') {
+             // Sales specfic view: Daily Sales, Orders. Hide global revenue/expenses/stock
+             keyKPIs = keyKPIs.filter(stat => 
+                ["Daily Sales", "Total Orders"].includes(stat.title)
+             );
+        } else {
+             // For Admin/Others, maybe hide Daily Sales if it's redundant, or show all? 
+             // Let's hide Daily Sales for others if Gross Revenue covers it, or show all if valid.
+             // User request was specific about Sales seeing Daily Sales. 
+             // Let's show everything for Admin except Daily Sales might be less relevant if Gross Revenue is there? 
+             // Actually, Admin might want to see Daily Sales too. Let's keep it but respect granular permissions.
+             
+             if (!hasPermission(PERMISSIONS.VIEW_EXPENSES)) {
+                 keyKPIs = keyKPIs.filter(stat => stat.title !== "Total Expenses");
+             }
+             if (!hasPermission(PERMISSIONS.VIEW_INVENTORY)) {
+                 keyKPIs = keyKPIs.filter(stat => stat.title !== "Low Stock Alert");
+             }
+             // Remove Daily Sales from non-Sales view to keep it clean? Or keep it?
+             // "when admin adding permission for a sales ... he can see it daily sales".
+             // Implies mainly for Sales. Let's keep it for Sales mainly.
+             if (user?.role !== 'Sales') {
+                  // For Admin, standard view
+                  keyKPIs = keyKPIs.filter(stat => stat.title !== "Daily Sales");
+             }
+        }
+
         setKpis(keyKPIs);
       } catch (error) {
         console.error("Error fetching KPIs:", error);
@@ -29,7 +62,7 @@ const KPICards = ({ dateRange }) => {
       }
     };
     fetchKPIs();
-  }, [dateRange]);
+  }, [dateRange, user, hasPermission]);
 
   const getIcon = (iconName) => {
     const icons = {
@@ -72,7 +105,7 @@ const KPICards = ({ dateRange }) => {
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
         Key Performance Indicators
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {kpis.map((kpi) => {
           const Icon = getIcon(kpi.icon);
           const isAlert = kpi.trend === "alert";

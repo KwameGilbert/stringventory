@@ -21,6 +21,13 @@ import ViewInventory from "./pages/dashboards/Inventory/ViewInventory";
 import Orders from "./pages/dashboards/Orders/Orders";
 import ViewOrder from "./pages/dashboards/Orders/ViewOrder";
 import CreateOrder from "./pages/dashboards/Orders/CreateOrder";
+import CreateRefund from "./pages/dashboards/Orders/CreateRefund";
+import SalesMain from "./pages/dashboards/Sales/SalesMain";
+import POS from "./pages/dashboards/Sales/POS";
+import ViewSales from "./pages/dashboards/Sales/ViewSales";
+import ViewSale from "./pages/dashboards/Sales/ViewSale";
+import SalesRefund from "./pages/dashboards/Sales/SalesRefund";
+import PaymentPage from "./pages/dashboards/Sales/PaymentPage";
 import Customers from "./pages/dashboards/Customers/Customers";
 import ViewCustomer from "./pages/dashboards/Customers/ViewCustomer";
 import CreateCustomer from "./pages/dashboards/Customers/CreateCustomer";
@@ -34,6 +41,10 @@ import Reports from "./pages/dashboards/Reports/Reports";
 import Users from "./pages/dashboards/Users/Users";
 import AddUser from "./pages/dashboards/Users/AddUser";
 import EditUser from "./pages/dashboards/Users/EditUser";
+import CreateSupplier from "./pages/dashboards/Suppliers/CreateSupplier";
+import EditSupplier from "./pages/dashboards/Suppliers/EditSupplier";
+import ViewSupplier from "./pages/dashboards/Suppliers/ViewSupplier";
+import Suppliers from "./pages/dashboards/Suppliers/Suppliers";
 import UserPermissions from "./pages/dashboards/Users/UserPermissions";
 import ViewUser from "./pages/dashboards/Users/ViewUser";
 import Messaging from "./pages/dashboards/Messaging/Messaging";
@@ -80,7 +91,19 @@ export default function App() {
                       <Route path="/inventory/:id" element={<ViewInventory />} />
                       <Route path="/orders" element={<Orders />} />
                       <Route path="/orders/new" element={<CreateOrder />} />
+                      <Route path="/orders/:id/refund" element={<CreateRefund />} />
                       <Route path="/orders/:id" element={<ViewOrder />} />
+                      <Route path="/sales/pos" element={<POS />} />
+                      <Route path="/sales/payment" element={<PaymentPage />} />
+                      <Route path="/sales" element={<SalesMain />} />
+                      <Route path="/sales/history" element={<ViewSales />} />
+                      <Route path="/sales/:id" element={<ViewSale />} />
+                      <Route path="/sales/:id/refund" element={<SalesRefund />} />
+                      <Route path="/suppliers" element={<Suppliers />} />
+                      <Route path="/suppliers/new" element={<CreateSupplier />} />
+                      <Route path="/suppliers/:id" element={<ViewSupplier />} />
+                      <Route path="/suppliers/:id/edit" element={<EditSupplier />} />
+                      <Route path="/refunds" element={<CreateRefund />} />
                       <Route path="/customers" element={<Customers />} />
                       <Route path="/customers/new" element={<CreateCustomer />} />
                       <Route path="/customers/:id" element={<ViewCustomer />} />

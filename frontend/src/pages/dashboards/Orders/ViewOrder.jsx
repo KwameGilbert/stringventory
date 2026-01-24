@@ -3,9 +3,10 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, Printer, Mail, User, Phone, AtSign, Calendar, Hash, 
   CreditCard, Clock, CheckCircle, XCircle, RotateCcw, Package, 
-  DollarSign, Percent, Receipt
+  DollarSign, Percent, Receipt, Save, RefreshCw
 } from "lucide-react";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const statusConfig = {
   pending: {
@@ -64,6 +65,53 @@ export default function ViewOrder() {
     };
     fetchData();
   }, [id]);
+
+  const handleUpdatePicked = (index, change) => {
+    setItems(prevItems => {
+      const newItems = [...prevItems];
+      const item = newItems[index];
+      const newPicked = Math.max(0, Math.min(item.quantity, (item.pickedQuantity || 0) + change));
+      
+      newItems[index] = { ...item, pickedQuantity: newPicked };
+      return newItems;
+    });
+  };
+
+  const handlePickAll = () => {
+    setItems(prevItems => prevItems.map(item => ({
+      ...item,
+      pickedQuantity: item.quantity
+    })));
+  };
+
+  const handleSave = () => {
+    const pickedItems = items.filter(item => (item.pickedQuantity || 0) > 0);
+    
+    if (pickedItems.length === 0) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Nothing to save',
+        text: 'Please pick at least one item before saving.',
+        confirmButtonColor: '#10b981'
+      });
+      return;
+    }
+
+    console.log("Saving pickup:", items);
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'Pickup Saved',
+      text: `Successfully saved pickup for ${pickedItems.length} items.`,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true
+    });
+  };
+
+  const allItemsPicked = items.length > 0 && items.every(item => item.pickedQuantity === item.quantity);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-GH", {
@@ -144,6 +192,25 @@ export default function ViewOrder() {
             </div>
             
             <div className="flex items-center gap-2">
+              <button 
+                onClick={handleSave}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors font-medium text-sm shadow-sm"
+              >
+                <Save size={16} />
+                Save Pickup
+              </button>
+              <button 
+                onClick={handlePickAll}
+                disabled={allItemsPicked}
+                className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors font-medium text-sm ${
+                  allItemsPicked 
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-600' 
+                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <CheckCircle size={16} />
+                {allItemsPicked ? 'All Picked' : 'Pick All'}
+              </button>
               <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors font-medium text-sm">
                 <Printer size={16} />
                 Print
@@ -151,6 +218,13 @@ export default function ViewOrder() {
               <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors font-medium text-sm">
                 <Mail size={16} />
                 Email
+              </button>
+              <button 
+                onClick={() => navigate(`/dashboard/orders/${id}/refund`)}
+                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
+              >
+                <RefreshCw size={16} />
+                Refund
               </button>
             </div>
           </div>
@@ -171,20 +245,52 @@ export default function ViewOrder() {
               </div>
             </div>
             <div className="divide-y divide-gray-50">
-              {items.map((item, index) => (
-                <div key={index} className="px-6 py-4 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0">
-                    <Package className="w-5 h-5 text-gray-400" />
+              {items.map((item, index) => {
+                const picked = item.pickedQuantity || 0;
+                const isFullyPicked = picked === item.quantity;
+                
+                return (
+                  <div key={index} className={`px-6 py-4 flex items-center gap-4 transition-colors ${isFullyPicked ? 'bg-emerald-50/50' : ''}`}>
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 relative">
+                      <Package className={`w-5 h-5 ${isFullyPicked ? 'text-emerald-500' : 'text-gray-400'}`} />
+                      {isFullyPicked && (
+                        <div className="absolute -top-1 -right-1 bg-emerald-500 rounded-full p-0.5 border-2 border-white">
+                          <CheckCircle size={10} className="text-white" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{item.productName}</p>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <div className="flex items-center gap-3">
+                            <p className="text-sm text-gray-400">Ordered: <span className="font-medium text-gray-700">{item.quantity}</span></p>
+                            <div className="flex items-center gap-1">
+                                <button 
+                                onClick={() => handleUpdatePicked(index, -1)}
+                                disabled={picked <= 0}
+                                className="w-5 h-5 flex items-center justify-center rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-500 bg-white"
+                                >
+                                -
+                                </button>
+                                <button 
+                                onClick={() => handleUpdatePicked(index, 1)}
+                                disabled={picked >= item.quantity}
+                                className="w-5 h-5 flex items-center justify-center rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-500 bg-white"
+                                >
+                                +
+                                </button>
+                            </div>
+                        </div>
+                        <p className="text-sm text-gray-500">Picked: <span className={`font-semibold ${isFullyPicked ? 'text-emerald-600' : 'text-gray-900'}`}>{picked}</span></p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-gray-900">{formatCurrency(item.subtotal)}</p>
+                      {isFullyPicked && <span className="text-xs text-emerald-600 font-medium">Ready</span>}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900">{item.productName}</p>
-                    <p className="text-sm text-gray-400">Qty: {item.quantity} × {formatCurrency(item.unitPrice)}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-gray-900">{formatCurrency(item.subtotal)}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
             {/* Order Summary */}
