@@ -83,13 +83,13 @@ const OrdersTable = ({ orders }) => {
         <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
           <ShoppingBag className="w-8 h-8 text-gray-400" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">No orders found</h3>
-        <p className="text-gray-500 text-sm mb-4">Create your first order to get started</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-1">No sales found</h3>
+        <p className="text-gray-500 text-sm mb-4">Create your first sale to get started</p>
         <Link
           to="/dashboard/orders/new"
           className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
         >
-          New Order
+          New Sale
         </Link>
       </div>
     );
@@ -196,7 +196,7 @@ const OrdersTable = ({ orders }) => {
         <p className="text-sm text-gray-500">
           Showing <span className="font-medium text-gray-700">{startIndex + 1}</span> to{" "}
           <span className="font-medium text-gray-700">{Math.min(startIndex + ITEMS_PER_PAGE, orders.length)}</span> of{" "}
-          <span className="font-medium text-gray-700">{orders.length}</span> orders
+          <span className="font-medium text-gray-700">{orders.length}</span> sales
         </p>
         
         {totalPages > 1 && (

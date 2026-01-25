@@ -112,8 +112,8 @@ export default function CreateRefund() {
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto py-8 text-center">
-         <h2 className="text-xl font-semibold text-gray-900">Order not found</h2>
-         <Link to="/dashboard/orders" className="text-blue-600 hover:underline mt-2 inline-block">Back to Orders</Link>
+         <h2 className="text-xl font-semibold text-gray-900">Sale not found</h2>
+         <Link to="/dashboard/orders" className="text-blue-600 hover:underline mt-2 inline-block">Back to Sales</Link>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function CreateRefund() {
         <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
           <ArrowLeft size={18} />
         </div>
-        <span className="font-medium">Back to Order Details</span>
+        <span className="font-medium">Back to Sale Details</span>
       </button>
 
       <div className="mb-8">
@@ -139,7 +139,7 @@ export default function CreateRefund() {
             Create Refund
         </h1>
         <p className="text-gray-500 text-sm mt-1 ml-14">
-            Select items to refund for Order <span className="font-mono font-medium text-gray-700">{order.id}</span>
+            Select items to refund for Sale <span className="font-mono font-medium text-gray-700">{order.id}</span>
         </p>
       </div>
 

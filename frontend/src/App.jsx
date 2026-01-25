@@ -23,11 +23,7 @@ import ViewOrder from "./pages/dashboards/Orders/ViewOrder";
 import CreateOrder from "./pages/dashboards/Orders/CreateOrder";
 import CreateRefund from "./pages/dashboards/Orders/CreateRefund";
 import SalesMain from "./pages/dashboards/Sales/SalesMain";
-import POS from "./pages/dashboards/Sales/POS";
-import ViewSales from "./pages/dashboards/Sales/ViewSales";
-import ViewSale from "./pages/dashboards/Sales/ViewSale";
-import SalesRefund from "./pages/dashboards/Sales/SalesRefund";
-import PaymentPage from "./pages/dashboards/Sales/PaymentPage";
+// POS, ViewSales, ViewSale, SalesRefund, PaymentPage imports removed
 import Customers from "./pages/dashboards/Customers/Customers";
 import ViewCustomer from "./pages/dashboards/Customers/ViewCustomer";
 import CreateCustomer from "./pages/dashboards/Customers/CreateCustomer";
@@ -93,12 +89,9 @@ export default function App() {
                       <Route path="/orders/new" element={<CreateOrder />} />
                       <Route path="/orders/:id/refund" element={<CreateRefund />} />
                       <Route path="/orders/:id" element={<ViewOrder />} />
-                      <Route path="/sales/pos" element={<POS />} />
-                      <Route path="/sales/payment" element={<PaymentPage />} />
-                      <Route path="/sales" element={<SalesMain />} />
-                      <Route path="/sales/history" element={<ViewSales />} />
-                      <Route path="/sales/:id" element={<ViewSale />} />
-                      <Route path="/sales/:id/refund" element={<SalesRefund />} />
+                     
+                      {/* <Route path="/sales" element={<SalesMain />} /> */}
+                      
                       <Route path="/suppliers" element={<Suppliers />} />
                       <Route path="/suppliers/new" element={<CreateSupplier />} />
                       <Route path="/suppliers/:id" element={<ViewSupplier />} />
