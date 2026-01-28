@@ -1,18 +1,41 @@
 export const PERMISSIONS = {
   // Dashboard
   VIEW_DASHBOARD: "VIEW_DASHBOARD",
+  
+  // Dashboard Widgets (Granular Control)
+  VIEW_DASHBOARD_KPI: "VIEW_DASHBOARD_KPI",
+  VIEW_DASHBOARD_SALES: "VIEW_DASHBOARD_SALES",
+  VIEW_DASHBOARD_PRODUCTS: "VIEW_DASHBOARD_PRODUCTS",
+  VIEW_DASHBOARD_CUSTOMERS: "VIEW_DASHBOARD_CUSTOMERS",
+  VIEW_DASHBOARD_PAYMENTS: "VIEW_DASHBOARD_PAYMENTS",
+  VIEW_DASHBOARD_QUICK_ACTIONS: "VIEW_DASHBOARD_QUICK_ACTIONS",
+
+  // Specific KPI Cards
+  VIEW_KPI_GROSS_REVENUE: "VIEW_KPI_GROSS_REVENUE",
+  VIEW_KPI_DAILY_SALES: "VIEW_KPI_DAILY_SALES",
+  VIEW_KPI_TOTAL_EXPENSES: "VIEW_KPI_TOTAL_EXPENSES",
+  VIEW_KPI_TOTAL_REFUNDS: "VIEW_KPI_TOTAL_REFUNDS",
+  VIEW_KPI_NET_REVENUE: "VIEW_KPI_NET_REVENUE",
+  VIEW_KPI_TOTAL_SALES: "VIEW_KPI_TOTAL_SALES", // Was Orders
+  VIEW_KPI_TOTAL_STOCK: "VIEW_KPI_TOTAL_STOCK",
+  VIEW_KPI_INVENTORY_VALUE: "VIEW_KPI_INVENTORY_VALUE",
+  VIEW_KPI_LOW_STOCK: "VIEW_KPI_LOW_STOCK",
 
   // Products
   VIEW_PRODUCTS: "VIEW_PRODUCTS",
   MANAGE_PRODUCTS: "MANAGE_PRODUCTS", // Create, Edit, Delete
 
-  // Orders
+  // Sales (Previously Orders)
   VIEW_ORDERS: "VIEW_ORDERS",
   MANAGE_ORDERS: "MANAGE_ORDERS",
 
   // Inventory
   VIEW_INVENTORY: "VIEW_INVENTORY",
   MANAGE_INVENTORY: "MANAGE_INVENTORY", // Add stock, adjust
+
+  // Suppliers
+  VIEW_SUPPLIERS: "VIEW_SUPPLIERS",
+  MANAGE_SUPPLIERS: "MANAGE_SUPPLIERS",
 
   // Purchases
   VIEW_PURCHASES: "VIEW_PURCHASES",
@@ -43,9 +66,34 @@ export const PERMISSIONS = {
 // Grouped for UI display
 export const PERMISSION_GROUPS = [
   {
-    category: "Dashboard",
+    category: "Dashboard Access",
     permissions: [
-      { key: PERMISSIONS.VIEW_DASHBOARD, label: "View Dashboard" }
+      { key: PERMISSIONS.VIEW_DASHBOARD, label: "View Dashboard Page" }
+    ]
+  },
+  {
+    category: "Dashboard KPI Cards",
+    permissions: [
+      { key: PERMISSIONS.VIEW_KPI_GROSS_REVENUE, label: "Show Gross Revenue" },
+      { key: PERMISSIONS.VIEW_KPI_DAILY_SALES, label: "Show Daily Sales" },
+      { key: PERMISSIONS.VIEW_KPI_TOTAL_EXPENSES, label: "Show Total Expenses" },
+      { key: PERMISSIONS.VIEW_KPI_TOTAL_REFUNDS, label: "Show Refunds" },
+      { key: PERMISSIONS.VIEW_KPI_NET_REVENUE, label: "Show Net Revenue" },
+      { key: PERMISSIONS.VIEW_KPI_TOTAL_SALES, label: "Show Total Sales" },
+      { key: PERMISSIONS.VIEW_KPI_TOTAL_STOCK, label: "Show Total Stock" },
+      { key: PERMISSIONS.VIEW_KPI_INVENTORY_VALUE, label: "Show Inventory Value" },
+      { key: PERMISSIONS.VIEW_KPI_LOW_STOCK, label: "Show Low Stock Alerts" },
+    ]
+  },
+  {
+    category: "Dashboard Charts & Lists",
+    permissions: [
+      { key: PERMISSIONS.VIEW_DASHBOARD_KPI, label: "View KPI Section" },
+      { key: PERMISSIONS.VIEW_DASHBOARD_SALES, label: "View Sales & Expenses Chart" },
+      { key: PERMISSIONS.VIEW_DASHBOARD_PAYMENTS, label: "View Payment Distribution" },
+      { key: PERMISSIONS.VIEW_DASHBOARD_PRODUCTS, label: "View Top Products" },
+      { key: PERMISSIONS.VIEW_DASHBOARD_CUSTOMERS, label: "View Top Customers" },
+      { key: PERMISSIONS.VIEW_DASHBOARD_QUICK_ACTIONS, label: "View Quick Action Lists" },
     ]
   },
   {
@@ -56,10 +104,10 @@ export const PERMISSION_GROUPS = [
     ]
   },
   {
-    category: "Orders",
+    category: "Sales",
     permissions: [
-      { key: PERMISSIONS.VIEW_ORDERS, label: "View Orders" },
-      { key: PERMISSIONS.MANAGE_ORDERS, label: "Manage Orders" }
+      { key: PERMISSIONS.VIEW_ORDERS, label: "View Sales" },
+      { key: PERMISSIONS.MANAGE_ORDERS, label: "Manage Sales" }
     ]
   },
   {
@@ -67,6 +115,13 @@ export const PERMISSION_GROUPS = [
     permissions: [
       { key: PERMISSIONS.VIEW_INVENTORY, label: "View Inventory" },
       { key: PERMISSIONS.MANAGE_INVENTORY, label: "Manage Inventory" }
+    ]
+  },
+  {
+    category: "Suppliers",
+    permissions: [
+      { key: PERMISSIONS.VIEW_SUPPLIERS, label: "View Suppliers" },
+      { key: PERMISSIONS.MANAGE_SUPPLIERS, label: "Manage Suppliers" }
     ]
   },
   {

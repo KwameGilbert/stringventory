@@ -105,7 +105,7 @@ export default function Customers() {
               <ShoppingBag className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Orders</p>
+              <p className="text-sm text-gray-500">Total Sales</p>
               <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
             </div>
           </div>

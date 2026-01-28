@@ -19,10 +19,12 @@ const OrdersHeader = ({
   return (
     <div className="space-y-4">
       {/* Title Row */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Sales</h1>
-          <p className="text-gray-500 text-sm">{totalOrders} sales</p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Sales Management</h1>
+          <div className="flex items-center gap-2 mt-1">
+            <p className="text-gray-500 text-sm">{totalOrders} sales</p>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

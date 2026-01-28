@@ -93,46 +93,9 @@ export default function Reports() {
     );
   }
 
-  // Calculate totals
-  const inventoryTotal = data?.inventoryValuation?.reduce((sum, item) => sum + item.totalValue, 0) || 0;
-  const expiryLoss = data?.expiryWastage?.reduce((sum, item) => sum + item.estimatedLoss, 0) || 0;
-  const totalProfit = data?.profitPerProduct?.reduce((sum, item) => sum + item.profit, 0) || 0;
-  const yearlyRevenue = data?.monthlyRevenueExpenses?.reduce((sum, item) => sum + item.revenue, 0) || 0;
-  const yearlyExpenses = data?.monthlyRevenueExpenses?.reduce((sum, item) => sum + item.expenses, 0) || 0;
-  const totalCustomerSpend = data?.customerPerformance?.reduce((sum, item) => sum + item.totalSpent, 0) || 0;
 
-  // Prepare chart data
-  const inventoryChartData = data?.inventoryValuation?.map(item => ({
-    name: item.productName.split(" ")[0],
-    value: item.totalValue,
-    quantity: item.quantity,
-  }));
 
-  const expiryPieData = [
-    { name: "Critical", value: data?.expiryWastage?.filter(i => i.status === "critical").length || 0, color: "#EF4444" },
-    { name: "Warning", value: data?.expiryWastage?.filter(i => i.status === "warning").length || 0, color: "#F59E0B" },
-    { name: "Safe", value: data?.expiryWastage?.filter(i => i.status === "safe").length || 0, color: "#10B981" },
-  ];
 
-  const profitChartData = data?.profitPerProduct?.map(item => ({
-    name: item.productName.split(" ")[0],
-    profit: item.profit,
-    revenue: item.revenue,
-    cost: item.cost,
-  }));
-
-  const revenueChartData = data?.monthlyRevenueExpenses?.map(item => ({
-    name: item.month.split(" ")[0],
-    revenue: item.revenue,
-    expenses: item.expenses,
-    profit: item.profit,
-  }));
-
-  const customerChartData = data?.customerPerformance?.slice(0, 6).map(item => ({
-    name: item.customerName.split(" ")[0],
-    spent: item.totalSpent,
-    orders: item.totalOrders,
-  }));
 
   return (
     <div className="pb-8 animate-fade-in space-y-6">
@@ -207,7 +170,7 @@ export default function Reports() {
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
              {/* Sales Summary Cards */}
              <SummaryCard title="Total Revenue" value={formatCurrency(data?.salesReport?.summary?.totalRevenue || 0)} icon={DollarSign} color="emerald" />
-             <SummaryCard title="Total Orders" value={data?.salesReport?.summary?.totalOrders || 0} icon={Package} color="blue" />
+             <SummaryCard title="Total Sales" value={data?.salesReport?.summary?.totalOrders || 0} icon={Package} color="blue" />
              <SummaryCard title="Avg. Order Value" value={formatCurrency(data?.salesReport?.summary?.averageOrderValue || 0)} icon={TrendingUp} color="purple" />
              <SummaryCard title="Growth" value={`${data?.salesReport?.summary?.growth || 0}%`} icon={BarChart3} color="amber" />
           </div>
@@ -486,7 +449,8 @@ export default function Reports() {
 }
 
 // Helper Component for Summary Cards
-function SummaryCard({ title, value, icon: Icon, color }) {
+function SummaryCard({ title, value, icon, color }) {
+  const Icon = icon;
   const colorClasses = {
     blue: "bg-blue-50 text-blue-600",
     emerald: "bg-emerald-50 text-emerald-600",

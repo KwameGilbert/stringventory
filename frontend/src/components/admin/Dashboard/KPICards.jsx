@@ -21,38 +21,28 @@ const KPICards = ({ dateRange }) => {
     const fetchKPIs = async () => {
       try {
         const response = await axios.get("/data/dashboard-stats.json");
-        // Get the key KPIs
-        let keyKPIs = response.data.filter((stat) =>
-          ["Daily Sales", "Gross Revenue", "Total Expenses", "Net Revenue", "Total Orders", "Low Stock Alert"].includes(stat.title)
-        );
+        // Map KPI Titles to Permission Keys
+        const kpiPermissionMap = {
+          "Gross Revenue": PERMISSIONS.VIEW_KPI_GROSS_REVENUE,
+          "Daily Sales": PERMISSIONS.VIEW_KPI_DAILY_SALES,
+          "Total Expenses": PERMISSIONS.VIEW_KPI_TOTAL_EXPENSES,
+          "Total Refunds": PERMISSIONS.VIEW_KPI_TOTAL_REFUNDS,
+          "Net Revenue": PERMISSIONS.VIEW_KPI_NET_REVENUE,
+          "Total Orders": PERMISSIONS.VIEW_KPI_TOTAL_SALES, // Check against current data API (Orders) but map to Sales permission
+          "Total Sales": PERMISSIONS.VIEW_KPI_TOTAL_SALES, // Handle potential rename
+          "Total Stock (Units)": PERMISSIONS.VIEW_KPI_TOTAL_STOCK,
+          "Inventory Value": PERMISSIONS.VIEW_KPI_INVENTORY_VALUE,
+          "Low Stock Alert": PERMISSIONS.VIEW_KPI_LOW_STOCK
+        };
 
-        // Filter based on permissions/role
-        if (user?.role === 'Sales') {
-             // Sales specfic view: Daily Sales, Orders. Hide global revenue/expenses/stock
-             keyKPIs = keyKPIs.filter(stat => 
-                ["Daily Sales", "Total Orders"].includes(stat.title)
-             );
-        } else {
-             // For Admin/Others, maybe hide Daily Sales if it's redundant, or show all? 
-             // Let's hide Daily Sales for others if Gross Revenue covers it, or show all if valid.
-             // User request was specific about Sales seeing Daily Sales. 
-             // Let's show everything for Admin except Daily Sales might be less relevant if Gross Revenue is there? 
-             // Actually, Admin might want to see Daily Sales too. Let's keep it but respect granular permissions.
-             
-             if (!hasPermission(PERMISSIONS.VIEW_EXPENSES)) {
-                 keyKPIs = keyKPIs.filter(stat => stat.title !== "Total Expenses");
-             }
-             if (!hasPermission(PERMISSIONS.VIEW_INVENTORY)) {
-                 keyKPIs = keyKPIs.filter(stat => stat.title !== "Low Stock Alert");
-             }
-             // Remove Daily Sales from non-Sales view to keep it clean? Or keep it?
-             // "when admin adding permission for a sales ... he can see it daily sales".
-             // Implies mainly for Sales. Let's keep it for Sales mainly.
-             if (user?.role !== 'Sales') {
-                  // For Admin, standard view
-                  keyKPIs = keyKPIs.filter(stat => stat.title !== "Daily Sales");
-             }
-        }
+        const keyKPIs = response.data.filter((stat) => {
+            const permissionKey = kpiPermissionMap[stat.title];
+            // If we have a permission key mapped, check if user has it.
+            // If no map found (unexpected new KPI), default to hidden or check generic?
+            // Let's hide unmapped ones to be safe, or show if Admin? 
+            // Better to only show what is explicitly allowed via the map.
+            return permissionKey && hasPermission(permissionKey);
+        });
 
         setKpis(keyKPIs);
       } catch (error) {

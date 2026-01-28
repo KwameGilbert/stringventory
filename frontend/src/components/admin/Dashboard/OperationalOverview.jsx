@@ -74,7 +74,7 @@ const OperationalOverview = ({ dateRange }) => {
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-500 mb-1">Total Orders</p>
+          <p className="text-sm text-gray-500 mb-1">Total Sales</p>
           <p className="text-xl font-bold text-gray-900">{formatNumber(data?.totalOrders?.value || 0)}</p>
         </div>
 

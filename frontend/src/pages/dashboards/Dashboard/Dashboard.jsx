@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "../../../contexts/AuthContext";
+import { PERMISSIONS } from "../../../constants/permissions";
 import DashboardHeader from "../../../components/admin/Dashboard/DashboardHeader";
 import KPICards from "../../../components/admin/Dashboard/KPICards";
 import SalesExpensesChart from "../../../components/admin/Dashboard/SalesExpensesChart";
@@ -8,6 +10,7 @@ import PaymentDistribution from "../../../components/admin/Dashboard/PaymentDist
 import QuickLists from "../../../components/admin/Dashboard/QuickLists";
 
 export default function Dashboard() {
+  const { hasPermission } = useAuth();
   const [dateRange, setDateRange] = useState("30days");
 
   return (
@@ -16,35 +19,52 @@ export default function Dashboard() {
       <DashboardHeader dateRange={dateRange} setDateRange={setDateRange} />
 
       {/* KPI Cards Section */}
-      <KPICards dateRange={dateRange} />
+      {hasPermission(PERMISSIONS.VIEW_DASHBOARD_KPI) && (
+        <KPICards dateRange={dateRange} />
+      )}
 
       {/* Charts Section */}
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-          Performance Insights
-        </h2>
+        {(hasPermission(PERMISSIONS.VIEW_DASHBOARD_SALES) || 
+          hasPermission(PERMISSIONS.VIEW_DASHBOARD_PAYMENTS) ||
+          hasPermission(PERMISSIONS.VIEW_DASHBOARD_PRODUCTS) ||
+          hasPermission(PERMISSIONS.VIEW_DASHBOARD_CUSTOMERS)) && (
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+            Performance Insights
+          </h2>
+        )}
         
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Sales & Expenses Trend - 2 columns */}
-          <div className="xl:col-span-2">
-            <SalesExpensesChart dateRange={dateRange} />
-          </div>
+          {hasPermission(PERMISSIONS.VIEW_DASHBOARD_SALES) && (
+            <div className="xl:col-span-2">
+              <SalesExpensesChart dateRange={dateRange} />
+            </div>
+          )}
           
           {/* Payment Distribution - 1 column */}
-          <div>
-            <PaymentDistribution dateRange={dateRange} />
-          </div>
+          {hasPermission(PERMISSIONS.VIEW_DASHBOARD_PAYMENTS) && (
+            <div>
+              <PaymentDistribution dateRange={dateRange} />
+            </div>
+          )}
         </div>
 
         {/* Top Products & Top Customers - 2 columns */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <TopProductsChart dateRange={dateRange} />
-          <TopCustomers dateRange={dateRange} />
+          {hasPermission(PERMISSIONS.VIEW_DASHBOARD_PRODUCTS) && (
+            <TopProductsChart dateRange={dateRange} />
+          )}
+          {hasPermission(PERMISSIONS.VIEW_DASHBOARD_CUSTOMERS) && (
+            <TopCustomers dateRange={dateRange} />
+          )}
         </div>
       </div>
 
       {/* Quick Access Lists */}
-      <QuickLists />
+      {hasPermission(PERMISSIONS.VIEW_DASHBOARD_QUICK_ACTIONS) && (
+        <QuickLists />
+      )}
     </div>
   );
 }

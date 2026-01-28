@@ -75,7 +75,7 @@ export default function Orders() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Orders */}
+        {/* Total Sales */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-lg bg-blue-50">
@@ -128,7 +128,7 @@ export default function Orders() {
         </div>
       </div>
 
-      {/* Orders Table */}
+      {/* Sales Table */}
       <OrdersTable orders={filteredOrders} />
     </div>
   );
