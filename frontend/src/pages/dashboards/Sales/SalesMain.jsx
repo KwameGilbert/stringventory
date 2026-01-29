@@ -31,7 +31,7 @@ export default function SalesMain() {
 
         setStats([
             { title: "Total Revenue", value: formatCurrency(totalRevenue), icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
-            { title: "Total Orders", value: totalOrders.toString(), icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
+            { title: "Total Sales", value: totalOrders.toString(), icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
             { title: "Avg. Ticket Size", value: formatCurrency(avgTicket), icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-50" },
         ]);
 

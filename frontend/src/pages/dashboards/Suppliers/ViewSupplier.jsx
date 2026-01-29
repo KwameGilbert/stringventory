@@ -141,7 +141,7 @@ export default function ViewSupplier() {
                         <p className="text-2xl font-bold text-gray-900">{supplier.productsCount}</p>
                      </div>
                      <div className="p-4 bg-gray-50 rounded-xl">
-                        <p className="text-xs text-gray-500 uppercase">Total Orders</p>
+                        <p className="text-xs text-gray-500 uppercase">Total Sales</p>
                         <p className="text-2xl font-bold text-gray-900">0</p>
                      </div>
                  </div>

@@ -136,7 +136,7 @@ export default function ViewCustomer() {
                   <ShoppingBag className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-500">Total Orders</p>
+                  <p className="text-sm text-gray-500">Total Sales</p>
                   <p className="text-2xl font-bold text-gray-900">{customer.totalOrders}</p>
                 </div>
               </div>
@@ -155,7 +155,7 @@ export default function ViewCustomer() {
             </div>
           </div>
 
-          {/* Recent Orders */}
+          {/* Recent Sales */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
               <h3 className="font-semibold text-gray-900">Order History</h3>
