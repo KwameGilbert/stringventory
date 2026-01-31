@@ -1,0 +1,64 @@
+{
+  "kpi": {
+    "revenue": { "current": 125430, "previous": 112000, "change": 12.1 },
+    "users": { "current": 3450, "previous": 3100, "change": 11.3 },
+    "activeBusinesses": { "current": 450, "previous": 420, "change": 7.1 },
+    "churnRate": { "current": 2.1, "previous": 2.4, "change": -0.3 },
+    "arpu": { "current": 278, "previous": 266, "change": 4.5 },
+    "ltv": { "current": 4500, "previous": 4200, "change": 7.1 }
+  },
+  "revenueTrends": [
+    { "date": "Jan", "revenue": 85000, "mrr": 82000, "arr": 984000 },
+    { "date": "Feb", "revenue": 89000, "mrr": 86000, "arr": 1032000 },
+    { "date": "Mar", "revenue": 95000, "mrr": 91000, "arr": 1092000 },
+    { "date": "Apr", "revenue": 102000, "mrr": 98000, "arr": 1176000 },
+    { "date": "May", "revenue": 108000, "mrr": 104000, "arr": 1248000 },
+    { "date": "Jun", "revenue": 115000, "mrr": 110000, "arr": 1320000 },
+    { "date": "Jul", "revenue": 125430, "mrr": 118000, "arr": 1416000 }
+  ],
+  "userGrowth": [
+    { "date": "Jan", "active": 2500, "new": 120, "churned": 40 },
+    { "date": "Feb", "active": 2580, "new": 130, "churned": 50 },
+    { "date": "Mar", "active": 2700, "new": 160, "churned": 40 },
+    { "date": "Apr", "active": 2850, "new": 190, "churned": 40 },
+    { "date": "May", "active": 3100, "new": 280, "churned": 30 },
+    { "date": "Jun", "active": 3300, "new": 250, "churned": 50 },
+    { "date": "Jul", "active": 3450, "new": 210, "churned": 60 }
+  ],
+  "revenueByPlan": [
+    { "plan": "Enterprise", "revenue": 65000, "percentage": 52, "count": 130, "color": "bg-amber-500", "fill": "#f59e0b" },
+    { "plan": "Professional", "revenue": 45000, "percentage": 36, "count": 300, "color": "bg-purple-500", "fill": "#8b5cf6" },
+    { "plan": "Starter", "revenue": 12430, "percentage": 10, "count": 250, "color": "bg-emerald-500", "fill": "#10b981" },
+    { "plan": "Free Trial", "revenue": 0, "percentage": 2, "count": 50, "color": "bg-gray-500", "fill": "#6b7280" }
+  ],
+  "topBusinesses": [
+    { "name": "Acme Corp", "plan": "Enterprise", "users": 120, "mrr": 5000, "growth": 15 },
+    { "name": "Globex Inc", "plan": "Enterprise", "users": 85, "mrr": 4200, "growth": 8 },
+    { "name": "Soylent Corp", "plan": "Professional", "users": 45, "mrr": 2800, "growth": 22 },
+    { "name": "Umbrella Corp", "plan": "Professional", "users": 32, "mrr": 1500, "growth": 5 },
+    { "name": "Stark Ind", "plan": "Enterprise", "users": 200, "mrr": 8500, "growth": 12 }
+  ],
+  "geographicDistribution": [
+    { "country": "United States", "users": 1500, "percentage": 45 },
+    { "country": "United Kingdom", "users": 650, "percentage": 19 },
+    { "country": "Canada", "users": 400, "percentage": 12 },
+    { "country": "Germany", "users": 350, "percentage": 10 },
+    { "country": "Australia", "users": 200, "percentage": 6 },
+    { "country": "Others", "users": 350, "percentage": 8 }
+  ],
+  "systemHealth": {
+    "uptime": "99.99%",
+    "apiLatency": "45ms",
+    "errorRate": "0.02%",
+    "databaseLoad": "34%",
+    "history": [
+        { "time": "00:00", "latency": 42, "load": 30 },
+        { "time": "04:00", "latency": 38, "load": 25 },
+        { "time": "08:00", "latency": 55, "load": 45 },
+        { "time": "12:00", "latency": 62, "load": 55 },
+        { "time": "16:00", "latency": 58, "load": 48 },
+        { "time": "20:00", "latency": 48, "load": 35 },
+        { "time": "24:00", "latency": 45, "load": 32 }
+    ]
+  }
+}

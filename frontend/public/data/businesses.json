@@ -1,0 +1,312 @@
+[
+  {
+    "id": "bus-001",
+    "name": "Acme Innovations Inc.",
+    "email": "contact@acme.com",
+    "owner_name": "John Smith",
+    "subscription_plan": "professional",
+    "status": "active",
+    "current_usage": {
+      "total_users": 8,
+      "total_products": 1247,
+      "storage_used": 3.2,
+      "api_calls": 8945
+    },
+    "usage_limits": {
+      "maxUsers": 15,
+      "maxProducts": 5000,
+      "maxStorage": 50,
+      "maxApiCalls": 50000
+    },
+    "mrr": 149,
+    "total_revenue": 1788,
+    "created_at": "2023-10-26T09:15:00Z",
+    "trial_ends_at": null,
+    "last_payment": "2023-10-28T14:22:00Z",
+    "next_billing_date": "2023-11-28T00:00:00Z",
+    "logo_url": null,
+    "industry": "Technology",
+    "country": "United States",
+    "phone": "+1-555-0123",
+    "notes": "High-value customer, excellent engagement"
+  },
+  {
+    "id": "bus-002",
+    "name": "TechStart Solutions",
+    "email": "hello@techstart.com",
+    "owner_name": "Sarah Johnson",
+    "subscription_plan": "starter",
+    "status": "active",
+    "current_usage": {
+      "total_users": 3,
+      "total_products": 185,
+      "storage_used": 0.8,
+      "api_calls": 1245
+    },
+    "usage_limits": {
+      "maxUsers": 5,
+      "maxProducts": 500,
+      "maxStorage": 10,
+      "maxApiCalls": 10000
+    },
+    "mrr": 49,
+    "total_revenue": 294,
+    "created_at": "2023-10-25T11:30:00Z",
+    "trial_ends_at": null,
+    "last_payment": "2023-10-27T10:15:00Z",
+    "next_billing_date": "2023-11-27T00:00:00Z",
+    "logo_url": null,
+    "industry": "Retail",
+    "country": "Canada",
+    "phone": "+1-416-555-0156",
+    "notes": "Recently converted from trial"
+  },
+  {
+    "id": "bus-003",
+    "name": "Global Retail Co.",
+    "email": "admin@globalretail.com",
+    "owner_name": "Michael Chen",
+    "subscription_plan": "enterprise",
+    "status": "active",
+    "current_usage": {
+      "total_users": 25,
+      "total_products": 5420,
+      "storage_used": 12.4,
+      "api_calls": 45678
+    },
+    "usage_limits": {
+      "maxUsers": -1,
+      "maxProducts": -1,
+      "maxStorage": -1,
+      "maxApiCalls": -1
+    },
+    "mrr": 499,
+    "total_revenue": 9980,
+    "created_at": "2023-10-24T08:45:00Z",
+    "trial_ends_at": null,
+    "last_payment": "2023-10-26T09:30:00Z",
+    "next_billing_date": "2023-11-26T00:00:00Z",
+    "logo_url": null,
+    "industry": "Retail",
+    "country": "United Kingdom",
+    "phone": "+44-20-7946-0958",
+    "notes": "Enterprise client - dedicated support"
+  },
+  {
+    "id": "bus-004",
+    "name": "SmallBiz Store",
+    "email": "owner@smallbiz.com",
+    "owner_name": "Emily Rodriguez",
+    "subscription_plan": "starter",
+    "status": "trial",
+    "current_usage": {
+      "total_users": 1,
+      "total_products": 45,
+      "storage_used": 0.2,
+      "api_calls": 234
+    },
+    "usage_limits": {
+      "maxUsers": 5,
+      "maxProducts": 500,
+      "maxStorage": 10,
+      "maxApiCalls": 10000
+    },
+    "mrr": 0,
+    "total_revenue": 0,
+    "created_at": "2023-10-23T14:20:00Z",
+    "trial_ends_at": "2023-11-06T23:59:59Z",
+    "last_payment": null,
+    "next_billing_date": null,
+    "logo_url": null,
+    "industry": "E-commerce",
+    "country": "United States",
+    "phone": "+1-555-0189",
+    "notes": "Trial - high engagement, likely to convert"
+  },
+  {
+    "id": "bus-005",
+    "name": "Suspended Business Ltd.",
+    "email": "test@suspended.com",
+    "owner_name": "David Wilson",
+    "subscription_plan": "professional",
+    "status": "suspended",
+    "current_usage": {
+      "total_users": 5,
+      "total_products": 320,
+      "storage_used": 1.8,
+      "api_calls": 0
+    },
+    "usage_limits": {
+      "maxUsers": 15,
+      "maxProducts": 5000,
+      "maxStorage": 50,
+      "maxApiCalls": 50000
+    },
+    "mrr": 0,
+    "total_revenue": 745,
+    "created_at": "2023-09-15T10:00:00Z",
+    "trial_ends_at": null,
+    "last_payment": "2023-10-10T11:22:00Z",
+    "next_billing_date": null,
+    "logo_url": null,
+    "industry": "Services",
+    "country": "Australia",
+    "phone": "+61-2-9876-5432",
+    "notes": "Payment failed - suspended until resolved"
+  },
+  {
+    "id": "bus-006",
+    "name": "Enterprise Corp",
+    "email": "it@enterprise.com",
+    "owner_name": "Jennifer Lee",
+    "subscription_plan": "professional",
+    "status": "active",
+    "current_usage": {
+      "total_users": 12,
+      "total_products": 892,
+      "storage_used": 4.5,
+      "api_calls": 12456
+    },
+    "usage_limits": {
+      "maxUsers": 15,
+      "maxProducts": 5000,
+      "maxStorage": 50,
+      "maxApiCalls": 50000
+    },
+    "mrr": 149,
+    "total_revenue": 1192,
+    "created_at": "2023-10-22T16:45:00Z",
+    "trial_ends_at": null,
+    "last_payment": "2023-10-25T08:15:00Z",
+    "next_billing_date": "2023-11-25T00:00:00Z",
+    "logo_url": null,
+    "industry": "Manufacturing",
+    "country": "Germany",
+    "phone": "+49-30-1234-5678",
+    "notes": "Considering upgrade to Enterprise"
+  },
+  {
+    "id": "bus-007",
+    "name": "Digital Ventures LLC",
+    "email": "hello@digitalventures.io",
+    "owner_name": "Robert Martinez",
+    "subscription_plan": "enterprise",
+    "status": "active",
+    "current_usage": {
+      "total_users": 18,
+      "total_products": 3245,
+      "storage_used": 8.9,
+      "api_calls": 34521
+    },
+    "usage_limits": {
+      "maxUsers": -1,
+      "maxProducts": -1,
+      "maxStorage": -1,
+      "maxApiCalls": -1
+    },
+    "mrr": 499,
+    "total_revenue": 3493,
+    "created_at": "2023-10-20T13:30:00Z",
+    "trial_ends_at": null,
+    "last_payment": "2023-10-24T15:45:00Z",
+    "next_billing_date": "2023-11-24T00:00:00Z",
+    "logo_url": null,
+    "industry": "Technology",
+    "country": "United States",
+    "phone": "+1-555-0234",
+    "notes": "Very satisfied customer"
+  },
+  {
+    "id": "bus-008",
+    "name": "FreshMart Groceries",
+    "email": "contact@freshmart.com",
+    "owner_name": "Lisa Anderson",
+    "subscription_plan": "starter",
+    "status": "active",
+    "current_usage": {
+      "total_users": 4,
+      "total_products": 267,
+      "storage_used": 1.1,
+      "api_calls": 2341
+    },
+    "usage_limits": {
+      "maxUsers": 5,
+      "maxProducts": 500,
+      "maxStorage": 10,
+      "maxApiCalls": 10000
+    },
+    "mrr": 49,
+    "total_revenue": 441,
+    "created_at": "2023-10-18T09:20:00Z",
+    "trial_ends_at": null,
+    "last_payment": "2023-10-23T12:00:00Z",
+    "next_billing_date": "2023-11-23T00:00:00Z",
+    "logo_url": null,
+    "industry": "Food & Beverage",
+    "country": "Canada",
+    "phone": "+1-604-555-0198",
+    "notes": "Local grocery chain"
+  },
+  {
+    "id": "bus-009",
+    "name": "Fashion Forward Boutique",
+    "email": "info@fashionforward.com",
+    "owner_name": "Amanda Thompson",
+    "subscription_plan": "professional",
+    "status": "active",
+    "current_usage": {
+      "total_users": 6,
+      "total_products": 534,
+      "storage_used": 2.4,
+      "api_calls": 5678
+    },
+    "usage_limits": {
+      "maxUsers": 15,
+      "maxProducts": 5000,
+      "maxStorage": 50,
+      "maxApiCalls": 50000
+    },
+    "mrr": 149,
+    "total_revenue": 596,
+    "created_at": "2023-10-15T11:15:00Z",
+    "trial_ends_at": null,
+    "last_payment": "2023-10-22T09:30:00Z",
+    "next_billing_date": "2023-11-22T00:00:00Z",
+    "logo_url": null,
+    "industry": "Fashion",
+    "country": "France",
+    "phone": "+33-1-4567-8901",
+    "notes": "Seasonal business - high activity Q4"
+  },
+  {
+    "id": "bus-010",
+    "name": "BuildPro Construction",
+    "email": "admin@buildpro.com",
+    "owner_name": "James Harper",
+    "subscription_plan": "starter",
+    "status": "trial",
+    "current_usage": {
+      "total_users": 2,
+      "total_products": 78,
+      "storage_used": 0.4,
+      "api_calls": 456
+    },
+    "usage_limits": {
+      "maxUsers": 5,
+      "maxProducts": 500,
+      "maxStorage": 10,
+      "maxApiCalls": 10000
+    },
+    "mrr": 0,
+    "total_revenue": 0,
+    "created_at": "2023-10-28T10:45:00Z",
+    "trial_ends_at": "2023-11-11T23:59:59Z",
+    "last_payment": null,
+    "next_billing_date": null,
+    "logo_url": null,
+    "industry": "Construction",
+    "country": "United Kingdom",
+    "phone": "+44-20-1234-5678",
+    "notes": "Trial - contacted for onboarding support"
+  }
+]

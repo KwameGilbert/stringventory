@@ -53,76 +53,123 @@ import Footer from "./components/admin/layout/Footer";
 import DashboardLayout from "./components/admin/layout/DashboardLayout";
 import Login from "./pages/login/Login";
 
+// Superadmin imports
+import SuperadminRoute from "./components/auth/SuperadminRoute";
+import SuperadminLayout from "./components/superadmin/layout/SuperadminLayout";
+import SuperadminDashboard from "./pages/superadmin/Dashboard/SuperadminDashboard";
+import Businesses from "./pages/superadmin/Businesses/Businesses";
+import BusinessDetails from "./pages/superadmin/Businesses/BusinessDetails";
+import EditBusiness from "./pages/superadmin/Businesses/EditBusiness";
+import AddBusiness from "./pages/superadmin/Businesses/AddBusiness";
+import PricingPlans from "./pages/superadmin/PricingPlans/PricingPlans";
+import CreatePricingPlan from "./pages/superadmin/PricingPlans/CreatePricingPlan";
+import ViewPricingPlan from "./pages/superadmin/PricingPlans/ViewPricingPlan";
+import Analytics from "./pages/superadmin/Analytics/Analytics";
+import SuperadminSettings from "./pages/superadmin/Settings/Settings";
+import SuperadminMessaging from "./pages/superadmin/Messaging/Messaging";
+import { TenantProvider } from "./contexts/TenantProvider";
+import { SubscriptionProvider } from "./contexts/SubscriptionProvider";
+
+
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-        <Routes>
-          {/* Login Route - No Layout */}
-          <Route path="/" element={<Login />} />
+        <TenantProvider>
+          <SubscriptionProvider>
+            <Router>
+              <Routes>
+                {/* Login Route - No Layout */}
+                <Route path="/" element={<Login />} />
 
-          {/* Dashboard Routes - With Sidebar and Header */}
-          <Route
-            path="/dashboard/*"
-            element={
-              <ProtectedRoute>
-                  <DashboardLayout>
-                    <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/categories" element={<Categories />} />
-                      <Route path="/categories/new" element={<CreateCategory />} />
-                      <Route path="/categories/:id" element={<ViewCategory />} />
-                      <Route path="/categories/:id/edit" element={<EditCategory />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/products/new" element={<CreateProduct />} />
-                      <Route path="/products/:id" element={<ViewProduct />} />
-                      <Route path="/products/:id/edit" element={<EditProduct />} />
-                      <Route path="/purchases" element={<Purchases />} />
-                      <Route path="/purchases/new" element={<CreatePurchase />} />
-                      <Route path="/purchases/:id" element={<ViewPurchase />} />
-                      <Route path="/purchases/:id/edit" element={<EditPurchase />} />
-                      <Route path="/inventory" element={<Inventory />} />
-                      <Route path="/inventory/new" element={<AddInventory />} />
-                      <Route path="/inventory/:id" element={<ViewInventory />} />
-                      <Route path="/orders" element={<Orders />} />
-                      <Route path="/orders/new" element={<CreateOrder />} />
-                      <Route path="/orders/:id/refund" element={<CreateRefund />} />
-                      <Route path="/orders/:id" element={<ViewOrder />} />
-                     
-                      {/* <Route path="/sales" element={<SalesMain />} /> */}
-                      
-                      <Route path="/suppliers" element={<Suppliers />} />
-                      <Route path="/suppliers/new" element={<CreateSupplier />} />
-                      <Route path="/suppliers/:id" element={<ViewSupplier />} />
-                      <Route path="/suppliers/:id/edit" element={<EditSupplier />} />
-                      <Route path="/refunds" element={<CreateRefund />} />
-                      <Route path="/customers" element={<Customers />} />
-                      <Route path="/customers/new" element={<CreateCustomer />} />
-                      <Route path="/customers/:id" element={<ViewCustomer />} />
-                      <Route path="/customers/:id/edit" element={<EditCustomer />} />
-                      <Route path="/expenses" element={<Expenses />} />
-                      <Route path="/expenses/new" element={<AddExpense />} />
-                      <Route path="/expenses/:id" element={<ViewExpense />} />
-                      <Route path="/expenses/:id/edit" element={<EditExpense />} />
-                      <Route path="/expenses/categories" element={<ExpenseCategories />} />
-                      <Route path="/reports" element={<Reports />} />
-                      <Route path="/users" element={<Users />} />
-                      <Route path="/users/new" element={<AddUser />} />
-                      <Route path="/users/:id" element={<ViewUser />} />
-                      <Route path="/users/:id/edit" element={<EditUser />} />
-                      <Route path="/users/:id/permissions" element={<UserPermissions />} />
-                      <Route path="/messaging" element={<Messaging />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/notifications" element={<Notifications />} />
-                      <Route path="/profile" element={<Profile />} />
-                    </Routes>
-                  </DashboardLayout>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </Router>
+                {/* Superadmin Routes */}
+                <Route
+                  path="/superadmin/*"
+                  element={
+                    <SuperadminRoute>
+                      <SuperadminLayout>
+                        <Routes>
+                          <Route path="/" element={<SuperadminDashboard />} />
+                          <Route path="/businesses" element={<Businesses />} />
+                          <Route path="/businesses/new" element={<AddBusiness />} />
+                          <Route path="/businesses/:id" element={<BusinessDetails />} />
+                          <Route path="/businesses/edit/:id" element={<EditBusiness />} />
+                          <Route path="/pricing-plans" element={<PricingPlans />} />
+                          <Route path="/pricing-plans/new" element={<CreatePricingPlan />} />
+                          <Route path="/pricing-plans/:id" element={<ViewPricingPlan />} />
+                          <Route path="/pricing-plans/:id/edit" element={<CreatePricingPlan />} />
+                          <Route path="/analytics" element={<Analytics />} />
+                          <Route path="/settings" element={<SuperadminSettings />} />
+                          <Route path="/messaging" element={<SuperadminMessaging />} />
+                        </Routes>
+                      </SuperadminLayout>
+                    </SuperadminRoute>
+                  }
+                />
+
+                {/* Dashboard Routes - With Sidebar and Header */}
+                <Route
+                  path="/dashboard/*"
+                  element={
+                    // <ProtectedRoute>
+                      <DashboardLayout>
+                        <Routes>
+                          <Route path="/" element={<Dashboard />} />
+                          <Route path="/categories" element={<Categories />} />
+                          <Route path="/categories/new" element={<CreateCategory />} />
+                          <Route path="/categories/:id" element={<ViewCategory />} />
+                          <Route path="/categories/:id/edit" element={<EditCategory />} />
+                          <Route path="/products" element={<Products />} />
+                          <Route path="/products/new" element={<CreateProduct />} />
+                          <Route path="/products/:id" element={<ViewProduct />} />
+                          <Route path="/products/:id/edit" element={<EditProduct />} />
+                          <Route path="/purchases" element={<Purchases />} />
+                          <Route path="/purchases/new" element={<CreatePurchase />} />
+                          <Route path="/purchases/:id" element={<ViewPurchase />} />
+                          <Route path="/purchases/:id/edit" element={<EditPurchase />} />
+                          <Route path="/inventory" element={<Inventory />} />
+                          <Route path="/inventory/new" element={<AddInventory />} />
+                          <Route path="/inventory/:id" element={<ViewInventory />} />
+                          <Route path="/orders" element={<Orders />} />
+                          <Route path="/orders/new" element={<CreateOrder />} />
+                          <Route path="/orders/:id/refund" element={<CreateRefund />} />
+                          <Route path="/orders/:id" element={<ViewOrder />} />
+                         
+                          {/* <Route path="/sales" element={<SalesMain />} /> */}
+                          
+                          <Route path="/suppliers" element={<Suppliers />} />
+                          <Route path="/suppliers/new" element={<CreateSupplier />} />
+                          <Route path="/suppliers/:id" element={<ViewSupplier />} />
+                          <Route path="/suppliers/:id/edit" element={<EditSupplier />} />
+                          <Route path="/refunds" element={<CreateRefund />} />
+                          <Route path="/customers" element={<Customers />} />
+                          <Route path="/customers/new" element={<CreateCustomer />} />
+                          <Route path="/customers/:id" element={<ViewCustomer />} />
+                          <Route path="/customers/:id/edit" element={<EditCustomer />} />
+                          <Route path="/expenses" element={<Expenses />} />
+                          <Route path="/expenses/new" element={<AddExpense />} />
+                          <Route path="/expenses/:id" element={<ViewExpense />} />
+                          <Route path="/expenses/:id/edit" element={<EditExpense />} />
+                          <Route path="/expenses/categories" element={<ExpenseCategories />} />
+                          <Route path="/reports" element={<Reports />} />
+                          <Route path="/users" element={<Users />} />
+                          <Route path="/users/new" element={<AddUser />} />
+                          <Route path="/users/:id" element={<ViewUser />} />
+                          <Route path="/users/:id/edit" element={<EditUser />} />
+                          <Route path="/users/:id/permissions" element={<UserPermissions />} />
+                          <Route path="/messaging" element={<Messaging />} />
+                          <Route path="/settings" element={<Settings />} />
+                          <Route path="/notifications" element={<Notifications />} />
+                          <Route path="/profile" element={<Profile />} />
+                        </Routes>
+                      </DashboardLayout>
+                    // </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </Router>
+          </SubscriptionProvider>
+        </TenantProvider>
       </AuthProvider>
     </ThemeProvider>
   );
