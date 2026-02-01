@@ -1,0 +1,148 @@
+{
+  "totalBusinesses": 284,
+  "activeSubscriptions": 267,
+  "monthlyRecurringRevenue": 42850,
+  "trialConversion": 68,
+  "businessesChange": 12,
+  "subscriptionsChange": 8,
+  "mrrChange": 15,
+  "conversionChange": 5,
+  "totalUsers": 1247,
+  "totalTransactions": 3892,
+  "platformHealth": {
+    "uptime": 99.98,
+    "apiResponseTime": 145,
+    "databaseSize": 2.4,
+    "storageUsed": 67.3
+  },
+  "monthlyGrowth": {
+    "newBusinesses": 34,
+    "churnedBusinesses": 5,
+    "upgrades": 12,
+    "downgrades": 3,
+    "newRevenue": 5650,
+    "lostRevenue": 897
+  },
+  "planBreakdown": {
+    "free_trial": {
+      "count": 30,
+      "percentage": 10.6,
+      "mrr": 0
+    },
+    "starter": {
+      "count": 142,
+      "percentage": 50.0,
+      "mrr": 6958
+    },
+    "professional": {
+      "count": 89,
+      "percentage": 31.3,
+      "mrr": 13261
+    },
+    "enterprise": {
+      "count": 23,
+      "percentage": 8.1,
+      "mrr": 11477
+    }
+  },
+  "revenueHistory": [
+    {
+      "month": "2023-01",
+      "revenue": 18500,
+      "subscriptions": 142,
+      "businesses": 158
+    },
+    {
+      "month": "2023-02",
+      "revenue": 21200,
+      "subscriptions": 165,
+      "businesses": 182
+    },
+    {
+      "month": "2023-03",
+      "revenue": 24800,
+      "subscriptions": 189,
+      "businesses": 201
+    },
+    {
+      "month": "2023-04",
+      "revenue": 28500,
+      "subscriptions": 218,
+      "businesses": 235
+    },
+    {
+      "month": "2023-05",
+      "revenue": 31200,
+      "subscriptions": 235,
+      "businesses": 248
+    },
+    {
+      "month": "2023-06",
+      "revenue": 33800,
+      "subscriptions": 248,
+      "businesses": 257
+    },
+    {
+      "month": "2023-07",
+      "revenue": 35600,
+      "subscriptions": 257,
+      "businesses": 262
+    },
+    {
+      "month": "2023-08",
+      "revenue": 37200,
+      "subscriptions": 272,
+      "businesses": 272
+    },
+    {
+      "month": "2023-09",
+      "revenue": 39850,
+      "subscriptions": 281,
+      "businesses": 278
+    },
+    {
+      "month": "2023-10",
+      "revenue": 42850,
+      "subscriptions": 298,
+      "businesses": 284
+    }
+  ],
+  "topCountries": [
+    {
+      "country": "United States",
+      "businesses": 127,
+      "revenue": 19245
+    },
+    {
+      "country": "United Kingdom",
+      "businesses": 48,
+      "revenue": 7156
+    },
+    {
+      "country": "Canada",
+      "businesses": 35,
+      "revenue": 5234
+    },
+    {
+      "country": "Australia",
+      "businesses": 28,
+      "revenue": 4187
+    },
+    {
+      "country": "Germany",
+      "businesses": 22,
+      "revenue": 3298
+    },
+    {
+      "country": "France",
+      "businesses": 15,
+      "revenue": 2245
+    },
+    {
+      "country": "Others",
+      "businesses": 9,
+      "revenue": 1485
+    }
+  ],
+  "lastUpdated": "2023-10-30T14:32:00Z"
+}

@@ -1,0 +1,246 @@
+{
+  "revenue": {
+    "current_period": 42850,
+    "previous_period": 37200,
+    "change_percentage": 15.2,
+    "monthly_data": [
+      {
+        "month": "2023-01",
+        "revenue": 18500,
+        "mrr": 18500,
+        "arr": 222000
+      },
+      {
+        "month": "2023-02",
+        "revenue": 21200,
+        "mrr": 21200,
+        "arr": 254400
+      },
+      {
+        "month": "2023-03",
+        "revenue": 24800,
+        "mrr": 24800,
+        "arr": 297600
+      },
+      {
+        "month": "2023-04",
+        "revenue": 28500,
+        "mrr": 28500,
+        "arr": 342000
+      },
+      {
+        "month": "2023-05",
+        "revenue": 31200,
+        "mrr": 31200,
+        "arr": 374400
+      },
+      {
+        "month": "2023-06",
+        "revenue": 33800,
+        "mrr": 33800,
+        "arr": 405600
+      },
+      {
+        "month": "2023-07",
+        "revenue": 35600,
+        "mrr": 35600,
+        "arr": 427200
+      },
+      {
+        "month": "2023-08",
+        "revenue": 37200,
+        "mrr": 37200,
+        "arr": 446400
+      },
+      {
+        "month": "2023-09",
+        "revenue": 39850,
+        "mrr": 39850,
+        "arr": 478200
+      },
+      {
+        "month": "2023-10",
+        "revenue": 42850,
+        "mrr": 42850,
+        "arr": 514200
+      }
+    ]
+  },
+  "users": {
+    "current_period": 1247,
+    "previous_period": 1089,
+    "change_percentage": 14.5,
+    "monthly_data": [
+      {
+        "month": "2023-01",
+        "total_users": 562,
+        "active_users": 487,
+        "new_users": 45
+      },
+      {
+        "month": "2023-02",
+        "total_users": 638,
+        "active_users": 556,
+        "new_users": 76
+      },
+      {
+        "month": "2023-03",
+        "total_users": 724,
+        "active_users": 632,
+        "new_users": 86
+      },
+      {
+        "month": "2023-04",
+        "total_users": 823,
+        "active_users": 718,
+        "new_users": 99
+      },
+      {
+        "month": "2023-05",
+        "total_users": 931,
+        "active_users": 812,
+        "new_users": 108
+      },
+      {
+        "month": "2023-06",
+        "total_users": 1012,
+        "active_users": 883,
+        "new_users": 81
+      },
+      {
+        "month": "2023-07",
+        "total_users": 1078,
+        "active_users": 941,
+        "new_users": 66
+      },
+      {
+        "month": "2023-08",
+        "total_users": 1089,
+        "active_users": 950,
+        "new_users": 11
+      },
+      {
+        "month": "2023-09",
+        "total_users": 1156,
+        "active_users": 1009,
+        "new_users": 67
+      },
+      {
+        "month": "2023-10",
+        "total_users": 1247,
+        "active_users": 1088,
+        "new_users": 91
+      }
+    ]
+  },
+  "businesses": {
+    "current_period": 284,
+    "previous_period": 272,
+    "change_percentage": 4.4,
+    "monthly_data": [
+      {
+        "month": "2023-01",
+        "total": 158,
+        "active": 142,
+        "trial": 12,
+        "suspended": 3,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-02",
+        "total": 182,
+        "active": 165,
+        "trial": 14,
+        "suspended": 2,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-03",
+        "total": 201,
+        "active": 189,
+        "trial": 10,
+        "suspended": 1,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-04",
+        "total": 235,
+        "active": 218,
+        "trial": 15,
+        "suspended": 1,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-05",
+        "total": 248,
+        "active": 235,
+        "trial": 11,
+        "suspended": 1,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-06",
+        "total": 257,
+        "active": 248,
+        "trial": 8,
+        "suspended": 0,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-07",
+        "total": 262,
+        "active": 257,
+        "trial": 4,
+        "suspended": 0,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-08",
+        "total": 272,
+        "active": 265,
+        "trial": 6,
+        "suspended": 0,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-09",
+        "total": 278,
+        "active": 271,
+        "trial": 6,
+        "suspended": 0,
+        "cancelled": 1
+      },
+      {
+        "month": "2023-10",
+        "total": 284,
+        "active": 275,
+        "trial": 8,
+        "suspended": 0,
+        "cancelled": 1
+      }
+    ]
+  },
+  "transactions": {
+    "current_period": 3892,
+    "previous_period": 3421,
+    "change_percentage": 13.8
+  },
+  "churn_rate": {
+    "current": 2.4,
+    "previous": 3.1,
+    "change_percentage": -22.6
+  },
+  "customer_lifetime_value": {
+    "average": 1847,
+    "by_plan": {
+      "starter": 892,
+      "professional": 2156,
+      "enterprise": 8943
+    }
+  },
+  "conversion_metrics": {
+    "trial_to_paid": 68,
+    "starter_to_professional": 23,
+    "professional_to_enterprise": 12
+  }
+}

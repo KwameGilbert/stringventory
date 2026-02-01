@@ -1,17 +1,23 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { MessageSquare, Clock, Send, Users } from "lucide-react";
+import { MessageCircle, Clock, Send } from "lucide-react";
 import CustomerSelector from "../../../components/admin/Messaging/CustomerSelector";
 import Composer from "../../../components/admin/Messaging/Composer";
 import MessageHistory from "../../../components/admin/Messaging/MessageHistory";
 import MessageDetails from "../../../components/admin/Messaging/MessageDetails";
+import SupportChat from "./components/SupportChat";
 import { showSuccess, showLoading, closeLoading } from "../../../utils/alerts";
 
 export default function Messaging() {
-  const [activeTab, setActiveTab] = useState("compose");
+  const [activeTab, setActiveTab] = useState("support");
+  
+  // Campaign Logic
   const [customers, setCustomers] = useState([]);
   const [selectedCustomerIds, setSelectedCustomerIds] = useState([]);
-  const [selectedMessage, setSelectedMessage] = useState(null); // For details modal
+  const [selectedMessage, setSelectedMessage] = useState(null);
+
+  // Support Chat Logic
+  const [isOnline] = useState(true);
 
   useEffect(() => {
     // Reusing customer data logic or fetching from customers.json
@@ -21,8 +27,6 @@ export default function Messaging() {
         setCustomers(response.data);
       } catch (error) {
         console.error("Error loading customers", error);
-        // Fallback or retry with reports.json as seen in previous version if needed, 
-        // but let's stick to the standard customers.json I saw in the file list.
       }
     };
     fetchCustomers();
@@ -48,7 +52,6 @@ export default function Messaging() {
       closeLoading();
       console.log("Message sent:", messageBody);
       showSuccess(`Successfully sent to ${selectedCustomerIds.length} customers`);
-      // In a real app, we would POST to an API here
       setSelectedCustomerIds([]);
       setActiveTab("history");
     }, 1500);
@@ -60,11 +63,22 @@ export default function Messaging() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Messaging Center</h1>
-          <p className="text-gray-500 text-sm">Manage SMS and Email campaigns</p>
+          <p className="text-gray-500 text-sm">Manage campaigns and support</p>
         </div>
         
         {/* Tabs */}
         <div className="flex p-1 bg-gray-100 rounded-xl">
+           <button
+            onClick={() => setActiveTab("support")}
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              activeTab === "support" 
+                ? "bg-white text-gray-900 shadow-sm" 
+                : "text-gray-500 hover:text-gray-900"
+            }`}
+          >
+            <MessageCircle size={18} />
+            Support Chat
+          </button>
           <button
             onClick={() => setActiveTab("compose")}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
@@ -74,7 +88,7 @@ export default function Messaging() {
             }`}
           >
             <Send size={18} />
-            Compose
+            Campaigns
           </button>
           <button
             onClick={() => setActiveTab("history")}
@@ -91,9 +105,13 @@ export default function Messaging() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0">
-        {activeTab === "compose" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+      <div className="flex-1 min-h-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        {activeTab === "support" && (
+            <SupportChat isOnline={isOnline} />
+        )}
+
+        {activeTab === "compose" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full p-6">
             <div className="lg:col-span-1 h-full">
               <CustomerSelector 
                 customers={customers} 
@@ -109,8 +127,10 @@ export default function Messaging() {
               />
             </div>
           </div>
-        ) : (
-          <div className="h-full">
+        )}
+
+        {activeTab === "history" && (
+          <div className="h-full p-6">
             <MessageHistory onViewDetails={setSelectedMessage} />
           </div>
         )}

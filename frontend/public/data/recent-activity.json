@@ -1,0 +1,115 @@
+[
+  {
+    "id": "act-001",
+    "type": "signup",
+    "business_id": "bus-002",
+    "business_name": "TechStart Solutions",
+    "timestamp": "2023-10-30T14:25:00Z",
+    "details": {
+      "plan": "starter",
+      "trial": true
+    }
+  },
+  {
+    "id": "act-002",
+    "type": "upgrade",
+    "business_id": "bus-001",
+    "business_name": "Acme Innovations Inc.",
+    "timestamp": "2023-10-30T14:18:00Z",
+    "details": {
+      "from_plan": "starter",
+      "to_plan": "professional"
+    }
+  },
+  {
+    "id": "act-003",
+    "type": "payment",
+    "business_id": "bus-003",
+    "business_name": "Global Retail Co.",
+    "timestamp": "2023-10-30T14:07:00Z",
+    "details": {
+      "amount": 499,
+      "plan": "enterprise",
+      "payment_method": "card"
+    }
+  },
+  {
+    "id": "act-004",
+    "type": "signup",
+    "business_id": "bus-010",
+    "business_name": "BuildPro Construction",
+    "timestamp": "2023-10-30T13:30:00Z",
+    "details": {
+      "plan": "starter",
+      "trial": true
+    }
+  },
+  {
+    "id": "act-005",
+    "type": "cancellation",
+    "business_id": "bus-005",
+    "business_name": "Suspended Business Ltd.",
+    "timestamp": "2023-10-30T12:30:00Z",
+    "details": {
+      "reason": "payment_failed",
+      "plan": "professional"
+    }
+  },
+  {
+    "id": "act-006",
+    "type": "payment",
+    "business_id": "bus-006",
+    "business_name": "Enterprise Corp",
+    "timestamp": "2023-10-30T11:15:00Z",
+    "details": {
+      "amount": 149,
+      "plan": "professional",
+      "payment_method": "card"
+    }
+  },
+  {
+    "id": "act-007",
+    "type": "user_added",
+    "business_id": "bus-007",
+    "business_name": "Digital Ventures LLC",
+    "timestamp": "2023-10-30T10:45:00Z",
+    "details": {
+      "user_count": 18,
+      "plan": "enterprise"
+    }
+  },
+  {
+    "id": "act-008",
+    "type": "upgrade",
+    "business_id": "bus-009",
+    "business_name": "Fashion Forward Boutique",
+    "timestamp": "2023-10-30T09:20:00Z",
+    "details": {
+      "from_plan": "starter",
+      "to_plan": "professional"
+    }
+  },
+  {
+    "id": "act-009",
+    "type": "payment",
+    "business_id": "bus-008",
+    "business_name": "FreshMart Groceries",
+    "timestamp": "2023-10-30T08:30:00Z",
+    "details": {
+      "amount": 49,
+      "plan": "starter",
+      "payment_method": "bank_transfer"
+    }
+  },
+  {
+    "id": "act-010",
+    "type": "trial_started",
+    "business_id": "bus-004",
+    "business_name": "SmallBiz Store",
+    "timestamp": "2023-10-29T16:20:00Z",
+    "details": {
+      "plan": "starter",
+      "trial_days": 14
+    }
+  }
+]

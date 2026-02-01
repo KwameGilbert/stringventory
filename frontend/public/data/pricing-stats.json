@@ -1,0 +1,28 @@
+{
+  "totalSubscribers": 301,
+  "totalMRR": 17890,
+  "activePlans": 4,
+  "avgRevenuePerUser": 59.43,
+  "planStats": {
+    "free_trial": {
+      "subscribers": 47,
+      "revenue": 0,
+      "growth": 12
+    },
+    "starter": {
+      "subscribers": 142,
+      "revenue": 6958,
+      "growth": 8.5
+    },
+    "professional": {
+      "subscribers": 89,
+      "revenue": 13261,
+      "growth": 15.2
+    },
+    "enterprise": {
+      "subscribers": 23,
+      "revenue": 11477,
+      "growth": 4.1
+    }
+  }
+}

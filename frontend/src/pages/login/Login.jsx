@@ -22,8 +22,14 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
-      navigate("/dashboard");
+      const user = await login(email, password);
+      
+      // Redirect based on user role
+      if (user?.isSuperAdmin || user?.role === 'Superadmin') {
+        navigate("/superadmin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error("Login failed", error);
     }
@@ -190,6 +196,25 @@ export default function Login() {
               </span>
             </p>
           </form>
+
+          {/* Login Hints */}
+          <div className="mt-6 pt-6 border-t border-gray-100">
+            <p className="text-xs text-gray-500 text-center mb-3 font-medium">Test Credentials</p>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between items-center px-3 py-2 bg-purple-50 rounded-lg">
+                <span className="text-gray-600">Superadmin:</span>
+                <code className="text-purple-700 font-mono">superadmin@test.com</code>
+              </div>
+              <div className="flex justify-between items-center px-3 py-2 bg-emerald-50 rounded-lg">
+                <span className="text-gray-600">Business Admin:</span>
+                <code className="text-emerald-700 font-mono">admin@test.com</code>
+              </div>
+              <div className="flex justify-between items-center px-3 py-2 bg-blue-50 rounded-lg">
+                <span className="text-gray-600">Sales User:</span>
+                <code className="text-blue-700 font-mono">sales@test.com</code>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
