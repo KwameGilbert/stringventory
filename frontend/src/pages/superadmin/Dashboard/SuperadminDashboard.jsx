@@ -18,11 +18,11 @@ export default function SuperadminDashboard() {
     totalBusinesses: 0,
     activeSubscriptions: 0,
     monthlyRecurringRevenue: 0,
-    trialConversion: 0,
+    totalUsers: 0,
     businessesChange:  0,
     subscriptionsChange: 0,
     mrrChange: 0,
-    conversionChange: 0
+    usersChange: 0
   });
 
   const [recentBusinesses, setRecentBusinesses] = useState([]);
@@ -76,11 +76,11 @@ export default function SuperadminDashboard() {
         totalBusinesses: 284,
         activeSubscriptions: 267,
         monthlyRecurringRevenue: 42850,
-        trialConversion: 68,
+        totalUsers: 1847,
         businessesChange: 12,
         subscriptionsChange: 8,
         mrrChange: 15,
-        conversionChange: 5
+        usersChange: 9
       });
 
       // Mock businesses data
@@ -207,13 +207,13 @@ export default function SuperadminDashboard() {
           subtitle={`+$${(((stats?.mrrChange || 0) / 100) * (stats?.monthlyRecurringRevenue || 0)).toFixed(0)} this month`}
         />
         <KPICard
-          title="Trial Conversion"
-          value={`${stats?.trialConversion || 0}%`}
-          change={stats?.conversionChange || 0}
+          title="Total Users"
+          value={(stats?.totalUsers || 0).toLocaleString()}
+          change={stats?.usersChange || 0}
           changeType="positive"
-          icon={TrendingUp}
+          icon={Users}
           color="amber"
-          subtitle="Last 30 days"
+          subtitle="Across all businesses"
         />
       </div>
 

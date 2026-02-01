@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { User, Lock, Settings as SettingsIcon } from "lucide-react";
+import { User, Lock, Settings as SettingsIcon, CreditCard } from "lucide-react";
 import ProfileSettings from "../../../components/admin/Settings/ProfileSettings";
 import SecuritySettings from "../../../components/admin/Settings/SecuritySettings";
 import PreferenceSettings from "../../../components/admin/Settings/PreferenceSettings";
+import SubscriptionSettings from "../../../components/admin/Settings/SubscriptionSettings";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -11,6 +12,7 @@ export default function Settings() {
     { id: "profile", label: "Profile", icon: User },
     { id: "security", label: "Security", icon: Lock },
     { id: "preferences", label: "Preferences", icon: SettingsIcon },
+    { id: "subscription", label: "Subscription", icon: CreditCard },
   ];
 
   return (
@@ -53,6 +55,7 @@ export default function Settings() {
           {activeTab === "profile" && <ProfileSettings />}
           {activeTab === "security" && <SecuritySettings />}
           {activeTab === "preferences" && <PreferenceSettings />}
+          {activeTab === "subscription" && <SubscriptionSettings />}
         </div>
       </div>
     </div>

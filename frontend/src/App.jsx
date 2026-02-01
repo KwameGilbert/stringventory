@@ -67,6 +67,8 @@ import ViewPricingPlan from "./pages/superadmin/PricingPlans/ViewPricingPlan";
 import Analytics from "./pages/superadmin/Analytics/Analytics";
 import SuperadminSettings from "./pages/superadmin/Settings/Settings";
 import SuperadminMessaging from "./pages/superadmin/Messaging/Messaging";
+import SuperadminNotifications from "./pages/superadmin/Notifications/Notifications";
+import SuperadminProfile from "./pages/superadmin/Profile/Profile";
 import { TenantProvider } from "./contexts/TenantProvider";
 import { SubscriptionProvider } from "./contexts/SubscriptionProvider";
 
@@ -101,6 +103,8 @@ export default function App() {
                           <Route path="/analytics" element={<Analytics />} />
                           <Route path="/settings" element={<SuperadminSettings />} />
                           <Route path="/messaging" element={<SuperadminMessaging />} />
+                          <Route path="/notifications" element={<SuperadminNotifications />} />
+                          <Route path="/profile" element={<SuperadminProfile />} />
                         </Routes>
                       </SuperadminLayout>
                     </SuperadminRoute>

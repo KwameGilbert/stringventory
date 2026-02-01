@@ -17,17 +17,15 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  CornerDownLeftIcon,
   LogOut,
   Bell,
   Tag,
   FileText,
-  Store,
   Truck,
-  Calculator,
+  X,
 } from "lucide-react";
 
-const Sidebar = () => {
+const Sidebar = ({ mobileOpen, onClose }) => {
   useTheme(); // Hook maintained for potential future use
   const { user, hasPermission } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
@@ -35,6 +33,13 @@ const Sidebar = () => {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleNavClick = () => {
+    // Close sidebar on mobile when navigating
+    if (onClose) {
+      onClose();
+    }
   };
 
   const menuItems = [
@@ -64,6 +69,8 @@ const Sidebar = () => {
         fixed left-0 top-0 h-screen bg-slate-900
         text-gray-300 transition-all duration-300 ease-in-out z-50 flex flex-col
         ${isOpen ? "w-64" : "w-20"}
+        ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+        lg:translate-x-0
       `}
     >
       {/* Header */}
@@ -73,7 +80,7 @@ const Sidebar = () => {
             isOpen ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
           }`}
         >
-          <div className="bg-emerald-500 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <div className="bg-emerald-500 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 flex-shrink-0">
             <Package className="w-5 h-5 text-white" />
           </div>
           <span className="text-lg font-bold text-white tracking-tight">
@@ -81,17 +88,25 @@ const Sidebar = () => {
           </span>
         </div>
 
-        {/* Toggle Button */}
+        {/* Toggle Button - hidden on mobile */}
         <button
           onClick={toggleSidebar}
           className={`
-            w-8 h-8 flex items-center justify-center rounded-lg
+            hidden lg:flex w-8 h-8 items-center justify-center rounded-lg
             bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white
             transition-all duration-200
             ${!isOpen && "mx-auto"}
           `}
         >
           {isOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+        </button>
+
+        {/* Close button for mobile */}
+        <button
+          onClick={onClose}
+          className="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+        >
+          <X className="w-5 h-5" />
         </button>
       </div>
 
@@ -116,6 +131,7 @@ const Sidebar = () => {
               <Link
                 key={index}
                 to={item.path}
+                onClick={handleNavClick}
                 className={`
                   flex items-center gap-3 px-3 py-3 rounded-xl
                   transition-all duration-200 group relative
@@ -160,11 +176,18 @@ const Sidebar = () => {
       {isOpen && (
         <div className="px-3 py-3 border-t border-slate-800">
           <div className="flex items-center gap-2">
-            <Link to="/dashboard/notifications" className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-all duration-200">
+            <Link 
+              to="/dashboard/notifications" 
+              onClick={handleNavClick}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-gray-400 hover:text-white transition-all duration-200"
+            >
               <Bell className="w-4 h-4" />
               <span className="text-xs">Notifications</span>
             </Link>
-            <Link to="/" className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white hover:text-white transition-all duration-200">
+            <Link 
+              to="/" 
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white hover:text-white transition-all duration-200"
+            >
               <LogOut className="w-4 h-4" />
               <span className="text-xs">Logout</span>
             </Link>
@@ -175,14 +198,15 @@ const Sidebar = () => {
       {/* User Profile */}
       <div className="border-t border-slate-800 p-3">
         <Link
-          to="/dashboard/settings"
+          to="/dashboard/profile"
+          onClick={handleNavClick}
           className={`
             flex items-center gap-3 p-2.5 rounded-xl
             bg-slate-800/50 hover:bg-slate-800 transition-all duration-200
             ${!isOpen && "justify-center p-2"}
           `}
         >
-          <div className="relative">
+          <div className="relative flex-shrink-0">
             <img
               src={user?.avatar || "https://ui-avatars.com/api/?name=User&background=random"}
               alt="Profile"
@@ -202,7 +226,7 @@ const Sidebar = () => {
             </div>
           )}
 
-          {isOpen && <ChevronRight size={16} className="text-gray-500" />}
+          {isOpen && <ChevronRight size={16} className="text-gray-500 flex-shrink-0" />}
         </Link>
       </div>
     </aside>

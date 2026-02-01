@@ -73,7 +73,7 @@ export default function Analytics() {
       {/* Tabs */}
       <div className="border-b border-gray-200">
         <nav className="flex space-x-8">
-          {['overview', 'revenue', 'users', 'system'].map((tab) => (
+          {['overview', 'revenue', 'users' /* , 'system' */].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -95,7 +95,7 @@ export default function Analytics() {
         {activeTab === 'overview' && <AnalyticsOverview data={data} formatCurrency={formatCurrency} />}
         {activeTab === 'revenue' && <AnalyticsRevenue data={data} formatCurrency={formatCurrency} />}
         {activeTab === 'users' && <AnalyticsUsers data={data} />}
-        {activeTab === 'system' && <AnalyticsSystem data={data} />}
+        {/* {activeTab === 'system' && <AnalyticsSystem data={data} />} */}
       </div>
     </div>
   );
