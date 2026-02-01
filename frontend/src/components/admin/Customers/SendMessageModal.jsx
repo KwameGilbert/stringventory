@@ -19,7 +19,7 @@ export default function SendMessageModal({ isOpen, onClose, customer }) {
   const channels = [
     { id: "sms", label: "SMS", icon: Phone, color: "blue" },
     { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, color: "green" },
-    { id: "email", label: "Email", icon: Mail, color: "purple" }
+    { id: "email", label: "Email", icon: Mail, color: "emerald " }
   ];
 
   return (
@@ -65,7 +65,7 @@ export default function SendMessageModal({ isOpen, onClose, customer }) {
                 const colorClasses = {
                   blue: isSelected ? "bg-blue-100 border-blue-500 text-blue-700" : "border-gray-200 text-gray-600 hover:border-blue-300",
                   green: isSelected ? "bg-green-100 border-green-500 text-green-700" : "border-gray-200 text-gray-600 hover:border-green-300",
-                  purple: isSelected ? "bg-purple-100 border-purple-500 text-purple-700" : "border-gray-200 text-gray-600 hover:border-purple-300"
+                  emerald : isSelected ? "bg-emerald-100 border-emerald-500 text-emerald-700" : "border-gray-200 text-gray-600 hover:border-emerald-300"
                 };
 
                 return (

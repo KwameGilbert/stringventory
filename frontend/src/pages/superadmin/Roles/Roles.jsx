@@ -40,7 +40,7 @@ export default function Roles() {
         </div>
         <button
           onClick={handleCreateRole}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Create Role
@@ -51,8 +51,8 @@ export default function Roles() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Shield className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <Shield className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Total Roles</p>
@@ -104,16 +104,16 @@ export default function Roles() {
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                  role.isSystemRole ? 'bg-purple-100' : 'bg-gray-100'
+                  role.isSystemRole ? 'bg-emerald-100' : 'bg-gray-100'
                 }`}>
                   <Shield className={`w-6 h-6 ${
-                    role.isSystemRole ? 'text-purple-600' : 'text-gray-600'
+                    role.isSystemRole ? 'text-emerald-600' : 'text-gray-600'
                   }`} />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{role.name}</h3>
                   {role.isSystemRole && (
-                    <span className="inline-block px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded-full mt-1">
+                    <span className="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full mt-1">
                       System
                     </span>
                   )}
@@ -124,7 +124,7 @@ export default function Roles() {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setSelectedRole(role)}
-                    className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                    className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                     title="Edit Role"
                   >
                     <Edit className="w-4 h-4" />
@@ -160,7 +160,7 @@ export default function Roles() {
             {/* View Permissions Button */}
             <button
               onClick={() => setSelectedRole(role)}
-              className="w-full mt-4 px-4 py-2 border border-purple-200 text-purple-700 font-medium rounded-lg hover:bg-purple-50 transition-colors"
+              className="w-full mt-4 px-4 py-2 border border-emerald-200 text-emerald-700 font-medium rounded-lg hover:bg-emerald-50 transition-colors"
             >
               View Permissions
             </button>
@@ -190,9 +190,9 @@ export default function Roles() {
             <div className="p-6">
               <h3 className="font-semibold text-gray-900 mb-3">Permissions</h3>
               {selectedRole.permissions[0] === '*' ? (
-                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                  <p className="text-purple-900 font-medium">All Permissions</p>
-                  <p className="text-purple-700 text-sm mt-1">
+                <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                  <p className="text-emerald-900 font-medium">All Permissions</p>
+                  <p className="text-emerald-700 text-sm mt-1">
                     This role has access to all features and capabilities
                   </p>
                 </div>
@@ -223,7 +223,7 @@ export default function Roles() {
                 Close
               </button>
               {!selectedRole.isSystemRole && (
-                <button className="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                <button className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors">
                   Edit Role
                 </button>
               )}

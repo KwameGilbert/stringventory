@@ -14,7 +14,7 @@ const IconMap = {
 const colorSchemes = [
   { bg: "from-emerald-400 to-teal-500", shadow: "shadow-emerald-200", light: "bg-emerald-50" },
   { bg: "from-blue-400 to-cyan-500", shadow: "shadow-blue-200", light: "bg-blue-50" },
-  { bg: "from-purple-400 to-violet-500", shadow: "shadow-purple-200", light: "bg-purple-50" },
+  { bg: "from-emerald-400 to-emerald-500", shadow: "shadow-emerald-200", light: "bg-emerald-50" },
   { bg: "from-orange-400 to-amber-500", shadow: "shadow-orange-200", light: "bg-orange-50" },
   { bg: "from-rose-400 to-pink-500", shadow: "shadow-rose-200", light: "bg-rose-50" },
 ];

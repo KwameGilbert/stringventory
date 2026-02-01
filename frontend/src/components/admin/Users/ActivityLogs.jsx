@@ -13,8 +13,8 @@ export default function ActivityLogs({ logs }) {
       case "systemsettings": return <Settings size={16} className="text-blue-600" />;
       case "inventory": return <Package size={16} className="text-emerald-600" />;
       case "products": return <Package size={16} className="text-emerald-600" />;
-      case "sales": return <ShoppingCart size={16} className="text-purple-600" />;
-      case "orders": return <ShoppingCart size={16} className="text-purple-600" />;
+      case "sales": return <ShoppingCart size={16} className="text-emerald-600" />;
+      case "orders": return <ShoppingCart size={16} className="text-emerald-600" />;
       case "users": return <User size={16} className="text-amber-600" />;
       case "auth": return <LogIn size={16} className="text-gray-600" />;
       default: return <Activity size={16} className="text-gray-600" />;
@@ -26,8 +26,8 @@ export default function ActivityLogs({ logs }) {
       case "systemsettings": return "bg-blue-50 border-blue-100";
       case "inventory": return "bg-emerald-50 border-emerald-100";
       case "products": return "bg-emerald-50 border-emerald-100";
-      case "sales": return "bg-purple-50 border-purple-100";
-      case "orders": return "bg-purple-50 border-purple-100";
+      case "sales": return "bg-emerald-50 border-emerald-100";
+      case "orders": return "bg-emerald-50 border-emerald-100";
       case "users": return "bg-amber-50 border-amber-100";
       case "auth": return "bg-gray-50 border-gray-100";
       default: return "bg-gray-50 border-gray-100";

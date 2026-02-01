@@ -37,8 +37,8 @@ const ExpiringProducts = () => {
     { 
       label: "90 days", 
       value: data.summary?.days90 || 0, 
-      gradient: "from-indigo-400 to-purple-500",
-      bg: "from-indigo-50 to-purple-50",
+      gradient: "from-indigo-400 to-emerald-500",
+      bg: "from-indigo-50 to-emerald-50",
       border: "border-indigo-200",
       text: "text-indigo-600"
     },

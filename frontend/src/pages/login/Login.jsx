@@ -201,9 +201,9 @@ export default function Login() {
           <div className="mt-6 pt-6 border-t border-gray-100">
             <p className="text-xs text-gray-500 text-center mb-3 font-medium">Test Credentials</p>
             <div className="space-y-2 text-xs">
-              <div className="flex justify-between items-center px-3 py-2 bg-purple-50 rounded-lg">
+              <div className="flex justify-between items-center px-3 py-2 bg-emerald-50 rounded-lg">
                 <span className="text-gray-600">Superadmin:</span>
-                <code className="text-purple-700 font-mono">superadmin@test.com</code>
+                <code className="text-emerald-700 font-mono">superadmin@test.com</code>
               </div>
               <div className="flex justify-between items-center px-3 py-2 bg-emerald-50 rounded-lg">
                 <span className="text-gray-600">Business Admin:</span>

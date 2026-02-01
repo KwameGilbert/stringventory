@@ -89,7 +89,7 @@ export default function Profile() {
       {/* Profile Card */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {/* Profile Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-8">
+        <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-8">
           <div className="flex items-center gap-6">
             <div className="relative">
               <img
@@ -103,11 +103,11 @@ export default function Profile() {
             </div>
             <div className="text-white">
               <h2 className="text-2xl font-bold">{formData.name}</h2>
-              <p className="text-purple-200 flex items-center gap-2 mt-1">
+              <p className="text-emerald-200 flex items-center gap-2 mt-1">
                 <Shield className="w-4 h-4" />
                 {user?.role || 'Super Administrator'}
               </p>
-              <p className="text-purple-200 flex items-center gap-2 mt-1">
+              <p className="text-emerald-200 flex items-center gap-2 mt-1">
                 <Mail className="w-4 h-4" />
                 {formData.email}
               </p>
@@ -125,7 +125,7 @@ export default function Profile() {
                 className={`
                   py-4 px-1 border-b-2 font-medium text-sm transition-colors
                   ${activeTab === tab.id 
-                    ? 'border-purple-600 text-purple-600' 
+                    ? 'border-emerald-600 text-emerald-600' 
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
                 `}
               >
@@ -144,7 +144,7 @@ export default function Profile() {
                 {!isEditing ? (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 text-sm font-medium text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-50 transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-emerald-600 border border-emerald-200 rounded-lg hover:bg-emerald-50 transition-colors"
                   >
                     Edit Profile
                   </button>
@@ -159,7 +159,7 @@ export default function Profile() {
                     <button
                       onClick={handleSave}
                       disabled={isSaving}
-                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors"
                     >
                       <Save className="w-4 h-4" />
                       {isSaving ? 'Saving...' : 'Save Changes'}
@@ -178,7 +178,7 @@ export default function Profile() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       disabled={!isEditing}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                     />
                   </div>
                 </div>
@@ -192,7 +192,7 @@ export default function Profile() {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       disabled={!isEditing}
-                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                     />
                   </div>
                 </div>
@@ -204,7 +204,7 @@ export default function Profile() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     disabled={!isEditing}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                   />
                 </div>
 
@@ -214,7 +214,7 @@ export default function Profile() {
                     value={formData.timezone}
                     onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
                     disabled={!isEditing}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                   >
                     <option value="America/New_York">Eastern Time (ET)</option>
                     <option value="America/Chicago">Central Time (CT)</option>
@@ -233,7 +233,7 @@ export default function Profile() {
             <div className="space-y-6">
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Key className="w-5 h-5 text-purple-600" />
+                  <Key className="w-5 h-5 text-emerald-600" />
                   Change Password
                 </h3>
                 <div className="space-y-4 max-w-md">
@@ -243,7 +243,7 @@ export default function Profile() {
                       type="password"
                       value={passwordData.currentPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -252,7 +252,7 @@ export default function Profile() {
                       type="password"
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -261,13 +261,13 @@ export default function Profile() {
                       type="password"
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
                   <button
                     onClick={handlePasswordChange}
                     disabled={isSaving || !passwordData.currentPassword || !passwordData.newPassword}
-                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors"
                   >
                     <Key className="w-4 h-4" />
                     {isSaving ? 'Updating...' : 'Update Password'}
@@ -293,7 +293,7 @@ export default function Profile() {
           {activeTab === 'activity' && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <Clock className="w-5 h-5 text-purple-600" />
+                <Clock className="w-5 h-5 text-emerald-600" />
                 Recent Activity
               </h3>
               <div className="divide-y divide-gray-100">

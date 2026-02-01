@@ -19,8 +19,8 @@ const statusConfig = {
   },
   shipped: {
     label: "Shipped",
-    bg: "bg-purple-100",
-    text: "text-purple-700",
+    bg: "bg-emerald-100",
+    text: "text-emerald-700",
     icon: CheckCircle,
   },
   delivered: {

@@ -13,7 +13,7 @@ export default function ViewPricingPlan() {
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Plan Not Found</h2>
         <button
           onClick={() => navigate('/superadmin/pricing-plans')}
-          className="text-purple-600 hover:text-purple-700 font-medium"
+          className="text-emerald-600 hover:text-emerald-700 font-medium"
         >
           Return to Pricing Plans
         </button>
@@ -47,7 +47,7 @@ export default function ViewPricingPlan() {
         </div>
         <button
           onClick={() => navigate(`/superadmin/pricing-plans/${id}/edit`)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors"
         >
           <Edit className="w-5 h-5" />
           Edit Plan

@@ -42,8 +42,8 @@ export default function AnalyticsOverview({ data, formatCurrency }) {
           value={data.kpi.activeBusinesses.current} 
           change={data.kpi.activeBusinesses.change}
           icon={Activity}
-          iconColor="text-purple-600"
-          bgColor="bg-purple-100"
+          iconColor="text-emerald-600"
+          bgColor="bg-emerald-100"
         />
         <KPICard 
           title="Churn Rate" 
@@ -94,7 +94,7 @@ export default function AnalyticsOverview({ data, formatCurrency }) {
             {data.topBusinesses.slice(0, 5).map((biz, i) => (
               <div key={i} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">
+                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-xs">
                     #{i + 1}
                   </div>
                   <div>
@@ -118,6 +118,7 @@ export default function AnalyticsOverview({ data, formatCurrency }) {
   );
 }
 
+// eslint-disable-next-line no-unused-vars
 function KPICard({ title, value, change, icon: Icon, iconColor, bgColor, inverse = false }) {
   const isPositive = change >= 0;
   const isGood = inverse ? !isPositive : isPositive;

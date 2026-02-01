@@ -216,10 +216,10 @@ export default function CreateOrder() {
 
         {/* Order Items Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-violet-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-emerald-50">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-100">
-                <ShoppingCart className="w-5 h-5 text-purple-600" />
+              <div className="p-2 rounded-lg bg-emerald-100">
+                <ShoppingCart className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Sale Items</h3>
@@ -233,7 +233,7 @@ export default function CreateOrder() {
               <select
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 text-sm bg-white"
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm bg-white"
               >
                 <option value="">Select a product...</option>
                 {products.map((product) => (
@@ -247,14 +247,14 @@ export default function CreateOrder() {
                 value={selectedQuantity}
                 onChange={(e) => setSelectedQuantity(parseInt(e.target.value) || 1)}
                 min="1"
-                className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 text-sm text-center"
+                className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm text-center"
                 placeholder="Qty"
               />
               <button
                 type="button"
                 onClick={addItem}
                 disabled={!selectedProduct}
-                className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white rounded-xl transition-colors flex items-center gap-2 text-sm font-medium"
+                className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white rounded-xl transition-colors flex items-center gap-2 text-sm font-medium"
               >
                 <Plus size={16} />
                 Add

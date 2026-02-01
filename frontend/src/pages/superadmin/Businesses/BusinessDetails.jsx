@@ -141,7 +141,7 @@ export default function BusinessDetails() {
   if (loading || !business) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -193,7 +193,7 @@ export default function BusinessDetails() {
                     className={`
                         flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors
                         ${activeTab === tab.id 
-                            ? 'border-purple-600 text-purple-600' 
+                            ? 'border-emerald-600 text-emerald-600' 
                             : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
                     `}
                 >

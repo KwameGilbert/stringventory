@@ -32,10 +32,10 @@ const CustomersTable = ({ customers }) => {
   const getAvatarColor = (name) => {
     const colors = [
       "from-blue-400 to-cyan-500",
-      "from-purple-400 to-pink-500",
+      "from-emerald-400 to-pink-500",
       "from-emerald-400 to-teal-500",
       "from-orange-400 to-red-500",
-      "from-indigo-400 to-purple-500",
+      "from-indigo-400 to-emerald-500",
       "from-rose-400 to-pink-500",
     ];
     const index = name.charCodeAt(0) % colors.length;

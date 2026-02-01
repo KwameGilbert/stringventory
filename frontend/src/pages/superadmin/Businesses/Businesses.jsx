@@ -148,7 +148,7 @@ export default function Businesses() {
         </div>
         <button
           onClick={() => navigate('/superadmin/businesses/new')}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Add Business

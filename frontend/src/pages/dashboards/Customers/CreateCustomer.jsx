@@ -106,10 +106,10 @@ export default function CreateCustomer() {
 
         {/* Contact Info Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-violet-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-emerald-50">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-100">
-                <Phone className="w-5 h-5 text-purple-600" />
+              <div className="p-2 rounded-lg bg-emerald-100">
+                <Phone className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Contact Details</h3>
@@ -130,7 +130,7 @@ export default function CreateCustomer() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm"
                 placeholder="+234 801 234 5678"
                 required
               />
@@ -147,7 +147,7 @@ export default function CreateCustomer() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm"
                 placeholder="john@example.com"
               />
             </div>
@@ -163,7 +163,7 @@ export default function CreateCustomer() {
                 value={formData.address}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all text-sm resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm resize-none"
                 placeholder="45 Market Road, Lagos, Nigeria"
                 required
               />

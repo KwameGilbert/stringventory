@@ -43,7 +43,7 @@ const TopCustomers = ({ dateRange }) => {
     const colors = [
       "bg-gradient-to-br from-emerald-400 to-emerald-600",
       "bg-gradient-to-br from-blue-400 to-blue-600",
-      "bg-gradient-to-br from-purple-400 to-purple-600",
+      "bg-gradient-to-br from-emerald-400 to-emerald-600",
       "bg-gradient-to-br from-amber-400 to-amber-600",
       "bg-gradient-to-br from-rose-400 to-rose-600",
       "bg-gradient-to-br from-cyan-400 to-cyan-600",

@@ -29,7 +29,7 @@ export default function BusinessTable({
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       {loading ? (
         <div className="px-6 py-12 text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full mx-auto"></div>
+          <div className="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto"></div>
         </div>
       ) : (
         <div className="overflow-x-auto">
@@ -87,7 +87,7 @@ export default function BusinessTable({
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => onView(business.id)}
-                        className="p-1.5 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors"
+                        className="p-1.5 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
                         title="View"
                       >
                         <Eye className="w-4 h-4" />

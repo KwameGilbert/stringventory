@@ -79,8 +79,8 @@ export default function AnalyticsRevenue({ data, formatCurrency }) {
           change={5.3}
           subtitle="ARPU this month"
           icon={CreditCard}
-          iconColor="text-purple-600"
-          bgColor="bg-purple-100"
+          iconColor="text-emerald-600"
+          bgColor="bg-emerald-100"
         />
         <FinancialKPICard 
           title="Revenue Growth Rate" 

@@ -49,7 +49,7 @@ export default function CreatePricingPlan() {
 
   const colors = [
     { name: 'Gray', value: 'gray', class: 'bg-gray-500' },
-    { name: 'Purple', value: 'purple', class: 'bg-purple-500' },
+    { name: 'emerald ', value: 'emerald ', class: 'bg-emerald-500' },
     { name: 'Emerald', value: 'emerald', class: 'bg-emerald-500' },
     { name: 'Blue', value: 'blue', class: 'bg-blue-500' },
     { name: 'Amber', value: 'amber', class: 'bg-amber-500' },
@@ -194,7 +194,7 @@ export default function CreatePricingPlan() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                 placeholder="e.g., Ultra Premium"
               />
               {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
@@ -207,7 +207,7 @@ export default function CreatePricingPlan() {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
                 placeholder="Brief description of the plan"
               />
               {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
@@ -221,7 +221,7 @@ export default function CreatePricingPlan() {
                     key={color.value}
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, color: color.value }))}
-                    className={`w-8 h-8 rounded-full ${color.class} ${formData.color === color.value ? 'ring-2 ring-offset-2 ring-purple-600' : ''}`}
+                    className={`w-8 h-8 rounded-full ${color.class} ${formData.color === color.value ? 'ring-2 ring-offset-2 ring-emerald-600' : ''}`}
                     title={color.name}
                   />
                 ))}
@@ -235,7 +235,7 @@ export default function CreatePricingPlan() {
                 name="popular"
                 checked={formData.popular}
                 onChange={handleChange}
-                className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
               />
               <label htmlFor="popular" className="text-sm font-medium text-gray-700">
                 Mark as Popular Plan
@@ -256,7 +256,7 @@ export default function CreatePricingPlan() {
                 value={formData.priceMonthly}
                 onChange={handleChange}
                 min="0"
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${errors.priceMonthly ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${errors.priceMonthly ? 'border-red-500' : 'border-gray-300'}`}
                 placeholder="0.00"
               />
             </div>
@@ -268,7 +268,7 @@ export default function CreatePricingPlan() {
                 value={formData.priceYearly}
                 onChange={handleChange}
                 min="0"
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${errors.priceYearly ? 'border-red-500' : 'border-gray-300'}`}
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${errors.priceYearly ? 'border-red-500' : 'border-gray-300'}`}
                 placeholder="0.00"
               />
             </div>
@@ -280,7 +280,7 @@ export default function CreatePricingPlan() {
                 value={formData.trialDays}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
               />
             </div>
           </div>
@@ -308,7 +308,7 @@ export default function CreatePricingPlan() {
                       name={`limit_${limit.key}`}
                       checked={formData.limits[limit.key] === -1}
                       onChange={handleChange}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                     />
                     Unlimited
                   </label>
@@ -320,7 +320,7 @@ export default function CreatePricingPlan() {
                   disabled={formData.limits[limit.key] === -1}
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors disabled:bg-gray-100 disabled:text-gray-400"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors disabled:bg-gray-100 disabled:text-gray-400"
                   placeholder={formData.limits[limit.key] === -1 ? 'Unlimited' : '0'}
                 />
               </div>
@@ -336,7 +336,7 @@ export default function CreatePricingPlan() {
                     name="limit_maxStorageMB"
                     checked={formData.limits.maxStorageMB === -1}
                     onChange={handleChange}
-                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                   />
                   Unlimited
                 </label>
@@ -348,7 +348,7 @@ export default function CreatePricingPlan() {
                 disabled={formData.limits.maxStorageMB === -1}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors disabled:bg-gray-100 disabled:text-gray-400"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors disabled:bg-gray-100 disabled:text-gray-400"
                 placeholder={formData.limits.maxStorageMB === -1 ? 'Unlimited' : '0'}
               />
               {formData.limits.maxStorageMB !== -1 && (
@@ -371,7 +371,7 @@ export default function CreatePricingPlan() {
                     type="text"
                     value={feature}
                     onChange={(e) => handleFeatureChange(index, e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     placeholder="e.g., 24/7 Priority Support"
                   />
                   <button
@@ -386,7 +386,7 @@ export default function CreatePricingPlan() {
               <button
                 type="button"
                 onClick={addFeature}
-                className="flex items-center gap-2 text-purple-600 font-medium hover:text-purple-700"
+                className="flex items-center gap-2 text-emerald-600 font-medium hover:text-emerald-700"
               >
                 <Plus className="w-4 h-4" /> Add Feature
               </button>
@@ -402,7 +402,7 @@ export default function CreatePricingPlan() {
                     type="checkbox"
                     checked={formData.featureFlags.includes(flag.id)}
                     onChange={() => toggleFeatureFlag(flag.id)}
-                    className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                    className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                   />
                   <span className="text-sm text-gray-700">{flag.label}</span>
                 </label>
@@ -424,7 +424,7 @@ export default function CreatePricingPlan() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             {loading ? (
               <>

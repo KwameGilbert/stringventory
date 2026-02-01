@@ -40,7 +40,7 @@ export default function SuperadminDashboard() {
 
   // Mock plan distribution
   const planDistribution = [
-    { plan: 'Enterprise', count: 23, percentage: 8.1, revenue: 11477, color: 'bg-purple-500' },
+    { plan: 'Enterprise', count: 23, percentage: 8.1, revenue: 11477, color: 'bg-emerald-500' },
     { plan: 'Professional', count: 89, percentage: 31.3, revenue: 13261, color: 'bg-blue-500' },
     { plan: 'Starter', count: 142, percentage: 50.0, revenue: 6958, color: 'bg-emerald-500' },
     { plan: 'Free Trial', count: 30, percentage: 10.6, revenue: 0, color: 'bg-gray-400' }
@@ -50,7 +50,7 @@ export default function SuperadminDashboard() {
   const recentActivity = [
     { id: 1, type: 'signup', business: 'TechStart Solutions', time: '5 minutes ago', icon: Users, color: 'text-emerald-600 bg-emerald-50' },
     { id: 2, type: 'upgrade', business: 'Acme Innovations', plan: 'Enterprise', time: '12 minutes ago', icon: ArrowUp, color: 'text-blue-600 bg-blue-50' },
-    { id: 3, type: 'payment', business: 'Global Retail Co.', amount: 499, time: '23 minutes ago', icon: DollarSign, color: 'text-purple-600 bg-purple-50' },
+    { id: 3, type: 'payment', business: 'Global Retail Co.', amount: 499, time: '23 minutes ago', icon: DollarSign, color: 'text-emerald-600 bg-emerald-50' },
     { id: 4, type: 'signup', business: 'Digital Ventures', time: '1 hour ago', icon: Users, color: 'text-emerald-600 bg-emerald-50' },
     { id: 5, type: 'cancellation', business: 'OldBiz Corp', time: '2 hours ago', icon: ArrowDown, color: 'text-red-600 bg-red-50' }
   ];
@@ -162,7 +162,7 @@ export default function SuperadminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -185,7 +185,7 @@ export default function SuperadminDashboard() {
           change={stats?.businessesChange || 0}
           changeType="positive"
           icon={Building2}
-          color="purple"
+          color="emerald "
           subtitle="Active accounts"
         />
         <KPICard
@@ -225,7 +225,7 @@ export default function SuperadminDashboard() {
             <h2 className="text-lg font-semibold text-gray-900">Revenue Trend</h2>
             <div className="flex items-center gap-2 text-sm">
               <div className="flex items-center gap-1">
-                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
                 <span className="text-gray-600">Revenue</span>
               </div>
             </div>
@@ -240,7 +240,7 @@ export default function SuperadminDashboard() {
                 </div>
                 <div className="relative h-8 bg-gray-100 rounded-lg overflow-hidden">
                   <div 
-                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500 to-purple-400 transition-all duration-500 rounded-lg"
+                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-700 to-emerald-600 transition-all duration-500 rounded-lg"
                     style={{ width: `${(data.revenue / maxRevenue) * 100}%` }}
                   >
                     <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
@@ -297,7 +297,7 @@ export default function SuperadminDashboard() {
         {/* Recent Activity */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-2 mb-6">
-            <Activity className="w-5 h-5 text-purple-600" />
+            <Activity className="w-5 h-5 text-emerald-600" />
             <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
           </div>
           

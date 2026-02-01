@@ -30,7 +30,7 @@ export default function RecentBusinessesTable({ businesses = [] }) {
           <h2 className="text-lg font-semibold text-gray-900">Recent Businesses</h2>
           <Link 
             to="/superadmin/businesses"
-            className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+            className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
           >
             View All
           </Link>
@@ -77,8 +77,8 @@ export default function RecentBusinessesTable({ businesses = [] }) {
                         className="w-10 h-10 rounded-lg object-cover"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                        <span className="text-purple-600 font-semibold">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-200 flex items-center justify-center">
+                        <span className="text-emerald-600 font-semibold">
                           {business.name.charAt(0)}
                         </span>
                       </div>
@@ -108,14 +108,14 @@ export default function RecentBusinessesTable({ businesses = [] }) {
                   <div className="flex items-center justify-end gap-2">
                     <Link
                       to={`/superadmin/businesses/${business.id}`}
-                      className="p-1.5 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors"
+                      className="p-1.5 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
                       title="View Details"
                     >
                       <Eye className="w-4 h-4" />
                     </Link>
                     <Link
                       to={`/superadmin/businesses/${business.id}/edit`}
-                      className="p-1.5 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors"
+                      className="p-1.5 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors"
                       title="Edit"
                     >
                       <Edit className="w-4 h-4" />

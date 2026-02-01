@@ -25,8 +25,8 @@ const statusConfig = {
   },
   Refunded: {
     label: "Refunded",
-    bg: "bg-purple-100",
-    text: "text-purple-700",
+    bg: "bg-emerald-100",
+    text: "text-emerald-700",
     icon: RotateCcw,
   },
 };

@@ -56,7 +56,7 @@ export default function PricingPlans() {
         </div>
         <button
           onClick={() => navigate('/superadmin/pricing-plans/new')}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors"
         >
           <Plus className="w-5 h-5" />
           Create New Plan
@@ -67,8 +67,8 @@ export default function PricingPlans() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <Users className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Total Subscribers</p>
@@ -138,7 +138,7 @@ export default function PricingPlans() {
                       e.stopPropagation();
                       navigate(`/superadmin/pricing-plans/${plan.id}/edit`);
                     }}
-                    className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                    className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
@@ -270,7 +270,7 @@ export default function PricingPlans() {
                 >
                   Close
                 </button>
-                <button className="px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                <button className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors">
                   Edit Plan
                 </button>
               </div>

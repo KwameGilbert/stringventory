@@ -29,11 +29,11 @@ const colorSchemes = {
     border: "border-emerald-100",
     iconColor: "text-white",
   },
-  purple: {
-    gradient: "bg-gradient-to-br from-purple-50 to-violet-50",
-    iconBg: "bg-gradient-to-br from-purple-400 to-violet-500",
-    iconShadow: "shadow-purple-200",
-    border: "border-purple-100",
+  emerald : {
+    gradient: "bg-gradient-to-br from-emerald-50 to-emerald-50",
+    iconBg: "bg-gradient-to-br from-emerald-400 to-emerald-500",
+    iconShadow: "shadow-emerald-200",
+    border: "border-emerald-100",
     iconColor: "text-white",
   },
   orange: {

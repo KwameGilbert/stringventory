@@ -40,7 +40,7 @@ export default function Analytics() {
   if (loading || !data) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+        <div className="animate-spin w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -57,14 +57,14 @@ export default function Analytics() {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option value="7days">Last 7 Days</option>
             <option value="30days">Last 30 Days</option>
             <option value="90days">Last 3 Months</option>
             <option value="1year">Last Year</option>
           </select>
-          <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
             <Download className="w-4 h-4" /> Export
           </button>
         </div>
@@ -80,7 +80,7 @@ export default function Analytics() {
               className={`
                 py-4 px-1 border-b-2 font-medium text-sm capitalize transition-colors
                 ${activeTab === tab 
-                  ? 'border-purple-600 text-purple-600' 
+                  ? 'border-emerald-600 text-emerald-600' 
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
               `}
             >

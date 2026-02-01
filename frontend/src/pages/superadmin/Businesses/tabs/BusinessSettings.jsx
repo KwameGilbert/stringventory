@@ -34,7 +34,7 @@ export default function BusinessSettings({ settings, setSettings, handleAction, 
                   </div>
                   <button 
                     onClick={() => setSettings(prev => ({ ...prev, maintenanceMode: !prev.maintenanceMode }))}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.maintenanceMode ? 'bg-purple-600' : 'bg-gray-200'}`}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.maintenanceMode ? 'bg-emerald-600' : 'bg-gray-200'}`}
                   >
                       <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.maintenanceMode ? 'translate-x-6' : 'translate-x-1'}`} />
                   </button>
@@ -51,7 +51,7 @@ export default function BusinessSettings({ settings, setSettings, handleAction, 
                     </div>
                     <button 
                       onClick={() => setSettings(prev => ({ ...prev, betaFeatures: !prev.betaFeatures }))}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.betaFeatures ? 'bg-purple-600' : 'bg-gray-200'}`}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.betaFeatures ? 'bg-emerald-600' : 'bg-gray-200'}`}
                     >
                         <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.betaFeatures ? 'translate-x-6' : 'translate-x-1'}`} />
                     </button>
@@ -61,7 +61,7 @@ export default function BusinessSettings({ settings, setSettings, handleAction, 
              </div>
 
             <div className="flex justify-end pt-2">
-                <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm">
+                <button className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors shadow-sm">
                     <Save className="w-4 h-4" /> Save Changes
                 </button>
             </div>

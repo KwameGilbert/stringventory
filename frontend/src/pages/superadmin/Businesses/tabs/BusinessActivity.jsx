@@ -24,7 +24,7 @@ export default function BusinessActivity({ activityLogs }) {
                 <div key={log.id} className="p-4 hover:bg-gray-50 transition-colors flex gap-4">
                     <div className="mt-1">
                         {log.type === 'user' && <Users className="w-5 h-5 text-blue-500" />}
-                        {log.type === 'subscription' && <CreditCard className="w-5 h-5 text-purple-500" />}
+                        {log.type === 'subscription' && <CreditCard className="w-5 h-5 text-emerald-500" />}
                         {log.type === 'product' && <Package className="w-5 h-5 text-emerald-500" />}
                         {log.type === 'security' && <Shield className="w-5 h-5 text-red-500" />}
                         {log.type === 'billing' && <FileText className="w-5 h-5 text-gray-500" />}
