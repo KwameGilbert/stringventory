@@ -16,14 +16,14 @@ export const PERMISSIONS = {
   VIEW_KPI_TOTAL_EXPENSES: "VIEW_KPI_TOTAL_EXPENSES",
   VIEW_KPI_TOTAL_REFUNDS: "VIEW_KPI_TOTAL_REFUNDS",
   VIEW_KPI_NET_REVENUE: "VIEW_KPI_NET_REVENUE",
-  VIEW_KPI_TOTAL_SALES: "VIEW_KPI_TOTAL_SALES", // Was Orders
+  VIEW_KPI_TOTAL_SALES: "VIEW_KPI_TOTAL_SALES",
   VIEW_KPI_TOTAL_STOCK: "VIEW_KPI_TOTAL_STOCK",
   VIEW_KPI_INVENTORY_VALUE: "VIEW_KPI_INVENTORY_VALUE",
   VIEW_KPI_LOW_STOCK: "VIEW_KPI_LOW_STOCK",
 
   // Products
   VIEW_PRODUCTS: "VIEW_PRODUCTS",
-  MANAGE_PRODUCTS: "MANAGE_PRODUCTS", // Create, Edit, Delete
+  MANAGE_PRODUCTS: "MANAGE_PRODUCTS",
 
   // Sales (Previously Orders)
   VIEW_ORDERS: "VIEW_ORDERS",
@@ -31,7 +31,7 @@ export const PERMISSIONS = {
 
   // Inventory
   VIEW_INVENTORY: "VIEW_INVENTORY",
-  MANAGE_INVENTORY: "MANAGE_INVENTORY", // Add stock, adjust
+  MANAGE_INVENTORY: "MANAGE_INVENTORY",
 
   // Suppliers
   VIEW_SUPPLIERS: "VIEW_SUPPLIERS",
@@ -58,9 +58,25 @@ export const PERMISSIONS = {
 
   // Messaging
   VIEW_MESSAGING: "VIEW_MESSAGING",
+  SEND_MESSAGES: "SEND_MESSAGES",
+
+  // Notifications
+  VIEW_NOTIFICATIONS: "VIEW_NOTIFICATIONS",
+  MANAGE_NOTIFICATIONS: "MANAGE_NOTIFICATIONS",
+
+  // Profile
+  VIEW_PROFILE: "VIEW_PROFILE",
+  EDIT_PROFILE: "EDIT_PROFILE",
+
+  // Subscription & Billing
+  VIEW_SUBSCRIPTION: "VIEW_SUBSCRIPTION",
+  MANAGE_SUBSCRIPTION: "MANAGE_SUBSCRIPTION",
+  VIEW_BILLING_HISTORY: "VIEW_BILLING_HISTORY",
+  MANAGE_PAYMENT_METHODS: "MANAGE_PAYMENT_METHODS",
 
   // Settings
   VIEW_SETTINGS: "VIEW_SETTINGS",
+  MANAGE_SETTINGS: "MANAGE_SETTINGS",
 };
 
 // Grouped for UI display
@@ -148,7 +164,31 @@ export const PERMISSION_GROUPS = [
   {
     category: "Messaging",
     permissions: [
-      { key: PERMISSIONS.VIEW_MESSAGING, label: "Access Messaging" }
+      { key: PERMISSIONS.VIEW_MESSAGING, label: "Access Messaging" },
+      { key: PERMISSIONS.SEND_MESSAGES, label: "Send Messages" }
+    ]
+  },
+  {
+    category: "Notifications",
+    permissions: [
+      { key: PERMISSIONS.VIEW_NOTIFICATIONS, label: "View Notifications" },
+      { key: PERMISSIONS.MANAGE_NOTIFICATIONS, label: "Manage Notifications" }
+    ]
+  },
+  {
+    category: "Profile",
+    permissions: [
+      { key: PERMISSIONS.VIEW_PROFILE, label: "View Profile" },
+      { key: PERMISSIONS.EDIT_PROFILE, label: "Edit Profile" }
+    ]
+  },
+  {
+    category: "Subscription & Billing",
+    permissions: [
+      { key: PERMISSIONS.VIEW_SUBSCRIPTION, label: "View Subscription Plans" },
+      { key: PERMISSIONS.MANAGE_SUBSCRIPTION, label: "Upgrade/Downgrade Plans" },
+      { key: PERMISSIONS.VIEW_BILLING_HISTORY, label: "View Billing History" },
+      { key: PERMISSIONS.MANAGE_PAYMENT_METHODS, label: "Manage Payment Methods" }
     ]
   },
   {
@@ -165,9 +205,10 @@ export const PERMISSION_GROUPS = [
     ]
   },
   {
-    category: "System",
+    category: "System Settings",
     permissions: [
-      { key: PERMISSIONS.VIEW_SETTINGS, label: "Access Settings" }
+      { key: PERMISSIONS.VIEW_SETTINGS, label: "View Settings" },
+      { key: PERMISSIONS.MANAGE_SETTINGS, label: "Manage Settings" }
     ]
   }
 ];

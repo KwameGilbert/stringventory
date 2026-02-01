@@ -122,7 +122,7 @@ export default function ChatArea({ activeContact, messages, onSendMessage }) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type your message..."
-            className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-2 max-h-32 text-sm text-gray-900 placeholder:text-gray-400"
+            className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-2 px-3 focus:outline-none max-h-32 text-sm text-gray-900 placeholder:text-gray-400"
             rows={1}
           />
           
