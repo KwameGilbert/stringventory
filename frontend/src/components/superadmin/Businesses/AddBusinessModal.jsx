@@ -188,7 +188,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
                       errors.name ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="e.g., Acme Innovations Inc."
@@ -207,7 +207,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
                       errors.email ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="contact@business.com"
@@ -226,7 +226,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                     name="owner_name"
                     value={formData.owner_name}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
                       errors.owner_name ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="John Doe"
@@ -245,7 +245,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
                       errors.phone ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="+1-555-0123"
@@ -263,7 +263,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                     name="industry"
                     value={formData.industry}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
                       errors.industry ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -285,7 +285,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                     name="country"
                     value={formData.country}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
                       errors.country ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
@@ -313,7 +313,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                     name="subscription_plan"
                     value={formData.subscription_plan}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     {PRICING_PLANS.map(plan => (
                       <option key={plan.id} value={plan.id}>
@@ -331,7 +331,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="trial">Trial</option>
                     <option value="active">Active</option>
@@ -351,7 +351,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
                 value={formData.notes}
                 onChange={handleChange}
                 rows="3"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 placeholder="Add any additional notes about this business..."
               />
             </div>
@@ -370,7 +370,7 @@ export default function AddBusinessModal({ isOpen, onClose, onAdd }) {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>

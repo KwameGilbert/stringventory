@@ -149,8 +149,8 @@ export default function Inventory() {
         {/* Total Units */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-purple-50">
-              <Package className="w-5 h-5 text-purple-600" />
+            <div className="p-2.5 rounded-lg bg-emerald-50">
+              <Package className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Units</p>

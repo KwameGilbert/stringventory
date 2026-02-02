@@ -134,8 +134,8 @@ export default function ViewInventory() {
               <div className="grid grid-cols-2 gap-6">
                 {/* Quantity */}
                 <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-purple-50">
-                    <Package className="w-5 h-5 text-purple-600" />
+                  <div className="p-2 rounded-lg bg-emerald-50">
+                    <Package className="w-5 h-5 text-emerald-600" />
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Quantity Received</p>

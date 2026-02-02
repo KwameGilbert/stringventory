@@ -45,8 +45,8 @@ const mockNotifications = [
     time: '1 hour ago',
     read: false,
     icon: TrendingUp,
-    iconColor: 'text-purple-600',
-    bgColor: 'bg-purple-100'
+    iconColor: 'text-emerald-600',
+    bgColor: 'bg-emerald-100'
   },
   {
     id: 4,
@@ -176,13 +176,13 @@ export default function Notifications() {
               className={`
                 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
                 ${activeTab === tab.id 
-                  ? 'border-purple-600 text-purple-600' 
+                  ? 'border-emerald-600 text-emerald-600' 
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
               `}
             >
               {tab.label}
               <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
-                activeTab === tab.id ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-600'
+                activeTab === tab.id ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-600'
               }`}>
                 {tab.count}
               </span>
@@ -214,7 +214,7 @@ export default function Notifications() {
                 <div 
                   key={notification.id}
                   className={`flex items-start gap-4 p-4 hover:bg-gray-50 transition-colors ${
-                    !notification.read ? 'bg-purple-50/50' : ''
+                    !notification.read ? 'bg-emerald-50/50' : ''
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${notification.bgColor}`}>
@@ -233,7 +233,7 @@ export default function Notifications() {
                         {!notification.read && (
                           <button
                             onClick={() => markAsRead(notification.id)}
-                            className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                             title="Mark as read"
                           >
                             <Check className="w-4 h-4" />
@@ -250,7 +250,7 @@ export default function Notifications() {
                     </div>
                   </div>
                   {!notification.read && (
-                    <div className="w-2 h-2 bg-purple-600 rounded-full flex-shrink-0 mt-2" />
+                    <div className="w-2 h-2 bg-emerald-600 rounded-full flex-shrink-0 mt-2" />
                   )}
                 </div>
               );

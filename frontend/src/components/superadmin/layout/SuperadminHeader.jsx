@@ -23,7 +23,7 @@ export default function SuperadminHeader({ onMenuToggle }) {
             <input
               type="text"
               placeholder="Search businesses, users, or settings..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
             />
           </div>
         </div>
@@ -44,14 +44,17 @@ export default function SuperadminHeader({ onMenuToggle }) {
           {/* User menu */}
           <div className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-gray-200">
             <Link to="/superadmin/profile" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity">
-              <img
-                src={user?.avatar}
-                alt={user?.name}
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full"
-              />
+              <div className="relative">
+                <img
+                  src={user?.avatar}
+                  alt={user?.name}
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full ring-2 ring-slate-200"
+                />
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></div>
+              </div>
               <div className="hidden md:block">
                 <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
-                <p className="text-xs text-purple-600">{user?.role}</p>
+                <p className="text-xs text-emerald-600">{user?.role}</p>
               </div>
             </Link>
             <button

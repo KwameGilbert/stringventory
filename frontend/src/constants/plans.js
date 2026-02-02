@@ -99,7 +99,7 @@ export const PRICING_PLANS = [
     priceMonthly: 149,
     priceYearly: 1430,
     popular: true,
-    color: 'purple',
+    color: 'blue',
     features: [
       '15 users',
       '5,000 products',

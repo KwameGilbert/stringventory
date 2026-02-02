@@ -183,7 +183,7 @@ export default function AddBusiness() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="e.g., Acme Innovations Inc."
@@ -202,7 +202,7 @@ export default function AddBusiness() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="contact@business.com"
@@ -221,7 +221,7 @@ export default function AddBusiness() {
                 name="owner_name"
                 value={formData.owner_name}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${
                   errors.owner_name ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="John Doe"
@@ -240,7 +240,7 @@ export default function AddBusiness() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${
                   errors.phone ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="+1-555-0123"
@@ -258,7 +258,7 @@ export default function AddBusiness() {
                 name="industry"
                 value={formData.industry}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${
                   errors.industry ? 'border-red-500' : 'border-gray-300'
                 }`}
               >
@@ -280,7 +280,7 @@ export default function AddBusiness() {
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
-                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors ${
+                className={`w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors ${
                   errors.country ? 'border-red-500' : 'border-gray-300'
                 }`}
               >
@@ -308,7 +308,7 @@ export default function AddBusiness() {
                 name="subscription_plan"
                 value={formData.subscription_plan}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
               >
                 {PRICING_PLANS.map(plan => (
                   <option key={plan.id} value={plan.id}>
@@ -330,7 +330,7 @@ export default function AddBusiness() {
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
               >
                 <option value="trial">Trial (14 days)</option>
                 <option value="active">Active</option>
@@ -355,7 +355,7 @@ export default function AddBusiness() {
               value={formData.notes}
               onChange={handleChange}
               rows="4"
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors resize-none"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors resize-none"
               placeholder="Add any additional notes about this business..."
             />
             <p className="mt-2 text-xs text-gray-500">
@@ -377,7 +377,7 @@ export default function AddBusiness() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 px-6 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

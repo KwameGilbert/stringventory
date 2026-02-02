@@ -29,7 +29,7 @@ export default function BusinessOverview({ business, handleAction }) {
       free_trial: 'bg-gray-100 text-gray-800 border-gray-200',
       starter: 'bg-emerald-100 text-emerald-800 border-emerald-200',
       professional: 'bg-blue-100 text-blue-800 border-blue-200',
-      enterprise: 'bg-purple-100 text-purple-800 border-purple-200'
+      enterprise: 'bg-emerald-100 text-emerald-800 border-emerald-200'
     };
     return badges[plan] || 'bg-gray-100 text-gray-800';
   };
@@ -96,7 +96,7 @@ export default function BusinessOverview({ business, handleAction }) {
              <h2 className="text-lg font-semibold text-gray-900 mb-6">Resource Usage</h2>
              <div className="space-y-6">
                 {[
-                    { label: 'Users', current: business.current_usage.total_users, max: business.usage_limits.maxUsers, color: 'bg-purple-600', icon: Users },
+                    { label: 'Users', current: business.current_usage.total_users, max: business.usage_limits.maxUsers, color: 'bg-emerald-600', icon: Users },
                     { label: 'Products', current: business.current_usage.total_products, max: business.usage_limits.maxProducts, color: 'bg-emerald-600', icon: Package },
                     { label: 'Storage (GB)', current: business.current_usage.storage_used, max: business.usage_limits.maxStorage, color: 'bg-blue-600', icon: FileText },
                 ].map((item, i) => {

@@ -1,9 +1,9 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 // eslint-disable-next-line no-unused-vars
-export default function KPICard({ title, value, change, changeType, icon: Icon, color = 'purple', subtitle }) {
+export default function KPICard({ title, value, change, changeType, icon: Icon, color = 'emerald ', subtitle }) {
   const colorClasses = {
-    purple: 'bg-purple-100 text-purple-600',
+    emerald : 'bg-emerald-100 text-emerald-600',
     emerald: 'bg-emerald-100 text-emerald-600',
     blue: 'bg-blue-100 text-blue-600',
     amber: 'bg-amber-100 text-amber-600'

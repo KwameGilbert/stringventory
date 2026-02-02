@@ -52,7 +52,7 @@ const plans = [
     period: "month",
     description: "Best for growing businesses",
     icon: Crown,
-    color: "purple",
+    color: "emerald ",
     popular: true,
     features: [
       { name: "Up to 5,000 products", included: true },
@@ -186,11 +186,11 @@ export default function SubscriptionSettings() {
         badge: "bg-emerald-100 text-emerald-700",
         icon: "text-emerald-600"
       },
-      purple: {
-        bg: isActive ? "bg-purple-50 border-purple-500" : "bg-white border-gray-200",
-        button: "bg-purple-600 hover:bg-purple-700",
-        badge: "bg-purple-100 text-purple-700",
-        icon: "text-purple-600"
+      emerald : {
+        bg: isActive ? "bg-emerald-50 border-emerald-500" : "bg-white border-gray-200",
+        button: "bg-emerald-600 hover:bg-emerald-700",
+        badge: "bg-emerald-100 text-emerald-700",
+        icon: "text-emerald-600"
       },
       amber: {
         bg: isActive ? "bg-amber-50 border-amber-500" : "bg-white border-gray-200",
@@ -271,7 +271,7 @@ export default function SubscriptionSettings() {
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
+                  <span className="px-3 py-1 bg-emerald-600 text-white text-xs font-semibold rounded-full">
                     Most Popular
                   </span>
                 </div>

@@ -32,9 +32,9 @@ const statusConfig = {
   },
   refunded: {
     label: "Refunded",
-    bg: "bg-purple-100",
-    text: "text-purple-700",
-    border: "border-purple-200",
+    bg: "bg-emerald-100",
+    text: "text-emerald-700",
+    border: "border-emerald-200",
     icon: RotateCcw,
   },
 };

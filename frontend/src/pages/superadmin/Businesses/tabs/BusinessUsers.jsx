@@ -5,7 +5,7 @@ export default function BusinessUsers({ users }) {
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-gray-900">Team Members</h2>
-            <button className="text-sm text-purple-600 font-medium hover:text-purple-700">Export List</button>
+            <button className="text-sm text-emerald-600 font-medium hover:text-emerald-700">Export List</button>
         </div>
         <table className="w-full">
             <thead className="bg-gray-50">
@@ -21,7 +21,7 @@ export default function BusinessUsers({ users }) {
                     <tr key={user.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">
+                                <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-xs">
                                     {user.name.charAt(0)}
                                 </div>
                                 <div>

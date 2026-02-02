@@ -167,10 +167,10 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
         {/* Supplier & Batch Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-violet-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-emerald-50">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-100">
-                <Truck className="w-5 h-5 text-purple-600" />
+              <div className="p-2 rounded-lg bg-emerald-100">
+                <Truck className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Supply Details</h3>
@@ -190,7 +190,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                 name="supplier"
                 value={formData.supplier}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm"
                 placeholder="e.g., Coca-Cola Ghana Ltd"
                 required
               />
@@ -208,7 +208,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                 name="batchNumber"
                 value={formData.batchNumber}
                 onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all text-sm font-mono"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm font-mono"
                 placeholder="e.g., BN-2024-001"
               />
             </div>

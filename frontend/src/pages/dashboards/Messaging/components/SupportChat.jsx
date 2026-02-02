@@ -65,7 +65,7 @@ export default function SupportChat({ isOnline }) {
       {/* Chat Header */}
       <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-white">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">
+          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold">
             SV
           </div>
           <div>
@@ -97,7 +97,7 @@ export default function SupportChat({ isOnline }) {
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[70%] group flex gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
                 {!isMe && (
-                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs mt-1 self-end">
+                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-xs mt-1 self-end">
                     SV
                   </div>
                 )}
@@ -105,7 +105,7 @@ export default function SupportChat({ isOnline }) {
                   <div
                     className={`px-4 py-2 rounded-2xl text-sm shadow-sm
                     ${isMe 
-                      ? 'bg-purple-600 text-white rounded-br-none' 
+                      ? 'bg-emerald-600 text-white rounded-br-none' 
                       : 'bg-white text-gray-900 border border-gray-100 rounded-bl-none'}
                     `}
                   >
@@ -127,12 +127,12 @@ export default function SupportChat({ isOnline }) {
 
       {/* Input Area */}
       <div className="p-4 bg-white border-t border-gray-200">
-        <div className="bg-gray-50 rounded-xl p-2 flex items-end gap-2 border border-gray-200 focus-within:ring-2 focus-within:ring-purple-500/20 focus-within:border-purple-500 transition-all">
+        <div className="bg-gray-50 rounded-xl p-2 flex items-end gap-2 border border-gray-200 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all">
           <div className="flex gap-1 pb-1">
-            <button className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+            <button className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
               <Paperclip className="w-5 h-5" />
             </button>
-            <button className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+            <button className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
               <ImageIcon className="w-5 h-5" />
             </button>
           </div>
@@ -145,13 +145,13 @@ export default function SupportChat({ isOnline }) {
             rows={1}
           />
           <div className="flex gap-1 pb-1">
-            <button className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors">
+            <button className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
               <Smile className="w-5 h-5" />
             </button>
             <button 
               onClick={handleSupportSend}
               disabled={!chatInput.trim()}
-              className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+              className="p-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
             >
               <Send className="w-5 h-5" />
             </button>

@@ -171,7 +171,7 @@ export default function Reports() {
              {/* Sales Summary Cards */}
              <SummaryCard title="Total Revenue" value={formatCurrency(data?.salesReport?.summary?.totalRevenue || 0)} icon={DollarSign} color="emerald" />
              <SummaryCard title="Total Sales" value={data?.salesReport?.summary?.totalOrders || 0} icon={Package} color="blue" />
-             <SummaryCard title="Avg. Order Value" value={formatCurrency(data?.salesReport?.summary?.averageOrderValue || 0)} icon={TrendingUp} color="purple" />
+             <SummaryCard title="Avg. Order Value" value={formatCurrency(data?.salesReport?.summary?.averageOrderValue || 0)} icon={TrendingUp} color="emerald " />
              <SummaryCard title="Growth" value={`${data?.salesReport?.summary?.growth || 0}%`} icon={BarChart3} color="amber" />
           </div>
 
@@ -259,7 +259,7 @@ export default function Reports() {
          <div className="space-y-6 animate-fade-in">
            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
              <SummaryCard title="Total Expenses" value={formatCurrency(data?.expenseReport?.summary?.totalExpenses || 0)} icon={DollarSign} color="rose" />
-             <SummaryCard title="Largest Category" value={data?.expenseReport?.summary?.largestCategory || "N/A"} icon={BarChart3} color="purple" />
+             <SummaryCard title="Largest Category" value={data?.expenseReport?.summary?.largestCategory || "N/A"} icon={BarChart3} color="emerald " />
              <SummaryCard title="Trend" value={`${data?.expenseReport?.summary?.trend || 0}%`} icon={TrendingUp} color={data?.expenseReport?.summary?.trend > 0 ? "rose" : "emerald"} />
           </div>
 
@@ -321,7 +321,7 @@ export default function Reports() {
            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
              <SummaryCard title="Total Revenue" value={formatCurrency(data?.profitAndLoss?.summary?.totalRevenue || 0)} icon={DollarSign} color="blue" />
              <SummaryCard title="Net Profit" value={formatCurrency(data?.profitAndLoss?.summary?.netProfit || 0)} icon={TrendingUp} color="emerald" />
-              <SummaryCard title="Profit Margin" value={`${data?.profitAndLoss?.summary?.margin || 0}%`} icon={BarChart} color="purple" />
+              <SummaryCard title="Profit Margin" value={`${data?.profitAndLoss?.summary?.margin || 0}%`} icon={BarChart} color="emerald " />
           </div>
 
            {/* P&L Chart */}
@@ -403,7 +403,7 @@ export default function Reports() {
          <div className="space-y-6 animate-fade-in">
            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
              <SummaryCard title="Active Users" value={data?.userActivity?.summary?.activeUsers || 0} icon={Users} color="blue" />
-             <SummaryCard title="Total Actions" value={data?.userActivity?.summary?.totalActions || 0} icon={Package} color="purple" />
+             <SummaryCard title="Total Actions" value={data?.userActivity?.summary?.totalActions || 0} icon={Package} color="emerald " />
              <SummaryCard title="Most Active" value={data?.userActivity?.summary?.mostActiveUser || "N/A"} icon={TrendingUp} color="emerald" />
           </div>
 
@@ -456,7 +456,7 @@ function SummaryCard({ title, value, icon, color }) {
     emerald: "bg-emerald-50 text-emerald-600",
     rose: "bg-rose-50 text-rose-600",
     amber: "bg-amber-50 text-amber-600",
-    purple: "bg-purple-50 text-purple-600",
+    emerald : "bg-emerald-50 text-emerald-600",
     red: "bg-red-50 text-red-600",
   };
 
@@ -465,7 +465,7 @@ function SummaryCard({ title, value, icon, color }) {
     emerald: "text-emerald-600",
     rose: "text-rose-600",
     amber: "text-amber-600",
-    purple: "text-gray-900", // Default or specific
+    emerald : "text-gray-900", // Default or specific
     red: "text-red-600",
   };
 

@@ -63,8 +63,8 @@ const OperationalOverview = ({ dateRange }) => {
         {/* Total Orders */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center justify-between mb-3">
-            <div className="p-2 rounded-lg bg-purple-100">
-              <ShoppingCart className="w-5 h-5 text-purple-600" />
+            <div className="p-2 rounded-lg bg-emerald-100">
+              <ShoppingCart className="w-5 h-5 text-emerald-600" />
             </div>
             {data?.totalOrders?.change !== 0 && (
               <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${

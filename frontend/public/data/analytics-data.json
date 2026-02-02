@@ -27,7 +27,7 @@
   ],
   "revenueByPlan": [
     { "plan": "Enterprise", "revenue": 65000, "percentage": 52, "count": 130, "color": "bg-amber-500", "fill": "#f59e0b" },
-    { "plan": "Professional", "revenue": 45000, "percentage": 36, "count": 300, "color": "bg-purple-500", "fill": "#8b5cf6" },
+    { "plan": "Professional", "revenue": 45000, "percentage": 36, "count": 300, "color": "bg-emerald-500", "fill": "#8b5cf6" },
     { "plan": "Starter", "revenue": 12430, "percentage": 10, "count": 250, "color": "bg-emerald-500", "fill": "#10b981" },
     { "plan": "Free Trial", "revenue": 0, "percentage": 2, "count": 50, "color": "bg-gray-500", "fill": "#6b7280" }
   ],
