@@ -456,7 +456,6 @@ function SummaryCard({ title, value, icon, color }) {
     emerald: "bg-emerald-50 text-emerald-600",
     rose: "bg-rose-50 text-rose-600",
     amber: "bg-amber-50 text-amber-600",
-    emerald : "bg-emerald-50 text-emerald-600",
     red: "bg-red-50 text-red-600",
   };
 
@@ -465,7 +464,6 @@ function SummaryCard({ title, value, icon, color }) {
     emerald: "text-emerald-600",
     rose: "text-rose-600",
     amber: "text-amber-600",
-    emerald : "text-gray-900", // Default or specific
     red: "text-red-600",
   };
 

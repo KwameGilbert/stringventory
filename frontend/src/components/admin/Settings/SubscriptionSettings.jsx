@@ -186,12 +186,6 @@ export default function SubscriptionSettings() {
         badge: "bg-emerald-100 text-emerald-700",
         icon: "text-emerald-600"
       },
-      emerald : {
-        bg: isActive ? "bg-emerald-50 border-emerald-500" : "bg-white border-gray-200",
-        button: "bg-emerald-600 hover:bg-emerald-700",
-        badge: "bg-emerald-100 text-emerald-700",
-        icon: "text-emerald-600"
-      },
       amber: {
         bg: isActive ? "bg-amber-50 border-amber-500" : "bg-white border-gray-200",
         button: "bg-amber-600 hover:bg-amber-700",
