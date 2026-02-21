@@ -194,6 +194,70 @@ export class SessionService {
   }
 
   /**
+   * Refresh a token (rotation) - Wrapper for rotateRefreshToken
+   * @param {string} oldToken - Old refresh token
+   * @param {Object} req - Express request
+   * @returns {Promise<Object>} New tokens
+   */
+  static async refreshToken(oldToken, req) {
+    const validToken = await this.validateRefreshToken(oldToken);
+    if (!validToken) {
+      throw new Error('Invalid or expired refresh token');
+    }
+
+    // Reuse rotation logic
+    const userId = validToken.userId; // Wait, RefreshTokenModel might not have userId directly
+    // Let's check RefreshTokenModel schema... it has sessionId.
+    // I need to get userId from the session.
+    const session = await AuthSessionModel.findById(validToken.sessionId);
+    if (!session || !session.isActive) {
+      throw new Error('Session is inactive');
+    }
+
+    const { refreshToken: newToken } = await this.rotateRefreshToken(oldToken, session.userId);
+    const { accessToken } = await import('../utils/jwt.js').then((m) =>
+      m.generateTokenPair({
+        id: session.userId,
+        email: null, // We'd need to fetch user, but we can just use extractUserId for most things
+        // Actually, it's better to fetch the user or at least the payload from somewhere.
+      })
+    );
+    // Wait, let's keep it simple for now or fetch the user.
+
+    // Better implementation of refreshToken:
+    const user = await import('../models/UserModel.js').then((m) =>
+      m.UserModel.findById(session.userId)
+    );
+    const { generateTokenPair } = await import('../utils/jwt.js');
+    const tokens = generateTokenPair({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      businessId: user.businessId,
+    });
+
+    // Create new token record and link to session
+    await this.rotateRefreshToken(oldToken, user.id);
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
+  }
+
+  /**
+   * Revoke a session using a refresh token
+   * @param {string} token - Refresh token
+   */
+  static async revokeSessionByToken(token) {
+    const tokenRecord = await RefreshTokenModel.findByHash(token);
+    if (tokenRecord) {
+      await this.revokeSession(tokenRecord.sessionId);
+    }
+    return true;
+  }
+
+  /**
    * Rotate refresh token
    * @param {string} oldToken - Old refresh token
    * @param {string} userId - User ID

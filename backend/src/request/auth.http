@@ -1,0 +1,59 @@
+### Auth Routes
+
+@baseUrl = http://localhost:3000/v1
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "password": "Password123!",
+  "role": "user"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "Password123!"
+}
+
+### Get Profile (requires auth)
+@accessToken = {{login.response.body.accessToken}}
+
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{accessToken}}
+
+### Refresh Token
+@refreshToken = {{login.response.body.refreshToken}}
+
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Forgot Password
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "john.doe@example.com"
+}
+
+### Reset Password
+# Replace [TOKEN] with the token from the email/database
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+
+{
+    "token": "[TOKEN]",
+    "password": "NewSecurePassword123!"
+}

@@ -29,18 +29,32 @@ export const authenticate = async (req, res, next) => {
     // Check if token is blacklisted
     const tokenSvc = await getTokenService();
     const isBlacklisted = await tokenSvc.isBlacklisted(token);
-    
+
     if (isBlacklisted) {
       throw new UnauthorizedError('Token has been invalidated');
     }
 
     const decoded = jwt.verify(token, env.JWT_SECRET);
+    const userId = decoded.sub || decoded.id;
 
-    // Attach user to request
+    // Fetch latest user data from DB to ensure roles/status are current
+    const { UserModel } = await import('../models/UserModel.js');
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      throw new UnauthorizedError('User no longer exists');
+    }
+
+    if (user.status !== 'active') {
+      throw new ForbiddenError(`Account is ${user.status}`);
+    }
+
+    // Attach fresh user data to request
     req.user = {
-      id: decoded.sub || decoded.id,
-      email: decoded.email,
-      role: decoded.role,
+      id: user.id,
+      email: user.email,
+      role: user.role, // Latest role from DB
+      businessId: user.businessId,
     };
 
     next();
@@ -64,11 +78,11 @@ export const optionalAuth = async (req, res, next) => {
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
-      
+
       // Check blacklist
       const tokenSvc = await getTokenService();
       const isBlacklisted = await tokenSvc.isBlacklisted(token);
-      
+
       if (!isBlacklisted) {
         const decoded = jwt.verify(token, env.JWT_SECRET);
 
@@ -117,9 +131,7 @@ export const requirePermission = (...requiredPermissions) => {
 
     const userPermissions = req.user.permissions || [];
 
-    const hasPermission = requiredPermissions.some((perm) =>
-      userPermissions.includes(perm)
-    );
+    const hasPermission = requiredPermissions.some((perm) => userPermissions.includes(perm));
 
     if (!hasPermission) {
       return next(new ForbiddenError('Insufficient permissions'));
@@ -169,7 +181,7 @@ export const requireVerifiedEmail = async (req, res, next) => {
   const { UserModel } = await import('../models/UserModel.js');
   const user = await UserModel.findById(req.user.id);
 
-  if (!user || !user.email_verified_at) {
+  if (!user || !user.emailVerifiedAt) {
     return next(new ForbiddenError('Please verify your email address first'));
   }
 

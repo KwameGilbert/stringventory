@@ -9,7 +9,9 @@ export class AuditService {
   /**
    * Event types (re-export from model for convenience)
    */
-  static EVENT_TYPES = AuditLogModel.EVENT_TYPES;
+  static get EVENT_TYPES() {
+    return AuditLogModel.EVENT_TYPES;
+  }
 
   /**
    * Extract context from request
@@ -28,11 +30,14 @@ export class AuditService {
    * Log a generic audit event
    * @param {string} eventType - Type of event
    * @param {string} userId - User ID (null for anonymous)
-   * @param {Object} context - Request context
+   * @param {Object} contextOrReq - Request context object OR Express req object
    * @param {Object} metadata - Additional event data
    * @returns {Promise<Object>} Created audit log
    */
-  static async logEvent(eventType, userId, context, metadata = null) {
+  static async logEvent(eventType, userId, contextOrReq, metadata = null) {
+    const context =
+      contextOrReq && contextOrReq.headers ? this.extractContext(contextOrReq) : contextOrReq || {};
+
     return AuditLogModel.logEvent({
       eventType,
       userId,

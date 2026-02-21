@@ -17,7 +17,13 @@ export class BaseModel {
     this.timestamps = options.timestamps !== false;
     this.softDeletes = options.softDeletes || false;
     this.searchableFields = options.searchableFields || [];
-    this.sortableFields = options.sortableFields || ['created_at', 'updated_at'];
+
+    // Column naming conventions
+    this.createdAtColumn = options.createdAtColumn || 'createdAt';
+    this.updatedAtColumn = options.updatedAtColumn || 'updatedAt';
+    this.deletedAtColumn = options.deletedAtColumn || 'deletedAt';
+
+    this.sortableFields = options.sortableFields || [this.createdAtColumn, this.updatedAtColumn];
     this.hidden = options.hidden || [];
   }
 
@@ -31,12 +37,12 @@ export class BaseModel {
   /**
    * Get base query
    */
-  query() {
-    let query = this.getConnection()(this.tableName);
+  query(trx = null) {
+    let query = trx ? trx(this.tableName) : this.getConnection()(this.tableName);
 
     // Exclude soft-deleted records by default
     if (this.softDeletes) {
-      query = query.whereNull(`${this.tableName}.deleted_at`);
+      query = query.whereNull(`${this.tableName}.${this.deletedAtColumn}`);
     }
 
     return query;
@@ -47,12 +53,9 @@ export class BaseModel {
    */
   async findAll(options = {}) {
     const { page, limit, offset } = parsePagination(options);
-    const { field: sortField, order: sortOrder } = parseSort(
-      options,
-      this.sortableFields
-    );
+    const { field: sortField, order: sortOrder } = parseSort(options, this.sortableFields);
 
-    let query = this.query();
+    let query = options.trx ? this.query(options.trx) : this.query();
 
     // Apply search if provided
     if (options.search && this.searchableFields.length > 0) {
@@ -74,7 +77,8 @@ export class BaseModel {
 
     // Get total count
     const countQuery = query.clone();
-    const [{ count }] = await countQuery.count(`${this.primaryKey} as count`);
+    const countResult = await countQuery.count(`${this.primaryKey} as count`);
+    const count = countResult[0]?.count || 0;
     const total = parseInt(count);
 
     // Apply sorting and pagination
@@ -93,10 +97,8 @@ export class BaseModel {
   /**
    * Find a single record by ID
    */
-  async findById(id) {
-    const record = await this.query()
-      .where(`${this.tableName}.${this.primaryKey}`, id)
-      .first();
+  async findById(id, trx = null) {
+    const record = await this.query(trx).where(`${this.tableName}.${this.primaryKey}`, id).first();
 
     return record ? this.hideFields(record) : null;
   }
@@ -104,8 +106,8 @@ export class BaseModel {
   /**
    * Find a single record by ID or throw error
    */
-  async findByIdOrFail(id) {
-    const record = await this.findById(id);
+  async findByIdOrFail(id, trx = null) {
+    const record = await this.findById(id, trx);
 
     if (!record) {
       throw new NotFoundError(`${this.tableName} not found`);
@@ -117,10 +119,8 @@ export class BaseModel {
   /**
    * Find a single record by field value
    */
-  async findBy(field, value) {
-    const record = await this.query()
-      .where(`${this.tableName}.${field}`, value)
-      .first();
+  async findBy(field, value, trx = null) {
+    const record = await this.query(trx).where(`${this.tableName}.${field}`, value).first();
 
     return record ? this.hideFields(record) : null;
   }
@@ -128,9 +128,8 @@ export class BaseModel {
   /**
    * Find records by field value
    */
-  async findAllBy(field, value) {
-    const records = await this.query()
-      .where(`${this.tableName}.${field}`, value);
+  async findAllBy(field, value, trx = null) {
+    const records = await this.query(trx).where(`${this.tableName}.${field}`, value);
 
     return records.map((record) => this.hideFields(record));
   }
@@ -138,8 +137,8 @@ export class BaseModel {
   /**
    * Find first record matching conditions
    */
-  async findFirst(conditions = {}) {
-    let query = this.query();
+  async findFirst(conditions = {}, trx = null) {
+    let query = this.query(trx);
 
     for (const [key, value] of Object.entries(conditions)) {
       query = query.where(`${this.tableName}.${key}`, value);
@@ -152,12 +151,11 @@ export class BaseModel {
   /**
    * Create a new record
    */
-  async create(data) {
+  async create(data, trx = null) {
     const record = this.prepareForInsert(data);
 
-    const [created] = await this.getConnection()(this.tableName)
-      .insert(record)
-      .returning('*');
+    const q = trx ? trx(this.tableName) : this.getConnection()(this.tableName);
+    const [created] = await q.insert(record).returning('*');
 
     return this.hideFields(created);
   }
@@ -165,12 +163,11 @@ export class BaseModel {
   /**
    * Create multiple records
    */
-  async createMany(dataArray) {
+  async createMany(dataArray, trx = null) {
     const records = dataArray.map((data) => this.prepareForInsert(data));
 
-    const created = await this.getConnection()(this.tableName)
-      .insert(records)
-      .returning('*');
+    const q = trx ? trx(this.tableName) : this.getConnection()(this.tableName);
+    const created = await q.insert(records).returning('*');
 
     return created.map((record) => this.hideFields(record));
   }
@@ -178,10 +175,10 @@ export class BaseModel {
   /**
    * Update a record by ID
    */
-  async update(id, data) {
+  async update(id, data, trx = null) {
     const record = this.prepareForUpdate(data);
 
-    const [updated] = await this.query()
+    const [updated] = await this.query(trx)
       .where(`${this.tableName}.${this.primaryKey}`, id)
       .update(record)
       .returning('*');
@@ -192,8 +189,8 @@ export class BaseModel {
   /**
    * Update a record by ID or throw error
    */
-  async updateOrFail(id, data) {
-    const updated = await this.update(id, data);
+  async updateOrFail(id, data, trx = null) {
+    const updated = await this.update(id, data, trx);
 
     if (!updated) {
       throw new NotFoundError(`${this.tableName} not found`);
@@ -205,8 +202,8 @@ export class BaseModel {
   /**
    * Update records matching conditions
    */
-  async updateWhere(conditions, data) {
-    let query = this.query();
+  async updateWhere(conditions, data, trx = null) {
+    let query = this.query(trx);
 
     for (const [key, value] of Object.entries(conditions)) {
       query = query.where(`${this.tableName}.${key}`, value);
@@ -221,12 +218,12 @@ export class BaseModel {
   /**
    * Delete a record by ID
    */
-  async delete(id) {
+  async delete(id, trx = null) {
     if (this.softDeletes) {
-      return this.softDelete(id);
+      return this.softDelete(id, trx);
     }
 
-    const deleted = await this.query()
+    const deleted = await this.query(trx)
       .where(`${this.tableName}.${this.primaryKey}`, id)
       .del()
       .returning('*');
@@ -237,10 +234,13 @@ export class BaseModel {
   /**
    * Soft delete a record
    */
-  async softDelete(id) {
-    const [updated] = await this.query()
+  async softDelete(id, trx = null) {
+    const updateData = {};
+    updateData[this.deletedAtColumn] = new Date();
+
+    const [updated] = await this.query(trx)
       .where(`${this.tableName}.${this.primaryKey}`, id)
-      .update({ deleted_at: new Date() })
+      .update(updateData)
       .returning('*');
 
     return !!updated;
@@ -249,13 +249,17 @@ export class BaseModel {
   /**
    * Restore a soft-deleted record
    */
-  async restore(id) {
-    const query = this.getConnection()(this.tableName)
-      .where(`${this.tableName}.${this.primaryKey}`, id);
+  async restore(id, trx = null) {
+    const updateData = {};
+    updateData[this.deletedAtColumn] = null;
+    if (this.timestamps) {
+      updateData[this.updatedAtColumn] = new Date();
+    }
 
-    const [updated] = await query
-      .update({ deleted_at: null, updated_at: new Date() })
-      .returning('*');
+    const q = trx ? trx(this.tableName) : this.getConnection()(this.tableName);
+    const query = q.where(`${this.tableName}.${this.primaryKey}`, id);
+
+    const [updated] = await query.update(updateData).returning('*');
 
     return updated ? this.hideFields(updated) : null;
   }
@@ -263,8 +267,8 @@ export class BaseModel {
   /**
    * Check if a record exists
    */
-  async exists(conditions) {
-    let query = this.query();
+  async exists(conditions, trx = null) {
+    let query = this.query(trx);
 
     for (const [key, value] of Object.entries(conditions)) {
       query = query.where(`${this.tableName}.${key}`, value);
@@ -277,14 +281,15 @@ export class BaseModel {
   /**
    * Count records
    */
-  async count(conditions = {}) {
-    let query = this.query();
+  async count(conditions = {}, trx = null) {
+    let query = this.query(trx);
 
     for (const [key, value] of Object.entries(conditions)) {
       query = query.where(`${this.tableName}.${key}`, value);
     }
 
-    const [{ count }] = await query.count(`${this.primaryKey} as count`);
+    const countResult = await query.count(`${this.primaryKey} as count`);
+    const count = countResult[0]?.count || 0;
     return parseInt(count);
   }
 
@@ -302,8 +307,8 @@ export class BaseModel {
     // Add timestamps
     if (this.timestamps) {
       const now = new Date();
-      record.created_at = record.created_at || now;
-      record.updated_at = record.updated_at || now;
+      record[this.createdAtColumn] = record[this.createdAtColumn] || now;
+      record[this.updatedAtColumn] = record[this.updatedAtColumn] || now;
     }
 
     return record;
@@ -317,11 +322,11 @@ export class BaseModel {
 
     // Remove immutable fields
     delete record[this.primaryKey];
-    delete record.created_at;
+    delete record[this.createdAtColumn];
 
     // Update timestamp
     if (this.timestamps) {
-      record.updated_at = new Date();
+      record[this.updatedAtColumn] = new Date();
     }
 
     return record;

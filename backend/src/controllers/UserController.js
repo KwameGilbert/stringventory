@@ -1,10 +1,15 @@
-import { UserService } from '../services/UserService.js';
+import { UserModel } from '../models/UserModel.js';
 import { ApiResponse } from '../utils/response.js';
 import { asyncHandler } from '../middlewares/errorHandler.js';
 import { parsePagination } from '../utils/helpers.js';
+import { AuditService } from '../services/AuditService.js';
+import { emailService } from '../services/EmailService.js';
+import { tokenService } from '../services/TokenService.js';
+import { NotFoundError, ConflictError, ForbiddenError } from '../utils/errors.js';
 
 /**
  * User Controller
+ * Directly handles UserModel and coordinates with support services (Email, Audit, etc.)
  */
 export class UserController {
   /**
@@ -13,7 +18,7 @@ export class UserController {
    */
   static list = asyncHandler(async (req, res) => {
     const pagination = parsePagination(req.query);
-    const result = await UserService.list({
+    const result = await UserModel.findAll({
       ...pagination,
       search: req.query.search,
       filters: {
@@ -30,7 +35,11 @@ export class UserController {
    * GET /users/:id
    */
   static getById = asyncHandler(async (req, res) => {
-    const user = await UserService.getById(req.params.id);
+    const user = await UserModel.findById(req.params.id);
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
 
     return ApiResponse.success(res, user);
   });
@@ -40,7 +49,29 @@ export class UserController {
    * POST /users
    */
   static create = asyncHandler(async (req, res) => {
-    const user = await UserService.create(req.body);
+    const { email } = req.body;
+
+    // Check if user already exists
+    const existingUser = await UserModel.findByEmail(email);
+    if (existingUser) {
+      throw new ConflictError('User with this email already exists');
+    }
+
+    const user = await UserModel.create({
+      ...req.body,
+      email: email.toLowerCase(),
+      status: req.body.status || 'active',
+    });
+
+    // Side Effects
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_CREATED, user.id, req, {
+      createdBy: req.user?.id || 'admin',
+    });
+
+    const { token } = await tokenService.createVerificationToken(user.id);
+    emailService
+      .sendVerificationEmail(user.email, user.firstName, token)
+      .catch((err) => console.error('Failed to send verification email:', err.message));
 
     return ApiResponse.created(res, user, 'User created successfully');
   });
@@ -50,7 +81,29 @@ export class UserController {
    * PATCH /users/:id
    */
   static update = asyncHandler(async (req, res) => {
-    const user = await UserService.update(req.params.id, req.body);
+    const userId = req.params.id;
+    const data = req.body;
+
+    // Check if email is being changed
+    if (data.email) {
+      const existingUser = await UserModel.findByEmail(data.email);
+      if (existingUser && existingUser.id !== userId) {
+        throw new ConflictError('User with this email already exists');
+      }
+      data.email = data.email.toLowerCase();
+    }
+
+    const user = await UserModel.update(userId, data);
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    // Side Effects
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_UPDATED, userId, req, {
+      updatedBy: req.user?.id,
+      fields: Object.keys(data),
+    });
 
     return ApiResponse.success(res, user, 'User updated successfully');
   });
@@ -60,7 +113,22 @@ export class UserController {
    * DELETE /users/:id
    */
   static delete = asyncHandler(async (req, res) => {
-    await UserService.delete(req.user, req.params.id);
+    const userId = req.params.id;
+
+    if (req.user && req.user.id === userId) {
+      throw new ForbiddenError('Cannot delete your own account');
+    }
+
+    const deleted = await UserModel.delete(userId);
+
+    if (!deleted) {
+      throw new NotFoundError('User not found');
+    }
+
+    // Side Effects
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_DELETED, userId, req, {
+      deletedBy: req.user?.id,
+    });
 
     return ApiResponse.success(res, null, 'User deleted successfully');
   });
@@ -70,7 +138,17 @@ export class UserController {
    * POST /users/:id/restore
    */
   static restore = asyncHandler(async (req, res) => {
-    const user = await UserService.restore(req.params.id);
+    const userId = req.params.id;
+    const user = await UserModel.restore(userId);
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    // Side Effects
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_ACTIVATED, userId, req, {
+      restoredBy: req.user?.id,
+    });
 
     return ApiResponse.success(res, user, 'User restored successfully');
   });
@@ -80,39 +158,48 @@ export class UserController {
    * PATCH /users/:id/role
    */
   static updateRole = asyncHandler(async (req, res) => {
+    const userId = req.params.id;
     const { role } = req.body;
-    const user = await UserService.updateRole(req.params.id, role);
+
+    const user = await UserModel.update(userId, { role });
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    // Side Effects
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ROLE_CHANGED, userId, req, {
+      newRole: role,
+      updatedBy: req.user?.id,
+    });
 
     return ApiResponse.success(res, user, 'User role updated successfully');
   });
 
   /**
-   * Activate user
-   * POST /users/:id/activate
+   * Status updates
    */
   static activate = asyncHandler(async (req, res) => {
-    const user = await UserService.activate(req.params.id);
+    const user = await UserModel.update(req.params.id, { status: 'active' });
+    if (!user) throw new NotFoundError('User not found');
 
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_ACTIVATED, user.id, req);
     return ApiResponse.success(res, user, 'User activated successfully');
   });
 
-  /**
-   * Deactivate user
-   * POST /users/:id/deactivate
-   */
   static deactivate = asyncHandler(async (req, res) => {
-    const user = await UserService.deactivate(req.params.id);
+    const user = await UserModel.update(req.params.id, { status: 'inactive' });
+    if (!user) throw new NotFoundError('User not found');
 
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_DEACTIVATED, user.id, req);
     return ApiResponse.success(res, user, 'User deactivated successfully');
   });
 
-  /**
-   * Suspend user
-   * POST /users/:id/suspend
-   */
   static suspend = asyncHandler(async (req, res) => {
-    const user = await UserService.suspend(req.params.id);
+    const user = await UserModel.update(req.params.id, { status: 'suspended' });
+    if (!user) throw new NotFoundError('User not found');
 
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_LOCKED, user.id, req);
     return ApiResponse.success(res, user, 'User suspended successfully');
   });
 }

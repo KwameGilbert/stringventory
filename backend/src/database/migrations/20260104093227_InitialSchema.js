@@ -12,8 +12,8 @@ export const up = async (knex) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.string('name', 100).unique().notNullable();
     table.text('description');
-    table.timestamp('created_at').defaultTo(knex.fn.now());
-    table.timestamp('updated_at').defaultTo(knex.fn.now());
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+    table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
 
   // PERMISSIONS
@@ -21,29 +21,29 @@ export const up = async (knex) => {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table.string('key', 100).unique().notNullable();
     table.text('description');
-    table.timestamp('created_at').defaultTo(knex.fn.now());
-    table.timestamp('updated_at').defaultTo(knex.fn.now());
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+    table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
 
   // ROLE PERMISSIONS
   await knex.schema.createTable('role_permissions', function (table) {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table
-      .uuid('role_id')
+      .uuid('roleId')
       .references('id')
       .inTable('roles')
       .onDelete('CASCADE')
       .onUpdate('CASCADE')
       .notNullable();
     table
-      .uuid('permission_id')
+      .uuid('permissionId')
       .references('id')
       .inTable('permissions')
       .onDelete('CASCADE')
       .onUpdate('CASCADE')
       .notNullable();
-    table.timestamp('created_at').defaultTo(knex.fn.now());
-    table.timestamp('updated_at').defaultTo(knex.fn.now());
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+    table.timestamp('updatedAt').defaultTo(knex.fn.now());
   });
 
   // PRODUCT CATEGORIES
@@ -134,23 +134,27 @@ export const up = async (knex) => {
   await knex.schema.createTable('users', function (table) {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table
-      .uuid('role_id')
+      .uuid('roleId')
       .references('id')
       .inTable('roles')
       .onDelete('RESTRICT')
       .onUpdate('CASCADE')
-      .notNullable();
+      .nullable(); // Made nullable to support simple 'role' string for now
+    table.string('role', 50).defaultTo('user'); // Added back missing 'role' column
     table.string('firstName', 100).notNullable();
     table.string('lastName', 100).notNullable();
     table.string('email', 255).unique().notNullable();
     table.string('phone', 50);
-    table.string('password', 255).notNullable();
+    table.string('passwordHash', 255).notNullable();
+    table.string('status', 20).defaultTo('active');
     table.boolean('isActive').defaultTo(true);
     table.boolean('mfaEnabled').defaultTo(false);
     table.boolean('emailVerified').defaultTo(false);
+    table.timestamp('emailVerifiedAt').nullable();
     table.timestamp('lastLoginAt');
     table.timestamp('createdAt').defaultTo(knex.fn.now());
     table.timestamp('updatedAt').defaultTo(knex.fn.now());
+    table.timestamp('deletedAt').nullable();
   });
 
   // UNITS OF MEASUREMENT
@@ -377,14 +381,14 @@ export const up = async (knex) => {
   await knex.schema.createTable('discountProducts', function (table) {
     table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
     table
-      .uuid('discount_id')
+      .uuid('discountId')
       .references('id')
       .inTable('discounts')
       .onDelete('CASCADE')
       .onUpdate('CASCADE')
       .notNullable();
     table
-      .uuid('product_id')
+      .uuid('productId')
       .references('id')
       .inTable('products')
       .onDelete('CASCADE')
@@ -567,6 +571,36 @@ export const up = async (knex) => {
 
     table.index(['eventType']);
     table.index(['userId']);
+  });
+
+  // TOKENS (Verification, Reset, etc.)
+  await knex.schema.createTable('tokens', function (table) {
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+    table
+      .uuid('userId')
+      .references('id')
+      .inTable('users')
+      .onDelete('CASCADE')
+      .onUpdate('CASCADE')
+      .notNullable();
+    table.string('type', 50).notNullable(); // email_verification, password_reset, etc.
+    table.string('token', 255).notNullable();
+    table.timestamp('expiresAt').notNullable();
+    table.timestamp('usedAt').nullable();
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+
+    table.unique(['token', 'type']);
+    table.index(['userId', 'type']);
+  });
+
+  // TOKEN BLACKLIST (for revoked JWTs)
+  await knex.schema.createTable('tokenBlacklist', function (table) {
+    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
+    table.string('tokenHash', 255).notNullable().unique();
+    table.timestamp('expiresAt').notNullable();
+    table.timestamp('createdAt').defaultTo(knex.fn.now());
+
+    table.index(['expiresAt']);
   });
 
   // ============================================
@@ -760,6 +794,8 @@ export const down = async (knex) => {
 
   // TIER 3
   await knex.schema.dropTableIfExists('auditLogs');
+  await knex.schema.dropTableIfExists('tokenBlacklist');
+  await knex.schema.dropTableIfExists('tokens');
   await knex.schema.dropTableIfExists('loginAttempts');
   await knex.schema.dropTableIfExists('refreshTokens');
   await knex.schema.dropTableIfExists('authSessions');

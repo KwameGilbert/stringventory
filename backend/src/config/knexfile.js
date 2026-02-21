@@ -10,70 +10,63 @@ const __dirname = path.dirname(__filename);
 const envPath = path.resolve(__dirname, '../../.env');
 dotenv.config({ path: envPath });
 
-/**
- * Get default port based on database client
- */
-const getDefaultPort = (client) => {
-  switch (client) {
-    case 'mysql':
-    case 'mysql2':
-      return 3306;
-    case 'pg':
-    default:
-      return 5432;
-  }
-};
+const isProd = process.env.NODE_ENV === 'production';
 
 /**
- * Get connection configuration based on database client
+ * Get connection configuration based on environment
  */
 const getConnectionConfig = () => {
-  const client = process.env.DB_CLIENT || 'pg';
-  const port = process.env.DB_PORT ? parseInt(process.env.DB_PORT) : getDefaultPort(client);
+  const client = isProd ? process.env.PROD_DB_CLIENT || 'pg' : process.env.DEV_DB_CLIENT || 'pg';
 
-  // If DATABASE_URL is provided, use it
-  if (process.env.DATABASE_URL) {
-    return process.env.DATABASE_URL;
+  const databaseUrl = isProd ? process.env.PROD_DATABASE_URL : process.env.DEV_DATABASE_URL;
+
+  if (databaseUrl) {
+    return databaseUrl;
   }
 
   // Build connection object
-  const baseConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port,
-    user: process.env.DB_USER || (client === 'pg' ? 'postgres' : 'root'),
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'app_db',
+  const connection = {
+    host: isProd ? process.env.PROD_DB_HOST : process.env.DEV_DB_HOST || 'localhost',
+    port: isProd
+      ? parseInt(process.env.PROD_DB_PORT || '5432')
+      : parseInt(process.env.DEV_DB_PORT || '5432'),
+    user: isProd ? process.env.PROD_DB_USER : process.env.DEV_DB_USER || 'postgres',
+    password: isProd ? process.env.PROD_DB_PASSWORD : process.env.DEV_DB_PASSWORD || '',
+    database: isProd ? process.env.PROD_DB_NAME : process.env.DEV_DB_NAME || 'stringventory_dev',
   };
 
   // Add MySQL-specific options
   if (client === 'mysql' || client === 'mysql2') {
     return {
-      ...baseConfig,
+      ...connection,
       charset: 'utf8mb4',
       timezone: 'Z',
     };
   }
 
-  return baseConfig;
+  return connection;
 };
 
 /**
- * Knex configuration file
- * Supports PostgreSQL (pg) and MySQL (mysql/mysql2)
+ * Knex configuration
  */
 const config = {
-  client: process.env.DB_CLIENT || 'pg',
+  client: isProd ? process.env.PROD_DB_CLIENT || 'pg' : process.env.DEV_DB_CLIENT || 'pg',
   connection: getConnectionConfig(),
   pool: {
-    min: parseInt(process.env.DB_POOL_MIN) || 2,
-    max: parseInt(process.env.DB_POOL_MAX) || 10,
+    min: isProd
+      ? parseInt(process.env.PROD_DB_POOL_MIN || '2')
+      : parseInt(process.env.DEV_DB_POOL_MIN || '2'),
+    max: isProd
+      ? parseInt(process.env.PROD_DB_POOL_MAX || '20')
+      : parseInt(process.env.DEV_DB_POOL_MAX || '10'),
   },
   migrations: {
-    directory: './../database/migrations',
+    directory: '../../src/database/migrations',
     tableName: 'knex_migrations',
   },
   seeds: {
-    directory: './../database/seeds',
+    directory: '../../src/database/seeds',
   },
 };
 

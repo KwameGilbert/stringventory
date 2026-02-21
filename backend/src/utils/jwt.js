@@ -25,6 +25,7 @@ export const generateAccessToken = (payload) => {
     id: payload.id,
     email: payload.email,
     role: payload.role,
+    businessId: payload.businessId,
     permissions: payload.permissions || [],
     type: 'access',
   };

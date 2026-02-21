@@ -10,7 +10,7 @@ import crypto from 'crypto';
 class TokenService {
   constructor() {
     this.tableName = 'tokens';
-    this.blacklistTable = 'token_blacklist';
+    this.blacklistTable = 'tokenBlacklist';
   }
 
   // ============ TOKEN GENERATION ============
@@ -37,11 +37,11 @@ class TokenService {
 
     await db(this.tableName).insert({
       id: crypto.randomUUID(),
-      user_id: userId,
+      userId: userId,
       type,
       token,
-      expires_at: expiresAt,
-      created_at: new Date(),
+      expiresAt: expiresAt,
+      createdAt: new Date(),
     });
 
     logger.debug({ type, userId }, 'Token created');
@@ -61,8 +61,8 @@ class TokenService {
   async verifyToken(type, token) {
     const record = await db(this.tableName)
       .where({ type, token })
-      .where('expires_at', '>', new Date())
-      .whereNull('used_at')
+      .where('expiresAt', '>', new Date())
+      .whereNull('usedAt')
       .first();
 
     if (!record) {
@@ -70,11 +70,9 @@ class TokenService {
     }
 
     // Mark token as used
-    await db(this.tableName)
-      .where({ id: record.id })
-      .update({ used_at: new Date() });
+    await db(this.tableName).where({ id: record.id }).update({ usedAt: new Date() });
 
-    logger.debug({ type, userId: record.user_id }, 'Token verified and consumed');
+    logger.debug({ type, userId: record.userId }, 'Token verified and consumed');
 
     return record;
   }
@@ -83,14 +81,14 @@ class TokenService {
    * Invalidate all tokens of a type for a user
    */
   async invalidateUserTokens(userId, type = null) {
-    let query = db(this.tableName).where({ user_id: userId });
-    
+    let query = db(this.tableName).where({ userId: userId });
+
     if (type) {
       query = query.where({ type });
     }
 
-    await query.update({ used_at: new Date() });
-    
+    await query.update({ usedAt: new Date() });
+
     logger.debug({ userId, type }, 'User tokens invalidated');
   }
 
@@ -98,7 +96,7 @@ class TokenService {
 
   /**
    * Add a JWT to the blacklist
-   * @param {string} jti - JWT ID (or token hash)
+   * @param {string} token - JWT token
    * @param {Date} expiresAt - When to remove from blacklist
    */
   async blacklistToken(token, expiresAt) {
@@ -107,9 +105,9 @@ class TokenService {
     try {
       await db(this.blacklistTable).insert({
         id: crypto.randomUUID(),
-        token_hash: tokenHash,
-        expires_at: expiresAt,
-        created_at: new Date(),
+        tokenHash: tokenHash,
+        expiresAt: expiresAt,
+        createdAt: new Date(),
       });
 
       logger.debug('JWT added to blacklist');
@@ -129,9 +127,7 @@ class TokenService {
   async isBlacklisted(token) {
     const tokenHash = this.hashToken(token);
 
-    const record = await db(this.blacklistTable)
-      .where({ token_hash: tokenHash })
-      .first();
+    const record = await db(this.blacklistTable).where({ tokenHash: tokenHash }).first();
 
     return !!record;
   }
@@ -151,20 +147,19 @@ class TokenService {
     const now = new Date();
 
     // Delete expired tokens
-    const deletedTokens = await db(this.tableName)
-      .where('expires_at', '<', now)
-      .del();
+    const deletedTokens = await db(this.tableName).where('expiresAt', '<', now).del();
 
     // Delete expired blacklist entries
-    const deletedBlacklist = await db(this.blacklistTable)
-      .where('expires_at', '<', now)
-      .del();
+    const deletedBlacklist = await db(this.blacklistTable).where('expiresAt', '<', now).del();
 
     if (deletedTokens > 0 || deletedBlacklist > 0) {
-      logger.info({ 
-        deletedTokens, 
-        deletedBlacklist,
-      }, 'Cleaned up expired tokens');
+      logger.info(
+        {
+          deletedTokens,
+          deletedBlacklist,
+        },
+        'Cleaned up expired tokens'
+      );
     }
 
     return { deletedTokens, deletedBlacklist };
@@ -192,7 +187,7 @@ class TokenService {
   async createPasswordResetToken(userId) {
     // Invalidate existing reset tokens
     await this.invalidateUserTokens(userId, 'password_reset');
-    
+
     return this.createToken('password_reset', userId, 60); // 1 hour
   }
 

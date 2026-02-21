@@ -1,4 +1,5 @@
 import { BaseModel } from './BaseModel.js';
+import { generateUUID } from '../utils/helpers.js';
 
 /**
  * Audit Log Model
@@ -13,61 +14,13 @@ class AuditLogModelClass extends BaseModel {
       sortableFields: ['createdAt', 'eventType'],
       hidden: [],
     });
+
+    // Make EVENT_TYPES accessible on the instance
+    this.EVENT_TYPES = AuditLogModelClass.EVENT_TYPES;
   }
 
   /**
-   * Event type constants
-   */
-  static EVENT_TYPES = {
-    // Authentication events
-    LOGIN_SUCCESS: 'login_success',
-    LOGIN_FAILURE: 'login_failure',
-    LOGOUT: 'logout',
-    LOGOUT_ALL: 'logout_all',
-
-    // Token events
-    TOKEN_REFRESH: 'token_refresh',
-    TOKEN_REVOKED: 'token_revoked',
-    SESSION_REVOKED: 'session_revoked',
-    SESSION_EXPIRED: 'session_expired',
-
-    // Account events
-    PASSWORD_CHANGED: 'password_changed',
-    PASSWORD_RESET_REQUESTED: 'password_reset_requested',
-    PASSWORD_RESET_COMPLETED: 'password_reset_completed',
-    EMAIL_VERIFIED: 'email_verified',
-    EMAIL_CHANGED: 'email_changed',
-
-    // Security events
-    MFA_ENABLED: 'mfa_enabled',
-    MFA_DISABLED: 'mfa_disabled',
-    MFA_VERIFIED: 'mfa_verified',
-    MFA_FAILED: 'mfa_failed',
-    ACCOUNT_LOCKED: 'account_locked',
-    ACCOUNT_UNLOCKED: 'account_unlocked',
-    SUSPICIOUS_ACTIVITY: 'suspicious_activity',
-
-    // Permission events
-    PERMISSION_CHANGED: 'permission_changed',
-    ROLE_CHANGED: 'role_changed',
-
-    // Account management
-    ACCOUNT_CREATED: 'account_created',
-    ACCOUNT_DELETED: 'account_deleted',
-    ACCOUNT_ACTIVATED: 'account_activated',
-    ACCOUNT_DEACTIVATED: 'account_deactivated',
-  };
-
-  /**
    * Log an audit event
-   * @param {Object} data - Event data
-   * @param {string} data.eventType - Type of event
-   * @param {string} data.userId - User ID (null for anonymous events)
-   * @param {string} data.ipAddress - IP address
-   * @param {string} data.userAgent - User agent string
-   * @param {string} data.sessionId - Session ID (if applicable)
-   * @param {Object} data.metadata - Additional event metadata
-   * @returns {Object} Created audit log record
    */
   async logEvent(data) {
     const {
@@ -91,9 +44,6 @@ class AuditLogModelClass extends BaseModel {
 
   /**
    * Log login success
-   * @param {string} userId - User ID
-   * @param {Object} context - Request context (IP, UA, sessionId)
-   * @returns {Object} Created log
    */
   async logLoginSuccess(userId, context) {
     return this.logEvent({
@@ -105,15 +55,10 @@ class AuditLogModelClass extends BaseModel {
 
   /**
    * Log login failure
-   * @param {string} identifier - Email/username attempted
-   * @param {string} reason - Failure reason
-   * @param {Object} context - Request context
-   * @returns {Object} Created log
    */
   async logLoginFailure(identifier, reason, context) {
     return this.logEvent({
       eventType: AuditLogModelClass.EVENT_TYPES.LOGIN_FAILURE,
-      userId: null,
       metadata: { identifier, reason },
       ...context,
     });
@@ -121,9 +66,6 @@ class AuditLogModelClass extends BaseModel {
 
   /**
    * Log logout
-   * @param {string} userId - User ID
-   * @param {Object} context - Request context
-   * @returns {Object} Created log
    */
   async logLogout(userId, context) {
     return this.logEvent({
@@ -135,9 +77,6 @@ class AuditLogModelClass extends BaseModel {
 
   /**
    * Log password change
-   * @param {string} userId - User ID
-   * @param {Object} context - Request context
-   * @returns {Object} Created log
    */
   async logPasswordChange(userId, context) {
     return this.logEvent({
@@ -149,10 +88,6 @@ class AuditLogModelClass extends BaseModel {
 
   /**
    * Log suspicious activity
-   * @param {string} userId - User ID (if known)
-   * @param {string} description - Activity description
-   * @param {Object} context - Request context
-   * @returns {Object} Created log
    */
   async logSuspiciousActivity(userId, description, context) {
     return this.logEvent({
@@ -164,197 +99,88 @@ class AuditLogModelClass extends BaseModel {
   }
 
   /**
-   * Get audit logs for a user
-   * @param {string} userId - User ID
-   * @param {Object} options - Pagination and filter options
-   * @returns {Object} Paginated audit logs
+   * Get logs for a user
    */
   async getUserLogs(userId, options = {}) {
-    const filters = { userId, ...options.filters };
-    return this.findAll({ ...options, filters });
-  }
-
-  /**
-   * Get logs by event type
-   * @param {string} eventType - Event type
-   * @param {Object} options - Pagination options
-   * @returns {Object} Paginated logs
-   */
-  async getEventLogs(eventType, options = {}) {
-    const filters = { eventType, ...options.filters };
+    const filters = { userId };
     return this.findAll({ ...options, filters });
   }
 
   /**
    * Get recent logs for a user
-   * @param {string} userId - User ID
-   * @param {number} limit - Number of records
-   * @returns {Array} Recent logs
    */
   async getUserRecentLogs(userId, limit = 20) {
-    const records = await this.query()
-      .where('userId', userId)
-      .orderBy('createdAt', 'desc')
-      .limit(limit);
-
-    return records;
+    return this.query().where('userId', userId).orderBy('createdAt', 'desc').limit(limit);
   }
 
   /**
-   * Get security events (filtered list of security-related events)
-   * @param {Object} options - Filter and pagination options
-   * @returns {Object} Paginated security events
+   * Get security-related events
    */
   async getSecurityEvents(options = {}) {
-    const securityEventTypes = [
+    const securityEvents = [
       AuditLogModelClass.EVENT_TYPES.LOGIN_FAILURE,
-      AuditLogModelClass.EVENT_TYPES.MFA_FAILED,
+      AuditLogModelClass.EVENT_TYPES.PASSWORD_RESET_REQUESTED,
       AuditLogModelClass.EVENT_TYPES.ACCOUNT_LOCKED,
       AuditLogModelClass.EVENT_TYPES.SUSPICIOUS_ACTIVITY,
-      AuditLogModelClass.EVENT_TYPES.SESSION_REVOKED,
     ];
 
-    let query = this.query().whereIn('eventType', securityEventTypes);
-
-    if (options.filters) {
-      query = this.applyFilters(query, options.filters);
-    }
-
-    const { page = 1, limit = 50 } = options;
-    const offset = (page - 1) * limit;
-
-    const [{ count }] = await query.clone().count('id as count');
-    const total = parseInt(count);
-
-    const data = await query.orderBy('createdAt', 'desc').limit(limit).offset(offset);
-
-    return {
-      data,
-      pagination: { page, limit, total },
-    };
+    const query = this.query().whereIn('eventType', securityEvents);
+    return this.findAll({ ...options, query });
   }
 
   /**
-   * Get event type statistics
-   * @param {Date} startDate - Start date
-   * @param {Date} endDate - End date
-   * @returns {Array} Event type counts
+   * Get logs by event type
    */
-  async getEventTypeStats(startDate, endDate = new Date()) {
-    const records = await this.query()
-      .whereBetween('createdAt', [startDate, endDate])
-      .groupBy('eventType')
-      .select('eventType')
-      .count('* as count')
-      .orderBy('count', 'desc');
-
-    return records.map((record) => ({
-      eventType: record.eventType,
-      count: parseInt(record.count),
-    }));
-  }
-
-  /**
-   * Get user activity summary
-   * @param {string} userId - User ID
-   * @param {number} days - Number of days to look back
-   * @returns {Object} Activity summary
-   */
-  async getUserActivitySummary(userId, days = 30) {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - days);
-
-    const records = await this.query()
-      .where('userId', userId)
-      .where('createdAt', '>=', startDate)
-      .groupBy('eventType')
-      .select('eventType')
-      .count('* as count');
-
-    const summary = {
-      userId,
-      period: { days, startDate, endDate: new Date() },
-      events: {},
-      totalEvents: 0,
-    };
-
-    records.forEach((record) => {
-      summary.events[record.eventType] = parseInt(record.count);
-      summary.totalEvents += parseInt(record.count);
-    });
-
-    return summary;
-  }
-
-  /**
-   * Get logs by IP address
-   * @param {string} ipAddress - IP address
-   * @param {Object} options - Pagination options
-   * @returns {Object} Paginated logs
-   */
-  async getLogsByIP(ipAddress, options = {}) {
-    const filters = { ipAddress, ...options.filters };
+  async getEventLogs(eventType, options = {}) {
+    const filters = { eventType };
     return this.findAll({ ...options, filters });
   }
 
   /**
-   * Search logs by metadata
-   * @param {Object} metadataSearch - Key-value pairs to search in metadata JSON
-   * @param {Object} options - Pagination options
-   * @returns {Array} Matching logs
+   * Get user activity summary
    */
-  async searchByMetadata(metadataSearch, options = {}) {
-    let query = this.query();
+  async getUserActivitySummary(userId, days = 30) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
 
-    // For PostgreSQL JSON search
-    for (const [key, value] of Object.entries(metadataSearch)) {
-      query = query.whereRaw(`metadata->>'${key}' = ?`, [value]);
-    }
+    const logs = await this.query()
+      .where('userId', userId)
+      .where('createdAt', '>=', cutoffDate)
+      .select('eventType')
+      .count('id as count')
+      .groupBy('eventType');
 
-    const { page = 1, limit = 50 } = options;
-    const offset = (page - 1) * limit;
-
-    const records = await query.orderBy('createdAt', 'desc').limit(limit).offset(offset);
-
-    return records;
+    return logs;
   }
 
   /**
-   * Delete old audit logs (cleanup job)
-   * @param {number} olderThanDays - Delete logs older than X days
-   * @returns {number} Number of deleted records
+   * Get event type statistics
+   */
+  async getEventTypeStats(startDate, endDate) {
+    let query = this.query().select('eventType').count('id as count').groupBy('eventType');
+
+    if (startDate) query = query.where('createdAt', '>=', startDate);
+    if (endDate) query = query.where('createdAt', '<=', endDate);
+
+    return query;
+  }
+
+  /**
+   * Get logs by IP address
+   */
+  async getLogsByIP(ipAddress, options = {}) {
+    const filters = { ipAddress };
+    return this.findAll({ ...options, filters });
+  }
+
+  /**
+   * Delete old logs
    */
   async deleteOldLogs(olderThanDays = 365) {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
 
-    const deleted = await this.getConnection()(this.tableName)
-      .where('createdAt', '<', cutoffDate)
-      .del();
-
-    return deleted;
-  }
-
-  /**
-   * Get failed login attempts from different IPs for same user
-   * @param {string} userId - User ID
-   * @param {number} hours - Time window in hours
-   * @returns {Array} IP addresses with failed login counts
-   */
-  async getFailedLoginIPs(userId, hours = 24) {
-    const cutoffDate = new Date();
-    cutoffDate.setHours(cutoffDate.getHours() - hours);
-
-    const records = await this.query()
-      .where('userId', userId)
-      .where('eventType', AuditLogModelClass.EVENT_TYPES.LOGIN_FAILURE)
-      .where('createdAt', '>=', cutoffDate)
-      .groupBy('ipAddress')
-      .select('ipAddress')
-      .count('* as attemptCount')
-      .orderBy('attemptCount', 'desc');
-
-    return records;
+    return this.query().where('createdAt', '<', cutoffDate).del();
   }
 
   /**
@@ -362,20 +188,15 @@ class AuditLogModelClass extends BaseModel {
    */
   prepareForInsert(data) {
     const record = { ...data };
-
     if (!record[this.primaryKey]) {
-      const { generateUUID } = require('../utils/helpers.js');
       record[this.primaryKey] = generateUUID();
     }
-
-    const now = new Date();
-    record.createdAt = record.createdAt || now;
-
+    record.createdAt = record.createdAt || new Date();
     return record;
   }
 
   /**
-   * Override prepareForUpdate (audit logs are generally immutable)
+   * Override prepareForUpdate to prevent changing immutable fields
    */
   prepareForUpdate(data) {
     const record = { ...data };
@@ -385,5 +206,49 @@ class AuditLogModelClass extends BaseModel {
   }
 }
 
+/**
+ * Event type constants
+ */
+AuditLogModelClass.EVENT_TYPES = {
+  // Authentication events
+  LOGIN_SUCCESS: 'login_success',
+  LOGIN_FAILURE: 'login_failure',
+  LOGOUT: 'logout',
+  LOGOUT_ALL: 'logout_all',
+
+  // Token events
+  TOKEN_REFRESH: 'token_refresh',
+  TOKEN_REVOKED: 'token_revoked',
+  SESSION_REVOKED: 'session_revoked',
+  SESSION_EXPIRED: 'session_expired',
+
+  // Account events
+  PASSWORD_CHANGED: 'password_changed',
+  PASSWORD_RESET_REQUESTED: 'password_reset_requested',
+  PASSWORD_RESET_COMPLETED: 'password_reset_completed',
+  EMAIL_VERIFIED: 'email_verified',
+  EMAIL_CHANGED: 'email_changed',
+
+  // Security events
+  MFA_ENABLED: 'mfa_enabled',
+  MFA_DISABLED: 'mfa_disabled',
+  MFA_VERIFIED: 'mfa_verified',
+  MFA_FAILED: 'mfa_failed',
+  ACCOUNT_LOCKED: 'account_locked',
+  ACCOUNT_UNLOCKED: 'account_unlocked',
+  SUSPICIOUS_ACTIVITY: 'suspicious_activity',
+
+  // Permission events
+  PERMISSION_CHANGED: 'permission_changed',
+  ROLE_CHANGED: 'role_changed',
+
+  // Account management
+  ACCOUNT_CREATED: 'account_created',
+  ACCOUNT_DELETED: 'account_deleted',
+  ACCOUNT_ACTIVATED: 'account_activated',
+  ACCOUNT_DEACTIVATED: 'account_deactivated',
+};
+
 export const AuditLogModel = new AuditLogModelClass();
+AuditLogModel.EVENT_TYPES = AuditLogModelClass.EVENT_TYPES;
 export default AuditLogModel;

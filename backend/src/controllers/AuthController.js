@@ -1,82 +1,284 @@
-import { AuthService } from '../services/AuthService.js';
+import { UserModel } from '../models/UserModel.js';
+import { BusinessModel } from '../models/BusinessModel.js';
+import { db } from '../config/database.js';
+import { generateTokenPair, generateAccessToken } from '../utils/jwt.js';
+import { tokenService } from '../services/TokenService.js';
+import { emailService } from '../services/EmailService.js';
+import { SecurityService } from '../services/SecurityService.js';
+import { SessionService } from '../services/SessionService.js';
+import { AuditService } from '../services/AuditService.js';
 import { ApiResponse } from '../utils/response.js';
 import { asyncHandler } from '../middlewares/errorHandler.js';
 import { logFailedLogin } from '../middlewares/advancedRateLimiter.js';
+import {
+  BadRequestError,
+  UnauthorizedError,
+  ConflictError,
+  NotFoundError,
+} from '../utils/errors.js';
 
 /**
  * Enhanced Authentication Controller
- * Uses all new authentication features:
- * - Session management
- * - Device fingerprinting
- * - Security checks
- * - Audit logging
+ * Handles the authentication lifecycle directly:
+ * - Registration
+ * - Login
+ * - Password Management
+ * - Email Verification
  */
 export class AuthController {
+  // Constants for default assignments
+  static DEFAULT_PLAN_ID = '5f4dcc3b-5aa7-4efc-a502-4fc93d6593d1'; // Free plan
+
   /**
-   * Register a new user with optional session creation
+   * Register a new user with business creation and subscription
    * POST /auth/register
    */
   static register = asyncHandler(async (req, res) => {
-    // Enhanced: Pass req for optional session creation
-    const result = await AuthService.register(req.body, req);
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      phone,
+      businessName,
+      businessType,
+      role = 'user',
+    } = req.body;
 
-    return ApiResponse.created(res, result, result.message || 'User registered successfully');
+    // Check if user already exists
+    const existingUser = await UserModel.findByEmail(email);
+    if (existingUser) {
+      throw new ConflictError('User with this email already exists');
+    }
+
+    let user = null;
+    let business = null;
+
+    // Use transaction to ensure business and user are created together
+    await db.transaction(async (trx) => {
+      // 1. Create Business with default subscription
+      business = await BusinessModel.create(
+        {
+          name: businessName,
+          type: businessType,
+          subscriptionPlanId: AuthController.DEFAULT_PLAN_ID,
+          subscriptionStatus: 'active',
+        },
+        trx
+      );
+
+      // 2. Create User linked to business
+      user = await UserModel.create(
+        {
+          email: email.toLowerCase(),
+          password,
+          firstName,
+          lastName,
+          phone,
+          businessId: business.id,
+          role,
+          status: 'active',
+          emailVerifiedAt: null,
+        },
+        trx
+      );
+    });
+
+    // Generate auth tokens
+    const tokenPayload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      businessId: user.businessId,
+    };
+
+    const tokens = generateTokenPair(tokenPayload);
+
+    // Side Effects (Async)
+    AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_CREATED, user.id, req).catch((err) =>
+      console.error('Failed to log registration event:', err)
+    );
+
+    tokenService
+      .createVerificationToken(user.id)
+      .then(({ token }) => {
+        return emailService.sendVerificationEmail(user.email, user.firstName, token);
+      })
+      .catch((err) => console.error('Failed to send verification email:', err.message));
+
+    // Optionally create session
+    let session = null;
+    try {
+      const sessionData = await SessionService.createSession(user.id, req, false);
+      session = sessionData.session;
+      tokens.refreshToken = sessionData.refreshToken;
+    } catch (error) {
+      console.error('Failed to create session during registration:', error);
+    }
+
+    const responseData = {
+      user: {
+        ...user,
+        businessName: business.name,
+        businessType: business.type,
+      },
+      ...tokens,
+      session,
+    };
+
+    return ApiResponse.created(
+      res,
+      responseData,
+      'Registration successful. Please check your email to verify your account.'
+    );
   });
 
   /**
-   * Enhanced login with session management
+   * Enhanced login with session management and subscription info
    * POST /auth/login
-   * Requires: deviceFingerprint and advancedLoginLimiter middlewares
    */
   static login = asyncHandler(async (req, res) => {
     const { email, password, rememberMe = false } = req.body;
+    const identifier = email.toLowerCase();
 
     try {
-      // Use enhanced login with session
-      const result = await AuthService.loginWithSession(email, password, req, rememberMe);
+      // 1. Security check
+      await SecurityService.performSecurityCheck(identifier, req, {
+        maxAttempts: 5,
+        windowMinutes: 15,
+      });
 
-      return ApiResponse.success(res, result, 'Login successful');
+      // 2. Find user with password
+      const userRaw = await UserModel.findByEmailWithPassword(identifier);
+
+      if (!userRaw) {
+        // Log failure
+        await SecurityService.logLoginAttempt({
+          userId: null,
+          identifier,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          success: false,
+          failureReason: 'user_not_found',
+        });
+        await AuditService.logLoginFailure(identifier, 'user_not_found', req);
+
+        throw new UnauthorizedError('Invalid email or password');
+      }
+
+      // 3. Status check
+      if (userRaw.status !== 'active') {
+        await SecurityService.logLoginAttempt({
+          userId: userRaw.id,
+          identifier,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          success: false,
+          failureReason: `account_${userRaw.status}`,
+        });
+        throw new UnauthorizedError(`Your account is ${userRaw.status}`);
+      }
+
+      // 4. Password validation
+      const isValidPassword = await UserModel.comparePassword(password, userRaw.passwordHash);
+
+      if (!isValidPassword) {
+        // Log failure
+        await SecurityService.logLoginAttempt({
+          userId: userRaw.id,
+          identifier,
+          ipAddress: req.ip,
+          userAgent: req.headers['user-agent'],
+          success: false,
+          failureReason: 'invalid_password',
+        });
+        await AuditService.logLoginFailure(identifier, 'invalid_password', req);
+
+        throw new UnauthorizedError('Invalid email or password');
+      }
+
+      // 5. Update user stats
+      await UserModel.update(userRaw.id, { lastLoginAt: new Date() });
+
+      // 6. Create session
+      const { session, refreshToken } = await SessionService.createSession(
+        userRaw.id,
+        req,
+        rememberMe
+      );
+
+      // 7. Get full user details including subscription
+      const user = await UserModel.findUserWithDetails(userRaw.id);
+
+      // 8. Success responses & Logging
+      const tokenPayload = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        businessId: user.businessId,
+      };
+
+      const accessToken = generateAccessToken(tokenPayload);
+
+      await SecurityService.logLoginAttempt({
+        userId: user.id,
+        identifier,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+        success: true,
+      });
+
+      await AuditService.logLoginSuccess(user.id, req);
+
+      // Format response exactly as requested
+      return ApiResponse.success(
+        res,
+        {
+          user: {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            role: user.role?.toUpperCase(),
+            status: user.status,
+            businessId: user.businessId,
+            subscriptionPlan: user.subscriptionPlan || 'free',
+            subscriptionStatus: user.subscriptionStatus || 'active',
+          },
+          tokens: {
+            accessToken,
+            refreshToken,
+            expiresIn: 3600,
+          },
+        },
+        'User logged in successfully'
+      );
     } catch (error) {
-      // Log failed login attempt
+      // Log failed login attempt for the limiter
       await logFailedLogin(email, error.message, req);
       throw error;
     }
   });
 
   /**
-   * Legacy login (backwards compatible)
-   * POST /auth/login/legacy
-   */
-  static loginLegacy = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-    const result = await AuthService.login(email, password);
-
-    return ApiResponse.success(res, result, 'Login successful');
-  });
-
-  /**
    * Refresh access token with rotation
-   * POST /auth/refresh
-   * Requires: deviceFingerprint middleware
+   * POST /auth/refresh-token
    */
   static refreshToken = asyncHandler(async (req, res) => {
-    const { refreshToken } = req.body;
+    const { refreshToken: oldToken } = req.body;
 
-    // Use enhanced refresh with token rotation
-    const tokens = await AuthService.refreshTokenWithSession(refreshToken, req);
+    const tokens = await SessionService.refreshToken(oldToken, req);
 
-    return ApiResponse.success(res, tokens, 'Token refreshed successfully');
-  });
-
-  /**
-   * Legacy refresh token (backwards compatible)
-   * POST /auth/refresh/legacy
-   */
-  static refreshTokenLegacy = asyncHandler(async (req, res) => {
-    const { refreshToken } = req.body;
-    const tokens = await AuthService.refreshToken(refreshToken);
-
-    return ApiResponse.success(res, tokens, 'Token refreshed successfully');
+    return ApiResponse.success(
+      res,
+      {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresIn: 3600,
+      },
+      'Token refreshed successfully'
+    );
   });
 
   /**
@@ -84,7 +286,8 @@ export class AuthController {
    * GET /auth/me
    */
   static getProfile = asyncHandler(async (req, res) => {
-    const user = await AuthService.getProfile(req.user.id);
+    const user = await UserModel.findById(req.user.id);
+    if (!user) throw new NotFoundError('User not found');
 
     return ApiResponse.success(res, user);
   });
@@ -94,33 +297,66 @@ export class AuthController {
    * PATCH /auth/me
    */
   static updateProfile = asyncHandler(async (req, res) => {
-    const user = await AuthService.updateProfile(req.user.id, req.body);
+    const userId = req.user.id;
+    const { password, role, status, emailVerifiedAt, ...safeData } = req.body;
+
+    const user = await UserModel.update(userId, safeData);
+
+    if (!user) throw new NotFoundError('User not found');
+
+    await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_UPDATED, userId, req, {
+      fields: Object.keys(safeData),
+    });
 
     return ApiResponse.success(res, user, 'Profile updated successfully');
   });
 
   /**
-   * Change password with audit logging
+   * Change password
    * POST /auth/change-password
    */
   static changePassword = asyncHandler(async (req, res) => {
     const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
 
-    // Enhanced: Pass req for audit logging
-    await AuthService.changePassword(req.user.id, currentPassword, newPassword, req);
+    const isValid = await UserModel.verifyPassword(userId, currentPassword);
+
+    if (!isValid) {
+      throw new BadRequestError('Current password is incorrect');
+    }
+
+    const user = await UserModel.update(userId, {
+      password: newPassword,
+    });
+
+    await AuditService.logEvent(AuditService.EVENT_TYPES.PASSWORD_CHANGED, userId, req);
+
+    if (user) {
+      emailService
+        .sendPasswordChangedEmail(user.email, user.firstName)
+        .catch((err) => console.error('Failed to send password changed email:', err.message));
+    }
 
     return ApiResponse.success(res, null, 'Password changed successfully');
   });
 
   /**
-   * Request password reset with audit logging
+   * Request password reset
    * POST /auth/forgot-password
    */
   static forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
+    const user = await UserModel.findByEmail(email);
 
-    // Enhanced: Pass req for audit logging
-    await AuthService.requestPasswordReset(email, req);
+    if (user) {
+      const { token } = await tokenService.createPasswordResetToken(user.id);
+
+      await AuditService.logEvent(AuditService.EVENT_TYPES.PASSWORD_RESET_REQUESTED, user.id, req);
+
+      emailService
+        .sendPasswordResetEmail(user.email, user.firstName, token)
+        .catch((err) => console.error('Failed to send reset email:', err.message));
+    }
 
     return ApiResponse.success(
       res,
@@ -130,85 +366,100 @@ export class AuthController {
   });
 
   /**
-   * Reset password with token and audit logging
+   * Reset password with token
    * POST /auth/reset-password
    */
   static resetPassword = asyncHandler(async (req, res) => {
-    const { token, password } = req.body;
+    const { token, newPassword } = req.body;
 
-    // Enhanced: Pass req for audit logging
-    await AuthService.resetPassword(token, password, req);
+    const tokenRecord = await tokenService.verifyPasswordResetToken(token);
+
+    if (!tokenRecord) {
+      throw new BadRequestError('Invalid or expired reset token');
+    }
+
+    const user = await UserModel.update(tokenRecord.userId, {
+      password: newPassword,
+    });
+
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    await AuditService.logEvent(AuditService.EVENT_TYPES.PASSWORD_RESET_COMPLETED, user.id, req);
+
+    emailService
+      .sendPasswordChangedEmail(user.email, user.firstName)
+      .catch((err) => console.error('Failed to send password changed email:', err.message));
 
     return ApiResponse.success(res, null, 'Password reset successfully');
   });
 
   /**
-   * Verify email with token and audit logging
-   * GET /auth/verify-email
+   * Verify email with token
+   * POST /auth/verify-email
    */
   static verifyEmail = asyncHandler(async (req, res) => {
-    const { token } = req.query;
+    const { token } = req.body;
 
     if (!token) {
       return ApiResponse.badRequest(res, 'Verification token is required');
     }
 
-    // Enhanced: Pass req for audit logging
-    const user = await AuthService.verifyEmail(token, req);
+    const tokenRecord = await tokenService.verifyVerificationToken(token);
 
-    return ApiResponse.success(res, { verified: true }, 'Email verified successfully');
-  });
+    if (!tokenRecord) {
+      throw new BadRequestError('Invalid or expired verification token');
+    }
 
-  /**
-   * Resend verification email
-   * POST /auth/resend-verification
-   */
-  static resendVerification = asyncHandler(async (req, res) => {
-    const { email } = req.body;
-    await AuthService.resendVerification(email);
+    const user = await UserModel.update(tokenRecord.userId, {
+      emailVerifiedAt: new Date(),
+      status: 'active',
+    });
 
-    return ApiResponse.success(
-      res,
-      null,
-      'If your email is registered and not verified, you will receive a verification link'
-    );
+    if (!user) {
+      throw new NotFoundError('User not found');
+    }
+
+    await AuditService.logEvent(AuditService.EVENT_TYPES.EMAIL_VERIFIED, user.id, req);
+
+    emailService
+      .sendWelcomeEmail(user.email, user.firstName)
+      .catch((err) => console.error('Failed to send welcome email:', err.message));
+
+    return ApiResponse.success(res, null, 'Email verified successfully');
   });
 
   /**
    * Logout from current session
    * POST /auth/logout
-   * Requires: authenticate middleware
    */
   static logout = asyncHandler(async (req, res) => {
-    const { sessionId } = req.body;
+    const { refreshToken } = req.body;
 
-    if (sessionId) {
-      // Enhanced: Logout from specific session
-      await AuthService.logoutFromSession(sessionId, req);
-      return ApiResponse.success(res, null, 'Logged out successfully');
+    if (refreshToken) {
+      await SessionService.revokeSessionByToken(refreshToken);
+    } else {
+      // Fallback: If no refreshToken provided, but we have a user from auth middleware,
+      // we could revoke all their sessions or just the current one if we had sessionId in token.
+      // For now, if no refreshToken, we'll just log the event.
+      if (req.user?.id) {
+        await AuditService.logEvent(AuditService.EVENT_TYPES.LOGOUT, req.user.id, req);
+      }
     }
 
-    // Legacy logout (token blacklisting)
-    const authHeader = req.headers.authorization;
-    const accessToken = authHeader?.split(' ')[1];
-    const { refreshToken } = req.body || {};
-
-    if (accessToken) {
-      await AuthService.logout(accessToken, refreshToken);
-    }
-
-    return ApiResponse.success(res, null, 'Logged out successfully');
+    return ApiResponse.success(res, null, 'User logged out successfully');
   });
 
   /**
    * Logout from all sessions (all devices)
    * POST /auth/logout-all
-   * Requires: authenticate middleware
    */
   static logoutAll = asyncHandler(async (req, res) => {
     const userId = req.user.id;
 
-    const revokedCount = await AuthService.logoutFromAllSessions(userId, req);
+    await AuditService.logEvent(AuditService.EVENT_TYPES.LOGOUT_ALL, userId, req);
+    const revokedCount = await SessionService.revokeAllUserSessions(userId);
 
     return ApiResponse.success(
       res,
@@ -220,7 +471,6 @@ export class AuthController {
   /**
    * Logout from other sessions (keep current)
    * POST /auth/logout-others
-   * Requires: authenticate middleware
    */
   static logoutOthers = asyncHandler(async (req, res) => {
     const { currentSessionId } = req.body;
@@ -230,7 +480,7 @@ export class AuthController {
       return ApiResponse.badRequest(res, 'Current session ID is required');
     }
 
-    const revokedCount = await AuthService.logoutFromOtherSessions(userId, currentSessionId, req);
+    const revokedCount = await SessionService.revokeOtherSessions(userId, currentSessionId);
 
     return ApiResponse.success(
       res,
@@ -240,14 +490,37 @@ export class AuthController {
   });
 
   /**
+   * Resend verification email
+   * POST /auth/resend-verification
+   */
+  static resendVerification = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const user = await UserModel.findByEmail(email);
+
+    // Security: Don't reveal if user exists, but only send if unverified
+    if (user && !user.emailVerifiedAt) {
+      const { token } = await tokenService.createVerificationToken(user.id);
+
+      await emailService.sendVerificationEmail(user.email, user.firstName, token);
+
+      // Log for security monitoring
+      console.log(`Verification email resent to ${email}`);
+    }
+
+    return ApiResponse.success(
+      res,
+      null,
+      'If your email is registered and not verified, you will receive a verification link'
+    );
+  });
+
+  /**
    * Get user's active sessions
    * GET /auth/sessions
-   * Requires: authenticate middleware
    */
   static getSessions = asyncHandler(async (req, res) => {
     const userId = req.user.id;
-
-    const sessions = await AuthService.getUserActiveSessions(userId);
+    const sessions = await SessionService.getUserActiveSessions(userId);
 
     return ApiResponse.success(res, { sessions, count: sessions.length });
   });
@@ -255,12 +528,10 @@ export class AuthController {
   /**
    * Revoke a specific session
    * DELETE /auth/sessions/:sessionId
-   * Requires: authenticate middleware
    */
   static revokeSession = asyncHandler(async (req, res) => {
     const { sessionId } = req.params;
-
-    await AuthService.logoutFromSession(sessionId, req);
+    await SessionService.revokeSession(sessionId, req);
 
     return ApiResponse.success(res, null, 'Session revoked successfully');
   });
@@ -268,13 +539,12 @@ export class AuthController {
   /**
    * Get login history
    * GET /auth/login-history
-   * Requires: authenticate middleware
    */
   static getLoginHistory = asyncHandler(async (req, res) => {
     const userId = req.user.id;
     const { page = 1, limit = 50 } = req.query;
 
-    const history = await AuthService.getLoginHistory(userId, {
+    const history = await SecurityService.getLoginHistory(userId, {
       page: parseInt(page),
       limit: parseInt(limit),
     });
@@ -285,7 +555,6 @@ export class AuthController {
   /**
    * Get user audit trail
    * GET /auth/audit-logs
-   * Requires: authenticate middleware
    */
   static getAuditLogs = asyncHandler(async (req, res) => {
     const userId = req.user.id;
@@ -300,7 +569,7 @@ export class AuthController {
       options.filters = { eventType };
     }
 
-    const logs = await AuthService.getUserAuditTrail(userId, options);
+    const logs = await AuditService.getUserLogs(userId, options);
 
     return ApiResponse.success(res, logs);
   });

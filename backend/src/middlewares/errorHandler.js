@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { ApiError } from '../utils/errors.js';
 import { ApiResponse } from '../utils/response.js';
 import { logger } from '../config/logger.js';
-import { isProduction } from '../config/env.js';
+import { isProduction, isDebug } from '../config/env.js';
 
 /**
  * Not found handler for undefined routes
@@ -80,8 +80,8 @@ export const errorHandler = (err, req, res, next) => {
     message = 'Referenced resource does not exist';
   }
 
-  // Handle non-operational errors in production
-  if (!err.isOperational && isProduction) {
+  // Handle non-operational errors when debug is off
+  if (!err.isOperational && !isDebug) {
     message = 'Something went wrong';
     errors = null;
   }
@@ -97,8 +97,8 @@ export const errorHandler = (err, req, res, next) => {
     response.errors = errors;
   }
 
-  // Include stack trace in development
-  if (!isProduction && err.stack) {
+  // Include stack trace when debug is on
+  if (isDebug && err.stack) {
     response.stack = err.stack;
   }
 

@@ -184,8 +184,8 @@ export class SecurityService {
    * @returns {boolean} True if bot detected
    */
   static isBot(req) {
-    const { isBot } = require('../utils/deviceInfo.js');
-    return isBot(req);
+    const { isBot: checkBot } = createDeviceRecord(req);
+    return checkBot;
   }
 
   /**

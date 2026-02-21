@@ -41,38 +41,15 @@ router.post(
 );
 
 /**
- * @route POST /auth/login/legacy
- * @desc Legacy login without session (backwards compatible)
- * @access Public
- */
-router.post(
-  '/login/legacy',
-  authRateLimiter,
-  validateBody(authSchemas.login),
-  AuthController.loginLegacy
-);
-
-/**
- * @route POST /auth/refresh
+ * @route POST /auth/refresh-token
  * @desc Refresh access token with rotation
  * @access Public
  */
 router.post(
-  '/refresh',
+  '/refresh-token',
   deviceFingerprint, // Extract device info for audit
   validateBody(authSchemas.refreshToken),
   AuthController.refreshToken
-);
-
-/**
- * @route POST /auth/refresh/legacy
- * @desc Legacy refresh token (backwards compatible)
- * @access Public
- */
-router.post(
-  '/refresh/legacy',
-  validateBody(authSchemas.refreshToken),
-  AuthController.refreshTokenLegacy
 );
 
 /**
@@ -125,11 +102,11 @@ router.get('/login-history', authenticate, AuthController.getLoginHistory);
 router.get('/audit-logs', authenticate, AuthController.getAuditLogs);
 
 /**
- * @route GET /auth/verify-email
+ * @route POST /auth/verify-email
  * @desc Verify email with token
  * @access Public
  */
-router.get('/verify-email', AuthController.verifyEmail);
+router.post('/verify-email', validateBody(authSchemas.verifyEmail), AuthController.verifyEmail);
 
 /**
  * @route POST /auth/resend-verification

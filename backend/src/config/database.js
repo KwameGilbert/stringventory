@@ -1,53 +1,43 @@
 import knex from 'knex';
-import { env } from './env.js';
+import { env, isProduction } from './env.js';
 import { logger } from './logger.js';
 
 /**
- * Get default port based on database client
- */
-const getDefaultPort = (client) => {
-  switch (client) {
-    case 'mysql':
-    case 'mysql2':
-      return 3306;
-    case 'pg':
-    default:
-      return 5432;
-  }
-};
-
-/**
- * Get database configuration
- * Supports PostgreSQL (pg) and MySQL (mysql/mysql2)
+ * Get database configuration based on environment
  */
 const getConfig = () => {
-  const client = env.DB_CLIENT || 'pg';
-  const port = env.DB_PORT || getDefaultPort(client);
+  const isProd = isProduction;
 
-  // Build base connection config
-  const baseConnection = {
-    host: env.DB_HOST,
-    port,
-    user: env.DB_USER,
-    password: env.DB_PASSWORD,
-    database: env.DB_NAME,
+  // Select configuration based on environment
+  const client = isProd ? env.PROD_DB_CLIENT : env.DEV_DB_CLIENT;
+  const databaseUrl = isProd ? env.PROD_DATABASE_URL : env.DEV_DATABASE_URL;
+
+  const connection = databaseUrl || {
+    host: isProd ? env.PROD_DB_HOST : env.DEV_DB_HOST,
+    port: isProd ? env.PROD_DB_PORT : env.DEV_DB_PORT,
+    user: isProd ? env.PROD_DB_USER : env.DEV_DB_USER,
+    password: isProd ? env.PROD_DB_PASSWORD : env.DEV_DB_PASSWORD,
+    database: isProd ? env.PROD_DB_NAME : env.DEV_DB_NAME,
   };
 
-  // Add MySQL-specific options
-  const connection = (client === 'mysql' || client === 'mysql2')
-    ? {
-        ...baseConnection,
-        charset: 'utf8mb4',
-        timezone: 'Z',
-      }
-    : baseConnection;
+  // Build MySQL-specific options if applicable
+  const connectionConfig =
+    client === 'mysql' || client === 'mysql2'
+      ? typeof connection === 'string'
+        ? connection
+        : {
+            ...connection,
+            charset: 'utf8mb4',
+            timezone: 'Z',
+          }
+      : connection;
 
   return {
     client,
-    connection: env.DATABASE_URL || connection,
+    connection: connectionConfig,
     pool: {
-      min: env.DB_POOL_MIN,
-      max: env.DB_POOL_MAX,
+      min: isProd ? env.PROD_DB_POOL_MIN : env.DEV_DB_POOL_MIN,
+      max: isProd ? env.PROD_DB_POOL_MAX : env.DEV_DB_POOL_MAX,
       acquireTimeoutMillis: 30000,
       createTimeoutMillis: 30000,
       destroyTimeoutMillis: 5000,
@@ -77,14 +67,24 @@ export const db = knex(getConfig());
 export const testConnection = async () => {
   try {
     await db.raw('SELECT 1');
-    logger.info({
-      client: env.DB_CLIENT,
-      host: env.DB_HOST,
-      database: env.DB_NAME,
-    }, 'Database connection established successfully');
+    const config = getConfig();
+    logger.info(
+      {
+        environment: env.NODE_ENV,
+        client: config.client,
+        database: typeof config.connection === 'string' ? 'URL' : config.connection.database,
+      },
+      'Database connection established successfully'
+    );
     return true;
   } catch (error) {
-    logger.error({ error: error.message }, 'Failed to connect to database');
+    logger.error(
+      {
+        error: error.message,
+        environment: env.NODE_ENV,
+      },
+      'Failed to connect to database'
+    );
     throw error;
   }
 };

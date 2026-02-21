@@ -211,8 +211,7 @@ class RefreshTokenModelClass extends BaseModel {
 
     // Generate UUID if not provided
     if (!record[this.primaryKey]) {
-      const { generateUUID } = require('../utils/helpers.js');
-      record[this.primaryKey] = generateUUID();
+      record[this.primaryKey] = crypto.randomUUID();
     }
 
     // Only add createdAt (refreshTokens table doesn't have updatedAt)

@@ -1,4 +1,5 @@
 import { BaseModel } from './BaseModel.js';
+import { generateUUID } from '../utils/helpers.js';
 
 /**
  * Login Attempt Model
@@ -254,26 +255,26 @@ class LoginAttemptModelClass extends BaseModel {
     const [stats] = await this.query()
       .whereBetween('createdAt', [startDate, endDate])
       .select(
-        this.getConnection().raw('COUNT(*) as total_attempts'),
+        this.getConnection().raw('COUNT(*) as totalAttempts'),
         this.getConnection().raw(
-          'SUM(CASE WHEN success = true THEN 1 ELSE 0 END) as successful_logins'
+          'SUM(CASE WHEN success = true THEN 1 ELSE 0 END) as successfulLogins'
         ),
         this.getConnection().raw(
-          'SUM(CASE WHEN success = false THEN 1 ELSE 0 END) as failed_logins'
+          'SUM(CASE WHEN success = false THEN 1 ELSE 0 END) as failedLogins'
         ),
-        this.getConnection().raw('COUNT(DISTINCT user_id) as unique_users'),
-        this.getConnection().raw('COUNT(DISTINCT ip_address) as unique_ips')
+        this.getConnection().raw('COUNT(DISTINCT "userId") as uniqueUsers'),
+        this.getConnection().raw('COUNT(DISTINCT "ipAddress") as uniqueIPs')
       );
 
     return {
-      totalAttempts: parseInt(stats.total_attempts),
-      successfulLogins: parseInt(stats.successful_logins),
-      failedLogins: parseInt(stats.failed_logins),
-      uniqueUsers: parseInt(stats.unique_users),
-      uniqueIPs: parseInt(stats.unique_ips),
+      totalAttempts: parseInt(stats.totalAttempts),
+      successfulLogins: parseInt(stats.successfulLogins),
+      failedLogins: parseInt(stats.failedLogins),
+      uniqueUsers: parseInt(stats.uniqueUsers),
+      uniqueIPs: parseInt(stats.uniqueIPs),
       successRate:
-        stats.total_attempts > 0
-          ? ((parseInt(stats.successful_logins) / parseInt(stats.total_attempts)) * 100).toFixed(2)
+        stats.totalAttempts > 0
+          ? ((parseInt(stats.successfulLogins) / parseInt(stats.totalAttempts)) * 100).toFixed(2)
           : 0,
     };
   }
@@ -285,7 +286,6 @@ class LoginAttemptModelClass extends BaseModel {
     const record = { ...data };
 
     if (!record[this.primaryKey]) {
-      const { generateUUID } = require('../utils/helpers.js');
       record[this.primaryKey] = generateUUID();
     }
 
