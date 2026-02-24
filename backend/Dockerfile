@@ -43,7 +43,7 @@ RUN chown -R expressjs:nodejs /app
 USER expressjs
 
 # Expose port
-EXPOSE 80
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
