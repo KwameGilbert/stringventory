@@ -49,12 +49,16 @@ export const authenticate = async (req, res, next) => {
       throw new ForbiddenError(`Account is ${user.status}`);
     }
 
+    // Load effective permissions (direct + role-based)
+    const permissions = await UserModel.getUserPermissions(userId);
+
     // Attach fresh user data to request
     req.user = {
       id: user.id,
       email: user.email,
       role: user.role, // Latest role from DB
       businessId: user.businessId,
+      permissions, // Array of permission keys e.g. ['VIEW_DASHBOARD', 'MANAGE_INVENTORY']
     };
 
     next();

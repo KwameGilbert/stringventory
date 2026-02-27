@@ -22,7 +22,55 @@
   "password": "SecurePassword123!",
   "confirmPassword": "SecurePassword123!",
   "businessName": "John's Store",
-  "businessType": "retail"
+  "businessType": "retail",
+  "role": "ADMIN",
+  "permissions": [
+    "VIEW_DASHBOARD",
+    "VIEW_DASHBOARD_KPI",
+    "VIEW_DASHBOARD_SALES",
+    "VIEW_DASHBOARD_PRODUCTS",
+    "VIEW_DASHBOARD_CUSTOMERS",
+    "VIEW_DASHBOARD_PAYMENTS",
+    "VIEW_DASHBOARD_QUICK_ACTIONS",
+    "VIEW_KPI_GROSS_REVENUE",
+    "VIEW_KPI_DAILY_SALES",
+    "VIEW_KPI_TOTAL_EXPENSES",
+    "VIEW_KPI_TOTAL_REFUNDS",
+    "VIEW_KPI_NET_REVENUE",
+    "VIEW_KPI_TOTAL_SALES",
+    "VIEW_KPI_TOTAL_STOCK",
+    "VIEW_KPI_INVENTORY_VALUE",
+    "VIEW_KPI_LOW_STOCK",
+    "VIEW_PRODUCTS",
+    "MANAGE_PRODUCTS",
+    "VIEW_ORDERS",
+    "MANAGE_ORDERS",
+    "VIEW_INVENTORY",
+    "MANAGE_INVENTORY",
+    "VIEW_SUPPLIERS",
+    "MANAGE_SUPPLIERS",
+    "VIEW_PURCHASES",
+    "MANAGE_PURCHASES",
+    "VIEW_CUSTOMERS",
+    "MANAGE_CUSTOMERS",
+    "VIEW_EXPENSES",
+    "MANAGE_EXPENSES",
+    "VIEW_REPORTS",
+    "VIEW_USERS",
+    "MANAGE_USERS",
+    "VIEW_MESSAGING",
+    "SEND_MESSAGES",
+    "VIEW_NOTIFICATIONS",
+    "MANAGE_NOTIFICATIONS",
+    "VIEW_PROFILE",
+    "EDIT_PROFILE",
+    "VIEW_SUBSCRIPTION",
+    "MANAGE_SUBSCRIPTION",
+    "VIEW_BILLING_HISTORY",
+    "MANAGE_PAYMENT_METHODS",
+    "VIEW_SETTINGS",
+    "MANAGE_SETTINGS"
+  ]
 }
 ```
 - **Response (201 Created):**
@@ -36,7 +84,55 @@
     "lastName": "Doe",
     "email": "john@example.com",
     "phone": "+1234567890",
-    "status": "pending_verification"
+    "status": "pending_verification",
+    "role": "ADMIN",
+    "permissions": [
+      "VIEW_DASHBOARD",
+      "VIEW_DASHBOARD_KPI",
+      "VIEW_DASHBOARD_SALES",
+      "VIEW_DASHBOARD_PRODUCTS",
+      "VIEW_DASHBOARD_CUSTOMERS",
+      "VIEW_DASHBOARD_PAYMENTS",
+      "VIEW_DASHBOARD_QUICK_ACTIONS",
+      "VIEW_KPI_GROSS_REVENUE",
+      "VIEW_KPI_DAILY_SALES",
+      "VIEW_KPI_TOTAL_EXPENSES",
+      "VIEW_KPI_TOTAL_REFUNDS",
+      "VIEW_KPI_NET_REVENUE",
+      "VIEW_KPI_TOTAL_SALES",
+      "VIEW_KPI_TOTAL_STOCK",
+      "VIEW_KPI_INVENTORY_VALUE",
+      "VIEW_KPI_LOW_STOCK",
+      "VIEW_PRODUCTS",
+      "MANAGE_PRODUCTS",
+      "VIEW_ORDERS",
+      "MANAGE_ORDERS",
+      "VIEW_INVENTORY",
+      "MANAGE_INVENTORY",
+      "VIEW_SUPPLIERS",
+      "MANAGE_SUPPLIERS",
+      "VIEW_PURCHASES",
+      "MANAGE_PURCHASES",
+      "VIEW_CUSTOMERS",
+      "MANAGE_CUSTOMERS",
+      "VIEW_EXPENSES",
+      "MANAGE_EXPENSES",
+      "VIEW_REPORTS",
+      "VIEW_USERS",
+      "MANAGE_USERS",
+      "VIEW_MESSAGING",
+      "SEND_MESSAGES",
+      "VIEW_NOTIFICATIONS",
+      "MANAGE_NOTIFICATIONS",
+      "VIEW_PROFILE",
+      "EDIT_PROFILE",
+      "VIEW_SUBSCRIPTION",
+      "MANAGE_SUBSCRIPTION",
+      "VIEW_BILLING_HISTORY",
+      "MANAGE_PAYMENT_METHODS",
+      "VIEW_SETTINGS",
+      "MANAGE_SETTINGS"
+    ]
   },
   "token": null
 }
@@ -235,7 +331,7 @@
     "lastName": "Doe",
     "email": "john@example.com",
     "phone": "+1234567890",
-    "role": "ceo",
+    "role": "ADMIN",
     "status": "active",
     "permissions": [
       "VIEW_DASHBOARD",
@@ -262,8 +358,7 @@
   "email": "jane@example.com",
   "phone": "+1234567891",
   "password": "pawword@123",
-  "businessId": "business_12345",
-  "roleId": "3jh3eid89andkla83jna83jf",
+  "roleId": "sales",
   "status": "active",
   "twoFactorEnabled": false,
   "permissions": [
@@ -1282,7 +1377,7 @@
 }
 ```
 
-```
+---
 
 # 🏭 SUPPLIERS & PURCHASES
 

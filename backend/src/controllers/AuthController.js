@@ -82,6 +82,45 @@ export class AuthController {
         },
         trx
       );
+
+      // 3. Assign default permissions based on role
+      const normalizedRole = role.toLowerCase();
+      let defaultPermKeys;
+
+      if (normalizedRole === 'admin' || normalizedRole === 'ceo') {
+        // Admin/CEO get ALL permissions
+        const allPerms = await trx('permissions').select('id');
+        defaultPermKeys = allPerms;
+      } else {
+        // Other roles: look up the role record and copy its role_permissions
+        const roleRecord = await trx('roles').where('name', normalizedRole).first();
+        if (roleRecord) {
+          defaultPermKeys = await trx('role_permissions')
+            .where('roleId', roleRecord.id)
+            .select('permissionId as id');
+        } else {
+          // Fallback: give basic default permissions for unknown roles
+          defaultPermKeys = await trx('permissions')
+            .whereIn('key', [
+              'VIEW_DASHBOARD',
+              'VIEW_PRODUCTS',
+              'VIEW_ORDERS',
+              'VIEW_INVENTORY',
+              'VIEW_PROFILE',
+              'EDIT_PROFILE',
+              'VIEW_NOTIFICATIONS',
+            ])
+            .select('id');
+        }
+      }
+
+      if (defaultPermKeys && defaultPermKeys.length > 0) {
+        const userPerms = defaultPermKeys.map((p) => ({
+          userId: user.id,
+          permissionId: p.id,
+        }));
+        await trx('user_permissions').insert(userPerms);
+      }
     });
 
     // Generate auth tokens
@@ -116,11 +155,15 @@ export class AuthController {
       console.error('Failed to create session during registration:', error);
     }
 
+    // Fetch the user's assigned permissions
+    const permissions = await UserModel.getUserPermissions(user.id);
+
     const responseData = {
       user: {
         ...user,
         businessName: business.name,
         businessType: business.type,
+        permissions,
       },
       ...tokens,
       session,
@@ -210,7 +253,10 @@ export class AuthController {
       // 7. Get full user details including subscription
       const user = await UserModel.findUserWithDetails(userRaw.id);
 
-      // 8. Success responses & Logging
+      // 8. Get user permissions
+      const permissions = await UserModel.getUserPermissions(userRaw.id);
+
+      // 9. Success responses & Logging
       const tokenPayload = {
         id: user.id,
         email: user.email,
@@ -245,6 +291,7 @@ export class AuthController {
             businessId: user.businessId,
             subscriptionPlan: user.subscriptionPlan || 'free',
             subscriptionStatus: user.subscriptionStatus || 'active',
+            permissions,
           },
           tokens: {
             accessToken,

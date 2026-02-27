@@ -129,19 +129,54 @@ export class AdminController {
       // Create primary user record
       const user = await UserModel.create(userData, trx);
 
-      // Add direct permissions if provided
+      // Determine which permissions to assign
+      let permissionIds = [];
+
       if (permissions && permissions.length > 0) {
-        // Resolve permission keys to IDs
+        // Use explicitly provided permissions
         const permissionRecords = await trx('permissions').whereIn('key', permissions).select('id');
+        permissionIds = permissionRecords.map((p) => p.id);
+      } else {
+        // No permissions provided – assign defaults based on role
+        const resolvedRole = (userData.role || 'user').toLowerCase();
 
-        const userPerms = permissionRecords.map((p) => ({
-          userId: user.id,
-          permissionId: p.id,
-        }));
-
-        if (userPerms.length > 0) {
-          await trx('user_permissions').insert(userPerms);
+        if (resolvedRole === 'admin' || resolvedRole === 'ceo') {
+          // Admin/CEO get ALL permissions
+          const allPerms = await trx('permissions').select('id');
+          permissionIds = allPerms.map((p) => p.id);
+        } else {
+          // Look up role record and copy its role_permissions as defaults
+          const roleRecord = await trx('roles').where('name', resolvedRole).first();
+          if (roleRecord) {
+            const rolePerms = await trx('role_permissions')
+              .where('roleId', roleRecord.id)
+              .select('permissionId');
+            permissionIds = rolePerms.map((p) => p.permissionId);
+          } else {
+            // Fallback: basic default permissions
+            const defaultPerms = await trx('permissions')
+              .whereIn('key', [
+                'VIEW_DASHBOARD',
+                'VIEW_PRODUCTS',
+                'VIEW_ORDERS',
+                'VIEW_INVENTORY',
+                'VIEW_PROFILE',
+                'EDIT_PROFILE',
+                'VIEW_NOTIFICATIONS',
+              ])
+              .select('id');
+            permissionIds = defaultPerms.map((p) => p.id);
+          }
         }
+      }
+
+      // Insert user_permissions
+      if (permissionIds.length > 0) {
+        const userPerms = permissionIds.map((permId) => ({
+          userId: user.id,
+          permissionId: permId,
+        }));
+        await trx('user_permissions').insert(userPerms);
       }
 
       return user;
