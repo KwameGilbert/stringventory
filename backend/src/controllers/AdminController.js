@@ -116,13 +116,23 @@ export class AdminController {
     }
     userData.email = email;
 
-    // 3. Resolve role string from roleId if provided
-    if (userData.roleId) {
+    // 3. Resolve role string to roleId or vice-versa to ensure consistency
+    if (userData.role && !userData.roleId) {
+      const roleRecord = await db('roles').where('name', userData.role.toLowerCase()).first();
+      if (roleRecord) {
+        userData.roleId = roleRecord.id;
+      }
+    } else if (userData.roleId && !userData.role) {
       const roleRecord = await db('roles').where('id', userData.roleId).first();
       if (roleRecord) {
         userData.role = roleRecord.name;
       }
     }
+
+    // Ensure 'role' field is removed before the model tries to insert it into DB
+    // since the 'role' column was dropped in favor of 'roleId'
+    const finalRoleName = userData.role || 'user';
+    delete userData.role;
 
     // 4. Create user and permissions in a transaction
     const newUser = await db.transaction(async (trx) => {
@@ -138,7 +148,7 @@ export class AdminController {
         permissionIds = permissionRecords.map((p) => p.id);
       } else {
         // No permissions provided – assign defaults based on role
-        const resolvedRole = (userData.role || 'user').toLowerCase();
+        const resolvedRole = (finalRoleName || 'user').toLowerCase();
 
         if (resolvedRole === 'admin' || resolvedRole === 'ceo') {
           // Admin/CEO get ALL permissions
@@ -218,13 +228,16 @@ export class AdminController {
       userData.email = email;
     }
 
-    // Resolve role string if roleId is provided
-    if (userData.roleId) {
-      const roleRecord = await db('roles').where('id', userData.roleId).first();
+    // Resolve role string if roleId is provided or vice-versa
+    if (userData.role && !userData.roleId) {
+      const roleRecord = await db('roles').where('name', userData.role.toLowerCase()).first();
       if (roleRecord) {
-        userData.role = roleRecord.name;
+        userData.roleId = roleRecord.id;
       }
     }
+
+    // Ensure 'role' field is removed so Knex doesn't try to update a non-existent column
+    delete userData.role;
 
     const updatedUser = await db.transaction(async (trx) => {
       // 1. Update primary user record

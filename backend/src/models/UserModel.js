@@ -1,6 +1,7 @@
 import { BaseModel } from './BaseModel.js';
 import { passwordHasher } from '../utils/passwordHasher.js';
 import { db } from '../config/database.js';
+import { parsePagination, parseSort } from '../utils/helpers.js';
 
 /**
  * User Model
@@ -17,12 +18,70 @@ class UserModelClass extends BaseModel {
   }
 
   /**
+   * Find all users with role joins
+   */
+  async findAll(options = {}) {
+    const { page, limit, offset } = parsePagination(options);
+    const { field: sortField, order: sortOrder } = parseSort(options, this.sortableFields);
+
+    let query = options.trx ? this.query(options.trx) : this.query();
+
+    // Join roles to get role name
+    query = query
+      .leftJoin('roles as r', `${this.tableName}.roleId`, 'r.id')
+      .select(`${this.tableName}.*`, 'r.name as role');
+
+    // Apply search if provided
+    if (options.search && this.searchableFields.length > 0) {
+      query = query.where((builder) => {
+        this.searchableFields.forEach((field, index) => {
+          const qualifiedField = field.includes('.') ? field : `${this.tableName}.${field}`;
+          if (index === 0) {
+            builder.whereILike(qualifiedField, `%${options.search}%`);
+          } else {
+            builder.orWhereILike(qualifiedField, `%${options.search}%`);
+          }
+        });
+      });
+    }
+
+    // Apply additional filters
+    if (options.filters) {
+      // Qualify filters to users table to avoid ambiguity
+      const qualifiedFilters = {};
+      for (const [key, value] of Object.entries(options.filters)) {
+        if (value === undefined || value === null) continue;
+        const qualifiedKey = key.includes('.') ? key : `${this.tableName}.${key}`;
+        qualifiedFilters[qualifiedKey] = value;
+      }
+      query = this.applyFilters(query, qualifiedFilters);
+    }
+
+    // Get total count
+    const countQuery = query.clone().clearSelect().count(`${this.tableName}.id as count`);
+    const countResult = await countQuery;
+    const count = countResult[0]?.count || 0;
+    const total = parseInt(count);
+
+    // Apply sorting and pagination
+    const data = await query
+      .orderBy(sortField.includes('.') ? sortField : `${this.tableName}.${sortField}`, sortOrder)
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      data: data.map((record) => this.hideFields(record)),
+      pagination: { page, limit, total },
+    };
+  }
+
+  /**
    * Find user by ID including role name
    */
   async findById(id, trx = null) {
     const q = trx ? trx : db;
-    const record = await q('users as u')
-      .leftJoin('roles as r', 'u.roleId', 'r.id')
+    const record = await q(`${this.tableName} as u`)
+      .leftJoin('roles as r', `u.roleId`, 'r.id')
       .where('u.id', id)
       .whereNull('u.deletedAt')
       .select('u.*', 'r.name as role')
@@ -42,7 +101,8 @@ class UserModelClass extends BaseModel {
       delete userData.password;
     }
 
-    return super.create(userData, trx);
+    const created = await super.create(userData, trx);
+    return this.findById(created.id, trx);
   }
 
   /**
@@ -56,7 +116,8 @@ class UserModelClass extends BaseModel {
       delete userData.password;
     }
 
-    return super.update(id, userData, trx);
+    await super.update(id, userData, trx);
+    return this.findById(id, trx);
   }
 
   /**
@@ -80,7 +141,7 @@ class UserModelClass extends BaseModel {
   async findUserWithDetails(userId, trx = null) {
     const q = trx ? trx : db;
 
-    const user = await q('users as u')
+    const user = await q(`${this.tableName} as u`)
       .leftJoin('businesses as b', 'u.businessId', 'b.id')
       .leftJoin('subscription_plans as sp', 'b.subscriptionPlanId', 'sp.id')
       .leftJoin('roles as r', 'u.roleId', 'r.id')

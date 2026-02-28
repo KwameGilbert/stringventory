@@ -57,9 +57,21 @@ export class UserController {
       throw new ConflictError('User with this email already exists');
     }
 
+    const { role, roleId, confirmPassword, ...userData } = req.body;
+
+    // Resolve role name to roleId if needed
+    let finalRoleId = roleId;
+    if (role && !finalRoleId) {
+      const roleRecord = await db('roles').where('name', role.toLowerCase()).first();
+      if (roleRecord) {
+        finalRoleId = roleRecord.id;
+      }
+    }
+
     const user = await UserModel.create({
-      ...req.body,
+      ...userData,
       email: email.toLowerCase(),
+      roleId: finalRoleId,
       status: req.body.status || 'active',
     });
 
@@ -82,18 +94,28 @@ export class UserController {
    */
   static update = asyncHandler(async (req, res) => {
     const userId = req.params.id;
-    const data = req.body;
+    const { role, roleId, ...userData } = req.body;
 
     // Check if email is being changed
-    if (data.email) {
-      const existingUser = await UserModel.findByEmail(data.email);
+    if (userData.email) {
+      const existingUser = await UserModel.findByEmail(userData.email);
       if (existingUser && existingUser.id !== userId) {
         throw new ConflictError('User with this email already exists');
       }
-      data.email = data.email.toLowerCase();
+      userData.email = userData.email.toLowerCase();
     }
 
-    const user = await UserModel.update(userId, data);
+    // Resolve role name to roleId if needed
+    if (role && !roleId) {
+      const roleRecord = await db('roles').where('name', role.toLowerCase()).first();
+      if (roleRecord) {
+        userData.roleId = roleRecord.id;
+      }
+    } else if (roleId) {
+      userData.roleId = roleId;
+    }
+
+    const user = await UserModel.update(userId, userData);
 
     if (!user) {
       throw new NotFoundError('User not found');
@@ -102,7 +124,7 @@ export class UserController {
     // Side Effects
     await AuditService.logEvent(AuditService.EVENT_TYPES.ACCOUNT_UPDATED, userId, req, {
       updatedBy: req.user?.id,
-      fields: Object.keys(data),
+      fields: Object.keys(userData),
     });
 
     return ApiResponse.success(res, user, 'User updated successfully');
@@ -159,9 +181,17 @@ export class UserController {
    */
   static updateRole = asyncHandler(async (req, res) => {
     const userId = req.params.id;
-    const { role } = req.body;
+    const { role, roleId } = req.body;
+    let finalRoleId = roleId;
 
-    const user = await UserModel.update(userId, { role });
+    if (role && !finalRoleId) {
+      const roleRecord = await db('roles').where('name', role.toLowerCase()).first();
+      if (roleRecord) {
+        finalRoleId = roleRecord.id;
+      }
+    }
+
+    const user = await UserModel.update(userId, { roleId: finalRoleId });
 
     if (!user) {
       throw new NotFoundError('User not found');

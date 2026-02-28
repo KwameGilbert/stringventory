@@ -86,7 +86,8 @@ export const adminSchemas = {
     phone: z.string().max(20).optional().nullable(),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     businessId: z.string().uuid().optional().nullable(),
-    roleId: z.string().uuid().optional().nullable(),
+    roleId: z.string().uuid('Invalid role ID format').optional().nullable(),
+    role: z.string().optional(), // Support role name lookup
     status: z.enum(['active', 'inactive', 'suspended']).optional().default('active'),
     twoFactorEnabled: z.boolean().optional().default(false),
     permissions: z.array(z.string()).optional().default([]),
@@ -98,7 +99,8 @@ export const adminSchemas = {
     phone: z.string().max(20).optional().nullable(),
     password: z.string().min(8).optional(),
     businessId: z.string().uuid().optional().nullable(),
-    roleId: z.string().uuid().optional().nullable(),
+    roleId: z.string().uuid('Invalid role ID format').optional().nullable(),
+    role: z.string().optional(),
     status: z.enum(['active', 'inactive', 'suspended']).optional(),
     twoFactorEnabled: z.boolean().optional(),
     permissions: z.array(z.string()).optional(),
@@ -118,7 +120,8 @@ export const userSchemas = {
     password: z.string().min(8, 'Password must be at least 8 characters'),
     firstName: z.string().min(1, 'First name is required').max(100),
     lastName: z.string().min(1, 'Last name is required').max(100),
-    role: z.enum(['user', 'admin', 'super_admin']).optional().default('user'),
+    roleId: z.string().uuid().optional().nullable(),
+    role: z.string().optional().default('user'),
     status: z.enum(['active', 'inactive', 'suspended']).optional().default('active'),
   }),
 
@@ -128,12 +131,19 @@ export const userSchemas = {
     lastName: z.string().min(1).max(100).optional(),
     phone: z.string().max(20).optional().nullable(),
     avatar: z.string().url().optional().nullable(),
+    roleId: z.string().uuid().optional().nullable(),
+    role: z.string().optional(),
     status: z.enum(['active', 'inactive', 'suspended']).optional(),
   }),
 
-  updateRole: z.object({
-    role: z.enum(['user', 'admin', 'super_admin']),
-  }),
+  updateRole: z
+    .object({
+      roleId: z.string().uuid().optional().nullable(),
+      role: z.string().optional(),
+    })
+    .refine((data) => data.roleId || data.role, {
+      message: 'Either roleId or role name must be provided',
+    }),
 
   params: z.object({
     id: z.string().uuid('Invalid user ID'),
