@@ -27,18 +27,6 @@ const extractUser = (response) => {
   return payload;
 };
 
-const extractPermissionKeys = (rawPermissions) => {
-  if (!Array.isArray(rawPermissions)) return [];
-  return rawPermissions
-    .map((permission) => {
-      if (typeof permission === "string") return permission;
-      if (typeof permission?.key === "string") return permission.key;
-      if (typeof permission?.name === "string") return permission.name;
-      return null;
-    })
-    .filter(Boolean);
-};
-
 export default function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -51,8 +39,7 @@ export default function EditUser() {
     phone: "",
     roleId: "",
     isActive: true,
-    mfaEnabled: false,
-    permissions: []
+    mfaEnabled: false
   });
 
   useEffect(() => {
@@ -83,7 +70,6 @@ export default function EditUser() {
           roleId: resolvedRoleId ? String(resolvedRoleId) : "",
           isActive: user?.isActive ?? String(user?.status || "").toLowerCase() === "active",
           mfaEnabled: user?.mfaEnabled ?? user?.twoFactorEnabled ?? false,
-          permissions: extractPermissionKeys(user?.permissions),
         });
       } catch (error) {
         console.error("Error fetching user", error);
@@ -108,7 +94,6 @@ export default function EditUser() {
         roleId: formData.roleId || undefined,
         status: formData.isActive ? "active" : "inactive",
         twoFactorEnabled: formData.mfaEnabled,
-        permissions: formData.permissions,
       });
 
       showSuccess("User updated successfully");

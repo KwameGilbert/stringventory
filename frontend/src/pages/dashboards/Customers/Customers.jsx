@@ -4,6 +4,8 @@ import CustomersHeader from "../../../components/admin/Customers/CustomersHeader
 import CustomersTable from "../../../components/admin/Customers/CustomersTable";
 import customerService from "../../../services/customerService";
 import { showError } from "../../../utils/alerts";
+import { useAuth } from "../../../contexts/AuthContext";
+import { canManageCatalog } from "../../../utils/accessControl";
 
 const extractCustomers = (response) => {
   const payload = response?.data || response || {};
@@ -32,9 +34,11 @@ const normalizeCustomer = (customer) => {
 };
 
 export default function Customers() {
+  const { user } = useAuth();
   const [customers, setCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const canManage = canManageCatalog(user?.role || user?.normalizedRole);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,6 +100,7 @@ export default function Customers() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         totalCustomers={customers.length}
+        canManage={canManage}
       />
 
       {/* Stat Cards */}
@@ -154,7 +159,7 @@ export default function Customers() {
       </div>
 
       {/* Customers Table */}
-      <CustomersTable customers={filteredCustomers} />
+      <CustomersTable customers={filteredCustomers} canManage={canManage} />
     </div>
   );
 }

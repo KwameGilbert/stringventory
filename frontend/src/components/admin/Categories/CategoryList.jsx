@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 5;
 
-const CategoryList = ({ categories, onToggleStatus, onDelete }) => {
+const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Pagination logic
@@ -24,12 +24,14 @@ const CategoryList = ({ categories, onToggleStatus, onDelete }) => {
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-1">No categories found</h3>
         <p className="text-gray-500 text-sm mb-4">Create your first category to get started</p>
-        <Link
-          to="/dashboard/categories/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
-        >
-          Add Category
-        </Link>
+        {canManage && (
+          <Link
+            to="/dashboard/categories/new"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+          >
+            Add Category
+          </Link>
+        )}
       </div>
     );
   }
@@ -56,7 +58,7 @@ const CategoryList = ({ categories, onToggleStatus, onDelete }) => {
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-3">
                       {/* Category Image */}
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
                         {category.image ? (
                           <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
                         ) : (
@@ -72,7 +74,7 @@ const CategoryList = ({ categories, onToggleStatus, onDelete }) => {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-sm text-gray-500 line-clamp-1 max-w-[200px]">
+                    <span className="text-sm text-gray-500 line-clamp-1 max-w-50">
                       {category.description || "—"}
                     </span>
                   </td>
@@ -80,16 +82,22 @@ const CategoryList = ({ categories, onToggleStatus, onDelete }) => {
                     <span className="text-sm font-medium text-gray-900">{category.productsCount}</span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <button
-                      onClick={() => onToggleStatus && onToggleStatus(category.id)}
-                      className={`text-xs font-medium px-2 py-1 rounded-full transition-colors ${
-                        isActive 
-                          ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' 
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {isActive ? 'Active' : 'Inactive'}
-                    </button>
+                    {canManage ? (
+                      <button
+                        onClick={() => onToggleStatus && onToggleStatus(category.id)}
+                        className={`text-xs font-medium px-2 py-1 rounded-full transition-colors ${
+                          isActive 
+                            ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' 
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {isActive ? 'Active' : 'Inactive'}
+                      </button>
+                    ) : (
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-600'}`}>
+                        {isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
@@ -100,20 +108,24 @@ const CategoryList = ({ categories, onToggleStatus, onDelete }) => {
                       >
                         <Eye size={16} />
                       </Link>
-                      <Link
-                        to={`/dashboard/categories/${category.id}/edit`}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-                        title="Edit"
-                      >
-                        <Edit2 size={16} />
-                      </Link>
-                      <button 
-                        onClick={() => onDelete && onDelete(category.id)}
-                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {canManage && (
+                        <>
+                          <Link
+                            to={`/dashboard/categories/${category.id}/edit`}
+                            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 size={16} />
+                          </Link>
+                          <button 
+                            onClick={() => onDelete && onDelete(category.id)}
+                            className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

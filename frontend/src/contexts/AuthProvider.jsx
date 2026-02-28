@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext.js";
 import authService from "../services/authService";
 import { getAccessToken, clearTokens } from "../services/api.client";
+import { ROLES, normalizeRole } from "../utils/accessControl";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -32,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       const payload = response?.data || response || {};
       const authUser = payload?.user || payload || {};
       const role = authUser?.role || "";
-      const normalizedRole = String(role).toLowerCase();
+      const normalizedRole = normalizeRole(role);
       const firstName = authUser?.firstName || "";
       const lastName = authUser?.lastName || "";
 
@@ -42,14 +43,15 @@ export const AuthProvider = ({ children }) => {
         firstName,
         lastName,
         name: `${firstName} ${lastName}`.trim(),
-        role,
+        role: normalizedRole,
+        rawRole: role,
+        normalizedRole,
         roleId: authUser?.roleId,
         status: authUser?.status,
         businessId: authUser?.businessId,
         subscriptionPlan: authUser?.subscriptionPlan,
         subscriptionStatus: authUser?.subscriptionStatus,
-        permissions: authUser?.permissions || payload?.permissions || [],
-        isSuperAdmin: normalizedRole === "superadmin" || normalizedRole === "super_admin",
+        isSuperAdmin: normalizedRole === ROLES.CEO,
         avatar: `https://ui-avatars.com/api/?name=${firstName || "User"}+${lastName || ""}&background=random&color=fff`,
       };
 
@@ -90,26 +92,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const hasPermission = (permission) => {
-    if (!user) return false;
-    const role = String(user.role || "").toLowerCase();
-    const isAdmin = role === "administrator" || role === "admin";
-    if (user.isSuperAdmin) return true; // Superadmin has all permissions
-    if (isAdmin) return true;
-    return user.permissions?.includes(permission) || false;
-  };
-
-  const hasAnyPermission = (permissionsArray) => {
-    if (!user) return false;
-    const role = String(user.role || "").toLowerCase();
-    const isAdmin = role === "administrator" || role === "admin";
-    if (user.isSuperAdmin) return true; // Superadmin has all permissions
-    if (isAdmin) return true;
-    return permissionsArray.some((permission) =>
-      user.permissions?.includes(permission)
-    );
-  };
-
   const isSuperAdmin = () => {
     return user?.isSuperAdmin === true;
   };
@@ -120,8 +102,6 @@ export const AuthProvider = ({ children }) => {
         user,
         login,
         logout,
-        hasPermission,
-        hasAnyPermission,
         isSuperAdmin,
         loading,
         error,

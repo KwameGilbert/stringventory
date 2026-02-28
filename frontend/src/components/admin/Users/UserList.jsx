@@ -4,7 +4,6 @@ import {
   Edit, 
   Trash2, 
   Shield, 
-  ShieldCheck, 
   ShieldAlert, 
   User,
   Eye
@@ -116,16 +115,6 @@ export default function UserList({ users, onEdit, onDelete }) {
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                       >
                         <Edit size={14} /> Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          // Allow parent to handle navigation or direct nav here
-                          // Since we don't have navigate prop here, window.location is a quick fix or we pass navigate
-                          window.location.href = `/dashboard/users/${user.id}/permissions`;
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                      >
-                         <ShieldCheck size={14} /> Permissions
                       </button>
                       <button
                         onClick={() => {

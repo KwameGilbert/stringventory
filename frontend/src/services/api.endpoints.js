@@ -24,7 +24,6 @@ export const API_ENDPOINTS = {
     CREATE: '/admin/users',
     UPDATE: (id) => `/admin/users/${id}`,
     DELETE: (id) => `/admin/users/${id}`,
-    PERMISSIONS: (id) => `/admin/users/${id}/permissions`,
     RESEND_VERIFICATION: (id) => `/admin/users/${id}/resend-verification`,
   },
 
@@ -166,15 +165,6 @@ export const API_ENDPOINTS = {
     ANALYTICS: {
       PLATFORM: '/superadmin/analytics/platform',
     },
-  },
-
-  // Roles & Permissions
-  ROLES: {
-    LIST: '/roles',
-    CREATE: '/roles',
-  },
-  PERMISSIONS: {
-    LIST: '/permissions',
   },
 };
 

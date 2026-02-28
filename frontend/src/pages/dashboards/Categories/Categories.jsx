@@ -4,6 +4,8 @@ import CategoryGrid from "../../../components/admin/Categories/CategoryGrid";
 import CategoryList from "../../../components/admin/Categories/CategoryList";
 import categoryService from "../../../services/categoryService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { useAuth } from "../../../contexts/AuthContext";
+import { canManageCatalog } from "../../../utils/accessControl";
 
 const extractCategories = (response) => {
   const payload = response?.data || response || {};
@@ -30,9 +32,11 @@ const normalizeCategory = (category) => ({
 });
 
 export default function Categories() {
+  const { user } = useAuth();
   const [view, setView] = useState('list');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const canManage = canManageCatalog(user?.role || user?.normalizedRole);
 
   const fetchCategories = async () => {
     try {
@@ -52,6 +56,7 @@ export default function Categories() {
   }, []);
 
   const handleToggleStatus = async (id) => {
+    if (!canManage) return;
     const targetCategory = categories.find((cat) => String(cat.id) === String(id));
     if (!targetCategory) return;
 
@@ -80,6 +85,7 @@ export default function Categories() {
   };
 
   const handleDelete = async (id) => {
+    if (!canManage) return;
     const result = await confirmDelete("this category");
     if (result.isConfirmed) {
       try {
@@ -104,12 +110,12 @@ export default function Categories() {
 
   return (
     <div className="pb-8 animate-fade-in space-y-6">
-      <CategoryHeader view={view} setView={setView} totalCategories={categories.length} />
+      <CategoryHeader view={view} setView={setView} totalCategories={categories.length} canManage={canManage} />
       
       {view === 'grid' ? (
-        <CategoryGrid categories={categories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} />
+        <CategoryGrid categories={categories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} canManage={canManage} />
       ) : (
-        <CategoryList categories={categories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} />
+        <CategoryList categories={categories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} canManage={canManage} />
       )}
     </div>
   );

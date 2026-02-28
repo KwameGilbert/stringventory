@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.js";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { ForgotPasswordModal, SuccessAlert } from "../../components/auth";
 
 export default function Login() {
@@ -13,6 +13,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Modal state
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
@@ -21,17 +22,15 @@ export default function Login() {
   // Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
-      const user = await login(email, password);
-      
-      // Redirect based on user role
-      if (user?.isSuperAdmin || user?.role === 'Superadmin') {
-        navigate("/superadmin");
-      } else {
-        navigate("/dashboard");
-      }
+      await login(email, password);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login failed", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -126,6 +125,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
+                  disabled={isLoading}
                   className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all outline-none"
                   required
                 />
@@ -146,6 +146,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
+                  disabled={isLoading}
                   className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all outline-none"
                   required
                   minLength={8}
@@ -153,6 +154,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -167,6 +169,7 @@ export default function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
+                  disabled={isLoading}
                   className="w-4 h-4 text-emerald-500 border-gray-300 rounded focus:ring-emerald-500"
                 />
                 <span className="text-sm text-gray-600">Remember me</span>
@@ -174,6 +177,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowForgotPasswordModal(true)}
+                disabled={isLoading}
                 className="text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:underline"
               >
                 Forgot password?
@@ -183,9 +187,17 @@ export default function Login() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg font-medium transition-all shadow-lg shadow-emerald-500/30"
+              disabled={isLoading}
+              className="w-full py-3 px-4 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg font-medium transition-all shadow-lg shadow-emerald-500/30"
             >
-              Sign In
+              {isLoading ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Signing in...
+                </span>
+              ) : (
+                "Sign In"
+              )}
             </button>
 
             {/* Footer Text */}
@@ -197,24 +209,6 @@ export default function Login() {
             </p>
           </form>
 
-          {/* Login Hints */}
-          <div className="mt-6 pt-6 border-t border-gray-100">
-            <p className="text-xs text-gray-500 text-center mb-3 font-medium">Test Credentials</p>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between items-center px-3 py-2 bg-emerald-50 rounded-lg">
-                <span className="text-gray-600">Superadmin:</span>
-                <code className="text-emerald-700 font-mono">superadmin@test.com</code>
-              </div>
-              <div className="flex justify-between items-center px-3 py-2 bg-emerald-50 rounded-lg">
-                <span className="text-gray-600">Business Admin:</span>
-                <code className="text-emerald-700 font-mono">admin@test.com</code>
-              </div>
-              <div className="flex justify-between items-center px-3 py-2 bg-blue-50 rounded-lg">
-                <span className="text-gray-600">Sales User:</span>
-                <code className="text-blue-700 font-mono">sales@test.com</code>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Footer */}

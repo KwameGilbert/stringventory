@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 const CustomersHeader = ({ 
   searchQuery, 
   setSearchQuery,
-  totalCustomers 
+  totalCustomers,
+  canManage = true,
 }) => {
   return (
     <div className="space-y-4">
@@ -26,14 +27,15 @@ const CustomersHeader = ({
             PDF
           </button>
 
-          {/* Add Customer Button */}
-          <Link
-            to="/dashboard/customers/new"
-            className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
-          >
-            <Plus size={16} />
-            Add Customer
-          </Link>
+          {canManage && (
+            <Link
+              to="/dashboard/customers/new"
+              className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
+            >
+              <Plus size={16} />
+              Add Customer
+            </Link>
+          )}
         </div>
       </div>
 

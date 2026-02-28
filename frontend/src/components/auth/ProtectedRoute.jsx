@@ -1,8 +1,8 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.js";
 
-export default function ProtectedRoute({ children, requiredPermission }) {
-  const { user, loading, hasPermission } = useAuth();
+export default function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -13,11 +13,6 @@ export default function ProtectedRoute({ children, requiredPermission }) {
   if (!user) {
     // Redirect to login if not authenticated
     return <Navigate to="/" state={{ from: location }} replace />;
-  }
-
-  if (requiredPermission && !hasPermission(requiredPermission)) {
-    // Redirect to dashboard (or 403 page) if authenticated but unauthorized
-    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

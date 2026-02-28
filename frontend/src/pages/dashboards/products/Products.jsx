@@ -7,6 +7,8 @@ import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { useAuth } from "../../../contexts/AuthContext";
+import { canManageCatalog } from "../../../utils/accessControl";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -29,12 +31,14 @@ const isForbiddenError = (error) => {
 
 export default function Products() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [permissionDenied, setPermissionDenied] = useState(false);
+  const canManage = canManageCatalog(user?.role || user?.normalizedRole);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,6 +110,7 @@ export default function Products() {
   });
 
   const handleDelete = async (id) => {
+    if (!canManage) return;
     const result = await confirmDelete("this product");
     if (result.isConfirmed) {
       try {
@@ -160,6 +165,7 @@ export default function Products() {
         setCategoryFilter={setCategoryFilter}
         categories={categories}
         totalProducts={products.length}
+        canManage={canManage}
       />
 
       {/* Stat Cards */}
@@ -210,7 +216,7 @@ export default function Products() {
       </div>
 
       {/* Products Table */}
-      <ProductsTable products={filteredProducts} onDelete={handleDelete} />
+      <ProductsTable products={filteredProducts} onDelete={handleDelete} canManage={canManage} />
     </div>
   );
 }

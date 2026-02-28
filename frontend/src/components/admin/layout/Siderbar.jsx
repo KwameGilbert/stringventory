@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { useAuth } from "../../../contexts/AuthContext.js";
-import { PERMISSIONS } from "../../../constants/permissions";
+import { getRoleMenuItems } from "../../../utils/accessControl";
 import { useLocation, Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -27,7 +27,7 @@ import {
 
 const Sidebar = ({ mobileOpen, onClose }) => {
   useTheme(); // Hook maintained for potential future use
-  const { user, hasPermission } = useAuth();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
   const location = useLocation();
 
@@ -43,25 +43,24 @@ const Sidebar = ({ mobileOpen, onClose }) => {
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/", permission: PERMISSIONS.VIEW_DASHBOARD },
-    { icon: FolderTree, label: "Categories", path: "/dashboard/categories", permission: PERMISSIONS.VIEW_PRODUCTS }, 
-    { icon: Package, label: "Products", path: "/dashboard/products", permission: PERMISSIONS.VIEW_PRODUCTS },
-    { icon: FileText, label: "Purchases", path: "/dashboard/purchases", permission: PERMISSIONS.VIEW_PURCHASES },
-    { icon: ClipboardList, label: "Stock Management", path: "/dashboard/inventory", permission: PERMISSIONS.VIEW_INVENTORY },
-    { icon: Truck, label: "Suppliers", path: "/dashboard/suppliers", permission: PERMISSIONS.VIEW_SUPPLIERS },
-    { icon: ShoppingCart, label: "Sales", path: "/dashboard/orders", permission: PERMISSIONS.VIEW_ORDERS },
-    { icon: Users, label: "Customers", path: "/dashboard/customers", permission: PERMISSIONS.VIEW_CUSTOMERS },
-    { icon: Tag, label: "Expense Categories", path: "/dashboard/expenses/categories", permission: PERMISSIONS.VIEW_EXPENSES },
-    { icon: DollarSign, label: "Expenses", path: "/dashboard/expenses", permission: PERMISSIONS.VIEW_EXPENSES },
-    { icon: BarChart3, label: "Reports", path: "/dashboard/reports", permission: PERMISSIONS.VIEW_REPORTS },
-    { icon: UserCog, label: "Users", path: "/dashboard/users", permission: PERMISSIONS.VIEW_USERS },
-    { icon: MessageSquare, label: "Messaging", path: "/dashboard/messaging", permission: PERMISSIONS.VIEW_MESSAGING },
-    { icon: Settings, label: "Settings", path: "/dashboard/settings", permission: PERMISSIONS.VIEW_SETTINGS },
+    { key: "dashboard", icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/" },
+    { key: "categories", icon: FolderTree, label: "Categories", path: "/dashboard/categories" },
+    { key: "products", icon: Package, label: "Products", path: "/dashboard/products" },
+    { key: "purchases", icon: FileText, label: "Purchases", path: "/dashboard/purchases" },
+    { key: "inventory", icon: ClipboardList, label: "Stock Management", path: "/dashboard/inventory" },
+    { key: "suppliers", icon: Truck, label: "Suppliers", path: "/dashboard/suppliers" },
+    { key: "sales", icon: ShoppingCart, label: "Sales", path: "/dashboard/orders" },
+    { key: "customers", icon: Users, label: "Customers", path: "/dashboard/customers" },
+    { key: "expense-categories", icon: Tag, label: "Expense Categories", path: "/dashboard/expenses/categories" },
+    { key: "expenses", icon: DollarSign, label: "Expenses", path: "/dashboard/expenses" },
+    { key: "reports", icon: BarChart3, label: "Reports", path: "/dashboard/reports" },
+    { key: "users", icon: UserCog, label: "Users", path: "/dashboard/users" },
+    { key: "messaging", icon: MessageSquare, label: "Messaging", path: "/dashboard/messaging" },
+    { key: "settings", icon: Settings, label: "Settings", path: "/dashboard/settings" },
   ];
 
-  const filteredMenuItems = menuItems.filter(item => 
-    !item.permission || hasPermission(item.permission)
-  );
+  const allowedMenuKeys = getRoleMenuItems(user?.role || user?.normalizedRole);
+  const filteredMenuItems = menuItems.filter((item) => allowedMenuKeys.includes(item.key));
 
   return (
     <aside
@@ -80,7 +79,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
             isOpen ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
           }`}
         >
-          <div className="bg-emerald-500 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 flex-shrink-0">
+          <div className="bg-emerald-500 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
             <Package className="w-5 h-5 text-white" />
           </div>
           <span className="text-lg font-bold text-white tracking-tight">
@@ -144,7 +143,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
                 `}
               >
                 <Icon
-                  className={`w-5 h-5 flex-shrink-0 ${
+                  className={`w-5 h-5 shrink-0 ${
                     isActive ? "text-emerald-400" : "text-gray-500 group-hover:text-emerald-400"
                   }`}
                 />
@@ -206,7 +205,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
             ${!isOpen && "justify-center p-2"}
           `}
         >
-          <div className="relative flex-shrink-0">
+          <div className="relative shrink-0">
             <img
               src={user?.avatar || "https://ui-avatars.com/api/?name=User&background=random"}
               alt="Profile"
@@ -226,7 +225,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
             </div>
           )}
 
-          {isOpen && <ChevronRight size={16} className="text-gray-500 flex-shrink-0" />}
+          {isOpen && <ChevronRight size={16} className="text-gray-500 shrink-0" />}
         </Link>
       </div>
     </aside>

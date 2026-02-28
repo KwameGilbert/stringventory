@@ -19,7 +19,7 @@ const colorSchemes = [
   { bg: "from-rose-400 to-pink-500", shadow: "shadow-rose-200", light: "bg-rose-50" },
 ];
 
-const CategoryGrid = ({ categories, onToggleStatus, onDelete }) => {
+const CategoryGrid = ({ categories, onToggleStatus, onDelete, canManage = true }) => {
   const [activeMenu, setActiveMenu] = useState(null);
 
   return (
@@ -43,47 +43,59 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete }) => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               ) : (
-                <div className={`w-full h-full bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
+                <div className={`w-full h-full bg-linear-to-br ${colors.bg} flex items-center justify-center`}>
                   <IconComponent className="text-white" size={48} />
                 </div>
               )}
               
               {/* Actions Menu - Positioned over image */}
               <div className="absolute top-3 right-3">
-                <button 
-                  onClick={() => setActiveMenu(activeMenu === category.id ? null : category.id)}
-                  className="p-1.5 text-white bg-black/20 backdrop-blur-sm hover:bg-black/40 rounded-lg transition-colors"
-                >
-                  <MoreVertical size={18} />
-                </button>
-                
-                {activeMenu === category.id && (
-                  <div className="absolute right-0 top-10 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 min-w-[140px] z-10">
-                    <Link 
-                      to={`/dashboard/categories/${category.id}`}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                {canManage ? (
+                  <>
+                    <button 
+                      onClick={() => setActiveMenu(activeMenu === category.id ? null : category.id)}
+                      className="p-1.5 text-white bg-black/20 backdrop-blur-sm hover:bg-black/40 rounded-lg transition-colors"
                     >
-                      <Eye size={16} />
-                      View
-                    </Link>
-                    <Link 
-                      to={`/dashboard/categories/${category.id}/edit`}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-                    >
-                      <Edit2 size={16} />
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => {
-                        onDelete && onDelete(category.id);
-                        setActiveMenu(null);
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors w-full"
-                    >
-                      <Trash2 size={16} />
-                      Delete
+                      <MoreVertical size={18} />
                     </button>
-                  </div>
+                    
+                    {activeMenu === category.id && (
+                      <div className="absolute right-0 top-10 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 min-w-35 z-10">
+                        <Link 
+                          to={`/dashboard/categories/${category.id}`}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                          <Eye size={16} />
+                          View
+                        </Link>
+                        <Link 
+                          to={`/dashboard/categories/${category.id}/edit`}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                          <Edit2 size={16} />
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => {
+                            onDelete && onDelete(category.id);
+                            setActiveMenu(null);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors w-full"
+                        >
+                          <Trash2 size={16} />
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Link
+                    to={`/dashboard/categories/${category.id}`}
+                    className="p-1.5 text-white bg-black/20 backdrop-blur-sm hover:bg-black/40 rounded-lg transition-colors inline-flex"
+                    title="View"
+                  >
+                    <Eye size={18} />
+                  </Link>
                 )}
               </div>
             </div>
@@ -91,7 +103,7 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete }) => {
             {/* Card Content */}
             <div className="px-5 py-4">
               <h3 className="text-base font-bold text-gray-900 mb-1">{category.name}</h3>
-              <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed min-h-[40px]">
+              <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed min-h-10">
                 {category.description}
               </p>
             </div>
@@ -103,27 +115,33 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete }) => {
                 <span className="text-xs text-gray-400">products</span>
               </div>
               
-              <button 
-                onClick={() => onToggleStatus && onToggleStatus(category.id)}
-                className="flex items-center gap-2 cursor-pointer focus:outline-none"
-              >
-                <span className={`
-                  text-xs font-medium px-2 py-0.5 rounded-full transition-colors
-                  ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}
-                `}>
+              {canManage ? (
+                <button 
+                  onClick={() => onToggleStatus && onToggleStatus(category.id)}
+                  className="flex items-center gap-2 cursor-pointer focus:outline-none"
+                >
+                  <span className={`
+                    text-xs font-medium px-2 py-0.5 rounded-full transition-colors
+                    ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}
+                  `}>
+                    {isActive ? 'Active' : 'Inactive'}
+                  </span>
+                  
+                  <div className={`
+                    w-9 h-5 rounded-full relative transition-colors duration-200
+                    ${isActive ? 'bg-emerald-500' : 'bg-gray-300'}
+                  `}>
+                    <div className={`
+                      absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-200
+                      ${isActive ? 'left-4' : 'left-0.5'}
+                    `} />
+                  </div>
+                </button>
+              ) : (
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                   {isActive ? 'Active' : 'Inactive'}
                 </span>
-                
-                <div className={`
-                  w-9 h-5 rounded-full relative transition-colors duration-200
-                  ${isActive ? 'bg-emerald-500' : 'bg-gray-300'}
-                `}>
-                  <div className={`
-                    absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-200
-                    ${isActive ? 'left-4' : 'left-0.5'}
-                  `} />
-                </div>
-              </button>
+              )}
             </div>
           </div>
         );

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import RoleRoute from "./components/auth/RoleRoute";
 import Dashboard from "./pages/dashboards/Dashboard/Dashboard";
 import Categories from "./pages/dashboards/Categories/Categories";
 import CreateCategory from "./pages/dashboards/Categories/CreateCategory";
@@ -41,7 +42,6 @@ import CreateSupplier from "./pages/dashboards/Suppliers/CreateSupplier";
 import EditSupplier from "./pages/dashboards/Suppliers/EditSupplier";
 import ViewSupplier from "./pages/dashboards/Suppliers/ViewSupplier";
 import Suppliers from "./pages/dashboards/Suppliers/Suppliers";
-import UserPermissions from "./pages/dashboards/Users/UserPermissions";
 import ViewUser from "./pages/dashboards/Users/ViewUser";
 import Messaging from "./pages/dashboards/Messaging/Messaging";
 import Settings from "./pages/dashboards/Settings/Settings";
@@ -71,9 +71,18 @@ import SuperadminNotifications from "./pages/superadmin/Notifications/Notificati
 import SuperadminProfile from "./pages/superadmin/Profile/Profile";
 import { TenantProvider } from "./contexts/TenantProvider";
 import { SubscriptionProvider } from "./contexts/SubscriptionProvider";
+import { ROLES } from "./utils/accessControl";
 
 
 export default function App() {
+  const allRoles = [ROLES.CEO, ROLES.MANAGER, ROLES.SALES];
+  const managementRoles = [ROLES.CEO, ROLES.MANAGER];
+  const ceoOnly = [ROLES.CEO];
+
+  const withRoles = (allowedRoles, element) => (
+    <RoleRoute allowedRoles={allowedRoles}>{element}</RoleRoute>
+  );
+
   return (
     <ThemeProvider>
       <AuthProvider>
@@ -115,59 +124,58 @@ export default function App() {
                 <Route
                   path="/dashboard/*"
                   element={
-                    // <ProtectedRoute>
+                    <ProtectedRoute>
                       <DashboardLayout>
                         <Routes>
-                          <Route path="/" element={<Dashboard />} />
-                          <Route path="/categories" element={<Categories />} />
-                          <Route path="/categories/new" element={<CreateCategory />} />
-                          <Route path="/categories/:id" element={<ViewCategory />} />
-                          <Route path="/categories/:id/edit" element={<EditCategory />} />
-                          <Route path="/products" element={<Products />} />
-                          <Route path="/products/new" element={<CreateProduct />} />
-                          <Route path="/products/:id" element={<ViewProduct />} />
-                          <Route path="/products/:id/edit" element={<EditProduct />} />
-                          <Route path="/purchases" element={<Purchases />} />
-                          <Route path="/purchases/new" element={<CreatePurchase />} />
-                          <Route path="/purchases/:id" element={<ViewPurchase />} />
-                          <Route path="/purchases/:id/edit" element={<EditPurchase />} />
-                          <Route path="/inventory" element={<Inventory />} />
-                          <Route path="/inventory/new" element={<AddInventory />} />
-                          <Route path="/inventory/:id" element={<ViewInventory />} />
-                          <Route path="/orders" element={<Orders />} />
-                          <Route path="/orders/new" element={<CreateOrder />} />
-                          <Route path="/orders/:id/refund" element={<CreateRefund />} />
-                          <Route path="/orders/:id" element={<ViewOrder />} />
+                          <Route path="/" element={withRoles(allRoles, <Dashboard />)} />
+                          <Route path="/categories" element={withRoles(allRoles, <Categories />)} />
+                          <Route path="/categories/new" element={withRoles(managementRoles, <CreateCategory />)} />
+                          <Route path="/categories/:id" element={withRoles(allRoles, <ViewCategory />)} />
+                          <Route path="/categories/:id/edit" element={withRoles(managementRoles, <EditCategory />)} />
+                          <Route path="/products" element={withRoles(allRoles, <Products />)} />
+                          <Route path="/products/new" element={withRoles(managementRoles, <CreateProduct />)} />
+                          <Route path="/products/:id" element={withRoles(allRoles, <ViewProduct />)} />
+                          <Route path="/products/:id/edit" element={withRoles(managementRoles, <EditProduct />)} />
+                          <Route path="/purchases" element={withRoles(managementRoles, <Purchases />)} />
+                          <Route path="/purchases/new" element={withRoles(managementRoles, <CreatePurchase />)} />
+                          <Route path="/purchases/:id" element={withRoles(managementRoles, <ViewPurchase />)} />
+                          <Route path="/purchases/:id/edit" element={withRoles(managementRoles, <EditPurchase />)} />
+                          <Route path="/inventory" element={withRoles(managementRoles, <Inventory />)} />
+                          <Route path="/inventory/new" element={withRoles(managementRoles, <AddInventory />)} />
+                          <Route path="/inventory/:id" element={withRoles(managementRoles, <ViewInventory />)} />
+                          <Route path="/orders" element={withRoles(allRoles, <Orders />)} />
+                          <Route path="/orders/new" element={withRoles(allRoles, <CreateOrder />)} />
+                          <Route path="/orders/:id/refund" element={withRoles(managementRoles, <CreateRefund />)} />
+                          <Route path="/orders/:id" element={withRoles(allRoles, <ViewOrder />)} />
                          
                           {/* <Route path="/sales" element={<SalesMain />} /> */}
                           
-                          <Route path="/suppliers" element={<Suppliers />} />
-                          <Route path="/suppliers/new" element={<CreateSupplier />} />
-                          <Route path="/suppliers/:id" element={<ViewSupplier />} />
-                          <Route path="/suppliers/:id/edit" element={<EditSupplier />} />
-                          <Route path="/refunds" element={<CreateRefund />} />
-                          <Route path="/customers" element={<Customers />} />
-                          <Route path="/customers/new" element={<CreateCustomer />} />
-                          <Route path="/customers/:id" element={<ViewCustomer />} />
-                          <Route path="/customers/:id/edit" element={<EditCustomer />} />
-                          <Route path="/expenses" element={<Expenses />} />
-                          <Route path="/expenses/new" element={<AddExpense />} />
-                          <Route path="/expenses/:id" element={<ViewExpense />} />
-                          <Route path="/expenses/:id/edit" element={<EditExpense />} />
-                          <Route path="/expenses/categories" element={<ExpenseCategories />} />
-                          <Route path="/reports" element={<Reports />} />
-                          <Route path="/users" element={<Users />} />
-                          <Route path="/users/new" element={<AddUser />} />
-                          <Route path="/users/:id" element={<ViewUser />} />
-                          <Route path="/users/:id/edit" element={<EditUser />} />
-                          <Route path="/users/:id/permissions" element={<UserPermissions />} />
-                          <Route path="/messaging" element={<Messaging />} />
-                          <Route path="/settings" element={<Settings />} />
-                          <Route path="/notifications" element={<Notifications />} />
-                          <Route path="/profile" element={<Profile />} />
+                          <Route path="/suppliers" element={withRoles(managementRoles, <Suppliers />)} />
+                          <Route path="/suppliers/new" element={withRoles(managementRoles, <CreateSupplier />)} />
+                          <Route path="/suppliers/:id" element={withRoles(managementRoles, <ViewSupplier />)} />
+                          <Route path="/suppliers/:id/edit" element={withRoles(managementRoles, <EditSupplier />)} />
+                          <Route path="/refunds" element={withRoles(managementRoles, <CreateRefund />)} />
+                          <Route path="/customers" element={withRoles(allRoles, <Customers />)} />
+                          <Route path="/customers/new" element={withRoles(managementRoles, <CreateCustomer />)} />
+                          <Route path="/customers/:id" element={withRoles(allRoles, <ViewCustomer />)} />
+                          <Route path="/customers/:id/edit" element={withRoles(managementRoles, <EditCustomer />)} />
+                          <Route path="/expenses" element={withRoles(managementRoles, <Expenses />)} />
+                          <Route path="/expenses/new" element={withRoles(managementRoles, <AddExpense />)} />
+                          <Route path="/expenses/:id" element={withRoles(managementRoles, <ViewExpense />)} />
+                          <Route path="/expenses/:id/edit" element={withRoles(managementRoles, <EditExpense />)} />
+                          <Route path="/expenses/categories" element={withRoles(managementRoles, <ExpenseCategories />)} />
+                          <Route path="/reports" element={withRoles(managementRoles, <Reports />)} />
+                          <Route path="/users" element={withRoles(managementRoles, <Users />)} />
+                          <Route path="/users/new" element={withRoles(ceoOnly, <AddUser />)} />
+                          <Route path="/users/:id" element={withRoles(managementRoles, <ViewUser />)} />
+                          <Route path="/users/:id/edit" element={withRoles(managementRoles, <EditUser />)} />
+                          <Route path="/messaging" element={withRoles(managementRoles, <Messaging />)} />
+                          <Route path="/settings" element={withRoles(managementRoles, <Settings />)} />
+                          <Route path="/notifications" element={withRoles(allRoles, <Notifications />)} />
+                          <Route path="/profile" element={withRoles(allRoles, <Profile />)} />
                         </Routes>
                       </DashboardLayout>
-                    // </ProtectedRoute>
+                    </ProtectedRoute>
                   }
                 />
               </Routes>

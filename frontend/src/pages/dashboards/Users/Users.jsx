@@ -5,6 +5,8 @@ import UserList from "../../../components/admin/Users/UserList";
 import ActivityLogs from "../../../components/admin/Users/ActivityLogs";
 import { showSuccess, showError, confirmDelete } from "../../../utils/alerts";
 import userService from "../../../services/userService";
+import { useAuth } from "../../../contexts/AuthContext";
+import { canManageUsers } from "../../../utils/accessControl";
 
 const toRoleLabel = (roleValue) => {
   if (!roleValue) return "User";
@@ -54,12 +56,14 @@ const isForbiddenError = (error) => {
 
 export default function Users() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [logs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [permissionDenied, setPermissionDenied] = useState(false);
+  const canAddUser = canManageUsers(user?.role || user?.normalizedRole);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,13 +150,15 @@ export default function Users() {
           <h1 className="text-2xl font-bold text-gray-900">Users & Roles</h1>
           <p className="text-gray-500 text-sm">Manage system access and team members</p>
         </div>
-        <button
-          onClick={handleAddUser}
-          className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all font-medium shadow-lg shadow-emerald-600/20"
-        >
-          <Plus size={18} />
-          Add New User
-        </button>
+        {canAddUser && (
+          <button
+            onClick={handleAddUser}
+            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-all font-medium shadow-lg shadow-emerald-600/20"
+          >
+            <Plus size={18} />
+            Add New User
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -169,7 +175,7 @@ export default function Users() {
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               />
             </div>
-            <div className="relative min-w-[180px]">
+            <div className="relative min-w-45">
               <Filter className="absolute left-3 top-2.5 text-gray-400" size={18} />
               <select
                 value={roleFilter}

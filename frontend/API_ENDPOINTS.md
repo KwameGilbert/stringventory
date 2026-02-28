@@ -7,6 +7,24 @@
 
 ---
 
+# 🆕 RECENT CHANGES (Feb 28, 2026)
+
+## Access Model Update
+- Frontend access control now uses **3 business roles only**:
+  - `CEO` → full access to all dashboard modules and actions
+  - `Manager` → full access except adding users
+  - `Sales` → dashboard + view products/categories/customers + create sale (view-only for catalog/customer management)
+
+## Single Dashboard UX
+- Frontend now routes all authenticated users to `/dashboard`.
+- Legacy `/superadmin/*` frontend flow is no longer used for daily operations.
+
+## Permissions Compatibility
+- Permission endpoints remain available for backward compatibility.
+- Frontend authorization now primarily resolves by role matrix (`CEO`, `Manager`, `Sales`) rather than granular permission flags.
+
+---
+
 # 🔐 AUTHENTICATION
 
 ## 1. Register User
@@ -23,54 +41,7 @@
   "confirmPassword": "SecurePassword123!",
   "businessName": "John's Store",
   "businessType": "retail",
-  "role": "ADMIN",
-  "permissions": [
-    "VIEW_DASHBOARD",
-    "VIEW_DASHBOARD_KPI",
-    "VIEW_DASHBOARD_SALES",
-    "VIEW_DASHBOARD_PRODUCTS",
-    "VIEW_DASHBOARD_CUSTOMERS",
-    "VIEW_DASHBOARD_PAYMENTS",
-    "VIEW_DASHBOARD_QUICK_ACTIONS",
-    "VIEW_KPI_GROSS_REVENUE",
-    "VIEW_KPI_DAILY_SALES",
-    "VIEW_KPI_TOTAL_EXPENSES",
-    "VIEW_KPI_TOTAL_REFUNDS",
-    "VIEW_KPI_NET_REVENUE",
-    "VIEW_KPI_TOTAL_SALES",
-    "VIEW_KPI_TOTAL_STOCK",
-    "VIEW_KPI_INVENTORY_VALUE",
-    "VIEW_KPI_LOW_STOCK",
-    "VIEW_PRODUCTS",
-    "MANAGE_PRODUCTS",
-    "VIEW_ORDERS",
-    "MANAGE_ORDERS",
-    "VIEW_INVENTORY",
-    "MANAGE_INVENTORY",
-    "VIEW_SUPPLIERS",
-    "MANAGE_SUPPLIERS",
-    "VIEW_PURCHASES",
-    "MANAGE_PURCHASES",
-    "VIEW_CUSTOMERS",
-    "MANAGE_CUSTOMERS",
-    "VIEW_EXPENSES",
-    "MANAGE_EXPENSES",
-    "VIEW_REPORTS",
-    "VIEW_USERS",
-    "MANAGE_USERS",
-    "VIEW_MESSAGING",
-    "SEND_MESSAGES",
-    "VIEW_NOTIFICATIONS",
-    "MANAGE_NOTIFICATIONS",
-    "VIEW_PROFILE",
-    "EDIT_PROFILE",
-    "VIEW_SUBSCRIPTION",
-    "MANAGE_SUBSCRIPTION",
-    "VIEW_BILLING_HISTORY",
-    "MANAGE_PAYMENT_METHODS",
-    "VIEW_SETTINGS",
-    "MANAGE_SETTINGS"
-  ]
+  "role": "CEO"
 }
 ```
 - **Response (201 Created):**
@@ -85,55 +56,8 @@
     "email": "john@example.com",
     "phone": "+1234567890",
     "status": "pending_verification",
-    "role": "ADMIN",
-    "permissions": [
-      "VIEW_DASHBOARD",
-      "VIEW_DASHBOARD_KPI",
-      "VIEW_DASHBOARD_SALES",
-      "VIEW_DASHBOARD_PRODUCTS",
-      "VIEW_DASHBOARD_CUSTOMERS",
-      "VIEW_DASHBOARD_PAYMENTS",
-      "VIEW_DASHBOARD_QUICK_ACTIONS",
-      "VIEW_KPI_GROSS_REVENUE",
-      "VIEW_KPI_DAILY_SALES",
-      "VIEW_KPI_TOTAL_EXPENSES",
-      "VIEW_KPI_TOTAL_REFUNDS",
-      "VIEW_KPI_NET_REVENUE",
-      "VIEW_KPI_TOTAL_SALES",
-      "VIEW_KPI_TOTAL_STOCK",
-      "VIEW_KPI_INVENTORY_VALUE",
-      "VIEW_KPI_LOW_STOCK",
-      "VIEW_PRODUCTS",
-      "MANAGE_PRODUCTS",
-      "VIEW_ORDERS",
-      "MANAGE_ORDERS",
-      "VIEW_INVENTORY",
-      "MANAGE_INVENTORY",
-      "VIEW_SUPPLIERS",
-      "MANAGE_SUPPLIERS",
-      "VIEW_PURCHASES",
-      "MANAGE_PURCHASES",
-      "VIEW_CUSTOMERS",
-      "MANAGE_CUSTOMERS",
-      "VIEW_EXPENSES",
-      "MANAGE_EXPENSES",
-      "VIEW_REPORTS",
-      "VIEW_USERS",
-      "MANAGE_USERS",
-      "VIEW_MESSAGING",
-      "SEND_MESSAGES",
-      "VIEW_NOTIFICATIONS",
-      "MANAGE_NOTIFICATIONS",
-      "VIEW_PROFILE",
-      "EDIT_PROFILE",
-      "VIEW_SUBSCRIPTION",
-      "MANAGE_SUBSCRIPTION",
-      "VIEW_BILLING_HISTORY",
-      "MANAGE_PAYMENT_METHODS",
-      "VIEW_SETTINGS",
-      "MANAGE_SETTINGS"
-    ]
-  },
+    "role": "CEO"
+},
   "token": null
 }
 ```
@@ -161,7 +85,7 @@
     "lastName": "Doe",
     "email": "john@example.com",
     "phone": "+1234567890",
-    "role": "ADMIN",
+    "role": "CEO",
     "status": "active",
     "businessId": "business_88234",
     "subscriptionPlan": "professional",
@@ -286,7 +210,7 @@
 - **Auth Required:** Yes
 - **Query Parameters:**
 ```
-?page=1&limit=20&search=john&status=active&role=ADMIN
+?page=1&limit=20&search=john&status=active&role=CEO
 ```
 - **Response (200 OK):**
 ```json
@@ -300,7 +224,7 @@
       "lastName": "Doe",
       "email": "john@example.com",
       "phone": "+1234567890",
-      "role": "ADMIN",
+      "role": "CEO",
       "status": "active",
       "createdAt": "2026-01-15T10:30:00Z",
       "lastLogin": "2026-02-05T08:15:00Z"
@@ -331,15 +255,9 @@
     "lastName": "Doe",
     "email": "john@example.com",
     "phone": "+1234567890",
-    "role": "ADMIN",
+    "role": "CEO",
     "status": "active",
-    "permissions": [
-      "VIEW_DASHBOARD",
-      "VIEW_PRODUCTS",
-      "MANAGE_PRODUCTS",
-      "VIEW_ORDERS",
-      "MANAGE_ORDERS"
-    ],
+    
     "createdAt": "2026-01-15T10:30:00Z"
   }
 }
@@ -350,6 +268,9 @@
 ## 3. Create User
 - **Endpoint:** `POST /admin/users`
 - **Auth Required:** Yes (Admin)
+- **Role Notes:**
+  - `CEO`: can create `CEO`, `Manager`, and `Sales` users
+  - `Manager`: cannot create users (frontend restriction)
 - **Request Body:**
 ```json
 {
@@ -358,17 +279,13 @@
   "email": "jane@example.com",
   "phone": "+1234567891",
   "password": "pawword@123",
-  "roleId": "sales",
+  "role": "Sales",
+  "roleId": "role_sales",
   "status": "active",
-  "twoFactorEnabled": false,
-  "permissions": [
-    "VIEW_DASHBOARD",
-    "VIEW_PRODUCTS",
-    "MANAGE_PRODUCTS",
-    "VIEW_INVENTORY"
-  ]
+  "twoFactorEnabled": false
 }
 ```
+- `permissions` is optional for role-based frontend flows.
 - **Response (201 Created):**
 ```json
 {
@@ -380,8 +297,8 @@
     "lastName": "Smith",
     "email": "jane@example.com",
     "phone": "+1234567891",
-     "password": "pawword@123",
-    "roleId": "sales",
+    "role": "Sales",
+    "roleId": "role_sales",
     "status": "active",
     "createdAt": "2026-02-05T09:00:00Z"
   }
@@ -399,17 +316,12 @@
   "firstName": "Jane",
   "lastName": "Smith",
   "phone": "+1234567891",
-   "password": "pawword@123",
-  "roleId": "role_002",
-  "status": "active",
-  "permissions": [
-    "VIEW_DASHBOARD",
-    "VIEW_PRODUCTS",
-    "VIEW_INVENTORY",
-    "VIEW_ORDERS"
-  ]
+  "role": "Manager",
+  "roleId": "role_manager",
+  "status": "active"
 }
 ```
+- `permissions` is optional for role-based frontend flows.
 - **Response (200 OK):**
 ```json
 {
@@ -438,35 +350,6 @@
 {
   "status": "success",
   "message": "User deleted successfully"
-}
-```
-
----
-
-## 6. Get User Permissions
-- **Endpoint:** `GET /admin/users/:userId/permissions`
-- **Auth Required:** Yes
-- **Response (200 OK):**
-```json
-{
-  "status": "success",
-  "message": "User permissions retrieved successfully",
-  "data": {
-    "userId": "user_12345",
-    "role": "ADMIN",
-    "permissions": [
-      {
-        "id": "perm_001",
-        "name": "VIEW_DASHBOARD",
-        "description": "Can view dashboard"
-      },
-      {
-        "id": "perm_002",
-        "name": "MANAGE_PRODUCTS",
-        "description": "Can create, update, delete products"
-      }
-    ]
-  }
 }
 ```
 
@@ -562,7 +445,7 @@
 
 ## 3. Create Product
 - **Endpoint:** `POST /products`
-- **Auth Required:** Yes (MANAGE_PRODUCTS)
+- **Auth Required:** Yes
 - **Request Body:**
 ```json
 {
@@ -602,7 +485,7 @@
 
 ## 4. Update Product
 - **Endpoint:** `PUT /products/:productId`
-- **Auth Required:** Yes (MANAGE_PRODUCTS)
+- **Auth Required:** Yes
 - **Request Body:**
 ```json
 {
@@ -633,7 +516,7 @@
 
 ## 5. Delete Product
 - **Endpoint:** `DELETE /products/:productId`
-- **Auth Required:** Yes (MANAGE_PRODUCTS)
+- **Auth Required:** Yes
 - **Response (200 OK):**
 ```json
 {
@@ -737,7 +620,7 @@
 
 ## 9. Create Category
 - **Endpoint:** `POST /categories`
-- **Auth Required:** Yes (MANAGE_PRODUCTS)
+- **Auth Required:** Yes
 - **Request Body:**
 ```json
 {
@@ -765,7 +648,7 @@
 
 ## 10. Update Category
 - **Endpoint:** `PUT /categories/:categoryId`
-- **Auth Required:** Yes (MANAGE_PRODUCTS)
+- **Auth Required:** Yes
 - **Request Body:**
 ```json
 {
@@ -791,7 +674,7 @@
 
 ## 11. Delete Category
 - **Endpoint:** `DELETE /categories/:categoryId`
-- **Auth Required:** Yes (MANAGE_PRODUCTS)
+- **Auth Required:** Yes
 - **Response (200 OK):**
 ```json
 {
@@ -869,7 +752,7 @@
 
 ## 3. Add Inventory
 - **Endpoint:** `POST /inventory/add`
-- **Auth Required:** Yes (MANAGE_INVENTORY)
+- **Auth Required:** Yes
 - **Request Body:**
 ```json
 {
@@ -902,7 +785,7 @@
 
 ## 4. Adjust Inventory
 - **Endpoint:** `POST /inventory/adjust`
-- **Auth Required:** Yes (MANAGE_INVENTORY)
+- **Auth Required:** Yes
 - **Request Body:**
 ```json
 {
@@ -936,7 +819,7 @@
 
 ## 5. Transfer Inventory
 - **Endpoint:** `POST /inventory/transfer`
-- **Auth Required:** Yes (MANAGE_INVENTORY)
+- **Auth Required:** Yes
 - **Request Body:**
 ```json
 {
@@ -2782,6 +2665,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 
 # 🏢 SUPERADMIN - BUSINESSES
 
+> **Note:** Superadmin endpoints remain valid for platform operations.
+> The current frontend UX is unified into one `/dashboard` flow with role-based gating.
+
 ## 1. Get All Businesses
 - **Endpoint:** `GET /superadmin/businesses`
 - **Auth Required:** Yes (Superadmin)
@@ -3274,6 +3160,16 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 
 # 🔗 ROLES & PERMISSIONS
 
+## Current Role Set (Frontend Access Matrix)
+
+| Role | Dashboard | Users | Products/Categories | Sales | Customers |
+|------|-----------|-------|---------------------|-------|-----------|
+| CEO | Full | Full (add/edit/delete) | Full | Full | Full |
+| Manager | Full | View/Edit only (no add user) | Full | Full | Full |
+| Sales | View | No access | View only (no add/edit/delete) | Create + View | View only |
+
+---
+
 ## 1. Get All Roles
 - **Endpoint:** `GET /roles`
 - **Auth Required:** Yes (Admin)
@@ -3284,16 +3180,31 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "message": "Roles retrieved successfully",
   "data": [
     {
-      "id": "role_001",
-      "name": "Administrator",
+      "id": "role_ceo",
+      "name": "CEO",
       "description": "Full system access",
       "level": "business",
-      "permissions": [
-        "VIEW_DASHBOARD",
-        "MANAGE_PRODUCTS",
-        "MANAGE_ORDERS",
-        "MANAGE_USERS"
-      ],
+      
+      "isDefault": false,
+      "isSystemRole": true,
+      "createdAt": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "role_manager",
+      "name": "Manager",
+      "description": "Operational access except user creation",
+      "level": "business",
+      
+      "isDefault": false,
+      "isSystemRole": true,
+      "createdAt": "2026-01-01T00:00:00Z"
+    },
+    {
+      "id": "role_sales",
+      "name": "Sales",
+      "description": "Sales-focused view role",
+      "level": "business",
+      
       "isDefault": false,
       "isSystemRole": true,
       "createdAt": "2026-01-01T00:00:00Z"
@@ -3311,15 +3222,7 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ```json
 {
   "name": "Sales Manager",
-  "description": "Manages sales and customer orders",
-  "permissions": [
-    "VIEW_DASHBOARD",
-    "VIEW_PRODUCTS",
-    "VIEW_ORDERS",
-    "MANAGE_ORDERS",
-    "VIEW_CUSTOMERS",
-    "MANAGE_CUSTOMERS"
-  ]
+  "description": "Manages sales and customer orders"
 }
 ```
 - **Response (201 Created):**
@@ -3331,44 +3234,10 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
     "id": "role_007",
     "name": "Sales Manager",
     "description": "Manages sales and customer orders",
-    "permissions": [
-      "VIEW_DASHBOARD",
-      "VIEW_PRODUCTS",
-      "VIEW_ORDERS",
-      "MANAGE_ORDERS",
-      "VIEW_CUSTOMERS",
-      "MANAGE_CUSTOMERS"
-    ],
+    
     "isDefault": false,
     "createdAt": "2026-02-05T09:00:00Z"
   }
-}
-```
-
----
-
-## 3. Get All Permissions
-- **Endpoint:** `GET /permissions`
-- **Auth Required:** Yes
-- **Response (200 OK):**
-```json
-{
-  "status": "success",
-  "message": "Permissions retrieved successfully",
-  "data": [
-    {
-      "id": "perm_001",
-      "name": "VIEW_DASHBOARD",
-      "description": "Can view dashboard",
-      "category": "dashboard"
-    },
-    {
-      "id": "perm_002",
-      "name": "MANAGE_PRODUCTS",
-      "description": "Can create, update, delete products",
-      "category": "products"
-    }
-  ]
 }
 ```
 
@@ -3445,6 +3314,6 @@ Content-Type: application/json
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** February 5, 2026
+**Document Version:** 1.1
+**Last Updated:** February 28, 2026
 **Status:** Complete

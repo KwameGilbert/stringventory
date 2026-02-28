@@ -8,13 +8,10 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-import { useAuth } from "../../../contexts/AuthContext";
-import { PERMISSIONS } from "../../../constants/permissions";
 import analyticsService from "../../../services/analyticsService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const KPICards = ({ dateRange }) => {
-  const { user, hasPermission } = useAuth();
   const [kpis, setKpis] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +56,6 @@ const KPICards = ({ dateRange }) => {
             trend: metrics?.grossRevenue?.trend || toTrend(metrics?.grossRevenue?.change),
             icon: "DollarSign",
             color: "emerald",
-            permission: PERMISSIONS.VIEW_KPI_GROSS_REVENUE,
           },
           {
             id: "totalSales",
@@ -69,7 +65,6 @@ const KPICards = ({ dateRange }) => {
             trend: metrics?.totalOrders?.trend || toTrend(metrics?.totalOrders?.change),
             icon: "ShoppingCart",
             color: "blue",
-            permission: PERMISSIONS.VIEW_KPI_TOTAL_SALES,
           },
           {
             id: "totalExpenses",
@@ -79,7 +74,6 @@ const KPICards = ({ dateRange }) => {
             trend: metrics?.totalExpenses?.trend || toTrend(metrics?.totalExpenses?.change),
             icon: "AlertTriangle",
             color: "orange",
-            permission: PERMISSIONS.VIEW_KPI_TOTAL_EXPENSES,
           },
           {
             id: "netProfit",
@@ -89,7 +83,6 @@ const KPICards = ({ dateRange }) => {
             trend: metrics?.netProfit?.trend || toTrend(metrics?.netProfit?.change),
             icon: "TrendingUp",
             color: "emerald",
-            permission: PERMISSIONS.VIEW_KPI_NET_REVENUE,
           },
           {
             id: "inventoryValue",
@@ -99,7 +92,6 @@ const KPICards = ({ dateRange }) => {
             trend: metrics?.inventoryValue?.trend || toTrend(metrics?.inventoryValue?.change),
             icon: "Package",
             color: "blue",
-            permission: PERMISSIONS.VIEW_KPI_INVENTORY_VALUE,
           },
           {
             id: "lowStockItems",
@@ -109,11 +101,10 @@ const KPICards = ({ dateRange }) => {
             trend: "alert",
             icon: "AlertTriangle",
             color: "red",
-            permission: PERMISSIONS.VIEW_KPI_LOW_STOCK,
           },
         ];
 
-        setKpis(mappedKpis.filter((kpi) => hasPermission(kpi.permission)));
+        setKpis(mappedKpis);
       } catch (error) {
         console.error("Error fetching KPIs:", error);
         setKpis([]);
@@ -122,7 +113,7 @@ const KPICards = ({ dateRange }) => {
       }
     };
     fetchKPIs();
-  }, [dateRange, user, hasPermission]);
+  }, [dateRange]);
 
   const getIcon = (iconName) => {
     const icons = {
