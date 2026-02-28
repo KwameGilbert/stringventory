@@ -76,7 +76,6 @@ export class InventoryModelClass {
         'p.sku',
         'p.quantity',
         'p.reorderThreshold as reorderLevel',
-        'p.reorderQuantity',
         'p.updatedAt'
       )
       .first();
@@ -100,7 +99,6 @@ export class InventoryModelClass {
       sku: product.sku,
       quantity: product.quantity,
       reorderLevel: product.reorderLevel,
-      reorderQuantity: product.reorderQuantity,
       warehouseLocation: batches[0]?.warehouseLocation || 'Main',
       batchNumbers: batches.map((b) => b.batchNumber).filter(Boolean),
       lastStockCheck: product.updatedAt,

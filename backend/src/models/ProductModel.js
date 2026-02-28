@@ -30,7 +30,6 @@ export class ProductModelClass extends BaseModel {
         'p.costPrice as cost',
         'p.quantity',
         'p.reorderThreshold as reorderLevel',
-        'p.reorderQuantity',
         'uom.name as unit',
         'p.isActive',
         'p.image',
@@ -108,7 +107,6 @@ export class ProductModelClass extends BaseModel {
         'p.costPrice as cost',
         'p.quantity',
         'p.reorderThreshold as reorderLevel',
-        'p.reorderQuantity',
         'uom.name as unit',
         'p.isActive',
         'p.image',
@@ -142,8 +140,7 @@ export class ProductModelClass extends BaseModel {
         'p.name',
         'p.sku',
         'p.quantity',
-        'p.reorderThreshold as reorderLevel',
-        'p.reorderQuantity'
+        'p.reorderThreshold as reorderLevel'
       )
       .limit(limit)
       .orderBy('p.quantity', 'asc');

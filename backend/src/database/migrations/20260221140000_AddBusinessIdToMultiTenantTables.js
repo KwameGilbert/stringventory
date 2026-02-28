@@ -34,7 +34,6 @@ export const up = async (knex) => {
 
       if (tableName === 'products') {
         table.integer('quantity').defaultTo(0);
-        table.integer('reorderQuantity').defaultTo(0);
       }
     });
   }

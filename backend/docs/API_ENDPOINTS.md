@@ -1,6 +1,7 @@
 # StringVentory API Endpoints Documentation
 
 ## BASE_URL
+
 ```
 /api/v1
 ```
@@ -10,9 +11,11 @@
 # 🔐 AUTHENTICATION
 
 ## 1. Register User
+
 - **Endpoint:** `POST /auth/register`
 - **Auth Required:** No
 - **Request Body:**
+
 ```json
 {
   "firstName": "John",
@@ -25,7 +28,9 @@
   "businessType": "retail"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -45,16 +50,20 @@
 ---
 
 ## 2. Login
+
 - **Endpoint:** `POST /auth/login`
 - **Auth Required:** No
 - **Request Body:**
+
 ```json
 {
   "email": "john@example.com",
   "password": "SecurePassword123!"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -82,15 +91,19 @@
 ---
 
 ## 3. Refresh Token
+
 - **Endpoint:** `POST /auth/refresh-token`
 - **Auth Required:** No (uses refresh token)
 - **Request Body:**
+
 ```json
 {
   "refreshToken": "eyJhbGc..."
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -106,15 +119,19 @@
 ---
 
 ## 4. Logout
+
 - **Endpoint:** `POST /auth/logout`
 - **Auth Required:** Yes (Bearer Token)
 - **Request Body:**
+
 ```json
 {
   "refreshToken": "eyJhbGc..."
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -125,15 +142,19 @@
 ---
 
 ## 5. Forgot Password
+
 - **Endpoint:** `POST /auth/forgot-password`
 - **Auth Required:** No
 - **Request Body:**
+
 ```json
 {
   "email": "john@example.com"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -144,9 +165,11 @@
 ---
 
 ## 6. Reset Password
+
 - **Endpoint:** `POST /auth/reset-password`
 - **Auth Required:** No
 - **Request Body:**
+
 ```json
 {
   "token": "reset_token_from_email",
@@ -154,7 +177,9 @@
   "confirmPassword": "NewSecurePassword123!"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -165,15 +190,19 @@
 ---
 
 ## 7. Verify Email
+
 - **Endpoint:** `POST /auth/verify-email`
 - **Auth Required:** No
 - **Request Body:**
+
 ```json
 {
   "token": "verification_token_from_email"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -186,13 +215,17 @@
 # 👥 USER MANAGEMENT (Admin Required)
 
 ## 1. Get All Users
+
 - **Endpoint:** `GET /admin/users`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=john&status=active&role=ADMIN
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -222,9 +255,11 @@
 ---
 
 ## 2. Get User by ID
+
 - **Endpoint:** `GET /admin/users/:userId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -252,9 +287,11 @@
 ---
 
 ## 3. Create User
+
 - **Endpoint:** `POST /admin/users`
 - **Auth Required:** Yes (Admin)
 - **Request Body:**
+
 ```json
 {
   "firstName": "Jane",
@@ -265,15 +302,12 @@
   "roleId": "sales",
   "status": "active",
   "twoFactorEnabled": false,
-  "permissions": [
-    "VIEW_DASHBOARD",
-    "VIEW_PRODUCTS",
-    "MANAGE_PRODUCTS",
-    "VIEW_INVENTORY"
-  ]
+  "permissions": ["VIEW_DASHBOARD", "VIEW_PRODUCTS", "MANAGE_PRODUCTS", "VIEW_INVENTORY"]
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -284,7 +318,7 @@
     "lastName": "Smith",
     "email": "jane@example.com",
     "phone": "+1234567891",
-     "password": "pawword@123",
+    "password": "pawword@123",
     "roleId": "sales",
     "status": "active",
     "createdAt": "2026-02-05T09:00:00Z"
@@ -295,26 +329,25 @@
 ---
 
 ## 4. Update User
+
 - **Endpoint:** `PUT /admin/users/:userId`
 - **Auth Required:** Yes (Admin)
 - **Request Body:**
+
 ```json
 {
   "firstName": "Jane",
   "lastName": "Smith",
   "phone": "+1234567891",
-   "password": "pawword@123",
+  "password": "pawword@123",
   "roleId": "role_002",
   "status": "active",
-  "permissions": [
-    "VIEW_DASHBOARD",
-    "VIEW_PRODUCTS",
-    "VIEW_INVENTORY",
-    "VIEW_ORDERS"
-  ]
+  "permissions": ["VIEW_DASHBOARD", "VIEW_PRODUCTS", "VIEW_INVENTORY", "VIEW_ORDERS"]
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -335,9 +368,11 @@
 ---
 
 ## 5. Delete User
+
 - **Endpoint:** `DELETE /admin/users/:userId`
 - **Auth Required:** Yes (Admin)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -348,9 +383,11 @@
 ---
 
 ## 6. Get User Permissions
+
 - **Endpoint:** `GET /admin/users/:userId/permissions`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -377,9 +414,11 @@
 ---
 
 ## 7. Resend Verification Email
+
 - **Endpoint:** `POST /admin/users/:userId/resend-verification`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -392,13 +431,17 @@
 # 🏭 PRODUCTS & CATEGORIES
 
 ## 1. Get All Products
+
 - **Endpoint:** `GET /products`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=laptop&category=electronics&status=active&sortBy=name&sortOrder=asc
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -412,7 +455,7 @@
       "categoryId": "category_001",
       "categoryName": "Electronics",
       "price": 1299.99,
-      "cost": 900.00,
+      "cost": 900.0,
       "quantity": 45,
       "reorderLevel": 10,
       "status": "active",
@@ -432,9 +475,11 @@
 ---
 
 ## 2. Get Product by ID
+
 - **Endpoint:** `GET /products/:productId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -447,10 +492,9 @@
     "categoryId": "category_001",
     "categoryName": "Electronics",
     "price": 1299.99,
-    "cost": 900.00,
+    "cost": 900.0,
     "quantity": 45,
     "reorderLevel": 10,
-    "reorderQuantity": 20,
     "unit": "piece",
     "status": "active",
     "image": "https://example.com/images/laptop.jpg",
@@ -465,9 +509,11 @@
 ---
 
 ## 3. Create Product
+
 - **Endpoint:** `POST /products`
 - **Auth Required:** Yes (MANAGE_PRODUCTS)
 - **Request Body:**
+
 ```json
 {
   "name": "Tablet Plus",
@@ -475,17 +521,18 @@
   "description": "10-inch display tablet",
   "categoryId": "category_001",
   "price": 599.99,
-  "cost": 350.00,
+  "cost": 350.0,
   "quantity": 30,
   "reorderLevel": 5,
-  "reorderQuantity": 15,
   "unit": "piece",
   "barcode": "9876543210123",
   "supplierId": "supplier_001",
   "image": "https://example.com/images/tablet.jpg"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -505,20 +552,24 @@
 ---
 
 ## 4. Update Product
+
 - **Endpoint:** `PUT /products/:productId`
 - **Auth Required:** Yes (MANAGE_PRODUCTS)
 - **Request Body:**
+
 ```json
 {
   "name": "Tablet Plus Ultra",
   "price": 649.99,
-  "cost": 380.00,
+  "cost": 380.0,
   "quantity": 28,
   "reorderLevel": 8,
   "status": "active"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -536,9 +587,11 @@
 ---
 
 ## 5. Delete Product
+
 - **Endpoint:** `DELETE /products/:productId`
 - **Auth Required:** Yes (MANAGE_PRODUCTS)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -549,13 +602,17 @@
 ---
 
 ## 6. Get Low Stock Products
+
 - **Endpoint:** `GET /products/low-stock`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?limit=20
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -567,7 +624,6 @@
       "sku": "LP-001",
       "quantity": 8,
       "reorderLevel": 10,
-      "reorderQuantity": 20,
       "status": "warning"
     }
   ],
@@ -580,13 +636,17 @@
 ---
 
 ## 7. Get Product Expiring Stock
+
 - **Endpoint:** `GET /products/expiring`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?days=30
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -607,13 +667,17 @@
 ---
 
 ## 8. Get All Categories
+
 - **Endpoint:** `GET /categories`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=electronics
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -640,16 +704,20 @@
 ---
 
 ## 9. Create Category
+
 - **Endpoint:** `POST /categories`
 - **Auth Required:** Yes (MANAGE_PRODUCTS)
 - **Request Body:**
+
 ```json
 {
   "name": "Furniture",
   "description": "Office and home furniture"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -668,16 +736,20 @@
 ---
 
 ## 10. Update Category
+
 - **Endpoint:** `PUT /categories/:categoryId`
 - **Auth Required:** Yes (MANAGE_PRODUCTS)
 - **Request Body:**
+
 ```json
 {
   "name": "Modern Furniture",
   "description": "Modern office and home furniture"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -694,9 +766,11 @@
 ---
 
 ## 11. Delete Category
+
 - **Endpoint:** `DELETE /categories/:categoryId`
 - **Auth Required:** Yes (MANAGE_PRODUCTS)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -709,13 +783,17 @@
 # 📦 INVENTORY
 
 ## 1. Get Inventory
+
 - **Endpoint:** `GET /inventory`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=laptop&status=active&sortBy=quantity
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -745,9 +823,11 @@
 ---
 
 ## 2. Get Inventory by Product
+
 - **Endpoint:** `GET /inventory/product/:productId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -759,7 +839,6 @@
     "sku": "LP-001",
     "quantity": 45,
     "reorderLevel": 10,
-    "reorderQuantity": 20,
     "warehouseLocation": "A-001",
     "batchNumbers": ["BATCH-001", "BATCH-002"],
     "lastStockCheck": "2026-02-05T08:00:00Z",
@@ -772,9 +851,11 @@
 ---
 
 ## 3. Add Inventory
+
 - **Endpoint:** `POST /inventory/add`
 - **Auth Required:** Yes (MANAGE_INVENTORY)
 - **Request Body:**
+
 ```json
 {
   "productId": "product_001",
@@ -786,7 +867,9 @@
   "notes": "New stock received"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -805,9 +888,11 @@
 ---
 
 ## 4. Adjust Inventory
+
 - **Endpoint:** `POST /inventory/adjust`
 - **Auth Required:** Yes (MANAGE_INVENTORY)
 - **Request Body:**
+
 ```json
 {
   "productId": "product_001",
@@ -818,7 +903,9 @@
   "notes": "5 units damaged in shipment"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -839,9 +926,11 @@
 ---
 
 ## 5. Transfer Inventory
+
 - **Endpoint:** `POST /inventory/transfer`
 - **Auth Required:** Yes (MANAGE_INVENTORY)
 - **Request Body:**
+
 ```json
 {
   "productId": "product_001",
@@ -852,7 +941,9 @@
   "notes": "Transfer to branch office"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -874,13 +965,17 @@
 # 🛒 CUSTOMERS
 
 ## 1. Get All Customers
+
 - **Endpoint:** `GET /customers`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=john&status=active&sortBy=name
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -895,7 +990,7 @@
       "businessName": "Smith Trading",
       "customerType": "retail",
       "totalOrders": 15,
-      "totalSpent": 5000.00,
+      "totalSpent": 5000.0,
       "status": "active",
       "createdAt": "2026-01-05T10:00:00Z"
     }
@@ -912,9 +1007,11 @@
 ---
 
 ## 2. Get Customer by ID
+
 - **Endpoint:** `GET /customers/:customerId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -933,10 +1030,10 @@
     "postalCode": "12345",
     "country": "Country",
     "taxId": "TAX-123456",
-    "creditLimit": 10000.00,
-    "creditUsed": 2000.00,
+    "creditLimit": 10000.0,
+    "creditUsed": 2000.0,
     "totalOrders": 15,
-    "totalSpent": 5000.00,
+    "totalSpent": 5000.0,
     "loyaltyPoints": 500,
     "status": "active",
     "notes": "VIP customer",
@@ -949,9 +1046,11 @@
 ---
 
 ## 3. Create Customer
+
 - **Endpoint:** `POST /customers`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "firstName": "Jane",
@@ -966,11 +1065,13 @@
   "postalCode": "54321",
   "country": "Country",
   "taxId": "TAX-654321",
-  "creditLimit": 15000.00,
+  "creditLimit": 15000.0,
   "notes": "Potential high-value customer"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -990,20 +1091,24 @@
 ---
 
 ## 4. Update Customer
+
 - **Endpoint:** `PUT /customers/:customerId`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "firstName": "Jane",
   "lastName": "Doe",
   "phone": "+1234567891",
   "businessName": "Doe Enterprise Ltd",
-  "creditLimit": 20000.00,
+  "creditLimit": 20000.0,
   "status": "active"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1013,7 +1118,7 @@
     "firstName": "Jane",
     "lastName": "Doe",
     "businessName": "Doe Enterprise Ltd",
-    "creditLimit": 20000.00,
+    "creditLimit": 20000.0,
     "updatedAt": "2026-02-05T09:15:00Z"
   }
 }
@@ -1022,9 +1127,11 @@
 ---
 
 ## 5. Delete Customer
+
 - **Endpoint:** `DELETE /customers/:customerId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1035,13 +1142,17 @@
 ---
 
 ## 6. Get Customer Orders
+
 - **Endpoint:** `GET /customers/:customerId/orders`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=10
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1051,7 +1162,7 @@
       "id": "order_001",
       "orderNumber": "ORD-001",
       "date": "2026-02-05T08:00:00Z",
-      "total": 1500.00,
+      "total": 1500.0,
       "status": "completed",
       "itemCount": 5
     }
@@ -1069,13 +1180,17 @@
 # 📋 ORDERS
 
 ## 1. Get All Orders
+
 - **Endpoint:** `GET /orders`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=ORD&status=pending&sortBy=date&sortOrder=desc
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1088,9 +1203,9 @@
       "customerName": "John Smith",
       "date": "2026-02-05T08:00:00Z",
       "dueDate": "2026-02-12T08:00:00Z",
-      "subtotal": 1400.00,
-      "tax": 100.00,
-      "total": 1500.00,
+      "subtotal": 1400.0,
+      "tax": 100.0,
+      "total": 1500.0,
       "status": "pending",
       "paymentStatus": "unpaid",
       "itemCount": 5,
@@ -1109,9 +1224,11 @@
 ---
 
 ## 2. Get Order by ID
+
 - **Endpoint:** `GET /orders/:orderId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1135,14 +1252,14 @@
         "quantity": 2,
         "unitPrice": 1299.99,
         "subtotal": 2599.98,
-        "discount": 100.00,
+        "discount": 100.0,
         "total": 2499.98
       }
     ],
     "subtotal": 2499.98,
-    "discount": 100.00,
-    "tax": 180.00,
-    "shippingCost": 50.00,
+    "discount": 100.0,
+    "tax": 180.0,
+    "shippingCost": 50.0,
     "total": 2729.98,
     "status": "pending",
     "paymentStatus": "unpaid",
@@ -1157,9 +1274,11 @@
 ---
 
 ## 3. Create Order
+
 - **Endpoint:** `POST /orders`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "customerId": "customer_001",
@@ -1169,7 +1288,7 @@
       "productId": "product_001",
       "quantity": 2,
       "unitPrice": 1299.99,
-      "discount": 50.00
+      "discount": 50.0
     },
     {
       "productId": "product_002",
@@ -1178,13 +1297,15 @@
       "discount": 0
     }
   ],
-  "tax": 180.00,
-  "shippingCost": 50.00,
+  "tax": 180.0,
+  "shippingCost": 50.0,
   "shippingAddress": "123 Main Street, City, State 12345",
   "notes": "Handle with care"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -1205,9 +1326,11 @@
 ---
 
 ## 4. Update Order
+
 - **Endpoint:** `PUT /orders/:orderId`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "status": "processing",
@@ -1216,7 +1339,9 @@
   "notes": "Expedited shipping requested"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1234,9 +1359,11 @@
 ---
 
 ## 5. Delete Order
+
 - **Endpoint:** `DELETE /orders/:orderId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1247,13 +1374,15 @@
 ---
 
 ## 6. Create Refund
+
 - **Endpoint:** `POST /orders/:orderId/refund`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "refundType": "partial",
-  "amount": 500.00,
+  "amount": 500.0,
   "reason": "customer_request",
   "items": [
     {
@@ -1264,7 +1393,9 @@
   "notes": "Customer changed mind"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -1272,7 +1403,7 @@
   "data": {
     "id": "refund_001",
     "orderId": "order_001",
-    "amount": 500.00,
+    "amount": 500.0,
     "refundType": "partial",
     "reason": "customer_request",
     "status": "processed",
@@ -1286,13 +1417,17 @@
 # 🏭 SUPPLIERS & PURCHASES
 
 ## 1. Get All Suppliers
+
 - **Endpoint:** `GET /suppliers`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=supplier&status=active
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1306,7 +1441,7 @@
       "city": "Tech City",
       "status": "active",
       "totalOrders": 25,
-      "totalSpent": 50000.00,
+      "totalSpent": 50000.0,
       "createdAt": "2026-01-01T10:00:00Z"
     }
   ],
@@ -1322,9 +1457,11 @@
 ---
 
 ## 2. Get Supplier by ID
+
 - **Endpoint:** `GET /suppliers/:supplierId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1346,7 +1483,7 @@
     "leadTime": 5,
     "minOrderQuantity": 10,
     "totalOrders": 25,
-    "totalSpent": 50000.00,
+    "totalSpent": 50000.0,
     "status": "active",
     "rating": 4.5,
     "notes": "Reliable supplier",
@@ -1358,9 +1495,11 @@
 ---
 
 ## 3. Create Supplier
+
 - **Endpoint:** `POST /suppliers`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "name": "Global Parts Ltd",
@@ -1379,7 +1518,9 @@
   "minOrderQuantity": 5
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -1397,9 +1538,11 @@
 ---
 
 ## 4. Update Supplier
+
 - **Endpoint:** `PUT /suppliers/:supplierId`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "name": "Global Parts Ltd International",
@@ -1409,7 +1552,9 @@
   "status": "active"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1426,9 +1571,11 @@
 ---
 
 ## 5. Delete Supplier
+
 - **Endpoint:** `DELETE /suppliers/:supplierId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1439,13 +1586,17 @@
 ---
 
 ## 6. Get All Purchases
+
 - **Endpoint:** `GET /purchases`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=PO&status=pending&supplierId=supplier_001
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1458,7 +1609,7 @@
       "supplierName": "Tech Supplies Co",
       "date": "2026-02-05T08:00:00Z",
       "dueDate": "2026-02-10T08:00:00Z",
-      "total": 5000.00,
+      "total": 5000.0,
       "status": "pending",
       "paymentStatus": "unpaid",
       "itemCount": 3,
@@ -1477,9 +1628,11 @@
 ---
 
 ## 7. Get Purchase by ID
+
 - **Endpoint:** `GET /purchases/:purchaseId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1500,15 +1653,15 @@
         "productName": "Laptop Pro",
         "sku": "LP-001",
         "quantity": 10,
-        "unitPrice": 450.00,
-        "total": 4500.00
+        "unitPrice": 450.0,
+        "total": 4500.0
       }
     ],
-    "subtotal": 4500.00,
-    "tax": 300.00,
-    "shippingCost": 50.00,
+    "subtotal": 4500.0,
+    "tax": 300.0,
+    "shippingCost": 50.0,
     "discount": 0,
-    "total": 4850.00,
+    "total": 4850.0,
     "status": "pending",
     "paymentStatus": "unpaid",
     "notes": "Rush order",
@@ -1520,9 +1673,11 @@
 ---
 
 ## 8. Create Purchase Order
+
 - **Endpoint:** `POST /purchases`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "supplierId": "supplier_001",
@@ -1532,20 +1687,22 @@
     {
       "productId": "product_001",
       "quantity": 10,
-      "unitPrice": 450.00
+      "unitPrice": 450.0
     },
     {
       "productId": "product_002",
       "quantity": 5,
-      "unitPrice": 350.00
+      "unitPrice": 350.0
     }
   ],
-  "tax": 120.00,
-  "shippingCost": 50.00,
+  "tax": 120.0,
+  "shippingCost": 50.0,
   "notes": "Rush delivery needed"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -1555,7 +1712,7 @@
     "purchaseNumber": "PO-001",
     "supplierId": "supplier_001",
     "date": "2026-02-05T08:00:00Z",
-    "total": 4920.00,
+    "total": 4920.0,
     "status": "pending",
     "paymentStatus": "unpaid",
     "createdAt": "2026-02-05T08:00:00Z"
@@ -1566,9 +1723,11 @@
 ---
 
 ## 9. Update Purchase
+
 - **Endpoint:** `PUT /purchases/:purchaseId`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "status": "received",
@@ -1576,7 +1735,9 @@
   "receivedDate": "2026-02-12T08:00:00Z"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1596,13 +1757,17 @@
 # 💰 EXPENSES
 
 ## 1. Get All Expenses
+
 - **Endpoint:** `GET /expenses`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=rent&category=operations&status=paid&dateFrom=2026-01-01&dateTo=2026-02-05
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1614,7 +1779,7 @@
       "description": "Office Rent",
       "categoryId": "exp_cat_001",
       "categoryName": "Operations",
-      "amount": 2000.00,
+      "amount": 2000.0,
       "date": "2026-02-01T08:00:00Z",
       "vendor": "Property Management Inc",
       "paymentMethod": "bank_transfer",
@@ -1634,9 +1799,11 @@
 ---
 
 ## 2. Get Expense by ID
+
 - **Endpoint:** `GET /expenses/:expenseId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1647,7 +1814,7 @@
     "description": "Office Rent",
     "categoryId": "exp_cat_001",
     "categoryName": "Operations",
-    "amount": 2000.00,
+    "amount": 2000.0,
     "date": "2026-02-01T08:00:00Z",
     "dueDate": "2026-02-05T08:00:00Z",
     "paymentDate": "2026-02-04T08:00:00Z",
@@ -1666,14 +1833,16 @@
 ---
 
 ## 3. Create Expense
+
 - **Endpoint:** `POST /expenses`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "description": "Electricity Bill",
   "categoryId": "exp_cat_001",
-  "amount": 500.00,
+  "amount": 500.0,
   "date": "2026-02-05T08:00:00Z",
   "dueDate": "2026-02-10T08:00:00Z",
   "vendor": "City Power Company",
@@ -1683,7 +1852,9 @@
   "notes": "Monthly electricity consumption"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -1693,7 +1864,7 @@
     "expenseNumber": "EXP-002",
     "description": "Electricity Bill",
     "categoryName": "Operations",
-    "amount": 500.00,
+    "amount": 500.0,
     "status": "pending",
     "createdAt": "2026-02-05T08:00:00Z"
   }
@@ -1703,18 +1874,22 @@
 ---
 
 ## 4. Update Expense
+
 - **Endpoint:** `PUT /expenses/:expenseId`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "description": "Electricity Bill - Updated",
-  "amount": 520.00,
+  "amount": 520.0,
   "status": "paid",
   "paymentDate": "2026-02-05T08:00:00Z"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1722,7 +1897,7 @@
   "data": {
     "id": "expense_002",
     "expenseNumber": "EXP-002",
-    "amount": 520.00,
+    "amount": 520.0,
     "status": "paid",
     "updatedAt": "2026-02-05T09:00:00Z"
   }
@@ -1732,9 +1907,11 @@
 ---
 
 ## 5. Delete Expense
+
 - **Endpoint:** `DELETE /expenses/:expenseId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1745,9 +1922,11 @@
 ---
 
 ## 6. Get Expense Categories
+
 - **Endpoint:** `GET /expense-categories`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1757,18 +1936,18 @@
       "id": "exp_cat_001",
       "name": "Operations",
       "description": "Day-to-day operational expenses",
-      "budgetLimit": 10000.00,
-      "spent": 2500.00,
-      "remaining": 7500.00,
+      "budgetLimit": 10000.0,
+      "spent": 2500.0,
+      "remaining": 7500.0,
       "status": "active"
     },
     {
       "id": "exp_cat_002",
       "name": "Marketing",
       "description": "Marketing and advertising expenses",
-      "budgetLimit": 5000.00,
-      "spent": 1500.00,
-      "remaining": 3500.00,
+      "budgetLimit": 5000.0,
+      "spent": 1500.0,
+      "remaining": 3500.0,
       "status": "active"
     }
   ]
@@ -1778,17 +1957,21 @@
 ---
 
 ## 7. Create Expense Category
+
 - **Endpoint:** `POST /expense-categories`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "name": "Utilities",
   "description": "Utility expenses (water, electricity, gas)",
-  "budgetLimit": 2000.00
+  "budgetLimit": 2000.0
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -1797,9 +1980,9 @@
     "id": "exp_cat_003",
     "name": "Utilities",
     "description": "Utility expenses (water, electricity, gas)",
-    "budgetLimit": 2000.00,
+    "budgetLimit": 2000.0,
     "spent": 0,
-    "remaining": 2000.00,
+    "remaining": 2000.0,
     "status": "active"
   }
 }
@@ -1810,13 +1993,17 @@
 # 💵 SALES
 
 ## 1. Get All Sales
+
 - **Endpoint:** `GET /sales`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=SALE&status=completed&dateFrom=2026-01-01&dateTo=2026-02-05
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1829,9 +2016,9 @@
       "customerName": "John Smith",
       "date": "2026-02-05T08:00:00Z",
       "items": 5,
-      "subtotal": 1400.00,
-      "tax": 100.00,
-      "total": 1500.00,
+      "subtotal": 1400.0,
+      "tax": 100.0,
+      "total": 1500.0,
       "paymentMethod": "credit_card",
       "status": "completed",
       "createdAt": "2026-02-05T08:00:00Z"
@@ -1849,9 +2036,11 @@
 ---
 
 ## 2. Get Sale by ID
+
 - **Endpoint:** `GET /sales/:saleId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1871,14 +2060,14 @@
         "sku": "LP-001",
         "quantity": 2,
         "unitPrice": 1299.99,
-        "discount": 100.00,
+        "discount": 100.0,
         "total": 2499.98
       }
     ],
     "subtotal": 2499.98,
-    "discount": 100.00,
-    "tax": 180.00,
-    "shippingCost": 50.00,
+    "discount": 100.0,
+    "tax": 180.0,
+    "shippingCost": 50.0,
     "total": 2729.98,
     "paymentMethod": "credit_card",
     "transactionId": "TXN-001",
@@ -1891,9 +2080,11 @@
 ---
 
 ## 3. Create Sale
+
 - **Endpoint:** `POST /sales`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "customerId": "customer_001",
@@ -1902,17 +2093,19 @@
       "productId": "product_001",
       "quantity": 2,
       "unitPrice": 1299.99,
-      "discount": 50.00
+      "discount": 50.0
     }
   ],
-  "tax": 180.00,
-  "shippingCost": 50.00,
+  "tax": 180.0,
+  "shippingCost": 50.0,
   "paymentMethod": "credit_card",
   "transactionId": "TXN-001",
   "notes": "Thank you for your purchase"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -1932,16 +2125,20 @@
 ---
 
 ## 4. Update Sale
+
 - **Endpoint:** `PUT /sales/:saleId`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "status": "completed",
   "paymentMethod": "bank_transfer"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1958,9 +2155,11 @@
 ---
 
 ## 5. Delete Sale
+
 - **Endpoint:** `DELETE /sales/:saleId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1973,13 +2172,17 @@
 # 📊 REPORTS & ANALYTICS
 
 ## 1. Get Dashboard Overview
+
 - **Endpoint:** `GET /analytics/dashboard`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?dateFrom=2026-01-01&dateTo=2026-02-05
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -1987,7 +2190,7 @@
   "data": {
     "metrics": {
       "grossRevenue": {
-        "value": 125000.00,
+        "value": 125000.0,
         "change": 15.5,
         "trend": "up"
       },
@@ -1997,12 +2200,12 @@
         "trend": "up"
       },
       "totalExpenses": {
-        "value": 35000.00,
+        "value": 35000.0,
         "change": 5.3,
         "trend": "up"
       },
       "netProfit": {
-        "value": 90000.00,
+        "value": 90000.0,
         "change": 22.1,
         "trend": "up"
       },
@@ -2012,7 +2215,7 @@
         "trend": "up"
       },
       "inventoryValue": {
-        "value": 45000.00,
+        "value": 45000.0,
         "change": -3.2,
         "trend": "down"
       },
@@ -2040,7 +2243,7 @@
           "customerId": "customer_001",
           "customerName": "John Smith",
           "orders": 15,
-          "spent": 5000.00
+          "spent": 5000.0
         }
       ]
     }
@@ -2051,20 +2254,24 @@
 ---
 
 ## 2. Get Sales Report
+
 - **Endpoint:** `GET /analytics/sales-report`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?dateFrom=2026-01-01&dateTo=2026-02-05&groupBy=daily
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
   "message": "Sales report retrieved successfully",
   "data": {
     "summary": {
-      "totalSales": 125000.00,
+      "totalSales": 125000.0,
       "totalOrders": 456,
       "averageOrderValue": 274.12,
       "totalItems": 1234,
@@ -2073,7 +2280,7 @@
     "byDate": [
       {
         "date": "2026-02-05",
-        "sales": 5000.00,
+        "sales": 5000.0,
         "orders": 18,
         "items": 42
       }
@@ -2091,7 +2298,7 @@
         "customerId": "customer_001",
         "customerName": "John Smith",
         "orders": 15,
-        "spent": 5000.00
+        "spent": 5000.0
       }
     ]
   }
@@ -2101,9 +2308,11 @@
 ---
 
 ## 3. Get Inventory Report
+
 - **Endpoint:** `GET /analytics/inventory-report`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2112,7 +2321,7 @@
     "summary": {
       "totalProducts": 156,
       "totalQuantity": 2345,
-      "totalValue": 125000.00,
+      "totalValue": 125000.0,
       "lowStockItems": 5,
       "outOfStockItems": 2
     },
@@ -2122,7 +2331,7 @@
         "categoryName": "Electronics",
         "productCount": 45,
         "quantity": 500,
-        "value": 45000.00
+        "value": 45000.0
       }
     ],
     "lowStockItems": [
@@ -2141,32 +2350,36 @@
 ---
 
 ## 4. Get Financial Report
+
 - **Endpoint:** `GET /analytics/financial-report`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?dateFrom=2026-01-01&dateTo=2026-02-05
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
   "message": "Financial report retrieved successfully",
   "data": {
     "income": {
-      "sales": 125000.00,
-      "other": 5000.00,
-      "total": 130000.00
+      "sales": 125000.0,
+      "other": 5000.0,
+      "total": 130000.0
     },
     "expenses": {
-      "costOfGoods": 50000.00,
-      "operationalExpenses": 25000.00,
-      "other": 10000.00,
-      "total": 85000.00
+      "costOfGoods": 50000.0,
+      "operationalExpenses": 25000.0,
+      "other": 10000.0,
+      "total": 85000.0
     },
     "summary": {
-      "grossProfit": 75000.00,
-      "netProfit": 45000.00,
+      "grossProfit": 75000.0,
+      "netProfit": 45000.0,
       "profitMargin": 34.6,
       "roi": 52.9
     }
@@ -2177,9 +2390,11 @@
 ---
 
 ## 5. Get Customer Report
+
 - **Endpoint:** `GET /analytics/customer-report`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2198,7 +2413,7 @@
         "customerId": "customer_001",
         "customerName": "John Smith",
         "orders": 15,
-        "spent": 5000.00,
+        "spent": 5000.0,
         "lastOrderDate": "2026-02-05T08:00:00Z"
       }
     ]
@@ -2209,20 +2424,24 @@
 ---
 
 ## 6. Get Expense Report
+
 - **Endpoint:** `GET /analytics/expense-report`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?dateFrom=2026-01-01&dateTo=2026-02-05
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
   "message": "Expense report retrieved successfully",
   "data": {
     "summary": {
-      "totalExpenses": 35000.00,
+      "totalExpenses": 35000.0,
       "totalExpenseItems": 45,
       "averageExpense": 777.78
     },
@@ -2230,11 +2449,11 @@
       {
         "categoryId": "exp_cat_001",
         "categoryName": "Operations",
-        "amount": 20000.00,
+        "amount": 20000.0,
         "itemCount": 25,
-        "budgetLimit": 30000.00,
-        "spent": 20000.00,
-        "remaining": 10000.00
+        "budgetLimit": 30000.0,
+        "spent": 20000.0,
+        "remaining": 10000.0
       }
     ]
   }
@@ -2244,13 +2463,17 @@
 ---
 
 ## 7. Export Report
+
 - **Endpoint:** `GET /analytics/export/:reportType`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?dateFrom=2026-01-01&dateTo=2026-02-05&format=pdf
 ```
+
 - **Response (200 OK - File Download):**
+
 ```
 File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ```
@@ -2260,13 +2483,17 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 # 💬 MESSAGING
 
 ## 1. Get All Messages
+
 - **Endpoint:** `GET /messaging/messages`
 - **Auth Required:** Yes
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&customerId=customer_001&status=unread
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2297,9 +2524,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 2. Get Message by ID
+
 - **Endpoint:** `GET /messaging/messages/:messageId`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2325,9 +2554,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 3. Send Message
+
 - **Endpoint:** `POST /messaging/messages`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "customerId": "customer_001",
@@ -2337,7 +2568,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "scheduledFor": null
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -2356,9 +2589,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 4. Send Bulk Messages
+
 - **Endpoint:** `POST /messaging/bulk-messages`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "customerIds": ["customer_001", "customer_002", "customer_003"],
@@ -2367,7 +2602,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "scheduledFor": null
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -2386,9 +2623,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 5. Get Message Templates
+
 - **Endpoint:** `GET /messaging/templates`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2408,9 +2647,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 6. Create Message Template
+
 - **Endpoint:** `POST /messaging/templates`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "name": "Payment Reminder",
@@ -2419,7 +2660,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "type": "sms"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -2438,9 +2681,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 # ⚙️ SETTINGS
 
 ## 1. Get Business Settings
+
 - **Endpoint:** `GET /settings/business`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2471,9 +2716,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 2. Update Business Settings
+
 - **Endpoint:** `PUT /settings/business`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "businessName": "John's Store Ltd",
@@ -2485,7 +2732,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "language": "en"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2502,9 +2751,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 3. Get Notification Settings
+
 - **Endpoint:** `GET /settings/notifications`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2540,9 +2791,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 4. Update Notification Settings
+
 - **Endpoint:** `PUT /settings/notifications`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "emailNotifications": {
@@ -2562,7 +2815,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   }
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2577,9 +2832,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 5. Get Payment Settings
+
 - **Endpoint:** `GET /settings/payment`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2612,9 +2869,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 6. Update Payment Settings
+
 - **Endpoint:** `PUT /settings/payment`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "defaultPaymentMethod": "pm_002",
@@ -2623,7 +2882,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "enabledMethods": ["pm_001", "pm_002"]
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2638,9 +2899,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 7. Get API Settings
+
 - **Endpoint:** `GET /settings/api`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2662,15 +2925,19 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 8. Regenerate API Key
+
 - **Endpoint:** `POST /settings/api/regenerate-key`
 - **Auth Required:** Yes
 - **Request Body:**
+
 ```json
 {
   "keyType": "secret"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2687,13 +2954,17 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 # 🏢 SUPERADMIN - BUSINESSES
 
 ## 1. Get All Businesses
+
 - **Endpoint:** `GET /superadmin/businesses`
 - **Auth Required:** Yes (Superadmin)
 - **Query Parameters:**
+
 ```
 ?page=1&limit=20&search=john&status=active&subscriptionPlan=professional
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2725,9 +2996,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 2. Get Business by ID
+
 - **Endpoint:** `GET /superadmin/businesses/:businessId`
 - **Auth Required:** Yes (Superadmin)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2750,14 +3023,14 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
     "subscriptionStatus": "active",
     "subscriptionStartDate": "2026-01-15T00:00:00Z",
     "subscriptionRenewalDate": "2026-04-15T00:00:00Z",
-    "planPrice": 149.00,
+    "planPrice": 149.0,
     "billingCycle": "monthly",
     "status": "active",
     "apiKey": "sk_live_abc...",
     "totalUsers": 8,
     "totalProducts": 156,
     "totalOrders": 456,
-    "monthlyRevenue": 25000.00,
+    "monthlyRevenue": 25000.0,
     "createdAt": "2026-01-15T10:00:00Z"
   }
 }
@@ -2766,9 +3039,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 3. Create Business
+
 - **Endpoint:** `POST /superadmin/businesses`
 - **Auth Required:** Yes (Superadmin)
 - **Request Body:**
+
 ```json
 {
   "name": "Jane's Enterprise",
@@ -2787,7 +3062,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "billingCycle": "monthly"
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -2807,9 +3084,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 4. Update Business
+
 - **Endpoint:** `PUT /superadmin/businesses/:businessId`
 - **Auth Required:** Yes (Superadmin)
 - **Request Body:**
+
 ```json
 {
   "name": "Jane's Enterprise Ltd",
@@ -2818,7 +3097,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "status": "active"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2835,9 +3116,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 5. Delete Business
+
 - **Endpoint:** `DELETE /superadmin/businesses/:businessId`
 - **Auth Required:** Yes (Superadmin)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2848,16 +3131,20 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 6. Suspend Business
+
 - **Endpoint:** `POST /superadmin/businesses/:businessId/suspend`
 - **Auth Required:** Yes (Superadmin)
 - **Request Body:**
+
 ```json
 {
   "reason": "Non-payment of subscription",
   "suspensionDays": 30
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2874,9 +3161,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 7. Reactivate Business
+
 - **Endpoint:** `POST /superadmin/businesses/:businessId/reactivate`
 - **Auth Required:** Yes (Superadmin)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2894,9 +3183,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 # 💳 SUPERADMIN - PRICING PLANS
 
 ## 1. Get All Pricing Plans
+
 - **Endpoint:** `GET /superadmin/pricing-plans`
 - **Auth Required:** Yes (Superadmin)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2911,12 +3202,7 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
       "priceYearly": 0,
       "popular": false,
       "color": "gray",
-      "features": [
-        "Dashboard access",
-        "Up to 100 products",
-        "1 user",
-        "1 location"
-      ],
+      "features": ["Dashboard access", "Up to 100 products", "1 user", "1 location"],
       "limits": {
         "maxProducts": 100,
         "maxUsers": 1,
@@ -2934,9 +3220,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 2. Get Plan by ID
+
 - **Endpoint:** `GET /superadmin/pricing-plans/:planId`
 - **Auth Required:** Yes (Superadmin)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -2950,13 +3238,7 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
     "priceYearly": 0,
     "popular": false,
     "color": "gray",
-    "features": [
-      "Dashboard access",
-      "Up to 100 products",
-      "1 user",
-      "1 location",
-      "Basic reports"
-    ],
+    "features": ["Dashboard access", "Up to 100 products", "1 user", "1 location", "Basic reports"],
     "limits": {
       "maxProducts": 100,
       "maxUsers": 1,
@@ -2967,18 +3249,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
       "maxSuppliers": 5,
       "maxCustomers": 100
     },
-    "featureFlags": [
-      "dashboard",
-      "products",
-      "orders",
-      "customers",
-      "inventory",
-      "basic_reports"
-    ],
+    "featureFlags": ["dashboard", "products", "orders", "customers", "inventory", "basic_reports"],
     "status": "active",
     "trialDays": 14,
     "subscriptionCount": 0,
-    "monthlyRecurringRevenue": 0.00,
+    "monthlyRecurringRevenue": 0.0,
     "createdAt": "2026-01-01T00:00:00Z"
   }
 }
@@ -2987,9 +3262,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 3. Create Pricing Plan
+
 - **Endpoint:** `POST /superadmin/pricing-plans`
 - **Auth Required:** Yes (Superadmin)
 - **Request Body:**
+
 ```json
 {
   "name": "Growth",
@@ -3039,7 +3316,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "trialDays": 0
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -3059,9 +3338,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 4. Update Pricing Plan
+
 - **Endpoint:** `PUT /superadmin/pricing-plans/:planId`
 - **Auth Required:** Yes (Superadmin)
 - **Request Body:**
+
 ```json
 {
   "priceMonthly": 199,
@@ -3070,7 +3351,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   "status": "active"
 }
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -3089,9 +3372,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 5. Delete Pricing Plan
+
 - **Endpoint:** `DELETE /superadmin/pricing-plans/:planId`
 - **Auth Required:** Yes (Superadmin)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -3104,13 +3389,17 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 # 📊 SUPERADMIN - ANALYTICS
 
 ## 1. Get Platform Analytics
+
 - **Endpoint:** `GET /superadmin/analytics/platform`
 - **Auth Required:** Yes (Superadmin)
 - **Query Parameters:**
+
 ```
 ?dateFrom=2026-01-01&dateTo=2026-02-05
 ```
+
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -3133,17 +3422,17 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
         "trend": "up"
       },
       "monthlyRecurringRevenue": {
-        "value": 45000.00,
+        "value": 45000.0,
         "change": 15.7,
         "trend": "up"
       },
       "totalGrossVolume": {
-        "value": 2500000.00,
+        "value": 2500000.0,
         "change": 22.1,
         "trend": "up"
       },
       "averageBusinessValue": {
-        "value": 20000.00,
+        "value": 20000.0,
         "change": 10.5,
         "trend": "up"
       }
@@ -3165,7 +3454,7 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
       "revenueByPlan": [
         {
           "plan": "professional",
-          "revenue": 25000.00,
+          "revenue": 25000.0,
           "businessCount": 42
         }
       ]
@@ -3179,9 +3468,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 # 🔗 ROLES & PERMISSIONS
 
 ## 1. Get All Roles
+
 - **Endpoint:** `GET /roles`
 - **Auth Required:** Yes (Admin)
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -3192,12 +3483,7 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
       "name": "Administrator",
       "description": "Full system access",
       "level": "business",
-      "permissions": [
-        "VIEW_DASHBOARD",
-        "MANAGE_PRODUCTS",
-        "MANAGE_ORDERS",
-        "MANAGE_USERS"
-      ],
+      "permissions": ["VIEW_DASHBOARD", "MANAGE_PRODUCTS", "MANAGE_ORDERS", "MANAGE_USERS"],
       "isDefault": false,
       "isSystemRole": true,
       "createdAt": "2026-01-01T00:00:00Z"
@@ -3209,9 +3495,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 2. Create Role
+
 - **Endpoint:** `POST /roles`
 - **Auth Required:** Yes (Admin)
 - **Request Body:**
+
 ```json
 {
   "name": "Sales Manager",
@@ -3226,7 +3514,9 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
   ]
 }
 ```
+
 - **Response (201 Created):**
+
 ```json
 {
   "status": "success",
@@ -3252,9 +3542,11 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ---
 
 ## 3. Get All Permissions
+
 - **Endpoint:** `GET /permissions`
 - **Auth Required:** Yes
 - **Response (200 OK):**
+
 ```json
 {
   "status": "success",
@@ -3280,19 +3572,19 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 
 # ✅ HTTP STATUS CODES
 
-| Code | Meaning | Example |
-|------|---------|---------|
-| 200 | OK | Request successful |
-| 201 | Created | Resource created |
-| 204 | No Content | Request successful, no response body |
-| 400 | Bad Request | Invalid request format |
-| 401 | Unauthorized | Missing/invalid authentication |
-| 403 | Forbidden | Insufficient permissions |
-| 404 | Not Found | Resource not found |
-| 409 | Conflict | Resource already exists |
-| 422 | Unprocessable Entity | Validation error |
-| 429 | Too Many Requests | Rate limit exceeded |
-| 500 | Internal Server Error | Server error |
+| Code | Meaning               | Example                              |
+| ---- | --------------------- | ------------------------------------ |
+| 200  | OK                    | Request successful                   |
+| 201  | Created               | Resource created                     |
+| 204  | No Content            | Request successful, no response body |
+| 400  | Bad Request           | Invalid request format               |
+| 401  | Unauthorized          | Missing/invalid authentication       |
+| 403  | Forbidden             | Insufficient permissions             |
+| 404  | Not Found             | Resource not found                   |
+| 409  | Conflict              | Resource already exists              |
+| 422  | Unprocessable Entity  | Validation error                     |
+| 429  | Too Many Requests     | Rate limit exceeded                  |
+| 500  | Internal Server Error | Server error                         |
 
 ---
 
@@ -3310,6 +3602,7 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 ```
 
 **Example:**
+
 ```json
 {
   "status": "error",
@@ -3327,6 +3620,7 @@ File: stringventory_sales_report_2026-01-01_2026-02-05.pdf
 # 🔐 AUTHENTICATION HEADERS
 
 All protected endpoints require:
+
 ```
 Authorization: Bearer {accessToken}
 Content-Type: application/json
