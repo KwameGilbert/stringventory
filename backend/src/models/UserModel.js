@@ -17,6 +17,21 @@ class UserModelClass extends BaseModel {
   }
 
   /**
+   * Find user by ID including role name
+   */
+  async findById(id, trx = null) {
+    const q = trx ? trx : db;
+    const record = await q('users as u')
+      .leftJoin('roles as r', 'u.roleId', 'r.id')
+      .where('u.id', id)
+      .whereNull('u.deletedAt')
+      .select('u.*', 'r.name as role')
+      .first();
+
+    return record ? this.hideFields(record) : null;
+  }
+
+  /**
    * Create user with hashed password
    */
   async create(data, trx = null) {
@@ -68,7 +83,8 @@ class UserModelClass extends BaseModel {
     const user = await q('users as u')
       .leftJoin('businesses as b', 'u.businessId', 'b.id')
       .leftJoin('subscription_plans as sp', 'b.subscriptionPlanId', 'sp.id')
-      .select('u.*', 'sp.slug as subscriptionPlan', 'b.subscriptionStatus')
+      .leftJoin('roles as r', 'u.roleId', 'r.id')
+      .select('u.*', 'sp.slug as subscriptionPlan', 'b.subscriptionStatus', 'r.name as role')
       .where('u.id', userId)
       .first();
 
@@ -121,18 +137,14 @@ class UserModelClass extends BaseModel {
       .select('p.key');
 
     // 2. Get permissions from user's role
-    const user = await this.findById(userId, trx);
+    const user = await this.query(trx).where(this.primaryKey, userId).first();
     let rolePermissions = [];
-    if (user && (user.roleId || user.role)) {
-      const query = q('permissions as p').join('role_permissions as rp', 'p.id', 'rp.permissionId');
 
-      if (user.roleId) {
-        query.where('rp.roleId', user.roleId);
-      } else {
-        query.join('roles as r', 'r.id', 'rp.roleId').where('r.name', user.role);
-      }
-
-      rolePermissions = await query.select('p.key');
+    if (user && user.roleId) {
+      rolePermissions = await q('permissions as p')
+        .join('role_permissions as rp', 'p.id', 'rp.permissionId')
+        .where('rp.roleId', user.roleId)
+        .select('p.key');
     }
 
     // Combine and unique
@@ -146,15 +158,24 @@ class UserModelClass extends BaseModel {
   async getUserPermissionsDetailed(userId, trx = null) {
     const q = trx ? trx : db;
 
+    const user = await this.query(trx).where(this.primaryKey, userId).first();
+    if (!user) return [];
+
     // Fetch all permissions (direct and via role)
     const permissions = await q('permissions as p')
-      .leftJoin('user_permissions as up', 'p.id', 'up.permissionId')
-      .leftJoin('role_permissions as rp', 'p.id', 'rp.permissionId')
-      .leftJoin('users as u', (join) => {
-        join.on('u.roleId', '=', 'rp.roleId').orOn('u.role', '=', q.raw('??', ['roles.name']));
+      .leftJoin('user_permissions as up', (join) => {
+        join.on('p.id', 'up.permissionId').andOn('up.userId', q.raw('?', [userId]));
       })
-      .where('up.userId', userId)
-      .orWhere('u.id', userId)
+      .leftJoin('role_permissions as rp', (join) => {
+        join.on('p.id', 'rp.permissionId');
+        if (user.roleId) {
+          join.andOn('rp.roleId', q.raw('?', [user.roleId]));
+        } else {
+          join.onRaw('1=0'); // No roleId, no role permissions
+        }
+      })
+      .whereNotNull('up.id')
+      .orWhereNotNull('rp.id')
       .select('p.id', 'p.key as name', 'p.description')
       .distinct('p.id');
 

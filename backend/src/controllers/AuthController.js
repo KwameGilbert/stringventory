@@ -54,8 +54,28 @@ export class AuthController {
     let user = null;
     let business = null;
 
-    // Use transaction to ensure business and user are created together
+    // Use transaction to ensure business, user, and permissions are created together
     await db.transaction(async (trx) => {
+      // 0. Lookup the role ID
+      const normalizedRole = role.toLowerCase();
+      let roleRecord = await trx('roles').where('name', normalizedRole).first();
+
+      // Fallback: If role specified doesn't exist, default to 'user'
+      if (!roleRecord) {
+        roleRecord = await trx('roles').where('name', 'user').first();
+      }
+
+      if (!roleRecord) {
+        // Create the 'user' role if it really doesn't exist as a safety net
+        const [newRole] = await trx('roles')
+          .insert({
+            name: 'user',
+            description: 'Default user role',
+          })
+          .returning('*');
+        roleRecord = newRole;
+      }
+
       // 1. Create Business with default subscription
       business = await BusinessModel.create(
         {
@@ -67,7 +87,7 @@ export class AuthController {
         trx
       );
 
-      // 2. Create User linked to business
+      // 2. Create User linked to business and roleId
       user = await UserModel.create(
         {
           email: email.toLowerCase(),
@@ -76,7 +96,7 @@ export class AuthController {
           lastName,
           phone,
           businessId: business.id,
-          role,
+          roleId: roleRecord.id,
           status: 'active',
           emailVerifiedAt: null,
         },
@@ -84,7 +104,6 @@ export class AuthController {
       );
 
       // 3. Assign default permissions based on role
-      const normalizedRole = role.toLowerCase();
       let defaultPermKeys;
 
       if (normalizedRole === 'admin' || normalizedRole === 'ceo') {
@@ -92,13 +111,12 @@ export class AuthController {
         const allPerms = await trx('permissions').select('id');
         defaultPermKeys = allPerms;
       } else {
-        // Other roles: look up the role record and copy its role_permissions
-        const roleRecord = await trx('roles').where('name', normalizedRole).first();
-        if (roleRecord) {
-          defaultPermKeys = await trx('role_permissions')
-            .where('roleId', roleRecord.id)
-            .select('permissionId as id');
-        } else {
+        // Other roles: look up the role-specific permissions
+        defaultPermKeys = await trx('role_permissions')
+          .where('roleId', roleRecord.id)
+          .select('permissionId as id');
+
+        if (defaultPermKeys.length === 0) {
           // Fallback: give basic default permissions for unknown roles
           defaultPermKeys = await trx('permissions')
             .whereIn('key', [
