@@ -1,7 +1,21 @@
 import { useState, useEffect } from "react";
 import { Save, Upload, Package, X, Check, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import categoryService from "../../../services/categoryService";
+import supplierService from "../../../services/supplierService";
+import { productService } from "../../../services/productService";
+import { showError } from "../../../utils/alerts";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+  return [];
+};
 
 const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = false }) => {
   const navigate = useNavigate();
@@ -14,7 +28,7 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
     description: "",
     categoryId: "",
     supplierId: "",
-    unitOfMeasurementId: "",
+    unit: "piece",
     status: "active",
     reorderThreshold: 10,
     ...initialData,
@@ -23,17 +37,34 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [catRes, supRes, uomRes] = await Promise.all([
-          axios.get("/data/categories.json"),
-          axios.get("/data/suppliers.json"),
-          axios.get("/data/unit-of-measurements.json")
+        const [catRes, supRes, productsRes] = await Promise.all([
+          categoryService.getCategories(),
+          supplierService.getSuppliers(),
+          productService.getProducts(),
         ]);
-        
-        setCategories(catRes.data.filter(cat => cat.status === "active"));
-        setSuppliers(supRes.data.filter(sup => sup.isActive));
-        setUoms(uomRes.data.filter(uom => uom.isActive));
+
+        const fetchedCategories = extractList(catRes, "categories").filter(
+          (cat) => (cat.status || "active") === "active"
+        );
+        const fetchedSuppliers = extractList(supRes, "suppliers").filter(
+          (sup) => sup.isActive !== false && (sup.status || "active") === "active"
+        );
+        const fetchedProducts = extractList(productsRes, "products");
+
+        const unitOptions = Array.from(
+          new Set(
+            fetchedProducts
+              .map((product) => product.unit || product.unitOfMeasure)
+              .filter(Boolean)
+          )
+        );
+
+        setCategories(fetchedCategories);
+        setSuppliers(fetchedSuppliers);
+        setUoms(unitOptions.length ? unitOptions : ["piece", "box", "kg", "litre"]);
       } catch (error) {
         console.error("Error loading form data", error);
+        showError(error?.message || "Failed to load product form data");
       }
     };
     fetchData();
@@ -173,15 +204,15 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
                 Unit of Measure <span className="text-rose-500">*</span>
               </label>
               <select
-                name="unitOfMeasurementId"
-                value={formData.unitOfMeasurementId}
+                name="unit"
+                value={formData.unit || ""}
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
                 required
               >
                 <option value="">Select Unit</option>
                 {uoms.map((unit) => (
-                  <option key={unit.id} value={unit.id}>{unit.name} ({unit.abbreviation})</option>
+                  <option key={unit} value={unit}>{unit}</option>
                 ))}
               </select>
             </div>

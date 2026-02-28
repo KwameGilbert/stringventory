@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Users, User, TrendingUp, ShoppingBag, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import analyticsService from "../../../services/analyticsService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const TopCustomers = ({ dateRange }) => {
   const [customers, setCustomers] = useState([]);
@@ -11,10 +12,25 @@ const TopCustomers = ({ dateRange }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/top-customers.json");
-        setCustomers(response.data);
+        const params = getDashboardDateParams(dateRange);
+        const response = await analyticsService.getCustomerReport(params);
+        const payload = response?.data || response || {};
+        const reportData = payload?.data || payload;
+        const list = Array.isArray(reportData?.topCustomers) ? reportData.topCustomers : [];
+
+        const mapped = list.map((customer) => ({
+          id: customer?.customerId || customer?.id,
+          name: customer?.customerName || customer?.name || "Unknown Customer",
+          totalOrders: Number(customer?.orders ?? customer?.totalOrders ?? 0),
+          totalSpent: Number(customer?.spent ?? customer?.totalSpent ?? 0),
+          businessName: customer?.businessName || "",
+          avatar: customer?.avatar || "",
+        }));
+
+        setCustomers(mapped);
       } catch (error) {
         console.error("Error fetching top customers:", error);
+        setCustomers([]);
       } finally {
         setLoading(false);
       }
@@ -50,7 +66,8 @@ const TopCustomers = ({ dateRange }) => {
       "bg-gradient-to-br from-indigo-400 to-indigo-600",
       "bg-gradient-to-br from-teal-400 to-teal-600",
     ];
-    const index = name.charCodeAt(0) % colors.length;
+    const safeName = name || "Customer";
+    const index = safeName.charCodeAt(0) % colors.length;
     return colors[index];
   };
 
@@ -130,7 +147,7 @@ const TopCustomers = ({ dateRange }) => {
 
               {/* Avatar */}
               <div
-                className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 ${getAvatarColor(
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0 ${getAvatarColor(
                   customer.name
                 )}`}
               >

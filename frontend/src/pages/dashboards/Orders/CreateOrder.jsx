@@ -1,14 +1,33 @@
 import { useState, useEffect, useMemo } from "react";
 import { Save, ArrowLeft, Plus, Trash2, Package, User, DollarSign, ShoppingCart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { productService } from "../../../services/productService";
+import customerService from "../../../services/customerService";
+import orderService from "../../../services/orderService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+  return [];
+};
 
 export default function CreateOrder() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
+    customerId: "",
     customer: {
       name: "",
       email: "",
@@ -26,10 +45,30 @@ export default function CreateOrder() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/products.json");
-        setProducts(response.data);
+        const [productsRes, customersRes] = await Promise.all([
+          productService.getProducts(),
+          customerService.getCustomers(),
+        ]);
+
+        const mappedProducts = extractList(productsRes, "products").map((product) => ({
+          ...product,
+          name: product?.name || "Unnamed Product",
+          unitPrice: Number(product?.sellingPrice ?? product?.price ?? 0),
+        }));
+
+        const mappedCustomers = extractList(customersRes, "customers").map((customer) => {
+          const customerName = customer?.name || `${customer?.firstName || ""} ${customer?.lastName || ""}`.trim();
+          return {
+            ...customer,
+            displayName: customerName || "Unknown Customer",
+          };
+        });
+
+        setProducts(mappedProducts);
+        setCustomers(mappedCustomers);
       } catch (error) {
         console.error("Error loading products", error);
+        showError(error?.message || "Failed to load order setup data");
       } finally {
         setLoading(false);
       }
@@ -47,7 +86,7 @@ export default function CreateOrder() {
 
   const addItem = () => {
     if (!selectedProduct) return;
-    const product = products.find((p) => p.id === parseInt(selectedProduct));
+    const product = products.find((p) => String(p.id) === String(selectedProduct));
     if (!product) return;
 
     // Check if product already in items
@@ -67,7 +106,7 @@ export default function CreateOrder() {
             productId: product.id,
             productName: product.name,
             quantity: selectedQuantity,
-            unitPrice: product.price || 5.0, // Default price if not set
+            unitPrice: Number(product.unitPrice ?? 0),
           },
         ],
       }));
@@ -109,19 +148,36 @@ export default function CreateOrder() {
     }).format(value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const orderData = {
-      id: `ORD-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, "0")}`,
-      ...formData,
-      subtotal,
-      tax,
-      total,
-      orderDate: new Date().toISOString(),
-      status: "pending",
-    };
-    console.log("Creating order:", orderData);
-    navigate("/dashboard/orders");
+
+    if (!formData.customerId) {
+      showError("Please select a customer");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await orderService.createOrder({
+        customerId: formData.customerId,
+        items: formData.items.map((item) => ({
+          productId: item.productId,
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice),
+          discount: 0,
+        })),
+        tax: Number(tax.toFixed(2)),
+        notes: `Payment method: ${formData.paymentMethod}`,
+      });
+
+      showSuccess("Sale created successfully");
+      navigate("/dashboard/orders");
+    } catch (error) {
+      console.error("Error creating order", error);
+      showError(error?.message || "Failed to create sale");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -160,7 +216,7 @@ export default function CreateOrder() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Customer Info Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-cyan-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-blue-50 to-cyan-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-blue-100">
                 <User className="w-5 h-5 text-blue-600" />
@@ -174,17 +230,35 @@ export default function CreateOrder() {
           <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                Customer Name <span className="text-rose-500">*</span>
+                Customer <span className="text-rose-500">*</span>
               </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.customer.name}
-                onChange={handleCustomerChange}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm"
-                placeholder="John Mensah"
+              <select
+                name="customerId"
+                value={formData.customerId}
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  const selectedCustomer = customers.find((c) => String(c.id) === String(selectedId));
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    customerId: selectedId,
+                    customer: {
+                      name: selectedCustomer?.displayName || "",
+                      email: selectedCustomer?.email || "",
+                      phone: selectedCustomer?.phone || "",
+                    },
+                  }));
+                }}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-white"
                 required
-              />
+              >
+                <option value="">Select customer...</option>
+                {customers.map((customer) => (
+                  <option key={customer.id} value={customer.id}>
+                    {customer.displayName}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Email</label>
@@ -216,7 +290,7 @@ export default function CreateOrder() {
 
         {/* Order Items Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-emerald-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-emerald-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-100">
                 <ShoppingCart className="w-5 h-5 text-emerald-600" />
@@ -238,7 +312,7 @@ export default function CreateOrder() {
                 <option value="">Select a product...</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name} - {formatCurrency(product.price || 5.0)}
+                    {product.name} - {formatCurrency(product.unitPrice || 0)}
                   </option>
                 ))}
               </select>
@@ -325,7 +399,7 @@ export default function CreateOrder() {
 
         {/* Payment & Summary Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-teal-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-teal-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-100">
                 <DollarSign className="w-5 h-5 text-emerald-600" />
@@ -416,11 +490,11 @@ export default function CreateOrder() {
           </Link>
           <button
             type="submit"
-            disabled={formData.items.length === 0 || !formData.customer.name}
+            disabled={submitting || formData.items.length === 0 || !formData.customerId}
             className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium transition-all flex items-center gap-2 text-sm shadow-lg shadow-gray-900/20"
           >
             <Save size={18} />
-            Complete Sale
+            {submitting ? "Saving..." : "Complete Sale"}
           </button>
         </div>
       </form>

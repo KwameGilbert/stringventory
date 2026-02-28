@@ -5,8 +5,8 @@ import {
   CreditCard, Clock, CheckCircle, XCircle, RotateCcw, Package, 
   DollarSign, Percent, Receipt, Save, RefreshCw
 } from "lucide-react";
-import axios from "axios";
-import Swal from "sweetalert2";
+import orderService from "../../../services/orderService";
+import { showError, showInfo, showSuccess } from "../../../utils/alerts";
 
 const statusConfig = {
   pending: {
@@ -44,27 +44,66 @@ export default function ViewOrder() {
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const extractOrder = (response) => {
+    const payload = response?.data || response || {};
+    return payload?.order || payload?.data?.order || payload?.data || payload;
+  };
+
+  const normalizeOrder = (rawOrder) => {
+    if (!rawOrder) return null;
+
+    const customer = {
+      name: rawOrder?.customer?.name || rawOrder?.customerName || "Unknown Customer",
+      email: rawOrder?.customer?.email || rawOrder?.customerEmail || "",
+      phone: rawOrder?.customer?.phone || rawOrder?.customerPhone || "",
+    };
+
+    return {
+      ...rawOrder,
+      orderDate: rawOrder?.orderDate || rawOrder?.date || rawOrder?.createdAt,
+      subtotal: Number(rawOrder?.subtotal ?? 0),
+      discountAmount: Number(rawOrder?.discountAmount ?? rawOrder?.discount ?? 0),
+      taxAmount: Number(rawOrder?.taxAmount ?? rawOrder?.tax ?? 0),
+      total: Number(rawOrder?.total ?? 0),
+      paymentMethod: rawOrder?.paymentMethod || "cash",
+      customer,
+      items: Array.isArray(rawOrder?.items)
+        ? rawOrder.items.map((item) => ({
+            ...item,
+            quantity: Number(item?.quantity ?? 0),
+            unitPrice: Number(item?.unitPrice ?? 0),
+            subtotal: Number(item?.subtotal ?? item?.total ?? (Number(item?.quantity ?? 0) * Number(item?.unitPrice ?? 0))),
+            pickedQuantity: Number(item?.pickedQuantity ?? 0),
+          }))
+        : [],
+    };
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ordersRes, itemsRes] = await Promise.all([
-          axios.get('/data/orders.json'),
-          axios.get('/data/order-items.json')
-        ]);
-        
-        const found = ordersRes.data.find(o => o.id === id);
-        if (found) {
-          setOrder(found);
-          const orderItems = itemsRes.data.filter(item => item.orderId === id);
-          setItems(orderItems);
+        const response = await orderService.getOrderById(id);
+        const found = normalizeOrder(extractOrder(response));
+        if (!found) {
+          showError("Order not found");
+          navigate("/dashboard/orders");
+          return;
         }
+
+        setOrder(found);
+        setItems(found.items || []);
       } catch (error) {
         console.error("Error fetching order", error);
+        showError(error?.message || "Failed to fetch sale details");
+        navigate("/dashboard/orders");
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleUpdatePicked = (index, change) => {
     setItems(prevItems => {
@@ -88,27 +127,11 @@ export default function ViewOrder() {
     const pickedItems = items.filter(item => (item.pickedQuantity || 0) > 0);
     
     if (pickedItems.length === 0) {
-      Swal.fire({
-        icon: 'info',
-        title: 'Nothing to save',
-        text: 'Please pick at least one item before saving.',
-        confirmButtonColor: '#10b981'
-      });
+      showInfo("Please pick at least one item before saving.", "Nothing to save");
       return;
     }
 
-    console.log("Saving pickup:", items);
-    
-    Swal.fire({
-      icon: 'success',
-      title: 'Pickup Saved',
-      text: `Successfully saved pickup for ${pickedItems.length} items.`,
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true
-    });
+    showSuccess(`Successfully saved pickup for ${pickedItems.length} items.`, "Pickup Saved");
   };
 
   const allItemsPicked = items.length > 0 && items.every(item => item.pickedQuantity === item.quantity);
@@ -136,7 +159,7 @@ export default function ViewOrder() {
     });
   };
 
-  if (!order) {
+  if (loading || !order) {
     return (
       <div className="max-w-5xl mx-auto py-8">
         <div className="bg-white rounded-xl p-8 border border-gray-100 animate-pulse">
@@ -174,7 +197,7 @@ export default function ViewOrder() {
         <div className="px-6 py-5 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 <Receipt className="w-7 h-7 text-white" />
               </div>
               <div>
@@ -251,7 +274,7 @@ export default function ViewOrder() {
                 
                 return (
                   <div key={index} className={`px-6 py-4 flex items-center gap-4 transition-colors ${isFullyPicked ? 'bg-emerald-50/50' : ''}`}>
-                    <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 relative">
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 relative">
                       <Package className={`w-5 h-5 ${isFullyPicked ? 'text-emerald-500' : 'text-gray-400'}`} />
                       {isFullyPicked && (
                         <div className="absolute -top-1 -right-1 bg-emerald-500 rounded-full p-0.5 border-2 border-white">
@@ -260,7 +283,7 @@ export default function ViewOrder() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{item.productName}</p>
+                      <p className="font-medium text-gray-900">{item.productName || "Product"}</p>
                       <div className="flex flex-col gap-1 mt-1">
                         <div className="flex items-center gap-3">
                             <p className="text-sm text-gray-400">Ordered: <span className="font-medium text-gray-700">{item.quantity}</span></p>
@@ -299,7 +322,7 @@ export default function ViewOrder() {
                 <span className="text-gray-500">Subtotal</span>
                 <span className="text-gray-900">{formatCurrency(order.subtotal)}</span>
               </div>
-              {order.discountAmount > 0 && (
+                  {order.discountAmount > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 flex items-center gap-1">
                     <Percent size={12} />
@@ -329,7 +352,7 @@ export default function ViewOrder() {
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold">
                   {order.customer.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>

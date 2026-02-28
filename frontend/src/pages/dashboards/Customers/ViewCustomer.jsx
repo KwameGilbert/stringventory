@@ -4,7 +4,26 @@ import {
   ArrowLeft, Edit2, Trash2, User, Phone, Mail, MapPin, Building2, 
   Calendar, ShoppingBag, DollarSign, Clock, TrendingUp
 } from "lucide-react";
-import axios from "axios";
+import customerService from "../../../services/customerService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractCustomer = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.customer || payload?.data?.customer || payload?.data || payload;
+};
+
+const extractOrders = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.orders)) return payload.orders;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.orders)) return payload.data.orders;
+
+  return [];
+};
 
 export default function ViewCustomer() {
   const { id } = useParams();
@@ -15,25 +34,43 @@ export default function ViewCustomer() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [customersRes, ordersRes] = await Promise.all([
-          axios.get('/data/customers.json'),
-          axios.get('/data/orders.json')
+        const [customerRes, ordersRes] = await Promise.all([
+          customerService.getCustomerById(id),
+          customerService.getCustomerOrders(id),
         ]);
-        const found = customersRes.data.find(c => c.id === id); // Compare as string
+
+        const found = extractCustomer(customerRes);
         if (found) {
-          setCustomer(found);
-          // Filter orders for this customer (by name match for mock data)
-          const customerOrders = ordersRes.data.filter(o => 
-            o.customer.name.toLowerCase() === found.name.toLowerCase()
-          );
-          setOrders(customerOrders);
+          setCustomer({
+            ...found,
+            name: found.name || `${found.firstName || ""} ${found.lastName || ""}`.trim(),
+            status: found.status || "active",
+            totalOrders: Number(found.totalOrders ?? 0),
+            totalSpent: Number(found.totalSpent ?? 0),
+          });
+          setOrders(extractOrders(ordersRes));
         }
       } catch (error) {
         console.error("Error fetching customer", error);
+        showError(error?.message || "Failed to fetch customer details");
       }
     };
     fetchData();
   }, [id]);
+
+  const handleDelete = async () => {
+    const result = await confirmDelete("this customer");
+    if (!result.isConfirmed) return;
+
+    try {
+      await customerService.deleteCustomer(id);
+      showSuccess("Customer deleted successfully");
+      navigate("/dashboard/customers");
+    } catch (error) {
+      console.error("Failed to delete customer", error);
+      showError(error?.message || "Failed to delete customer");
+    }
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-GH", {
@@ -115,7 +152,10 @@ export default function ViewCustomer() {
                 <Edit2 size={16} />
                 Edit
               </Link>
-              <button className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
+              >
                 <Trash2 size={16} />
                 Delete
               </button>
@@ -170,12 +210,12 @@ export default function ViewCustomer() {
                         <ShoppingBag size={16} className="text-gray-500" />
                       </div>
                       <div>
-                        <p className="font-mono text-sm font-medium text-gray-900">{order.id}</p>
-                        <p className="text-xs text-gray-400">{formatDate(order.orderDate)}</p>
+                        <p className="font-mono text-sm font-medium text-gray-900">{order.orderNumber || order.id}</p>
+                        <p className="text-xs text-gray-400">{order.orderDate ? formatDate(order.orderDate) : "—"}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">{formatCurrency(order.total)}</p>
+                      <p className="font-semibold text-gray-900">{formatCurrency(order.total ?? 0)}</p>
                       <span className={`text-xs font-medium ${
                         order.status === 'fulfilled' ? 'text-emerald-600' :
                         order.status === 'pending' ? 'text-amber-600' :
@@ -248,7 +288,7 @@ export default function ViewCustomer() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Customer Since</p>
-                  <p className="text-sm font-medium text-gray-900">{formatDate(customer.createdAt)}</p>
+                  <p className="text-sm font-medium text-gray-900">{customer.createdAt ? formatDate(customer.createdAt) : '—'}</p>
                 </div>
               </div>
 

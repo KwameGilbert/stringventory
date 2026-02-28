@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Search, ShoppingCart, Plus, Minus, Trash2, CreditCard, DollarSign, Package, CheckCircle } from "lucide-react";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { productService } from "../../../services/productService";
 
 export default function POS() {
   const navigate = useNavigate();
@@ -16,29 +16,27 @@ export default function POS() {
   const [taxRate, setTaxRate] = useState(0);
 
   useEffect(() => {
-    // Start with some mock data if fetch fails or for immediate display
-    const mockProducts = [
-        { id: 1, name: "Premium Guitar Strings", price: 45.00, sku: "STR-001" },
-        { id: 2, name: "Drum Sticks (Pair)", price: 25.00, sku: "DRM-001" },
-        { id: 3, name: "Keyboard Stand", price: 150.00, sku: "KEY-001" },
-        { id: 4, name: "Microphone Cable (XLR)", price: 35.00, sku: "CBL-001" },
-        { id: 5, name: "Guitar Tuner", price: 55.00, sku: "ACC-001" },
-        { id: 6, name: "Piano Sustain Pedal", price: 85.00, sku: "KEY-002" },
-        { id: 7, name: "Violin Rosin", price: 15.00, sku: "STR-002" },
-        { id: 8, name: "Music Stand", price: 65.00, sku: "ACC-002" },
-    ];
-
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/products.json");
-        if (response.data && Array.isArray(response.data)) {
-            setProducts(response.data);
-        } else {
-            setProducts(mockProducts);
-        }
-      } catch {
-        console.warn("Using mock products as fallback");
-        setProducts(mockProducts);
+        const response = await productService.getProducts();
+        const payload = response?.data || response || {};
+        const list = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload.products)
+            ? payload.products
+            : Array.isArray(payload.data)
+              ? payload.data
+              : [];
+
+        setProducts(
+          list.map((product) => ({
+            ...product,
+            price: Number(product?.price ?? product?.sellingPrice ?? 0),
+          }))
+        );
+      } catch (error) {
+        console.error("Failed to load POS products", error);
+        setProducts([]);
       } finally {
         setLoading(false);
       }

@@ -19,7 +19,7 @@ const colorSchemes = [
   { bg: "from-rose-400 to-pink-500", shadow: "shadow-rose-200", light: "bg-rose-50" },
 ];
 
-const CategoryGrid = ({ categories, onToggleStatus }) => {
+const CategoryGrid = ({ categories, onToggleStatus, onDelete }) => {
   const [activeMenu, setActiveMenu] = useState(null);
 
   return (
@@ -73,7 +73,13 @@ const CategoryGrid = ({ categories, onToggleStatus }) => {
                       <Edit2 size={16} />
                       Edit
                     </Link>
-                    <button className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors w-full">
+                    <button
+                      onClick={() => {
+                        onDelete && onDelete(category.id);
+                        setActiveMenu(null);
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors w-full"
+                    >
                       <Trash2 size={16} />
                       Delete
                     </button>

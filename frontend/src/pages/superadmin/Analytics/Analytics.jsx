@@ -4,6 +4,64 @@ import AnalyticsOverview from './tabs/AnalyticsOverview';
 import AnalyticsRevenue from './tabs/AnalyticsRevenue';
 import AnalyticsUsers from './tabs/AnalyticsUsers';
 import AnalyticsSystem from './tabs/AnalyticsSystem';
+import superadminService from '../../../services/superadminService';
+import { showError } from '../../../utils/alerts';
+
+const extractAnalytics = (response) => {
+  const payload = response?.data || response || {};
+
+  if (payload?.analytics) return payload.analytics;
+  if (payload?.data?.analytics) return payload.data.analytics;
+  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
+
+  return payload;
+};
+
+const normalizeAnalyticsData = (raw) => {
+  const kpiSource = raw?.kpi || {};
+  const revenue = kpiSource?.revenue || {};
+  const users = kpiSource?.users || {};
+  const activeBusinesses = kpiSource?.activeBusinesses || {};
+  const churnRate = kpiSource?.churnRate || {};
+
+  const revenueByPlanSource = Array.isArray(raw?.revenueByPlan) ? raw.revenueByPlan : [];
+
+  return {
+    kpi: {
+      revenue: {
+        current: Number(revenue?.current) || Number(raw?.monthlyRecurringRevenue) || 0,
+        change: Number(revenue?.change) || Number(raw?.mrrChange) || 0,
+      },
+      users: {
+        current: Number(users?.current) || Number(raw?.totalUsers) || 0,
+        change: Number(users?.change) || Number(raw?.usersChange) || 0,
+      },
+      activeBusinesses: {
+        current: Number(activeBusinesses?.current) || Number(raw?.activeSubscriptions) || 0,
+        change: Number(activeBusinesses?.change) || Number(raw?.subscriptionsChange) || 0,
+      },
+      churnRate: {
+        current: Number(churnRate?.current) || Number(raw?.churnRate) || 0,
+        change: Number(churnRate?.change) || 0,
+      },
+    },
+    revenueTrends: (Array.isArray(raw?.revenueTrends) ? raw.revenueTrends : []).map((entry) => ({
+      ...entry,
+      date: entry?.date || entry?.month || 'N/A',
+      revenue: Number(entry?.revenue) || Number(entry?.mrr) || 0,
+      mrr: Number(entry?.mrr) || Number(entry?.revenue) || 0,
+    })),
+    topBusinesses: Array.isArray(raw?.topBusinesses) ? raw.topBusinesses : [],
+    revenueByPlan: revenueByPlanSource.map((entry, index) => ({
+      ...entry,
+      plan: entry?.plan || entry?.name || 'Unknown',
+      revenue: Number(entry?.revenue) || 0,
+      fill: entry?.fill || ['#10b981', '#3b82f6', '#f59e0b', '#6b7280'][index % 4],
+    })),
+    userGrowth: Array.isArray(raw?.userGrowth) ? raw.userGrowth : [],
+    geographicDistribution: Array.isArray(raw?.geographicDistribution) ? raw.geographicDistribution : [],
+  };
+};
 
 export default function Analytics() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -18,12 +76,13 @@ export default function Analytics() {
   const fetchAnalyticsData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/data/analytics-data.json'); 
-      const jsonData = await response.json();
-      await new Promise(resolve => setTimeout(resolve, 600)); // Simulate delay
-      setData(jsonData);
+      const response = await superadminService.getPlatformAnalytics({ timeRange });
+      const analytics = extractAnalytics(response);
+      setData(normalizeAnalyticsData(analytics));
     } catch (error) {
       console.error('Error fetching analytics:', error);
+      showError(error?.message || 'Failed to load analytics');
+      setData(null);
     } finally {
       setLoading(false);
     }
@@ -91,7 +150,7 @@ export default function Analytics() {
       </div>
 
       {/* Content */}
-      <div className="min-h-[500px]">
+      <div className="min-h-125">
         {activeTab === 'overview' && <AnalyticsOverview data={data} formatCurrency={formatCurrency} />}
         {activeTab === 'revenue' && <AnalyticsRevenue data={data} formatCurrency={formatCurrency} />}
         {activeTab === 'users' && <AnalyticsUsers data={data} />}

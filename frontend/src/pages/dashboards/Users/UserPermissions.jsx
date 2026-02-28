@@ -1,9 +1,42 @@
 import { useState, useEffect } from "react";
 import { Save, ArrowLeft, Shield } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { PERMISSION_GROUPS } from "../../../constants/permissions";
-import { showSuccess } from "../../../utils/alerts";
+import { showError, showSuccess } from "../../../utils/alerts";
+import userService from "../../../services/userService";
+
+const extractUser = (response) => {
+    const payload = response?.data || response || {};
+
+    if (payload?.user) return payload.user;
+    if (payload?.data?.user) return payload.data.user;
+    if (payload?.data && !Array.isArray(payload.data)) return payload.data;
+    return payload;
+};
+
+const extractPermissionKeys = (rawPermissions) => {
+    if (!Array.isArray(rawPermissions)) return [];
+
+    return rawPermissions
+        .map((permission) => {
+            if (typeof permission === "string") return permission;
+            if (typeof permission?.key === "string") return permission.key;
+            if (typeof permission?.name === "string") return permission.name;
+            return null;
+        })
+        .filter(Boolean);
+};
+
+const extractPermissionsResponse = (response) => {
+    const payload = response?.data || response || {};
+
+    if (Array.isArray(payload)) return extractPermissionKeys(payload);
+    if (Array.isArray(payload.permissions)) return extractPermissionKeys(payload.permissions);
+    if (Array.isArray(payload.data)) return extractPermissionKeys(payload.data);
+    if (Array.isArray(payload.data?.permissions)) return extractPermissionKeys(payload.data.permissions);
+
+    return [];
+};
 
 export default function UserPermissions() {
   const navigate = useNavigate();
@@ -14,21 +47,35 @@ export default function UserPermissions() {
 
   useEffect(() => {
     const fetchUser = async () => {
-        try {
-            const usersRes = await axios.get("/data/users.json");
-            const user = usersRes.data.find(u => u.id === parseInt(id) || u.id === id);
-            
-            if (user) {
-                setPermissions(user.permissions || []);
-                setUserName(`${user.firstName} ${user.lastName}`);
+            try {
+                const [userRes, permissionsRes] = await Promise.allSettled([
+                    userService.getUserById(id),
+                    userService.getUserPermissions(id),
+                ]);
+
+                if (userRes.status !== "fulfilled") {
+                    throw userRes.reason;
+                }
+
+                const user = extractUser(userRes.value);
+                const userLabel = `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || user?.email || "User";
+                setUserName(userLabel);
+
+                const userLevelPermissions = extractPermissionKeys(user?.permissions);
+                const endpointPermissions =
+                    permissionsRes.status === "fulfilled"
+                        ? extractPermissionsResponse(permissionsRes.value)
+                        : [];
+
+                setPermissions(endpointPermissions.length ? endpointPermissions : userLevelPermissions);
+            } catch (error) {
+                console.error("Error fetching user", error);
+                showError(error?.message || "Failed to load user permissions");
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            console.error("Error fetching user", error);
-        } finally {
-            setLoading(false);
-        }
     };
-    
+
     if (id) fetchUser();
   }, [id]);
 
@@ -52,11 +99,16 @@ export default function UserPermissions() {
       });
   };
 
-  const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updating permissions for", id, permissions);
-    showSuccess("Permissions updated successfully");
-    navigate("/dashboard/users");
+        try {
+            await userService.updateUserPermissions(id, permissions);
+            showSuccess("Permissions updated successfully");
+            navigate("/dashboard/users");
+        } catch (error) {
+            console.error("Failed to update permissions", error);
+            showError(error?.message || "Failed to update permissions");
+        }
   };
 
   if (loading) return <div className="p-8 text-center text-gray-500">Loading permissions...</div>;

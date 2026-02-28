@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { CreditCard } from "lucide-react";
 import {
   PieChart,
@@ -8,6 +7,7 @@ import {
   ResponsiveContainer,
   Tooltip
 } from "recharts";
+import orderService from "../../../services/orderService";
 
 const PaymentDistribution = ({ dateRange }) => {
   const [data, setData] = useState([]);
@@ -16,15 +16,37 @@ const PaymentDistribution = ({ dateRange }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/payment-method.json");
+        const response = await orderService.getOrders({ limit: 200 });
+        const payload = response?.data || response || {};
+        const orders = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload.orders)
+            ? payload.orders
+            : Array.isArray(payload.data)
+              ? payload.data
+              : [];
+
+        const paymentTotals = orders.reduce((accumulator, order) => {
+          const method = String(order?.paymentMethod || "other").replace(/_/g, " ").trim();
+          const key = method || "other";
+          accumulator[key] = (accumulator[key] || 0) + Number(order?.total || 0);
+          return accumulator;
+        }, {});
+
+        const normalizedData = Object.entries(paymentTotals).map(([name, value]) => ({
+          name: name.charAt(0).toUpperCase() + name.slice(1),
+          value,
+        }));
+
         const colors = ["#10b981", "#6366f1", "#f59e0b", "#ec4899"];
-        const enhancedData = response.data.map((item, index) => ({
+        const enhancedData = normalizedData.map((item, index) => ({
           ...item,
           color: colors[index % colors.length]
         }));
         setData(enhancedData);
       } catch (err) {
         console.error("Error fetching data", err);
+        setData([]);
       } finally {
         setLoading(false);
       }

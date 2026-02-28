@@ -1,9 +1,31 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { FileText, Package, AlertCircle, CheckCircle } from "lucide-react";
 import PurchasesHeader from "../../../components/admin/Purchases/PurchasesHeader";
 import PurchasesTable from "../../../components/admin/Purchases/PurchasesTable";
-import { confirmDelete, showSuccess } from "../../../utils/alerts";
+import purchaseService from "../../../services/purchaseService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractPurchases = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.purchases)) return payload.purchases;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.purchases)) return payload.data.purchases;
+
+  return [];
+};
+
+const normalizePurchase = (purchase) => ({
+  ...purchase,
+  supplierName: purchase?.supplierName || purchase?.supplier?.name || "Unknown Supplier",
+  purchaseDate: purchase?.purchaseDate || purchase?.createdAt,
+  totalAmount: Number(purchase?.totalAmount ?? purchase?.amount ?? 0),
+  createdBy: purchase?.createdBy || purchase?.createdByName || "System",
+  status: String(purchase?.status || "pending").toLowerCase(),
+});
 
 export default function Purchases() {
   const [purchases, setPurchases] = useState([]);
@@ -14,10 +36,11 @@ export default function Purchases() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/purchases.json");
-        setPurchases(response.data);
+        const response = await purchaseService.getPurchases();
+        setPurchases(extractPurchases(response).map(normalizePurchase));
       } catch (error) {
         console.error("Error loading purchases", error);
+        showError(error?.message || "Failed to load purchases");
       } finally {
         setLoading(false);
       }
@@ -34,8 +57,8 @@ export default function Purchases() {
   // Filter purchases
   const filteredPurchases = purchases.filter((purchase) => {
     const matchesSearch =
-      purchase.waybillNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      purchase.supplierName.toLowerCase().includes(searchQuery.toLowerCase());
+      String(purchase.waybillNumber || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(purchase.supplierName || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = !statusFilter || purchase.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -43,8 +66,14 @@ export default function Purchases() {
   const handleDelete = async (id) => {
     const result = await confirmDelete("this purchase");
     if (result.isConfirmed) {
-      setPurchases((prev) => prev.filter((p) => p.id !== id));
-      showSuccess("Purchase deleted successfully");
+      try {
+        await purchaseService.deletePurchase(id);
+        setPurchases((prev) => prev.filter((p) => String(p.id) !== String(id)));
+        showSuccess("Purchase deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete purchase", error);
+        showError(error?.message || "Failed to delete purchase");
+      }
     }
   };
 

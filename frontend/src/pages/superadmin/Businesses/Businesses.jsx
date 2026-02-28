@@ -1,10 +1,63 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
-import axios from 'axios';
 import BusinessStats from './components/BusinessStats';
 import BusinessFilters from './components/BusinessFilters';
 import BusinessTable from './components/BusinessTable';
+import superadminService from '../../../services/superadminService';
+import { showError, showSuccess } from '../../../utils/alerts';
+
+const extractBusinesses = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.businesses)) return payload.businesses;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.businesses)) return payload.data.businesses;
+
+  return [];
+};
+
+const normalizeBusiness = (business) => ({
+  ...business,
+  id: business?.id,
+  name: business?.name || business?.businessName || 'Unnamed Business',
+  email: business?.email || business?.ownerEmail || '',
+  subscription_plan: business?.subscription_plan || business?.subscriptionPlan || business?.plan || 'starter',
+  status: String(business?.status || 'active').toLowerCase(),
+  current_usage: {
+    total_users:
+      Number(business?.current_usage?.total_users) ||
+      Number(business?.currentUsage?.totalUsers) ||
+      Number(business?.totalUsers) ||
+      0,
+    total_products:
+      Number(business?.current_usage?.total_products) ||
+      Number(business?.currentUsage?.totalProducts) ||
+      Number(business?.totalProducts) ||
+      0,
+  },
+  usage_limits: {
+    maxUsers:
+      Number(business?.usage_limits?.maxUsers) ||
+      Number(business?.usageLimits?.maxUsers) ||
+      Number(business?.planLimits?.maxUsers) ||
+      0,
+    maxProducts:
+      Number(business?.usage_limits?.maxProducts) ||
+      Number(business?.usageLimits?.maxProducts) ||
+      Number(business?.planLimits?.maxProducts) ||
+      0,
+  },
+  mrr:
+    Number(business?.mrr) ||
+    Number(business?.monthlyRecurringRevenue) ||
+    Number(business?.revenue?.mrr) ||
+    0,
+  created_at: business?.created_at || business?.createdAt || new Date().toISOString(),
+});
 
 export default function Businesses() {
   const navigate = useNavigate();
@@ -27,8 +80,8 @@ export default function Businesses() {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(business =>
-        business.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        business.email.toLowerCase().includes(searchTerm.toLowerCase())
+        String(business?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(business?.email || '').toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -56,68 +109,12 @@ export default function Businesses() {
   const fetchBusinesses = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/data/businesses.json');
-      setBusinesses(response.data);
+      const response = await superadminService.getBusinesses();
+      setBusinesses(extractBusinesses(response).map(normalizeBusiness));
     } catch (error) {
       console.error('Error fetching businesses:', error);
-      // Mock data
-      setBusinesses([
-        {
-          id: '1',
-          name: 'Acme Innovations Inc.',
-          email: 'contact@acme.com',
-          subscription_plan: 'professional',
-          status: 'active',
-          current_usage: { total_users: 8, total_products: 1247 },
-          usage_limits: { maxUsers: 15, maxProducts: 5000 },
-          mrr: 149,
-          created_at: ' 2023-10-26'
-        },
-        {
-          id: '2',
-          name: 'TechStart Solutions',
-          email: 'hello@techstart.com',
-          subscription_plan: 'starter',
-          status: 'active',
-          current_usage: { total_users: 3, total_products: 185 },
-          usage_limits: { maxUsers: 5, maxProducts: 500 },
-          mrr: 49,
-          created_at: '2023-10-25'
-        },
-        {
-          id: '3',
-          name: 'Global Retail Co.',
-          email: 'admin@globalretail.com',
-          subscription_plan: 'enterprise',
-          status: 'active',
-          current_usage: { total_users: 25, total_products: 5420 },
-          usage_limits: { maxUsers: -1, maxProducts: -1 },
-          mrr: 499,
-          created_at: '2023-10-24'
-        },
-        {
-          id: '4',
-          name: 'SmallBiz Store',
-          email: 'owner@smallbiz.com',
-          subscription_plan: 'starter',
-          status: 'trial',
-          current_usage: { total_users: 1, total_products: 45 },
-          usage_limits: { maxUsers: 5, maxProducts: 500 },
-          mrr: 0,
-          created_at: '2023-10-23'
-        },
-        {
-          id: '5',
-          name: 'Suspended Business',
-          email: 'test@suspended.com',
-          subscription_plan: 'professional',
-          status: 'suspended',
-          current_usage: { total_users: 5, total_products: 320 },
-          usage_limits: { maxUsers: 15, maxProducts: 5000 },
-          mrr: 0,
-          created_at: '2023-09-15'
-        }
-      ]);
+      showError(error?.message || 'Failed to fetch businesses');
+      setBusinesses([]);
     } finally {
       setLoading(false);
     }
@@ -132,9 +129,18 @@ export default function Businesses() {
     navigate(`/superadmin/businesses/edit/${id}`);
   };
 
-  const handleDeleteBusiness = (business) => {
-    if (window.confirm(`Are you sure you want to delete ${business.name}? This action cannot be undone.`)) {
+  const handleDeleteBusiness = async (business) => {
+    if (!window.confirm(`Are you sure you want to delete ${business.name}? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      await superadminService.deleteBusiness(business.id);
       setBusinesses(prev => prev.filter(b => b.id !== business.id));
+      showSuccess('Business deleted successfully');
+    } catch (error) {
+      console.error('Error deleting business:', error);
+      showError(error?.message || 'Failed to delete business');
     }
   };
 

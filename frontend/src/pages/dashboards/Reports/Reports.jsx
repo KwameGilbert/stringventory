@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   BarChart3,
   Package,
@@ -31,6 +30,10 @@ import {
   AreaChart,
   Legend,
 } from "recharts";
+import analyticsService from "../../../services/analyticsService";
+import orderService from "../../../services/orderService";
+import userService from "../../../services/userService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const TABS = [
   { id: "sales", label: "Sales Report", icon: TrendingUp },
@@ -52,16 +55,182 @@ export default function Reports() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/reports.json");
-        setData(response.data);
+        const params = getDashboardDateParams(
+          dateRange === "year" ? "year" : dateRange === "quarter" ? "90days" : dateRange === "month" ? "30days" : "30days"
+        );
+
+        const [
+          salesRes,
+          inventoryRes,
+          expenseRes,
+          financialRes,
+          customerRes,
+          dashboardRes,
+          ordersRes,
+          usersRes,
+        ] = await Promise.all([
+          analyticsService.getSalesReport(params),
+          analyticsService.getInventoryReport(params),
+          analyticsService.getExpenseReport(params),
+          analyticsService.getFinancialReport(params),
+          analyticsService.getCustomerReport(params),
+          analyticsService.getDashboardOverview(params),
+          orderService.getOrders({ limit: 100 }),
+          userService.getUsers({ limit: 50 }),
+        ]);
+
+        const unwrap = (response) => {
+          const payload = response?.data || response || {};
+          return payload?.data || payload;
+        };
+
+        const salesData = unwrap(salesRes);
+        const inventoryData = unwrap(inventoryRes);
+        const expenseData = unwrap(expenseRes);
+        const financialData = unwrap(financialRes);
+        const customerData = unwrap(customerRes);
+        const dashboardData = unwrap(dashboardRes);
+
+        const orderPayload = ordersRes?.data || ordersRes || {};
+        const orders = Array.isArray(orderPayload)
+          ? orderPayload
+          : Array.isArray(orderPayload.orders)
+            ? orderPayload.orders
+            : Array.isArray(orderPayload.data)
+              ? orderPayload.data
+              : [];
+
+        const userPayload = usersRes?.data || usersRes || {};
+        const users = Array.isArray(userPayload)
+          ? userPayload
+          : Array.isArray(userPayload.users)
+            ? userPayload.users
+            : Array.isArray(userPayload.data)
+              ? userPayload.data
+              : [];
+
+        const groupedMonthly = {};
+        (dashboardData?.charts?.revenueByDate || []).forEach((row) => {
+          const key = row?.date ? new Date(row.date).toLocaleDateString("en-US", { month: "short" }) : "N/A";
+          groupedMonthly[key] = groupedMonthly[key] || { month: key, revenue: 0, expenses: 0, profit: 0 };
+          groupedMonthly[key].revenue += Number(row?.revenue || 0);
+          groupedMonthly[key].expenses += Number(row?.expenses || 0);
+          groupedMonthly[key].profit = groupedMonthly[key].revenue - groupedMonthly[key].expenses;
+        });
+
+        const monthlyPnL = Object.values(groupedMonthly);
+
+        const salesReport = {
+          summary: {
+            totalRevenue: Number(salesData?.summary?.totalSales ?? 0),
+            totalOrders: Number(salesData?.summary?.totalOrders ?? 0),
+            averageOrderValue: Number(salesData?.summary?.averageOrderValue ?? 0),
+            growth: Number(dashboardData?.metrics?.grossRevenue?.change ?? 0),
+          },
+          monthlySales: (salesData?.byDate || []).map((row) => ({
+            month: row?.date ? new Date(row.date).toLocaleDateString("en-US", { month: "short" }) : "N/A",
+            revenue: Number(row?.sales || 0),
+          })),
+          topProducts: (salesData?.byProduct || []).slice(0, 8).map((row) => ({
+            name: row?.productName || "Product",
+            units: Number(row?.quantity || 0),
+            revenue: Number(row?.revenue || 0),
+          })),
+        };
+
+        const inventoryReport = {
+          summary: {
+            totalValue: Number(inventoryData?.summary?.totalValue ?? 0),
+            totalItems: Number(inventoryData?.summary?.totalQuantity ?? 0),
+            lowStockItems: Number(inventoryData?.summary?.lowStockItems ?? 0),
+            outOfStockItems: Number(inventoryData?.summary?.outOfStockItems ?? 0),
+          },
+          categoryValuation: (inventoryData?.byCategory || []).map((row) => ({
+            name: row?.categoryName || "Category",
+            value: Number(row?.value || 0),
+          })),
+        };
+
+        const expenseReport = {
+          summary: {
+            totalExpenses: Number(expenseData?.summary?.totalExpenses ?? 0),
+            largestCategory: (expenseData?.byCategory || []).sort((a, b) => Number(b?.amount || 0) - Number(a?.amount || 0))[0]?.categoryName || "N/A",
+            trend: Number(dashboardData?.metrics?.totalExpenses?.change ?? 0),
+          },
+          monthlyExpenses: (salesData?.byDate || []).map((row) => ({
+            month: row?.date ? new Date(row.date).toLocaleDateString("en-US", { month: "short" }) : "N/A",
+            amount: Number(row?.expenses || 0),
+          })),
+          expensesByCategory: (expenseData?.byCategory || []).map((row) => ({
+            name: row?.categoryName || "Category",
+            amount: Number(row?.amount || 0),
+          })),
+        };
+
+        const stockMovement = {
+          summary: {
+            totalIn: Number(inventoryData?.summary?.totalQuantity ?? 0),
+            totalOut: Number(salesData?.summary?.totalItems ?? 0),
+            adjustments: 0,
+          },
+          recentMovements: (inventoryData?.lowStockItems || []).slice(0, 10).map((item, index) => ({
+            id: `move-${index}`,
+            date: new Date().toISOString(),
+            product: item?.productName || "Product",
+            type: Number(item?.quantity || 0) <= Number(item?.reorderLevel || 0) ? "out" : "in",
+            quantity: Number(item?.quantity || 0),
+            reason: "Inventory monitoring",
+            user: "System",
+          })),
+        };
+
+        const userActivity = {
+          summary: {
+            activeUsers: users.filter((user) => user?.isActive ?? user?.status === "active").length,
+            totalActions: orders.length,
+            mostActiveUser: users[0]?.firstName ? `${users[0].firstName} ${users[0]?.lastName || ""}`.trim() : "N/A",
+          },
+          recentActivity: orders.slice(0, 10).map((order, index) => ({
+            id: `act-${index}`,
+            time: order?.orderDate || order?.date || order?.createdAt || new Date().toISOString(),
+            user: order?.customerName || order?.customer?.name || "System",
+            module: "Sales",
+            action: "Order processed",
+            details: order?.orderNumber || order?.id || "Order",
+          })),
+        };
+
+        setData({
+          salesReport,
+          inventoryReport,
+          expenseReport,
+          profitAndLoss: {
+            summary: {
+              totalRevenue: Number(financialData?.income?.total ?? salesReport.summary.totalRevenue),
+              netProfit: Number(financialData?.summary?.netProfit ?? dashboardData?.metrics?.netProfit?.value ?? 0),
+              margin: Number(financialData?.summary?.profitMargin ?? 0),
+            },
+            monthlyPnL,
+          },
+          stockMovement,
+          userActivity,
+        });
       } catch (error) {
         console.error("Error loading reports", error);
+        setData({
+          salesReport: { summary: {}, monthlySales: [], topProducts: [] },
+          inventoryReport: { summary: {}, categoryValuation: [] },
+          expenseReport: { summary: {}, monthlyExpenses: [], expensesByCategory: [] },
+          profitAndLoss: { summary: {}, monthlyPnL: [] },
+          stockMovement: { summary: {}, recentMovements: [] },
+          userActivity: { summary: {}, recentActivity: [] },
+        });
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [dateRange]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-GH", {
@@ -104,7 +273,7 @@ export default function Reports() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-gray-800 to-gray-900">
+              <div className="p-2 rounded-lg bg-linear-to-br from-gray-800 to-gray-900">
                 <BarChart3 className="w-5 h-5 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
@@ -152,7 +321,7 @@ export default function Reports() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "bg-gradient-to-r from-gray-800 to-gray-900 text-white shadow-lg shadow-gray-900/20"
+                    ? "bg-linear-to-r from-gray-800 to-gray-900 text-white shadow-lg shadow-gray-900/20"
                     : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 }`}
               >

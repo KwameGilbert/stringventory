@@ -99,13 +99,21 @@ apiClient.interceptors.response.use(
           refreshToken,
         });
 
-        const { tokens } = response.data;
-        setTokens(tokens.accessToken, tokens.refreshToken);
+        const payload = response?.data?.data || response?.data || {};
+        const tokenPayload = payload?.tokens || response?.data?.tokens || {};
+        const accessToken = tokenPayload?.accessToken || payload?.accessToken;
+        const nextRefreshToken = tokenPayload?.refreshToken || payload?.refreshToken;
 
-        apiClient.defaults.headers.common.Authorization = `Bearer ${tokens.accessToken}`;
-        originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
+        if (!accessToken) {
+          throw new Error('No access token returned from refresh endpoint');
+        }
 
-        processQueue(null, tokens.accessToken);
+        setTokens(accessToken, nextRefreshToken);
+
+        apiClient.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+        processQueue(null, accessToken);
         return apiClient(originalRequest);
       } catch (err) {
         processQueue(err, null);

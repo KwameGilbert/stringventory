@@ -1,43 +1,108 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit2, Trash2, Calendar, Hash, Tag, Layers, AlertTriangle, Image } from "lucide-react";
-import axios from "axios";
+import { productService } from "../../../services/productService";
+import categoryService from "../../../services/categoryService";
+import supplierService from "../../../services/supplierService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  return [];
+};
+
+const extractProduct = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.product || payload?.data?.product || payload?.data || payload;
+};
+
+const isForbiddenError = (error) => {
+  const statusCode = error?.statusCode || error?.status;
+  const message = String(error?.message || "").toLowerCase();
+  return statusCode === 403 || message.includes("insufficient permissions") || message.includes("forbidden");
+};
 
 export default function ViewProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes, suppliersRes, uomsRes] = await Promise.all([
-          axios.get("/data/products.json"),
-          axios.get("/data/categories.json"),
-          axios.get("/data/suppliers.json"),
-          axios.get("/data/unit-of-measurements.json")
+        setPermissionDenied(false);
+        const [productRes, categoriesRes, suppliersRes] = await Promise.all([
+          productService.getProductById(id),
+          categoryService.getCategories(),
+          supplierService.getSuppliers(),
         ]);
-        
-        const found = productsRes.data.find((p) => p.id === id); // Compare as string, not parseInt
-        if (found) {
-          // Add related data
-          const category = categoriesRes.data.find(c => c.id === found.categoryId);
-          const supplier = suppliersRes.data.find(s => s.id === found.supplierId);
-          const uom = uomsRes.data.find(u => u.id === found.unitOfMeasurementId);
-          
+
+        const found = extractProduct(productRes);
+        if (found?.id) {
+          const categories = extractList(categoriesRes, "categories");
+          const suppliers = extractList(suppliersRes, "suppliers");
+          const category = categories.find((c) => String(c.id) === String(found.categoryId));
+          const supplier = suppliers.find((s) => String(s.id) === String(found.supplierId));
+
           setProduct({
             ...found,
-            category: category?.name || "Unknown",
-            supplier: supplier?.name || "Unknown",
-            unitOfMeasure: uom?.name || "N/A"
+            code: found.code || found.sku || "—",
+            currentStock: Number(found.currentStock ?? found.quantity ?? 0),
+            reorderThreshold: Number(found.reorderThreshold ?? found.reorderLevel ?? 0),
+            category: found.category || found.categoryName || category?.name || "Unknown",
+            supplier: found.supplier || found.supplierName || supplier?.name || "Unknown",
+            unitOfMeasure: found.unitOfMeasure || found.unit || "N/A",
+            createdAt: found.createdAt || null,
           });
         }
       } catch (error) {
         console.error("Error fetching product", error);
+        if (isForbiddenError(error)) {
+          setPermissionDenied(true);
+          return;
+        }
+        showError(error?.message || "Failed to fetch product details");
       }
     };
     fetchData();
   }, [id]);
+
+  const handleDelete = async () => {
+    const result = await confirmDelete("this product");
+    if (!result.isConfirmed) return;
+
+    try {
+      await productService.deleteProduct(id);
+      showSuccess("Product deleted successfully");
+      navigate("/dashboard/products");
+    } catch (error) {
+      console.error("Failed to delete product", error);
+      showError(error?.message || "Failed to delete product");
+    }
+  };
+
+  if (permissionDenied) {
+    return (
+      <div className="py-16 animate-fade-in">
+        <div className="max-w-xl mx-auto bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900">Insufficient permissions</h2>
+          <p className="text-sm text-gray-500">You do not have access to view this product. Contact your administrator for the required permissions.</p>
+          <button
+            onClick={() => navigate("/dashboard/products")}
+            className="mt-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            Back to Products
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -114,7 +179,10 @@ export default function ViewProduct() {
                 <Edit2 size={16} />
                 Edit
               </Link>
-              <button className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
+              >
                 <Trash2 size={16} />
                 Delete
               </button>
@@ -215,7 +283,7 @@ export default function ViewProduct() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium">Created</p>
-                  <p className="text-sm font-semibold text-gray-900">{product.createdAt}</p>
+                  <p className="text-sm font-semibold text-gray-900">{product.createdAt ? new Date(product.createdAt).toLocaleDateString() : "—"}</p>
                 </div>
               </div>
             </div>

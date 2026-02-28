@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { Save, ArrowLeft, User, Building2, Phone, Mail, MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import customerService from "../../../services/customerService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+const splitName = (fullName = "") => {
+  const parts = String(fullName).trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { firstName: "", lastName: "" };
+  if (parts.length === 1) return { firstName: parts[0], lastName: "" };
+  return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
+};
 
 export default function CreateCustomer() {
   const navigate = useNavigate();
@@ -18,19 +27,27 @@ export default function CreateCustomer() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const customerData = {
-      id: Date.now(),
-      ...formData,
-      totalOrders: 0,
-      totalSpent: 0,
-      status: "active",
-      joinedDate: new Date().toISOString().split('T')[0],
-      lastOrderDate: null,
-    };
-    console.log("Creating customer:", customerData);
-    navigate("/dashboard/customers");
+    const { firstName, lastName } = splitName(formData.name);
+
+    try {
+      await customerService.createCustomer({
+        firstName,
+        lastName,
+        businessName: formData.businessName,
+        email: formData.email || null,
+        phone: formData.phone,
+        address: formData.address,
+        status: "active",
+      });
+
+      showSuccess("Customer created successfully");
+      navigate("/dashboard/customers");
+    } catch (error) {
+      console.error("Failed to create customer", error);
+      showError(error?.message || "Failed to create customer");
+    }
   };
 
   return (

@@ -1,22 +1,73 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { ShoppingBag, DollarSign, Clock, CheckCircle } from "lucide-react";
 import OrdersHeader from "../../../components/admin/Orders/OrdersHeader";
 import OrdersTable from "../../../components/admin/Orders/OrdersTable";
+import orderService from "../../../services/orderService";
+import { showError } from "../../../utils/alerts";
+
+const extractOrders = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.orders)) return payload.orders;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.orders)) return payload.data.orders;
+
+  return [];
+};
+
+const normalizeOrder = (order) => {
+  const customerName = order?.customer?.name || order?.customerName || "Unknown Customer";
+  const customerEmail = order?.customer?.email || order?.customerEmail || "";
+  const customerPhone = order?.customer?.phone || order?.customerPhone || "";
+  const orderDate = order?.orderDate || order?.date || order?.createdAt;
+
+  return {
+    ...order,
+    orderNumber: order?.orderNumber || order?.id || "—",
+    orderDate,
+    status: order?.status || "pending",
+    total: Number(order?.total ?? 0),
+    discountAmount: Number(order?.discountAmount ?? order?.discount ?? 0),
+    itemCount: Number(order?.itemCount ?? order?.items?.length ?? 0),
+    customer: {
+      name: customerName,
+      email: customerEmail,
+      phone: customerPhone,
+    },
+  };
+};
+
+const isForbiddenError = (error) => {
+  const statusCode = error?.statusCode || error?.status;
+  const message = String(error?.message || "").toLowerCase();
+  return statusCode === 403 || message.includes("insufficient permissions") || message.includes("forbidden");
+};
 
 export default function Orders() {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/orders.json");
-        setOrders(response.data);
+        setPermissionDenied(false);
+        const response = await orderService.getOrders();
+        setOrders(extractOrders(response).map(normalizeOrder));
       } catch (error) {
         console.error("Error loading orders", error);
+        if (isForbiddenError(error)) {
+          setPermissionDenied(true);
+          return;
+        }
+        showError(error?.message || "Failed to load sales");
       } finally {
         setLoading(false);
       }
@@ -32,10 +83,11 @@ export default function Orders() {
 
   // Filter orders
   const filteredOrders = orders.filter((order) => {
+    const searchLower = searchQuery.toLowerCase();
     const matchesSearch =
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customer.email.toLowerCase().includes(searchQuery.toLowerCase());
+      String(order.orderNumber || order.id || "").toLowerCase().includes(searchLower) ||
+      String(order.customer?.name || "").toLowerCase().includes(searchLower) ||
+      String(order.customer?.email || "").toLowerCase().includes(searchLower);
     const matchesStatus = !statusFilter || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -58,6 +110,23 @@ export default function Orders() {
           ))}
         </div>
         <div className="h-96 bg-gray-200 rounded-xl animate-pulse"></div>
+      </div>
+    );
+  }
+
+  if (permissionDenied) {
+    return (
+      <div className="py-16 animate-fade-in">
+        <div className="max-w-xl mx-auto bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900">Insufficient permissions</h2>
+          <p className="text-sm text-gray-500">You do not have access to view sales. Contact your administrator for the required permissions.</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mt-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
       </div>
     );
   }

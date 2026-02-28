@@ -1,8 +1,35 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Users, DollarSign, ShoppingBag, TrendingUp } from "lucide-react";
 import CustomersHeader from "../../../components/admin/Customers/CustomersHeader";
 import CustomersTable from "../../../components/admin/Customers/CustomersTable";
+import customerService from "../../../services/customerService";
+import { showError } from "../../../utils/alerts";
+
+const extractCustomers = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.customers)) return payload.customers;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.customers)) return payload.data.customers;
+
+  return [];
+};
+
+const normalizeCustomer = (customer) => {
+  const firstName = customer?.firstName || "";
+  const lastName = customer?.lastName || "";
+
+  return {
+    ...customer,
+    name: customer?.name || `${firstName} ${lastName}`.trim() || "Unknown Customer",
+    status: customer?.status || "active",
+    totalOrders: Number(customer?.totalOrders ?? 0),
+    totalSpent: Number(customer?.totalSpent ?? 0),
+  };
+};
 
 export default function Customers() {
   const [customers, setCustomers] = useState([]);
@@ -12,10 +39,11 @@ export default function Customers() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/customers.json");
-        setCustomers(response.data);
+        const response = await customerService.getCustomers();
+        setCustomers(extractCustomers(response).map(normalizeCustomer));
       } catch (error) {
         console.error("Error loading customers", error);
+        showError(error?.message || "Failed to load customers");
       } finally {
         setLoading(false);
       }
@@ -33,9 +61,9 @@ export default function Customers() {
   const filteredCustomers = customers.filter((customer) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-      customer.name.toLowerCase().includes(searchLower) ||
-      customer.email.toLowerCase().includes(searchLower) ||
-      customer.phone.includes(searchQuery)
+      String(customer.name || "").toLowerCase().includes(searchLower) ||
+      String(customer.email || "").toLowerCase().includes(searchLower) ||
+      String(customer.phone || "").includes(searchQuery)
     );
   });
 

@@ -29,21 +29,28 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const response = await authService.login(email, password);
+      const payload = response?.data || response || {};
+      const authUser = payload?.user || payload || {};
+      const role = authUser?.role || "";
+      const normalizedRole = String(role).toLowerCase();
+      const firstName = authUser?.firstName || "";
+      const lastName = authUser?.lastName || "";
 
       const userData = {
-        id: response.data.id,
-        email: response.data.email,
-        firstName: response.data.firstName,
-        lastName: response.data.lastName,
-        name: `${response.data.firstName} ${response.data.lastName}`,
-        role: response.data.role,
-        status: response.data.status,
-        businessId: response.data.businessId,
-        subscriptionPlan: response.data.subscriptionPlan,
-        subscriptionStatus: response.data.subscriptionStatus,
-        permissions: response.data.permissions || [],
-        isSuperAdmin: response.data.role === "SUPERADMIN",
-        avatar: `https://ui-avatars.com/api/?name=${response.data.firstName}+${response.data.lastName}&background=random&color=fff`,
+        id: authUser?.id,
+        email: authUser?.email,
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`.trim(),
+        role,
+        roleId: authUser?.roleId,
+        status: authUser?.status,
+        businessId: authUser?.businessId,
+        subscriptionPlan: authUser?.subscriptionPlan,
+        subscriptionStatus: authUser?.subscriptionStatus,
+        permissions: authUser?.permissions || payload?.permissions || [],
+        isSuperAdmin: normalizedRole === "superadmin" || normalizedRole === "super_admin",
+        avatar: `https://ui-avatars.com/api/?name=${firstName || "User"}+${lastName || ""}&background=random&color=fff`,
       };
 
       setUser(userData);
@@ -85,15 +92,19 @@ export const AuthProvider = ({ children }) => {
 
   const hasPermission = (permission) => {
     if (!user) return false;
+    const role = String(user.role || "").toLowerCase();
+    const isAdmin = role === "administrator" || role === "admin";
     if (user.isSuperAdmin) return true; // Superadmin has all permissions
-    if (user.role === "Administrator") return true;
+    if (isAdmin) return true;
     return user.permissions?.includes(permission) || false;
   };
 
   const hasAnyPermission = (permissionsArray) => {
     if (!user) return false;
+    const role = String(user.role || "").toLowerCase();
+    const isAdmin = role === "administrator" || role === "admin";
     if (user.isSuperAdmin) return true; // Superadmin has all permissions
-    if (user.role === "Administrator") return true;
+    if (isAdmin) return true;
     return permissionsArray.some((permission) =>
       user.permissions?.includes(permission)
     );

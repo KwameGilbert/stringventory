@@ -1,7 +1,20 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import axios from "axios";
+import customerService from "../../../services/customerService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+const extractCustomer = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.customer || payload?.data?.customer || payload?.data || payload;
+};
+
+const splitName = (fullName = "") => {
+  const parts = String(fullName).trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { firstName: "", lastName: "" };
+  if (parts.length === 1) return { firstName: parts[0], lastName: "" };
+  return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
+};
 
 export default function EditCustomer() {
   const { id } = useParams();
@@ -19,20 +32,21 @@ export default function EditCustomer() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/customers.json");
-        const customer = response.data.find((c) => c.id === id);
+        const response = await customerService.getCustomerById(id);
+        const customer = extractCustomer(response);
         if (customer) {
           setFormData({
-            name: customer.name,
-            email: customer.email,
-            phone: customer.phone,
-            address: customer.address,
-            status: customer.status,
+            name: customer.name || `${customer.firstName || ""} ${customer.lastName || ""}`.trim(),
+            email: customer.email || "",
+            phone: customer.phone || "",
+            address: customer.address || "",
+            status: customer.status || "active",
             notes: customer.notes || ""
           });
         }
       } catch (error) {
         console.error("Error fetching customer", error);
+        showError(error?.message || "Failed to fetch customer");
       } finally {
         setLoading(false);
       }
@@ -40,10 +54,26 @@ export default function EditCustomer() {
     fetchData();
   }, [id]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updating customer:", formData);
-    navigate("/dashboard/customers");
+    const { firstName, lastName } = splitName(formData.name);
+
+    try {
+      await customerService.updateCustomer(id, {
+        firstName,
+        lastName,
+        email: formData.email || null,
+        phone: formData.phone,
+        address: formData.address,
+        status: formData.status,
+        notes: formData.notes,
+      });
+      showSuccess("Customer updated successfully");
+      navigate("/dashboard/customers");
+    } catch (error) {
+      console.error("Failed to update customer", error);
+      showError(error?.message || "Failed to update customer");
+    }
   };
 
   const handleChange = (e) => {

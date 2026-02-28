@@ -1,12 +1,36 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, X } from "lucide-react";
-import axios from "axios";
+import purchaseService from "../../../services/purchaseService";
+import supplierService from "../../../services/supplierService";
+import { productService } from "../../../services/productService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+  return [];
+};
+
+const extractPurchase = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.purchase || payload?.data?.purchase || payload?.data || payload;
+};
 
 export default function EditPurchase() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [suppliers, setSuppliers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     waybillNumber: "",
     supplierId: "",
@@ -15,33 +39,38 @@ export default function EditPurchase() {
     status: "pending"
   });
 
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([{ productId: "", quantity: "", unitCost: "", expiryDate: "" }]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [purchasesRes, itemsRes] = await Promise.all([
-          axios.get("/data/purchases.json"),
-          axios.get("/data/purchase-items.json")
+        const [purchaseRes, suppliersRes, productsRes] = await Promise.all([
+          purchaseService.getPurchaseById(id),
+          supplierService.getSuppliers(),
+          productService.getProducts(),
         ]);
 
-        const purchase = purchasesRes.data.find((p) => p.id === id);
-        if (purchase) {
+        setSuppliers(extractList(suppliersRes, "suppliers"));
+        setProducts(extractList(productsRes, "products"));
+
+        const purchase = extractPurchase(purchaseRes);
+        if (purchase?.id) {
           setFormData({
             waybillNumber: purchase.waybillNumber,
             supplierId: purchase.supplierId,
-            purchaseDate: purchase.purchaseDate,
+            purchaseDate: purchase.purchaseDate || (purchase.createdAt ? purchase.createdAt.split('T')[0] : ""),
             notes: purchase.notes || "",
-            status: purchase.status
+            status: String(purchase.status || "pending").toLowerCase(),
           });
 
-          const purchaseItems = itemsRes.data.filter(item => item.purchaseId === id);
+          const purchaseItems = purchase.purchaseItems || purchase.items || [];
           setItems(purchaseItems.length > 0 ? purchaseItems : [
             { productId: "", quantity: "", unitCost: "", expiryDate: "" }
           ]);
         }
       } catch (error) {
         console.error("Error fetching purchase", error);
+        showError(error?.message || "Failed to load purchase");
       } finally {
         setLoading(false);
       }
@@ -49,10 +78,34 @@ export default function EditPurchase() {
     fetchData();
   }, [id]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updating purchase:", { formData, items });
-    navigate("/dashboard/purchases");
+    setSubmitting(true);
+
+    try {
+      const cleanedItems = items
+        .filter((item) => item.productId && item.quantity && item.unitCost)
+        .map((item) => ({
+          productId: item.productId,
+          quantity: Number(item.quantity),
+          unitCost: Number(item.unitCost),
+          expiryDate: item.expiryDate || null,
+        }));
+
+      await purchaseService.updatePurchase(id, {
+        ...formData,
+        status: String(formData.status || "pending").toLowerCase(),
+        purchaseItems: cleanedItems,
+      });
+
+      showSuccess("Purchase updated successfully");
+      navigate("/dashboard/purchases");
+    } catch (error) {
+      console.error("Failed to update purchase", error);
+      showError(error?.message || "Failed to update purchase");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const addItem = () => {
@@ -121,6 +174,23 @@ export default function EditPurchase() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                Supplier *
+              </label>
+              <select
+                value={formData.supplierId}
+                onChange={(e) => setFormData({ ...formData, supplierId: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                required
+              >
+                <option value="">Select supplier</option>
+                {suppliers.map((supplier) => (
+                  <option key={supplier.id} value={supplier.id}>{supplier.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Purchase Date *
               </label>
               <input
@@ -177,13 +247,16 @@ export default function EditPurchase() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Product
                     </label>
-                    <input
-                      type="text"
-                      value={item.productName || item.productId}
+                    <select
+                      value={item.productId || ""}
                       onChange={(e) => updateItem(index, 'productId', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
-                      placeholder="Select product..."
-                    />
+                    >
+                      <option value="">Select product...</option>
+                      {products.map((product) => (
+                        <option key={product.id} value={product.id}>{product.name}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
@@ -241,9 +314,10 @@ export default function EditPurchase() {
           </button>
           <button
             type="submit"
+            disabled={submitting}
             className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
           >
-            Update Purchase
+            {submitting ? "Updating..." : "Update Purchase"}
           </button>
         </div>
       </form>

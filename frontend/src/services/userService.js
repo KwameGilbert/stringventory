@@ -48,6 +48,13 @@ export const userService = {
   },
 
   /**
+   * Update user permissions
+   */
+  updateUserPermissions: async (userId, permissions = []) => {
+    return await apiClient.put(API_ENDPOINTS.USERS.PERMISSIONS(userId), { permissions });
+  },
+
+  /**
    * Resend verification email
    */
   resendVerificationEmail: async (userId) => {

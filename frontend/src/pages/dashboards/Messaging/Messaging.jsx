@@ -1,12 +1,39 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { MessageCircle, Clock, Send } from "lucide-react";
 import CustomerSelector from "../../../components/admin/Messaging/CustomerSelector";
 import Composer from "../../../components/admin/Messaging/Composer";
 import MessageHistory from "../../../components/admin/Messaging/MessageHistory";
 import MessageDetails from "../../../components/admin/Messaging/MessageDetails";
 import SupportChat from "./components/SupportChat";
-import { showSuccess, showLoading, closeLoading } from "../../../utils/alerts";
+import { showError, showSuccess, showLoading, closeLoading } from "../../../utils/alerts";
+import customerService from "../../../services/customerService";
+import messagingService from "../../../services/messagingService";
+
+const extractCustomers = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.customers)) return payload.customers;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.customers)) return payload.data.customers;
+
+  return [];
+};
+
+const normalizeCustomer = (customer) => {
+  const firstName = customer?.firstName || "";
+  const lastName = customer?.lastName || "";
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  return {
+    ...customer,
+    id: customer?.id,
+    customerName: customer?.customerName || customer?.name || fullName || customer?.email || "Unknown",
+    email: customer?.email || "",
+  };
+};
 
 export default function Messaging() {
   const [activeTab, setActiveTab] = useState("support");
@@ -20,13 +47,13 @@ export default function Messaging() {
   const [isOnline] = useState(true);
 
   useEffect(() => {
-    // Reusing customer data logic or fetching from customers.json
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get("/data/customers.json");
-        setCustomers(response.data);
+        const response = await customerService.getCustomers();
+        setCustomers(extractCustomers(response).map(normalizeCustomer));
       } catch (error) {
         console.error("Error loading customers", error);
+        showError(error?.message || "Failed to load customers");
       }
     };
     fetchCustomers();
@@ -46,15 +73,25 @@ export default function Messaging() {
     }
   };
 
-  const handleSendMessage = (messageBody) => {
+  const handleSendMessage = async (messageBody) => {
+    if (!selectedCustomerIds.length || !messageBody?.trim()) return;
+
     showLoading("Sending messages...");
-    setTimeout(() => {
+    try {
+      await messagingService.sendBulkMessage({
+        recipientIds: selectedCustomerIds,
+        body: messageBody,
+      });
+
       closeLoading();
-      console.log("Message sent:", messageBody);
       showSuccess(`Successfully sent to ${selectedCustomerIds.length} customers`);
       setSelectedCustomerIds([]);
       setActiveTab("history");
-    }, 1500);
+    } catch (error) {
+      closeLoading();
+      console.error("Failed to send message", error);
+      showError(error?.message || "Failed to send messages");
+    }
   };
 
   return (

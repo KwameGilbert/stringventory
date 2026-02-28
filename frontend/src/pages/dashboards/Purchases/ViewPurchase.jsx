@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit2, Trash2, Calendar, User, FileText, Package } from "lucide-react";
-import axios from "axios";
+import purchaseService from "../../../services/purchaseService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractPurchase = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.purchase || payload?.data?.purchase || payload?.data || payload;
+};
 
 export default function ViewPurchase() {
   const { id } = useParams();
@@ -12,23 +18,40 @@ export default function ViewPurchase() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [purchasesRes, itemsRes] = await Promise.all([
-          axios.get("/data/purchases.json"),
-          axios.get("/data/purchase-items.json")
-        ]);
-        
-        const found = purchasesRes.data.find((p) => p.id === id);
-        if (found) {
-          setPurchase(found);
-          const purchaseItems = itemsRes.data.filter(item => item.purchaseId === id);
-          setItems(purchaseItems);
+        const response = await purchaseService.getPurchaseById(id);
+        const found = extractPurchase(response);
+        if (found?.id) {
+          setPurchase({
+            ...found,
+            status: String(found.status || "pending").toLowerCase(),
+            supplierName: found.supplierName || found.supplier?.name || "Unknown Supplier",
+            purchaseDate: found.purchaseDate || found.createdAt,
+            totalAmount: Number(found.totalAmount ?? found.amount ?? 0),
+            createdBy: found.createdBy || found.createdByName || "System",
+          });
+          setItems(found.purchaseItems || found.items || []);
         }
       } catch (error) {
         console.error("Error fetching purchase", error);
+        showError(error?.message || "Failed to fetch purchase details");
       }
     };
     fetchData();
   }, [id]);
+
+  const handleDelete = async () => {
+    const result = await confirmDelete("this purchase");
+    if (!result.isConfirmed) return;
+
+    try {
+      await purchaseService.deletePurchase(id);
+      showSuccess("Purchase deleted successfully");
+      navigate("/dashboard/purchases");
+    } catch (error) {
+      console.error("Failed to delete purchase", error);
+      showError(error?.message || "Failed to delete purchase");
+    }
+  };
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -103,7 +126,10 @@ export default function ViewPurchase() {
                   Edit
                 </Link>
               )}
-              <button className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
+              >
                 <Trash2 size={16} />
                 Delete
               </button>
@@ -133,10 +159,10 @@ export default function ViewPurchase() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {items.map((item) => (
+                  {items.map((item, index) => (
                     <tr key={item.id} className="hover:bg-gray-50/50">
                       <td className="px-6 py-3">
-                        <span className="text-sm font-medium text-gray-900">{item.productName}</span>
+                        <span className="text-sm font-medium text-gray-900">{item.productName || item.product?.name || `Product ${index + 1}`}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span className="text-sm text-gray-600">{item.quantity}</span>
@@ -145,10 +171,10 @@ export default function ViewPurchase() {
                         <span className="text-sm text-gray-900">{formatCurrency(item.unitCost)}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.subtotal)}</span>
+                        <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.subtotal ?? Number(item.quantity || 0) * Number(item.unitCost || 0))}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-600">{formatDate(item.expiryDate)}</span>
+                        <span className="text-sm text-gray-600">{item.expiryDate ? formatDate(item.expiryDate) : "—"}</span>
                       </td>
                     </tr>
                   ))}

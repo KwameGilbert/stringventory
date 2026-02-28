@@ -1,11 +1,27 @@
 import { useState, useEffect, useMemo } from "react";
 import { Save, ArrowLeft, Package, Truck, DollarSign, Calendar, Hash, AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { productService } from "../../../services/productService";
+import supplierService from "../../../services/supplierService";
+import { showError } from "../../../utils/alerts";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+  return [];
+};
 
 const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const today = new Date().toISOString().split('T')[0];
@@ -16,6 +32,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
     category: "",
     batchNumber: "",
     supplier: "",
+    notes: "",
     unitCost: "",
     quantity: "",
     entryDate: today,
@@ -26,10 +43,16 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/products.json");
-        setProducts(response.data);
+        const [productsRes, suppliersRes] = await Promise.all([
+          productService.getProducts(),
+          supplierService.getSuppliers(),
+        ]);
+
+        setProducts(extractList(productsRes, "products"));
+        setSuppliers(extractList(suppliersRes, "suppliers"));
       } catch (error) {
         console.error("Error loading data", error);
+        showError(error?.message || "Failed to load inventory form data");
       } finally {
         setLoading(false);
       }
@@ -44,13 +67,15 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
   const handleProductChange = (e) => {
     const productId = e.target.value;
-    const product = products.find(p => p.id === parseInt(productId));
+    const product = products.find(p => String(p.id) === String(productId));
     if (product) {
       setFormData(prev => ({
         ...prev,
         productId: product.id,
         productName: product.name,
-        category: product.category,
+        category: product.category || product.categoryName || "Uncategorized",
+        supplier: product.supplier || product.supplierName || prev.supplier,
+        unitCost: product.costPrice ?? product.cost ?? prev.unitCost,
       }));
     }
   };
@@ -149,7 +174,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                 <option value="">Select a product...</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name} — {product.category}
+                    {product.name} — {product.category || product.categoryName || "Uncategorized"}
                   </option>
                 ))}
               </select>
@@ -185,15 +210,18 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
               <label className="text-sm font-medium text-gray-700">
                 Supplier / Manufacturer <span className="text-rose-500">*</span>
               </label>
-              <input
-                type="text"
+              <select
                 name="supplier"
                 value={formData.supplier}
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm"
-                placeholder="e.g., Coca-Cola Ghana Ltd"
                 required
-              />
+              >
+                <option value="">Select supplier...</option>
+                {suppliers.map((supplier) => (
+                  <option key={supplier.id} value={supplier.name}>{supplier.name}</option>
+                ))}
+              </select>
             </div>
 
             {/* Batch Number */}
@@ -348,6 +376,18 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                 </span>
               </div>
             )}
+
+            <div className="mt-4 space-y-2">
+              <label className="text-sm font-medium text-gray-700">Notes (Optional)</label>
+              <textarea
+                name="notes"
+                value={formData.notes || ""}
+                onChange={handleChange}
+                rows={3}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 transition-all text-sm resize-none"
+                placeholder="Add any notes for this stock entry..."
+              />
+            </div>
           </div>
         </div>
 

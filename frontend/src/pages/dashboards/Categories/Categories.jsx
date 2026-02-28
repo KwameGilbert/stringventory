@@ -1,42 +1,95 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import CategoryHeader from "../../../components/admin/Categories/CategoryHeader";
 import CategoryGrid from "../../../components/admin/Categories/CategoryGrid";
 import CategoryList from "../../../components/admin/Categories/CategoryList";
-import { confirmDelete, showSuccess } from "../../../utils/alerts";
+import categoryService from "../../../services/categoryService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractCategories = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.categories)) return payload.categories;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.categories)) return payload.data.categories;
+
+  return [];
+};
+
+const normalizeCategory = (category) => ({
+  ...category,
+  productsCount:
+    category?.productsCount ??
+    category?.products_count ??
+    category?.productCount ??
+    0,
+  image: category?.image || category?.imageUrl || null,
+  status: category?.status || "active",
+});
 
 export default function Categories() {
   const [view, setView] = useState('list');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchCategories = async () => {
+    try {
+      const response = await categoryService.getCategories();
+      const data = extractCategories(response).map(normalizeCategory);
+      setCategories(data);
+    } catch (error) {
+      console.error("Failed to load categories", error);
+      showError(error?.message || "Failed to load categories");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/data/categories.json');
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Failed to load categories", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchCategories();
   }, []);
 
-  const handleToggleStatus = (id) => {
-    setCategories(prev => prev.map(cat => 
-      cat.id === id 
-        ? { ...cat, status: cat.status === 'active' ? 'inactive' : 'active' }
-        : cat
-    ));
+  const handleToggleStatus = async (id) => {
+    const targetCategory = categories.find((cat) => String(cat.id) === String(id));
+    if (!targetCategory) return;
+
+    const nextStatus = targetCategory.status === 'active' ? 'inactive' : 'active';
+
+    try {
+      await categoryService.updateCategory(id, {
+        name: targetCategory.name,
+        description: targetCategory.description,
+        image: targetCategory.image,
+        status: nextStatus,
+      });
+
+      setCategories((prev) =>
+        prev.map((cat) =>
+          String(cat.id) === String(id)
+            ? { ...cat, status: nextStatus }
+            : cat
+        )
+      );
+      showSuccess(`Category ${nextStatus === 'active' ? 'activated' : 'deactivated'} successfully`);
+    } catch (error) {
+      console.error("Failed to update category status", error);
+      showError(error?.message || "Failed to update category status");
+    }
   };
 
   const handleDelete = async (id) => {
     const result = await confirmDelete("this category");
     if (result.isConfirmed) {
-      setCategories(prev => prev.filter(cat => cat.id !== id));
-      showSuccess("Category deleted successfully");
+      try {
+        await categoryService.deleteCategory(id);
+        setCategories((prev) => prev.filter((cat) => String(cat.id) !== String(id)));
+        showSuccess("Category deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete category", error);
+        showError(error?.message || "Failed to delete category");
+      }
     }
   };
 

@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import { ArrowLeft, Save, Building2, User, Mail, Phone, MapPin, Truck } from "lucide-react";
-import Swal from "sweetalert2";
-import axios from "axios";
+import supplierService from "../../../services/supplierService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+const extractSupplier = (response) => {
+    const payload = response?.data || response || {};
+    return payload?.supplier || payload?.data?.supplier || payload?.data || payload;
+};
 
 export default function EditSupplier() {
   const navigate = useNavigate();
@@ -22,16 +27,25 @@ export default function EditSupplier() {
   useEffect(() => {
     const fetchSupplier = async () => {
       try {
-        const response = await axios.get("/data/suppliers.json");
-        const found = response.data.find(s => s.id === id);
-        if (found) {
-            setFormData(found);
+                const response = await supplierService.getSupplierById(id);
+                const found = extractSupplier(response);
+                if (found?.id) {
+                        setFormData({
+                            ...found,
+                            status:
+                                found?.status === "active" || found?.isActive === true
+                                    ? "Active"
+                                    : found?.status === "inactive" || found?.isActive === false
+                                        ? "Inactive"
+                                        : found?.status || "Active",
+                        });
         } else {
-            Swal.fire("Error", "Supplier not found", "error");
+                        showError("Supplier not found");
             navigate("/dashboard/suppliers");
         }
       } catch (error) {
         console.error("Error loading supplier", error);
+                showError(error?.message || "Failed to load supplier");
       } finally {
         setLoading(false);
       }
@@ -50,19 +64,20 @@ export default function EditSupplier() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-        setSubmitting(false);
-        Swal.fire({
-            icon: 'success',
-            title: 'Supplier Updated',
-            text: 'Supplier details have been successfully updated.',
-            confirmButtonColor: '#10b981'
-        }).then(() => {
+
+        try {
+            await supplierService.updateSupplier(id, {
+                ...formData,
+                status: formData.status?.toLowerCase() === "active" ? "active" : "inactive",
+            });
+            showSuccess("Supplier details have been successfully updated.");
             navigate('/dashboard/suppliers');
-        });
-    }, 1000);
+        } catch (error) {
+            console.error("Failed to update supplier", error);
+            showError(error?.message || "Failed to update supplier");
+        } finally {
+            setSubmitting(false);
+        }
   };
 
   if (loading) {

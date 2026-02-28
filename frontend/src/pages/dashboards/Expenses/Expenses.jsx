@@ -1,8 +1,36 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import ExpensesHeader from "../../../components/admin/Expenses/ExpensesHeader";
 import ExpensesTable from "../../../components/admin/Expenses/ExpensesTable";
-import { confirmDelete, showSuccess } from "../../../utils/alerts";
+import expenseService from "../../../services/expenseService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractExpenses = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.expenses)) return payload.expenses;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.expenses)) return payload.data.expenses;
+
+  return [];
+};
+
+const normalizeExpense = (expense) => ({
+  ...expense,
+  name: expense?.name || expense?.description || "Expense",
+  category: expense?.category || expense?.categoryName || "Uncategorized",
+  categoryName: expense?.categoryName || expense?.category || "Uncategorized",
+  amount: Number(expense?.amount ?? 0),
+  date: expense?.date || expense?.createdAt,
+  supplier: expense?.supplier || expense?.vendor || "",
+  paymentMethod: expense?.paymentMethod || "",
+  notes: expense?.notes || expense?.description || "",
+  isRecurring: Boolean(expense?.isRecurring),
+  hasAttachment: Boolean(expense?.hasAttachment || expense?.receipt),
+  status: expense?.status || "pending",
+});
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState([]);
@@ -12,10 +40,11 @@ export default function Expenses() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/expenses.json");
-        setExpenses(response.data);
+        const response = await expenseService.getExpenses();
+        setExpenses(extractExpenses(response).map(normalizeExpense));
       } catch (error) {
         console.error("Error loading expenses", error);
+        showError(error?.message || "Failed to load expenses");
       } finally {
         setLoading(false);
       }
@@ -26,15 +55,21 @@ export default function Expenses() {
   const handleDelete = async (id) => {
     const result = await confirmDelete("this expense");
     if (result.isConfirmed) {
-      setExpenses(expenses.filter(e => e.id !== id));
-      showSuccess("Expense deleted successfully");
+      try {
+        await expenseService.deleteExpense(id);
+        setExpenses((prev) => prev.filter((expense) => String(expense.id) !== String(id)));
+        showSuccess("Expense deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete expense", error);
+        showError(error?.message || "Failed to delete expense");
+      }
     }
   };
 
   // Calculate stats
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
-  const paidExpenses = expenses.filter(e => e.status === 'paid').reduce((sum, e) => sum + e.amount, 0);
-  const pendingExpenses = expenses.filter(e => e.status === 'pending').reduce((sum, e) => sum + e.amount, 0);
+  const recurringExpenses = expenses.filter(e => e.isRecurring).reduce((sum, e) => sum + e.amount, 0);
+  const oneTimeExpenses = expenses.filter(e => !e.isRecurring).reduce((sum, e) => sum + e.amount, 0);
 
   // Filter expenses
   const filteredExpenses = expenses.filter((expense) => {
@@ -42,7 +77,7 @@ export default function Expenses() {
     return (
       expense.name.toLowerCase().includes(searchLower) ||
       expense.categoryName.toLowerCase().includes(searchLower) ||
-      expense.paymentMethod.toLowerCase().includes(searchLower) ||
+      String(expense.paymentMethod || "").toLowerCase().includes(searchLower) ||
       (expense.notes && expense.notes.toLowerCase().includes(searchLower))
     );
   });
@@ -67,8 +102,8 @@ export default function Expenses() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         totalExpenses={totalExpenses}
-        paidExpenses={paidExpenses}
-        pendingExpenses={pendingExpenses}
+        recurringExpenses={recurringExpenses}
+        oneTimeExpenses={oneTimeExpenses}
       />
 
       <ExpensesTable 

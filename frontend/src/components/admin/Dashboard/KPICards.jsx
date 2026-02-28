@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   TrendingUp,
   TrendingDown,
@@ -11,6 +10,8 @@ import {
 
 import { useAuth } from "../../../contexts/AuthContext";
 import { PERMISSIONS } from "../../../constants/permissions";
+import analyticsService from "../../../services/analyticsService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const KPICards = ({ dateRange }) => {
   const { user, hasPermission } = useAuth();
@@ -20,33 +21,102 @@ const KPICards = ({ dateRange }) => {
   useEffect(() => {
     const fetchKPIs = async () => {
       try {
-        const response = await axios.get("/data/dashboard-stats.json");
-        // Map KPI Titles to Permission Keys
-        const kpiPermissionMap = {
-          "Gross Revenue": PERMISSIONS.VIEW_KPI_GROSS_REVENUE,
-          "Daily Sales": PERMISSIONS.VIEW_KPI_DAILY_SALES,
-          "Total Expenses": PERMISSIONS.VIEW_KPI_TOTAL_EXPENSES,
-          "Total Refunds": PERMISSIONS.VIEW_KPI_TOTAL_REFUNDS,
-          "Net Revenue": PERMISSIONS.VIEW_KPI_NET_REVENUE,
-          "Total Orders": PERMISSIONS.VIEW_KPI_TOTAL_SALES, // Check against current data API (Orders) but map to Sales permission
-          "Total Sales": PERMISSIONS.VIEW_KPI_TOTAL_SALES, // Handle potential rename
-          "Total Stock (Units)": PERMISSIONS.VIEW_KPI_TOTAL_STOCK,
-          "Inventory Value": PERMISSIONS.VIEW_KPI_INVENTORY_VALUE,
-          "Low Stock Alert": PERMISSIONS.VIEW_KPI_LOW_STOCK
+        const params = getDashboardDateParams(dateRange);
+        const response = await analyticsService.getDashboardOverview(params);
+        const payload = response?.data || response || {};
+        const dashboardData = payload?.data || payload;
+        const metrics = dashboardData?.metrics || {};
+
+        const toTrend = (change) => {
+          if (change > 0) return "up";
+          if (change < 0) return "down";
+          return "neutral";
         };
 
-        const keyKPIs = response.data.filter((stat) => {
-            const permissionKey = kpiPermissionMap[stat.title];
-            // If we have a permission key mapped, check if user has it.
-            // If no map found (unexpected new KPI), default to hidden or check generic?
-            // Let's hide unmapped ones to be safe, or show if Admin? 
-            // Better to only show what is explicitly allowed via the map.
-            return permissionKey && hasPermission(permissionKey);
-        });
+        const formatChange = (change) => {
+          if (change === undefined || change === null) return "";
+          const value = Number(change);
+          if (Number.isNaN(value)) return "";
+          return `${value > 0 ? "+" : ""}${value.toFixed(1)}%`;
+        };
 
-        setKpis(keyKPIs);
+        const formatCurrency = (value) =>
+          new Intl.NumberFormat("en-GH", {
+            style: "currency",
+            currency: "GHS",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(Number(value || 0));
+
+        const formatNumber = (value) => new Intl.NumberFormat("en-US").format(Number(value || 0));
+
+        const mappedKpis = [
+          {
+            id: "grossRevenue",
+            title: "Gross Revenue",
+            value: formatCurrency(metrics?.grossRevenue?.value),
+            change: formatChange(metrics?.grossRevenue?.change),
+            trend: metrics?.grossRevenue?.trend || toTrend(metrics?.grossRevenue?.change),
+            icon: "DollarSign",
+            color: "emerald",
+            permission: PERMISSIONS.VIEW_KPI_GROSS_REVENUE,
+          },
+          {
+            id: "totalSales",
+            title: "Total Sales",
+            value: formatNumber(metrics?.totalOrders?.value),
+            change: formatChange(metrics?.totalOrders?.change),
+            trend: metrics?.totalOrders?.trend || toTrend(metrics?.totalOrders?.change),
+            icon: "ShoppingCart",
+            color: "blue",
+            permission: PERMISSIONS.VIEW_KPI_TOTAL_SALES,
+          },
+          {
+            id: "totalExpenses",
+            title: "Total Expenses",
+            value: formatCurrency(metrics?.totalExpenses?.value),
+            change: formatChange(metrics?.totalExpenses?.change),
+            trend: metrics?.totalExpenses?.trend || toTrend(metrics?.totalExpenses?.change),
+            icon: "AlertTriangle",
+            color: "orange",
+            permission: PERMISSIONS.VIEW_KPI_TOTAL_EXPENSES,
+          },
+          {
+            id: "netProfit",
+            title: "Net Revenue",
+            value: formatCurrency(metrics?.netProfit?.value),
+            change: formatChange(metrics?.netProfit?.change),
+            trend: metrics?.netProfit?.trend || toTrend(metrics?.netProfit?.change),
+            icon: "TrendingUp",
+            color: "emerald",
+            permission: PERMISSIONS.VIEW_KPI_NET_REVENUE,
+          },
+          {
+            id: "inventoryValue",
+            title: "Inventory Value",
+            value: formatCurrency(metrics?.inventoryValue?.value),
+            change: formatChange(metrics?.inventoryValue?.change),
+            trend: metrics?.inventoryValue?.trend || toTrend(metrics?.inventoryValue?.change),
+            icon: "Package",
+            color: "blue",
+            permission: PERMISSIONS.VIEW_KPI_INVENTORY_VALUE,
+          },
+          {
+            id: "lowStockItems",
+            title: "Low Stock Alert",
+            value: formatNumber(metrics?.lowStockItems),
+            change: "Requires attention",
+            trend: "alert",
+            icon: "AlertTriangle",
+            color: "red",
+            permission: PERMISSIONS.VIEW_KPI_LOW_STOCK,
+          },
+        ];
+
+        setKpis(mappedKpis.filter((kpi) => hasPermission(kpi.permission)));
       } catch (error) {
         console.error("Error fetching KPIs:", error);
+        setKpis([]);
       } finally {
         setLoading(false);
       }
@@ -108,11 +178,11 @@ const KPICards = ({ dateRange }) => {
               className="group relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden"
             >
               {/* Background Gradient on Hover */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(kpi.color)} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+              <div className={`absolute inset-0 bg-linear-to-br ${getGradient(kpi.color)} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
               
               {/* Icon */}
               <div className="relative mb-4">
-                <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${getGradient(kpi.color)} shadow-lg`}>
+                <div className={`inline-flex p-3 rounded-xl bg-linear-to-br ${getGradient(kpi.color)} shadow-lg`}>
                   <Icon className="w-6 h-6 text-white" />
                 </div>
               </div>

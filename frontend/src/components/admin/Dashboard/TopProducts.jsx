@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { TrendingUp, Image } from "lucide-react";
+import analyticsService from "../../../services/analyticsService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const TopProducts = ({ dateRange }) => {
   const [products, setProducts] = useState([]);
@@ -10,10 +11,28 @@ const TopProducts = ({ dateRange }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/top-products.json");
-        setProducts(response.data);
+        const params = {
+          ...getDashboardDateParams(dateRange),
+          groupBy: "daily",
+        };
+        const response = await analyticsService.getSalesReport(params);
+        const payload = response?.data || response || {};
+        const reportData = payload?.data || payload;
+        const byProduct = Array.isArray(reportData?.byProduct) ? reportData.byProduct : [];
+
+        setProducts(
+          byProduct.map((product) => ({
+            id: product?.productId || product?.id,
+            name: product?.productName || "Product",
+            category: product?.categoryName || "—",
+            revenue: Number(product?.revenue ?? 0),
+            volume: Number(product?.quantity ?? product?.sales ?? 0),
+            image: product?.image || null,
+          }))
+        );
       } catch (error) {
         console.error("Error fetching top products:", error);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -94,7 +113,7 @@ const TopProducts = ({ dateRange }) => {
               </div>
 
               {/* Product Image */}
-              <div className="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div className="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
                 {product.image ? (
                   <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                 ) : (

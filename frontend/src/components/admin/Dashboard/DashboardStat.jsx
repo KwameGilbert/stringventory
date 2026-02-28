@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import {
   DollarSign,
   Activity,
@@ -9,6 +8,7 @@ import {
   Package,
   AlertTriangle,
 } from "lucide-react";
+import analyticsService from "../../../services/analyticsService";
 
 const iconMap = {
   DollarSign,
@@ -67,8 +67,61 @@ const DashboardStat = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get("/data/dashboard-stats.json");
-        setStats(response.data);
+        const response = await analyticsService.getDashboardOverview();
+        const payload = response?.data || response || {};
+        const dashboardData = payload?.data || payload;
+        const metrics = dashboardData?.metrics || {};
+
+        const currency = (value) =>
+          new Intl.NumberFormat("en-GH", {
+            style: "currency",
+            currency: "GHS",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          }).format(Number(value || 0));
+
+        const number = (value) => new Intl.NumberFormat("en-US").format(Number(value || 0));
+        const toChange = (value) => (value === undefined || value === null ? "" : `${Number(value) > 0 ? "+" : ""}${Number(value).toFixed(1)}%`);
+        const toTrend = (value) => (Number(value) > 0 ? "up" : Number(value) < 0 ? "down" : "neutral");
+
+        setStats([
+          {
+            id: "grossRevenue",
+            title: "Gross Revenue",
+            value: currency(metrics?.grossRevenue?.value),
+            change: toChange(metrics?.grossRevenue?.change),
+            trend: metrics?.grossRevenue?.trend || toTrend(metrics?.grossRevenue?.change),
+            icon: "DollarSign",
+            color: "emerald",
+          },
+          {
+            id: "totalSales",
+            title: "Total Sales",
+            value: number(metrics?.totalOrders?.value),
+            change: toChange(metrics?.totalOrders?.change),
+            trend: metrics?.totalOrders?.trend || toTrend(metrics?.totalOrders?.change),
+            icon: "ShoppingCart",
+            color: "blue",
+          },
+          {
+            id: "inventoryValue",
+            title: "Inventory Value",
+            value: currency(metrics?.inventoryValue?.value),
+            change: toChange(metrics?.inventoryValue?.change),
+            trend: metrics?.inventoryValue?.trend || toTrend(metrics?.inventoryValue?.change),
+            icon: "Package",
+            color: "blue",
+          },
+          {
+            id: "lowStock",
+            title: "Low Stock Alert",
+            value: number(metrics?.lowStockItems),
+            change: "Requires attention",
+            trend: "alert",
+            icon: "AlertTriangle",
+            color: "red",
+          },
+        ]);
       } catch (err) {
         console.error("Error fetching dashboard stats:", err);
         setError("Failed to load statistics.");

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { DollarSign, ArrowDownCircle, RotateCcw, TrendingUp } from "lucide-react";
+import analyticsService from "../../../services/analyticsService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const FinancialOverview = ({ dateRange }) => {
   const [data, setData] = useState(null);
@@ -9,10 +10,33 @@ const FinancialOverview = ({ dateRange }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/financial-overview.json");
-        setData(response.data);
+        const params = getDashboardDateParams(dateRange);
+        const [dashboardRes, expenseReportRes] = await Promise.all([
+          analyticsService.getDashboardOverview(params),
+          analyticsService.getExpenseReport(params),
+        ]);
+
+        const dashboardPayload = dashboardRes?.data || dashboardRes || {};
+        const dashboardData = dashboardPayload?.data || dashboardPayload;
+        const metrics = dashboardData?.metrics || {};
+
+        const expensePayload = expenseReportRes?.data || expenseReportRes || {};
+        const expenseData = expensePayload?.data || expensePayload;
+        const expenseSummary = expenseData?.summary || {};
+
+        setData({
+          grossRevenue: metrics?.grossRevenue || { value: 0, change: 0, trend: "up" },
+          totalExpenses: metrics?.totalExpenses || {
+            value: expenseSummary?.totalExpenses || 0,
+            change: 0,
+            trend: "up",
+          },
+          totalRefunds: metrics?.totalRefunds || { value: 0, change: 0, trend: "down" },
+          netRevenue: metrics?.netProfit || { value: 0, change: 0, trend: "up" },
+        });
       } catch (error) {
         console.error("Error fetching financial data:", error);
+        setData(null);
       } finally {
         setLoading(false);
       }

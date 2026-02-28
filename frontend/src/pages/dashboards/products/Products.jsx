@@ -1,43 +1,86 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { Package, CheckCircle, AlertTriangle } from "lucide-react";
 import ProductsHeader from "../../../components/admin/Products/ProductsHeader";
 import ProductsTable from "../../../components/admin/Products/ProductsTable";
-import { confirmDelete, showSuccess } from "../../../utils/alerts";
+import { productService } from "../../../services/productService";
+import categoryService from "../../../services/categoryService";
+import supplierService from "../../../services/supplierService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+  return [];
+};
+
+const isForbiddenError = (error) => {
+  const statusCode = error?.statusCode || error?.status;
+  const message = String(error?.message || "").toLowerCase();
+  return statusCode === 403 || message.includes("insufficient permissions") || message.includes("forbidden");
+};
 
 export default function Products() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes, suppliersRes, uomsRes] = await Promise.all([
-          axios.get("/data/products.json"),
-          axios.get("/data/categories.json"),
-          axios.get("/data/suppliers.json"),
-          axios.get("/data/unit-of-measurements.json")
+        setPermissionDenied(false);
+        const [productsRes, categoriesRes, suppliersRes] = await Promise.all([
+          productService.getProducts(),
+          categoryService.getCategories(),
+          supplierService.getSuppliers(),
         ]);
-        
-        const fetchedProducts = productsRes.data;
-        const fetchedCategories = categoriesRes.data;
-        const fetchedSuppliers = suppliersRes.data;
-        const fetchedUoms = uomsRes.data;
 
-        const mappedProducts = fetchedProducts.map(product => ({
+        const fetchedProducts = extractList(productsRes, "products");
+        const fetchedCategories = extractList(categoriesRes, "categories");
+        const fetchedSuppliers = extractList(suppliersRes, "suppliers");
+
+        const mappedProducts = fetchedProducts.map((product) => ({
           ...product,
-          category: fetchedCategories.find(c => c.id === product.categoryId)?.name || "Unknown",
-          supplier: fetchedSuppliers.find(s => s.id === product.supplierId)?.name || "Unknown",
-          unitOfMeasure: fetchedUoms.find(u => u.id === product.unitOfMeasurementId)?.abbreviation || "N/A"
+          code: product.code || product.sku || "—",
+          sku: product.sku || product.code || "",
+          costPrice: Number(product.costPrice ?? product.cost ?? 0),
+          sellingPrice: Number(product.sellingPrice ?? product.price ?? 0),
+          currentStock: Number(product.currentStock ?? product.quantity ?? 0),
+          reorderThreshold: Number(product.reorderThreshold ?? product.reorderLevel ?? 0),
+          category:
+            product.category ||
+            product.categoryName ||
+            fetchedCategories.find((c) => String(c.id) === String(product.categoryId))?.name ||
+            "Unknown",
+          supplier:
+            product.supplier ||
+            product.supplierName ||
+            fetchedSuppliers.find((s) => String(s.id) === String(product.supplierId))?.name ||
+            "Unknown",
+          unitOfMeasure: product.unitOfMeasure || product.unit || "N/A",
+          status: product.status || "active",
         }));
 
         setProducts(mappedProducts);
         setCategories(fetchedCategories);
       } catch (error) {
         console.error("Error loading data", error);
+        if (isForbiddenError(error)) {
+          setPermissionDenied(true);
+          return;
+        }
+        showError(error?.message || "Failed to load products");
       } finally {
         setLoading(false);
       }
@@ -65,8 +108,14 @@ export default function Products() {
   const handleDelete = async (id) => {
     const result = await confirmDelete("this product");
     if (result.isConfirmed) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-      showSuccess("Product deleted successfully");
+      try {
+        await productService.deleteProduct(id);
+        setProducts((prev) => prev.filter((p) => String(p.id) !== String(id)));
+        showSuccess("Product deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete product", error);
+        showError(error?.message || "Failed to delete product");
+      }
     }
   };
 
@@ -80,6 +129,23 @@ export default function Products() {
           ))}
         </div>
         <div className="h-96 bg-gray-200 rounded-xl animate-pulse"></div>
+      </div>
+    );
+  }
+
+  if (permissionDenied) {
+    return (
+      <div className="py-16 animate-fade-in">
+        <div className="max-w-xl mx-auto bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900">Insufficient permissions</h2>
+          <p className="text-sm text-gray-500">You do not have access to view products. Contact your administrator for the required permissions.</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mt-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
       </div>
     );
   }

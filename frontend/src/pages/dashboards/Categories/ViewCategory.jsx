@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit2, Trash2, Calendar, Clock, Hash, Image, Package } from "lucide-react";
-import axios from "axios";
+import categoryService from "../../../services/categoryService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractCategory = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.category || payload?.data?.category || payload?.data || payload;
+};
 
 export default function ViewCategory() {
   const { id } = useParams();
@@ -13,22 +19,44 @@ export default function ViewCategory() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/data/categories.json');
-        const found = response.data.find(c => c.id === id);
-        if (found) {
-          setCategory(found);
+        const response = await categoryService.getCategoryById(id);
+        const found = extractCategory(response);
+        if (found?.id) {
+          setCategory({
+            ...found,
+            image: found.image || found.imageUrl || null,
+            productsCount:
+              found.productsCount ??
+              found.products_count ??
+              found.productCount ??
+              0,
+          });
         } else {
           setError("Category not found");
         }
       } catch (error) {
         console.error("Error fetching category", error);
-        setError("Failed to load category details");
+        setError(error?.message || "Failed to load category details");
       } finally {
         setLoading(false);
       }
     };
     fetchData();
   }, [id]);
+
+  const handleDelete = async () => {
+    const result = await confirmDelete("this category");
+    if (!result.isConfirmed) return;
+
+    try {
+      await categoryService.deleteCategory(id);
+      showSuccess("Category deleted successfully");
+      navigate("/dashboard/categories");
+    } catch (error) {
+      console.error("Failed to delete category", error);
+      showError(error?.message || "Failed to delete category");
+    }
+  };
 
   if (loading) {
     return (
@@ -116,7 +144,10 @@ export default function ViewCategory() {
                 <Edit2 size={16} />
                 Edit
               </Link>
-              <button className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
+              >
                 <Trash2 size={16} />
                 Delete
               </button>
@@ -191,7 +222,9 @@ export default function ViewCategory() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium">Created</p>
-                  <p className="text-sm font-semibold text-gray-900">Oct 24, 2024</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {category.createdAt ? new Date(category.createdAt).toLocaleDateString() : "—"}
+                  </p>
                 </div>
               </div>
               
@@ -201,7 +234,9 @@ export default function ViewCategory() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium">Last Modified</p>
-                  <p className="text-sm font-semibold text-gray-900">Jan 8, 2025</p>
+                  <p className="text-sm font-semibold text-gray-900">
+                    {category.updatedAt ? new Date(category.updatedAt).toLocaleDateString() : "—"}
+                  </p>
                 </div>
               </div>
             </div>

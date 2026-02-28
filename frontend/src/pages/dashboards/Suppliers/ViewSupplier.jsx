@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Edit, Building2, User, Mail, Phone, MapPin, Truck } from "lucide-react";
-import axios from "axios";
+import supplierService from "../../../services/supplierService";
+
+const extractSupplier = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.supplier || payload?.data?.supplier || payload?.data || payload;
+};
 
 export default function ViewSupplier() {
   const { id } = useParams();
@@ -12,10 +17,23 @@ export default function ViewSupplier() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/suppliers.json");
-        const found = response.data.find(s => s.id === id);
-        if (found) {
-           setSupplier(found);
+        const response = await supplierService.getSupplierById(id);
+        const found = extractSupplier(response);
+        if (found?.id) {
+           setSupplier({
+            ...found,
+            status:
+              found?.status === "active" || found?.isActive === true
+                ? "Active"
+                : found?.status === "inactive" || found?.isActive === false
+                  ? "Inactive"
+                  : found?.status || "Active",
+            productsCount:
+              found?.productsCount ??
+              found?.products_count ??
+              found?.productCount ??
+              0,
+           });
         }
         setLoading(false);
       } catch (error) {

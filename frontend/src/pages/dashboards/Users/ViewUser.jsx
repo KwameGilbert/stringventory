@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import userService from "../../../services/userService";
 import { 
   ArrowLeft, 
   Shield, 
@@ -16,6 +16,46 @@ import {
   Laptop
 } from "lucide-react";
 
+const toRoleLabel = (roleValue) => {
+  if (!roleValue) return "User";
+  const raw = String(roleValue).replace(/[_-]/g, " ").trim();
+  return raw
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
+
+const extractUser = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.user || payload?.data?.user || payload?.data || payload;
+};
+
+const extractPermissions = (response, fallback = []) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.permissions)) return payload.permissions;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.permissions)) return payload.data.permissions;
+
+  if (Array.isArray(fallback)) {
+    return fallback.map((permission, index) => ({
+      id: `${permission}-${index}`,
+      name: permission,
+      description: "",
+    }));
+  }
+
+  return [];
+};
+
+const isForbiddenError = (error) => {
+  const statusCode = error?.statusCode || error?.status;
+  const message = String(error?.message || "").toLowerCase();
+  return statusCode === 403 || message.includes("insufficient permissions") || message.includes("forbidden");
+};
+
 export default function ViewUser() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,39 +64,48 @@ export default function ViewUser() {
   const [sessions, setSessions] = useState([]);
   const [loginHistory, setLoginHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [permissionDenied, setPermissionDenied] = useState(false);
   const [activeTab, setActiveTab] = useState("permissions"); // permissions, sessions, history
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const [usersRes, rolesRes, rolePermsRes, permsRes, sessionsRes, historyRes] = await Promise.all([
-          axios.get("/data/users.json"),
-          axios.get("/data/roles.json"),
-          axios.get("/data/role-permissions.json"),
-          axios.get("/data/permissions.json"),
-          axios.get("/data/auth-sessions.json"),
-          axios.get("/data/login-attempts.json")
+        setPermissionDenied(false);
+        const [userRes, permissionsRes] = await Promise.all([
+          userService.getUserById(id),
+          userService.getUserPermissions(id).catch(() => null),
         ]);
+        const currentUser = extractUser(userRes);
 
-        const currentUser = usersRes.data.find(u => u.id === id);
-        const role = rolesRes.data.find(r => r.id === currentUser?.role_id);
-        
-        // Get Permissions
-        const rolePermIds = rolePermsRes.data.find(rp => rp.roleId === currentUser?.role_id)?.permissionIds || [];
-        const userPermissions = permsRes.data.filter(p => rolePermIds.includes(p.id));
+        if (!currentUser?.id) {
+          setUser(null);
+          setPermissions([]);
+          setSessions([]);
+          setLoginHistory([]);
+          return;
+        }
 
-        // Get Sessions
-        const userSessions = sessionsRes.data.filter(s => s.userId === id);
+        const normalizedUser = {
+          ...currentUser,
+          roleName: toRoleLabel(currentUser?.roleName || currentUser?.role || currentUser?.role?.name),
+          roleDesc: currentUser?.role?.description || currentUser?.roleDescription || "",
+          isActive: currentUser?.isActive ?? currentUser?.status === "active",
+          avatar:
+            currentUser?.avatar ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(`${currentUser?.firstName || ""} ${currentUser?.lastName || ""}`.trim() || "User")}&background=random&color=fff`,
+        };
 
-        // Get History
-        const userHistory = historyRes.data.filter(h => h.userId === id);
-
-        setUser({ ...currentUser, roleName: role?.name || "Unknown", roleDesc: role?.description });
-        setPermissions(userPermissions);
-        setSessions(userSessions);
-        setLoginHistory(userHistory);
+        setUser(normalizedUser);
+        setPermissions(extractPermissions(permissionsRes, currentUser?.permissions || []));
+        setSessions(currentUser?.sessions || currentUser?.authSessions || []);
+        setLoginHistory(currentUser?.loginHistory || currentUser?.loginAttempts || []);
       } catch (error) {
         console.error("Error fetching user details", error);
+        if (isForbiddenError(error)) {
+          setPermissionDenied(true);
+          return;
+        }
       } finally {
         setLoading(false);
       }
@@ -66,6 +115,22 @@ export default function ViewUser() {
   }, [id]);
 
   if (loading) return <div className="p-8">Loading...</div>;
+  if (permissionDenied) {
+    return (
+      <div className="py-16 animate-fade-in">
+        <div className="max-w-xl mx-auto bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900">Insufficient permissions</h2>
+          <p className="text-sm text-gray-500">You do not have access to view user details. Contact your administrator for the required permissions.</p>
+          <button
+            onClick={() => navigate("/dashboard/users")}
+            className="mt-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            Back to Users
+          </button>
+        </div>
+      </div>
+    );
+  }
   if (!user) return <div className="p-8">User not found</div>;
 
   return (
@@ -101,8 +166,8 @@ export default function ViewUser() {
                   <span className="text-sm">{user.email}</span>
                   <span>•</span>
                   <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border ${
-                    user.roleName === 'super admin' ? 'bg-rose-50 text-rose-700 border-rose-100' :
-                    user.roleName === 'admin' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                    user.roleName?.toLowerCase() === 'super admin' ? 'bg-rose-50 text-rose-700 border-rose-100' :
+                    user.roleName?.toLowerCase() === 'admin' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
                     'bg-blue-50 text-blue-700 border-blue-100'
                   }`}>
                     {user.roleName}
@@ -179,10 +244,10 @@ export default function ViewUser() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {permissions.map((perm) => (
-                        <div key={perm.id} className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
+                        <div key={perm.id || perm.name} className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
                           <CheckCircle size={16} className="text-emerald-600 mt-0.5" />
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{perm.name}</p>
+                            <p className="text-sm font-medium text-gray-900">{perm.name || perm.key || perm}</p>
                             <p className="text-xs text-gray-500">{perm.description}</p>
                           </div>
                         </div>
@@ -208,7 +273,7 @@ export default function ViewUser() {
                               )}
                             </div>
                             <p className="text-sm text-gray-500">{session.location} • {session.ipAddress}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">Last active: {new Date(session.lastActive).toLocaleString()}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">Last active: {session.lastActive ? new Date(session.lastActive).toLocaleString() : "N/A"}</p>
                           </div>
                         </div>
                         {!session.isCurrent && (
@@ -246,7 +311,7 @@ export default function ViewUser() {
                               </span>
                             </td>
                             <td className="py-3 text-sm text-gray-600">
-                              {new Date(login.timestamp).toLocaleString()}
+                              {login.timestamp ? new Date(login.timestamp).toLocaleString() : "N/A"}
                             </td>
                             <td className="py-3 text-sm text-gray-900 font-medium">
                               {login.device}

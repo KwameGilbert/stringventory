@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { BarChart3 } from "lucide-react";
 import {
   AreaChart,
@@ -10,6 +9,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import analyticsService from "../../../services/analyticsService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -32,10 +33,23 @@ const RevenueChart = ({ dateRange }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/revenue-chart.json");
-        setData(response.data);
+        const params = getDashboardDateParams(dateRange);
+        const response = await analyticsService.getDashboardOverview(params);
+        const payload = response?.data || response || {};
+        const dashboardData = payload?.data || payload;
+        const rows = dashboardData?.charts?.revenueByDate || [];
+
+        setData(
+          rows.map((row) => ({
+            month: row?.date
+              ? new Date(row.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+              : "—",
+            revenue: Number(row?.revenue ?? 0),
+          }))
+        );
       } catch (err) {
         console.error("Error fetching revenue data", err);
+        setData([]);
       } finally {
         setLoading(false);
       }

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   BarChart,
   Bar,
@@ -11,6 +10,8 @@ import {
   Cell,
 } from "recharts";
 import { Package, BarChart2, Table as TableIcon } from "lucide-react";
+import analyticsService from "../../../services/analyticsService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const TopProductsChart = ({ dateRange }) => {
   const [data, setData] = useState([]);
@@ -20,18 +21,30 @@ const TopProductsChart = ({ dateRange }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/top-products.json");
-        // Transform data for chart - use 'name' instead of 'productName'
-        const chartData = response.data.slice(0, 8).map((product) => ({
-          name: (product.name || "Unknown").substring(0, 15) + ((product.name || "").length > 15 ? "..." : ""),
-          fullName: product.name || "Unknown Product",
-          sales: product.revenue || 0,
-          units: product.volume || 0,
-          revenue: product.revenue || 0,
-        }));
+        const params = {
+          ...getDashboardDateParams(dateRange),
+          groupBy: "daily",
+        };
+        const response = await analyticsService.getSalesReport(params);
+        const payload = response?.data || response || {};
+        const reportData = payload?.data || payload;
+        const products = reportData?.byProduct || [];
+
+        const chartData = products.slice(0, 8).map((product) => {
+          const fullName = product?.productName || "Unknown Product";
+          return {
+            name: fullName.substring(0, 15) + (fullName.length > 15 ? "..." : ""),
+            fullName,
+            sales: Number(product?.revenue ?? 0),
+            units: Number(product?.quantity ?? product?.sales ?? 0),
+            revenue: Number(product?.revenue ?? 0),
+          };
+        });
+
         setData(chartData);
       } catch (error) {
         console.error("Error fetching top products:", error);
+        setData([]);
       } finally {
         setLoading(false);
       }

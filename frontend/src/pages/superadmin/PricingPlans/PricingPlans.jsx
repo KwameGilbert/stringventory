@@ -1,11 +1,61 @@
 import { useState, useEffect } from 'react';
 import { Edit, Users, DollarSign, TrendingUp, Check, X, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { PRICING_PLANS } from '../../../constants/plans';
+import superadminService from '../../../services/superadminService';
+import { showError } from '../../../utils/alerts';
+
+const extractPlans = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.plans)) return payload.plans;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.plans)) return payload.data.plans;
+
+  return [];
+};
+
+const extractAnalytics = (response) => {
+  const payload = response?.data || response || {};
+
+  if (payload?.analytics) return payload.analytics;
+  if (payload?.data?.analytics) return payload.data.analytics;
+  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
+
+  return payload;
+};
+
+const normalizePlan = (plan) => ({
+  ...plan,
+  id: plan?.id,
+  name: plan?.name || 'Unnamed',
+  description: plan?.description || '',
+  priceMonthly: Number(plan?.priceMonthly) || Number(plan?.monthlyPrice) || Number(plan?.price) || 0,
+  features: Array.isArray(plan?.features) ? plan.features : [],
+  limits: {
+    maxUsers:
+      Number(plan?.limits?.maxUsers) ||
+      Number(plan?.maxUsers) ||
+      0,
+    maxProducts:
+      Number(plan?.limits?.maxProducts) ||
+      Number(plan?.maxProducts) ||
+      0,
+    maxStorageMB:
+      Number(plan?.limits?.maxStorageMB) ||
+      Number(plan?.maxStorageMB) ||
+      0,
+  },
+  color: plan?.color || '#10b981',
+  subscribers: Number(plan?.subscribers) || 0,
+});
 
 export default function PricingPlans() {
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [plans, setPlans] = useState([]);
   const [stats, setStats] = useState({
     totalSubscribers: 0,
     totalMRR: 0,
@@ -17,11 +67,51 @@ export default function PricingPlans() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/data/pricing-stats.json');
-        const data = await response.json();
-        setStats(data);
+        const [plansRes, analyticsRes] = await Promise.all([
+          superadminService.getPricingPlans(),
+          superadminService.getPlatformAnalytics(),
+        ]);
+
+        const fetchedPlans = extractPlans(plansRes).map(normalizePlan);
+        setPlans(fetchedPlans);
+
+        const analytics = extractAnalytics(analyticsRes);
+        const planStats = analytics?.planStats || {};
+
+        const totalSubscribers =
+          Number(analytics?.totalSubscribers) ||
+          fetchedPlans.reduce((sum, plan) => {
+            const fromStats = Number(planStats?.[plan.id]?.subscribers);
+            return sum + (fromStats || Number(plan.subscribers) || 0);
+          }, 0);
+
+        const totalMRR =
+          Number(analytics?.totalMRR) ||
+          fetchedPlans.reduce((sum, plan) => {
+            const subscribers = Number(planStats?.[plan.id]?.subscribers) || Number(plan.subscribers) || 0;
+            return sum + subscribers * (Number(plan.priceMonthly) || 0);
+          }, 0);
+
+        const avgRevenuePerUser = totalSubscribers ? totalMRR / totalSubscribers : 0;
+
+        setStats({
+          totalSubscribers,
+          totalMRR,
+          activePlans: fetchedPlans.length,
+          avgRevenuePerUser,
+          planStats,
+        });
       } catch (error) {
         console.error('Error fetching pricing stats:', error);
+        showError(error?.message || 'Failed to load pricing plans');
+        setPlans([]);
+        setStats({
+          totalSubscribers: 0,
+          totalMRR: 0,
+          activePlans: 0,
+          avgRevenuePerUser: 0,
+          planStats: {},
+        });
       }
     };
 
@@ -33,7 +123,7 @@ export default function PricingPlans() {
   };
 
   const getMonthlyRevenue = (planId) => {
-    const plan = PRICING_PLANS.find(p => p.id === planId);
+    const plan = plans.find(p => p.id === planId);
     const count = getSubscriberCount(planId);
     return plan && plan.priceMonthly ? plan.priceMonthly * count : 0;
   };
@@ -96,7 +186,7 @@ export default function PricingPlans() {
             </div>
             <div>
               <p className="text-sm text-gray-600">Active Plans</p>
-              <p className="text-2xl font-bold text-gray-900">{PRICING_PLANS.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.activePlans}</p>
             </div>
           </div>
         </div>
@@ -118,7 +208,7 @@ export default function PricingPlans() {
 
       {/* Pricing Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {PRICING_PLANS.map((plan) => {
+        {plans.map((plan) => {
           const subscribers = getSubscriberCount(plan.id);
           const revenue = getMonthlyRevenue(plan.id);
 
@@ -180,7 +270,7 @@ export default function PricingPlans() {
                 <ul className="space-y-2">
                   {plan.features.slice(0, 5).map((feature, index) => (
                     <li key={index} className="flex items-start gap-2 text-sm">
-                      <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                       <span className="text-gray-700">{feature}</span>
                     </li>
                   ))}
@@ -255,7 +345,7 @@ export default function PricingPlans() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {selectedPlan.features.map((feature, index) => (
                   <div key={index} className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-700">{feature}</span>
                   </div>
                 ))}

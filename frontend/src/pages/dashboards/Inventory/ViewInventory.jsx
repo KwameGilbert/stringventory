@@ -1,7 +1,24 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit2, Trash2, Package, Calendar, DollarSign, Hash, Truck, Clock, AlertTriangle } from "lucide-react";
-import axios from "axios";
+import inventoryService from "../../../services/inventoryService";
+import { productService } from "../../../services/productService";
+import categoryService from "../../../services/categoryService";
+import supplierService from "../../../services/supplierService";
+import { confirmDelete, showError, showInfo, showSuccess } from "../../../utils/alerts";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+  return [];
+};
 
 export default function ViewInventory() {
   const { id } = useParams();
@@ -11,15 +28,54 @@ export default function ViewInventory() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/data/inventory.json');
-        const found = response.data.find(i => i.id === parseInt(id));
-        if (found) setItem(found);
+        const [inventoryRes, productsRes, categoriesRes, suppliersRes] = await Promise.all([
+          inventoryService.getInventory(),
+          productService.getProducts(),
+          categoryService.getCategories(),
+          supplierService.getSuppliers(),
+        ]);
+
+        const inventoryEntries = extractList(inventoryRes, "inventory");
+        const products = extractList(productsRes, "products");
+        const categories = extractList(categoriesRes, "categories");
+        const suppliers = extractList(suppliersRes, "suppliers");
+
+        const found = inventoryEntries.find((entry) => String(entry.id) === String(id));
+        if (found) {
+          const product = products.find((p) => String(p.id) === String(found.productId));
+          const category = categories.find((c) => String(c.id) === String(product?.categoryId));
+          const supplier = suppliers.find((s) => String(s.id) === String(product?.supplierId));
+          const unitCost = Number(found.unitCost ?? product?.costPrice ?? product?.cost ?? 0);
+          const quantity = Number(found.quantity ?? found.currentStock ?? 0);
+
+          setItem({
+            ...found,
+            productName: found.productName || product?.name || "Unknown Product",
+            category: found.category || found.categoryName || product?.categoryName || category?.name || "Uncategorized",
+            batchNumber: found.batchNumber || found.reference || `BATCH-${found.id}`,
+            supplier: found.supplier || found.supplierName || product?.supplierName || supplier?.name || "Unknown Supplier",
+            unitCost,
+            quantity,
+            totalValue: Number(found.totalValue ?? quantity * unitCost),
+            entryDate: found.entryDate || found.lastStockCheck || found.createdAt || new Date().toISOString(),
+            expiryDate: found.expiryDate || null,
+          });
+        }
       } catch (error) {
         console.error("Error fetching inventory", error);
+        showError(error?.message || "Failed to fetch inventory details");
       }
     };
     fetchData();
   }, [id]);
+
+  const handleDelete = async () => {
+    const result = await confirmDelete("this inventory entry");
+    if (!result.isConfirmed) return;
+
+    showInfo("Inventory delete endpoint is not available yet; this action cannot be persisted from detail view.");
+    navigate("/dashboard/inventory");
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-US", {
@@ -112,7 +168,10 @@ export default function ViewInventory() {
                 <Edit2 size={16} />
                 Edit
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
+              >
                 <Trash2 size={16} />
                 Delete
               </button>

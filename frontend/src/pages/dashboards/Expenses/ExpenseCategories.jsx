@@ -1,7 +1,27 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Plus, Search, Edit2, Trash2, Tag, Download, FileText } from "lucide-react";
-import { confirmDelete, showSuccess } from "../../../utils/alerts";
+import expenseService from "../../../services/expenseService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractCategories = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.categories)) return payload.categories;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.categories)) return payload.data.categories;
+
+  return [];
+};
+
+const normalizeCategory = (category) => ({
+  ...category,
+  name: category?.name || "Unnamed Category",
+  description: category?.description || "",
+  status: category?.status || "active",
+});
 
 export default function ExpenseCategories() {
   const [categories, setCategories] = useState([]);
@@ -14,10 +34,11 @@ export default function ExpenseCategories() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/expense-categories.json");
-        setCategories(response.data);
+        const response = await expenseService.getExpenseCategories();
+        setCategories(extractCategories(response).map(normalizeCategory));
       } catch (error) {
         console.error("Error loading categories", error);
+        showError(error?.message || "Failed to load expense categories");
       } finally {
         setLoading(false);
       }
@@ -47,43 +68,80 @@ export default function ExpenseCategories() {
     setFormData({ name: "", description: "" });
   };
 
-  const handleToggleStatus = (id) => {
-    setCategories(categories.map(cat => 
-      cat.id === id 
-        ? { ...cat, status: cat.status === 'active' ? 'inactive' : 'active' }
-        : cat
-    ));
-    showSuccess("Category status updated");
+  const handleToggleStatus = async (id) => {
+    const targetCategory = categories.find((cat) => String(cat.id) === String(id));
+    if (!targetCategory) return;
+
+    const nextStatus = targetCategory.status === "active" ? "inactive" : "active";
+
+    try {
+      await expenseService.updateExpenseCategory(id, { status: nextStatus });
+      setCategories((prev) =>
+        prev.map((cat) =>
+          String(cat.id) === String(id)
+            ? { ...cat, status: nextStatus }
+            : cat
+        )
+      );
+      showSuccess("Category status updated");
+    } catch (error) {
+      console.error("Failed to update category status", error);
+      showError(error?.message || "Failed to update category status");
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingCategory) {
-      // Update existing
-      setCategories(categories.map(cat => 
-        cat.id === editingCategory.id 
-          ? { ...cat, ...formData }
-          : cat
-      ));
-      showSuccess("Category updated successfully");
-    } else {
-      // Add new
-      const newCategory = {
-        id: Date.now(),
-        ...formData,
-        status: "active"
-      };
-      setCategories([...categories, newCategory]);
-      showSuccess("Category created successfully");
+    try {
+      if (editingCategory) {
+        const response = await expenseService.updateExpenseCategory(editingCategory.id, {
+          name: formData.name,
+          description: formData.description,
+        });
+
+        const updated = normalizeCategory(response?.data || response || {});
+
+        setCategories((prev) =>
+          prev.map((cat) =>
+            String(cat.id) === String(editingCategory.id)
+              ? { ...cat, ...updated, name: updated?.name || formData.name, description: updated?.description || formData.description }
+              : cat
+          )
+        );
+
+        showSuccess("Category updated successfully");
+      } else {
+        const response = await expenseService.createExpenseCategory({
+          name: formData.name,
+          description: formData.description,
+        });
+
+        const createdRaw = response?.data || response || {};
+        const created = normalizeCategory(createdRaw?.data || createdRaw);
+
+        setCategories((prev) => [...prev, created]);
+        showSuccess("Category created successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save category", error);
+      showError(error?.message || "Failed to save category");
+      return;
     }
+
     handleCloseModal();
   };
 
   const handleDelete = async (id) => {
     const result = await confirmDelete("this category");
     if (result.isConfirmed) {
-      setCategories(categories.filter(cat => cat.id !== id));
-      showSuccess("Category deleted successfully");
+      try {
+        await expenseService.deleteExpenseCategory(id);
+        setCategories((prev) => prev.filter((cat) => String(cat.id) !== String(id)));
+        showSuccess("Category deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete category", error);
+        showError(error?.message || "Failed to delete category");
+      }
     }
   };
 
@@ -150,7 +208,7 @@ export default function ExpenseCategories() {
             className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center">
                 <Tag size={20} className="text-white" />
               </div>
               <div className="flex items-center gap-1">

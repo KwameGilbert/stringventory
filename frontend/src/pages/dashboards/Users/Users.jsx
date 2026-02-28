@@ -1,67 +1,90 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Plus, Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import UserList from "../../../components/admin/Users/UserList";
 import ActivityLogs from "../../../components/admin/Users/ActivityLogs";
-import { showSuccess, confirmDelete } from "../../../utils/alerts";
-import { PERMISSIONS } from "../../../constants/permissions";
+import { showSuccess, showError, confirmDelete } from "../../../utils/alerts";
+import userService from "../../../services/userService";
+
+const toRoleLabel = (roleValue) => {
+  if (!roleValue) return "User";
+  const raw = String(roleValue).replace(/[_-]/g, " ").trim();
+  return raw
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
+
+const extractUsers = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.users)) return payload.users;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.users)) return payload.data.users;
+
+  return [];
+};
+
+const normalizeUser = (user) => {
+  const firstName = user?.firstName || "";
+  const lastName = user?.lastName || "";
+  const roleValue = user?.roleName || user?.role || user?.role?.name || "User";
+
+  return {
+    ...user,
+    firstName,
+    lastName,
+    roleName: toRoleLabel(roleValue),
+    isActive: user?.isActive ?? user?.status === "active",
+    avatar:
+      user?.avatar ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(`${firstName} ${lastName}`.trim() || "User")}&background=random&color=fff`,
+  };
+};
+
+const isForbiddenError = (error) => {
+  const statusCode = error?.statusCode || error?.status;
+  const message = String(error?.message || "").toLowerCase();
+  return statusCode === 403 || message.includes("insufficient permissions") || message.includes("forbidden");
+};
 
 export default function Users() {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [roles, setRoles] = useState([]);
-  const [logs, setLogs] = useState([]);
+  const [logs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const [usersRes, rolesRes, logsRes] = await Promise.all([
-          axios.get("/data/users.json"),
-          axios.get("/data/roles.json"),
-          axios.get("/data/activity-logs.json")
-        ]);
-        
-        const fetchedUsers = usersRes.data;
-        const fetchedRoles = rolesRes.data;
-        const fetchedLogs = logsRes.data;
-
-        // Mock permission data assignment for existing users if missing
-        const usersWithPermissions = fetchedUsers.map(user => {
-             // Assign some default permissions based on their old role_id for demo purposes
-             let defaultPerms = [];
-             const role = fetchedRoles.find(r => r.id === user.role_id);
-             if (role?.name === 'Administrator') defaultPerms = Object.keys(PERMISSIONS);
-             if (role?.name === 'Sales') defaultPerms = ["VIEW_DASHBOARD", "VIEW_PRODUCTS", "VIEW_ORDERS"];
-
-             return {
-                 ...user,
-                 roleName: role?.name || "User",
-                 permissions: user.permissions || defaultPerms
-             };
-        });
-
-        // Map user names to logs
-        const mappedLogs = fetchedLogs.map(log => {
-          const user = fetchedUsers.find(u => u.id === log.userId);
-          return {
-            ...log,
-            userName: user ? `${user.firstName} ${user.lastName}` : "Unknown User"
-          };
-        });
-
-        setUsers(usersWithPermissions);
-        setRoles(fetchedRoles);
-        setLogs(mappedLogs);
+        setPermissionDenied(false);
+        const usersRes = await userService.getUsers();
+        const fetchedUsers = extractUsers(usersRes).map(normalizeUser);
+        setUsers(fetchedUsers);
       } catch (error) {
         console.error("Error fetching user data", error);
+        if (isForbiddenError(error)) {
+          setPermissionDenied(true);
+          return;
+        }
+        showError(error?.message || "Failed to fetch users");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, []);
+
+  const roles = Array.from(new Set(users.map((user) => user.roleName).filter(Boolean)));
 
   const handleAddUser = () => {
     navigate("/dashboard/users/new");
@@ -74,8 +97,14 @@ export default function Users() {
   const handleDeleteUser = async (id) => {
     const result = await confirmDelete("this user");
     if (result.isConfirmed) {
-      setUsers(users.map(u => u.id === id ? { ...u, isActive: false } : u));
-      showSuccess("User deactivated successfully");
+      try {
+        await userService.deleteUser(id);
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+        showSuccess("User deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete user", error);
+        showError(error?.message || "Failed to delete user");
+      }
     }
   };
 
@@ -84,10 +113,31 @@ export default function Users() {
   const filteredUsers = users.filter(user => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
     const matchesSearch = fullName.includes(searchQuery.toLowerCase()) || 
-                          user.email.toLowerCase().includes(searchQuery.toLowerCase());
+                          String(user.email || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRole = roleFilter === "all" || user.roleName.toLowerCase() === roleFilter.toLowerCase();
     return matchesSearch && matchesRole;
   });
+
+  if (loading) {
+    return <div className="p-8 text-center text-gray-500">Loading users...</div>;
+  }
+
+  if (permissionDenied) {
+    return (
+      <div className="py-16 animate-fade-in">
+        <div className="max-w-xl mx-auto bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900">Insufficient permissions</h2>
+          <p className="text-sm text-gray-500">You do not have access to view users. Contact your administrator for the required permissions.</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mt-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-16 animate-fade-in space-y-6">
@@ -128,7 +178,7 @@ export default function Users() {
               >
                 <option value="all">All Roles</option>
                 {roles.map(role => (
-                  <option key={role.id} value={role.name}>{role.name}</option>
+                  <option key={role} value={role}>{role}</option>
                 ))}
               </select>
             </div>

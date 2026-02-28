@@ -1,23 +1,58 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User, Mail, Shield, CheckCircle, Phone, Lock, Save, ArrowLeft, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { PERMISSION_GROUPS } from "../../../constants/permissions";
-import { showSuccess } from "../../../utils/alerts";
+import { showError, showSuccess } from "../../../utils/alerts";
+import userService from "../../../services/userService";
+import roleService from "../../../services/roleService";
+
+const extractRoles = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.roles)) return payload.roles;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.roles)) return payload.data.roles;
+
+  return [];
+};
 
 export default function AddUser() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("details");
+  const [roles, setRoles] = useState([]);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
-    roleName: "",
+    roleId: "",
     permissions: [],
     isActive: true,
     mfaEnabled: false,
     password: ""
   });
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await roleService.getRoles();
+        const fetchedRoles = extractRoles(response);
+        setRoles(fetchedRoles);
+
+        if (fetchedRoles.length === 1) {
+          setFormData((prev) => ({ ...prev, roleId: String(fetchedRoles[0].id) }));
+        }
+      } catch (error) {
+        console.error("Failed to load roles", error);
+        showError(error?.message || "Failed to load roles");
+      }
+    };
+
+    fetchRoles();
+  }, []);
 
 
 
@@ -44,12 +79,33 @@ export default function AddUser() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In real app: API call here
-    console.log("Creating user:", formData);
-    showSuccess("User created successfully");
-    navigate("/dashboard/users");
+
+    if (!formData.roleId) {
+      showError("Please select a role");
+      return;
+    }
+
+    try {
+      await userService.createUser({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        password: formData.password,
+        roleId: formData.roleId,
+        status: formData.isActive ? "active" : "inactive",
+        twoFactorEnabled: formData.mfaEnabled,
+        permissions: formData.permissions,
+      });
+
+      showSuccess("User created successfully");
+      navigate("/dashboard/users");
+    } catch (error) {
+      console.error("Failed to create user", error);
+      showError(error?.message || "Failed to create user");
+    }
   };
 
   return (
@@ -173,16 +229,22 @@ export default function AddUser() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Role Title (Optional)</label>
+                <label className="text-sm font-medium text-gray-700">Role <span className="text-red-500">*</span></label>
                 <div className="relative">
                   <Shield className="absolute left-3 top-2.5 text-gray-400" size={18} />
-                  <input
-                    type="text"
-                    value={formData.roleName}
-                    onChange={(e) => setFormData({...formData, roleName: e.target.value})}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                    placeholder="e.g. Sales Manager"
-                  />
+                  <select
+                    required
+                    value={formData.roleId}
+                    onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none bg-white"
+                  >
+                    <option value="">Select a role</option>
+                    {roles.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {role.name || role.displayName || role.id}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -217,7 +279,7 @@ export default function AddUser() {
                       onChange={(e) => setFormData({...formData, mfaEnabled: e.target.checked})}
                       className="sr-only peer" 
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                   </label>
                 </div>
               </div>

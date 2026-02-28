@@ -23,8 +23,13 @@ export const authService = {
       password,
     });
 
-    if (response.tokens) {
-      setTokens(response.tokens.accessToken, response.tokens.refreshToken);
+    const payload = response?.data || response || {};
+    const tokenPayload = response?.tokens || payload?.tokens || {};
+    const accessToken = tokenPayload?.accessToken || payload?.accessToken;
+    const refreshToken = tokenPayload?.refreshToken || payload?.refreshToken;
+
+    if (accessToken) {
+      setTokens(accessToken, refreshToken);
     }
 
     return response;
@@ -51,8 +56,13 @@ export const authService = {
       refreshToken,
     });
 
-    if (response.tokens) {
-      setTokens(response.tokens.accessToken, response.tokens.refreshToken);
+    const payload = response?.data || response || {};
+    const tokenPayload = response?.tokens || payload?.tokens || {};
+    const nextAccessToken = tokenPayload?.accessToken || payload?.accessToken;
+    const nextRefreshToken = tokenPayload?.refreshToken || payload?.refreshToken;
+
+    if (nextAccessToken) {
+      setTokens(nextAccessToken, nextRefreshToken);
     }
 
     return response;
