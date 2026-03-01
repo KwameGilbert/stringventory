@@ -54,7 +54,7 @@ router.post(
 
 /**
  * @route POST /auth/logout
- * @desc Logout from current session (or legacy token blacklist)
+ * @desc Logout from current session
  * @access Private
  */
 router.post('/logout', authenticate, AuthController.logout);

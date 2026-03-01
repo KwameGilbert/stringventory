@@ -49,17 +49,48 @@ export const authenticate = async (req, res, next) => {
       throw new ForbiddenError(`Account is ${user.status}`);
     }
 
-    // Load effective permissions (direct + role-based)
-    const permissions = await UserModel.getUserPermissions(userId);
-
     // Attach fresh user data to request
     req.user = {
       id: user.id,
       email: user.email,
       role: user.role, // Latest role from DB
       businessId: user.businessId,
-      permissions, // Array of permission keys e.g. ['VIEW_DASHBOARD', 'MANAGE_INVENTORY']
     };
+
+    // Simple role-to-permission mapping for backward compatibility
+    // This allows requirePermission to still work without fetching from DB
+    const role = (user.role || '').toLowerCase();
+    let permissions = [];
+
+    if (role === 'ceo' || role === 'admin' || role === 'super_admin') {
+      permissions = ['*']; // Internal flag for all permissions
+    } else if (role === 'manager') {
+      permissions = [
+        'VIEW_DASHBOARD',
+        'VIEW_PRODUCTS',
+        'MANAGE_PRODUCTS',
+        'VIEW_ORDERS',
+        'MANAGE_ORDERS',
+        'VIEW_INVENTORY',
+        'MANAGE_INVENTORY',
+        'VIEW_SUPPLIERS',
+        'VIEW_CUSTOMERS',
+        'VIEW_EXPENSES',
+        'MANAGE_SALES',
+        'VIEW_REPORTS',
+      ];
+    } else if (role === 'sales' || role === 'sales person') {
+      permissions = [
+        'VIEW_DASHBOARD',
+        'VIEW_PRODUCTS',
+        'VIEW_ORDERS',
+        'MANAGE_ORDERS',
+        'VIEW_CUSTOMERS',
+        'MANAGE_SALES',
+      ];
+    }
+
+    req.user.permissions = permissions;
 
     next();
   } catch (error) {
@@ -115,30 +146,11 @@ export const requireRole = (...allowedRoles) => {
     }
 
     const userRole = req.user.role;
+    const normalizedUserRole = (userRole || '').toLowerCase();
+    const normalizedAllowedRoles = allowedRoles.map((r) => r.toLowerCase());
 
-    if (!allowedRoles.includes(userRole)) {
+    if (!normalizedAllowedRoles.includes(normalizedUserRole)) {
       return next(new ForbiddenError(`Role '${userRole}' is not authorized for this action`));
-    }
-
-    next();
-  };
-};
-
-/**
- * Require any of the specified permissions
- */
-export const requirePermission = (...requiredPermissions) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return next(new UnauthorizedError('Authentication required'));
-    }
-
-    const userPermissions = req.user.permissions || [];
-
-    const hasPermission = requiredPermissions.some((perm) => userPermissions.includes(perm));
-
-    if (!hasPermission) {
-      return next(new ForbiddenError('Insufficient permissions'));
     }
 
     next();
@@ -154,8 +166,9 @@ export const requireOwnership = (getResourceOwnerId) => {
       return next(new UnauthorizedError('Authentication required'));
     }
 
-    // Admins can access any resource
-    if (req.user.role === 'admin' || req.user.role === 'super_admin') {
+    // Admins and CEO can access any resource
+    const role = (req.user.role || '').toLowerCase();
+    if (role === 'admin' || role === 'super_admin' || role === 'ceo') {
       return next();
     }
 

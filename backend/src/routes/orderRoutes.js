@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { OrderController } from '../controllers/OrderController.js';
-import { authenticate, requirePermission } from '../middlewares/auth.js';
+import { authenticate, requireRole } from '../middlewares/auth.js';
 import { validateBody, validateParams } from '../middlewares/validate.js';
 import { orderSchemas } from '../validators/schemas.js';
 const router = Router();
@@ -11,7 +11,7 @@ router.use(authenticate);
  * @route GET /orders
  * @access Private (VIEW_ORDERS)
  */
-router.get('/', requirePermission('VIEW_ORDERS'), OrderController.getAllOrders);
+router.get('/', requireRole('ceo', 'manager', 'sales'), OrderController.getAllOrders);
 
 /**
  * @route POST /orders
@@ -19,7 +19,7 @@ router.get('/', requirePermission('VIEW_ORDERS'), OrderController.getAllOrders);
  */
 router.post(
   '/',
-  requirePermission('MANAGE_ORDERS'),
+  requireRole('ceo', 'manager', 'sales'),
   validateBody(orderSchemas.create),
   OrderController.createOrder
 );
@@ -30,7 +30,7 @@ router.post(
  */
 router.get(
   '/:orderId',
-  requirePermission('VIEW_ORDERS'),
+  requireRole('ceo', 'manager', 'sales'),
   validateParams(orderSchemas.params),
   OrderController.getOrderById
 );
@@ -41,7 +41,7 @@ router.get(
  */
 router.put(
   '/:orderId',
-  requirePermission('MANAGE_ORDERS'),
+  requireRole('ceo', 'manager'),
   validateParams(orderSchemas.params),
   validateBody(orderSchemas.update),
   OrderController.updateOrder
@@ -53,7 +53,7 @@ router.put(
  */
 router.delete(
   '/:orderId',
-  requirePermission('MANAGE_ORDERS'),
+  requireRole('ceo', 'manager'),
   validateParams(orderSchemas.params),
   OrderController.deleteOrder
 );
@@ -64,7 +64,7 @@ router.delete(
  */
 router.post(
   '/:orderId/refund',
-  requirePermission('MANAGE_ORDERS'),
+  requireRole('ceo', 'manager'),
   validateParams(orderSchemas.params),
   validateBody(orderSchemas.refund),
   OrderController.createRefund

@@ -36,7 +36,7 @@ router.get(
   '/',
   authenticate,
   requireTenant,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   TenantController.getCurrentTenant
 );
 
@@ -49,7 +49,7 @@ router.patch(
   '/',
   authenticate,
   requireTenant,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateBody(tenantSchemas.update),
   TenantController.updateCurrentTenant
 );

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ProductController } from '../controllers/ProductController.js';
-import { authenticate, requirePermission } from '../middlewares/auth.js';
+import { authenticate, requireRole } from '../middlewares/auth.js';
 import { validateBody, validateParams } from '../middlewares/validate.js';
 import { productSchemas } from '../validators/schemas.js';
 
@@ -13,19 +13,19 @@ router.use(authenticate);
  * @route GET /products
  * @access Private (VIEW_PRODUCTS)
  */
-router.get('/', requirePermission('VIEW_PRODUCTS'), ProductController.getAllProducts);
+router.get('/', requireRole('ceo', 'manager', 'sales'), ProductController.getAllProducts);
 
 /**
  * @route GET /products/low-stock
  * @access Private (VIEW_PRODUCTS)
  */
-router.get('/low-stock', requirePermission('VIEW_PRODUCTS'), ProductController.getLowStock);
+router.get('/low-stock', requireRole('ceo', 'manager', 'sales'), ProductController.getLowStock);
 
 /**
  * @route GET /products/expiring
  * @access Private (VIEW_PRODUCTS)
  */
-router.get('/expiring', requirePermission('VIEW_PRODUCTS'), ProductController.getExpiring);
+router.get('/expiring', requireRole('ceo', 'manager', 'sales'), ProductController.getExpiring);
 
 /**
  * @route GET /products/:productId
@@ -33,7 +33,7 @@ router.get('/expiring', requirePermission('VIEW_PRODUCTS'), ProductController.ge
  */
 router.get(
   '/:productId',
-  requirePermission('VIEW_PRODUCTS'),
+  requireRole('ceo', 'manager', 'sales'),
   validateParams(productSchemas.params),
   ProductController.getProductById
 );
@@ -44,7 +44,7 @@ router.get(
  */
 router.post(
   '/',
-  requirePermission('MANAGE_PRODUCTS'),
+  requireRole('ceo', 'manager'),
   validateBody(productSchemas.create),
   ProductController.createProduct
 );
@@ -55,7 +55,7 @@ router.post(
  */
 router.put(
   '/:productId',
-  requirePermission('MANAGE_PRODUCTS'),
+  requireRole('ceo', 'manager'),
   validateParams(productSchemas.params),
   validateBody(productSchemas.update),
   ProductController.updateProduct
@@ -67,7 +67,7 @@ router.put(
  */
 router.delete(
   '/:productId',
-  requirePermission('MANAGE_PRODUCTS'),
+  requireRole('ceo', 'manager'),
   validateParams(productSchemas.params),
   ProductController.deleteProduct
 );

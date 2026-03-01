@@ -31,7 +31,7 @@ export const authSchemas = {
     phone: z.string().min(1, 'Phone number is required').max(50),
     businessName: z.string().min(1, 'Business name is required').max(200),
     businessType: z.string().min(1, 'Business type is required').max(100),
-    role: z.enum(['user', 'admin']).optional().default('user'),
+    role: z.enum(['CEO', 'Manager', 'Sales', 'admin', 'user']).optional().default('CEO'),
   }),
 
   login: z.object({
@@ -90,7 +90,6 @@ export const adminSchemas = {
     role: z.string().optional(), // Support role name lookup
     status: z.enum(['active', 'inactive', 'suspended']).optional().default('active'),
     twoFactorEnabled: z.boolean().optional().default(false),
-    permissions: z.array(z.string()).optional().default([]),
   }),
 
   updateUser: z.object({
@@ -103,7 +102,6 @@ export const adminSchemas = {
     role: z.string().optional(),
     status: z.enum(['active', 'inactive', 'suspended']).optional(),
     twoFactorEnabled: z.boolean().optional(),
-    permissions: z.array(z.string()).optional(),
   }),
 
   params: z.object({

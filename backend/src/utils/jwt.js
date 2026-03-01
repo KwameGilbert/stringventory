@@ -13,7 +13,6 @@ import { UnauthorizedError } from './errors.js';
  * @param {string} payload.id - User ID
  * @param {string} payload.email - User email
  * @param {string} payload.role - User role
- * @param {Array} [payload.permissions] - User permissions (optional)
  * @returns {string} Signed JWT access token
  */
 export const generateAccessToken = (payload) => {
@@ -26,7 +25,6 @@ export const generateAccessToken = (payload) => {
     email: payload.email,
     role: payload.role,
     businessId: payload.businessId,
-    permissions: payload.permissions || [],
     type: 'access',
   };
 

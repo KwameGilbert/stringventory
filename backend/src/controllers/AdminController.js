@@ -74,8 +74,6 @@ export class AdminController {
       throw new ForbiddenError('You do not have permission to view this user');
     }
 
-    const permissions = await UserModel.getUserPermissions(userId);
-
     const formattedData = {
       id: user.id,
       firstName: user.firstName,
@@ -84,7 +82,6 @@ export class AdminController {
       phone: user.phone,
       role: user.role?.toLowerCase(), // API doc shows lowercase 'ceo'
       status: user.status,
-      permissions,
       createdAt: user.createdAt,
     };
 
@@ -134,63 +131,8 @@ export class AdminController {
     const finalRoleName = userData.role || 'user';
     delete userData.role;
 
-    // 4. Create user and permissions in a transaction
-    const newUser = await db.transaction(async (trx) => {
-      // Create primary user record
-      const user = await UserModel.create(userData, trx);
-
-      // Determine which permissions to assign
-      let permissionIds = [];
-
-      if (permissions && permissions.length > 0) {
-        // Use explicitly provided permissions
-        const permissionRecords = await trx('permissions').whereIn('key', permissions).select('id');
-        permissionIds = permissionRecords.map((p) => p.id);
-      } else {
-        // No permissions provided – assign defaults based on role
-        const resolvedRole = (finalRoleName || 'user').toLowerCase();
-
-        if (resolvedRole === 'admin' || resolvedRole === 'ceo') {
-          // Admin/CEO get ALL permissions
-          const allPerms = await trx('permissions').select('id');
-          permissionIds = allPerms.map((p) => p.id);
-        } else {
-          // Look up role record and copy its role_permissions as defaults
-          const roleRecord = await trx('roles').where('name', resolvedRole).first();
-          if (roleRecord) {
-            const rolePerms = await trx('role_permissions')
-              .where('roleId', roleRecord.id)
-              .select('permissionId');
-            permissionIds = rolePerms.map((p) => p.permissionId);
-          } else {
-            // Fallback: basic default permissions
-            const defaultPerms = await trx('permissions')
-              .whereIn('key', [
-                'VIEW_DASHBOARD',
-                'VIEW_PRODUCTS',
-                'VIEW_ORDERS',
-                'VIEW_INVENTORY',
-                'VIEW_PROFILE',
-                'EDIT_PROFILE',
-                'VIEW_NOTIFICATIONS',
-              ])
-              .select('id');
-            permissionIds = defaultPerms.map((p) => p.id);
-          }
-        }
-      }
-
-      // Insert user_permissions
-      if (permissionIds.length > 0) {
-        const userPerms = permissionIds.map((permId) => ({
-          userId: user.id,
-          permissionId: permId,
-        }));
-        await trx('user_permissions').insert(userPerms);
-      }
-
-      return user;
-    });
+    // 4. Create user
+    const newUser = await UserModel.create(userData);
 
     return ApiResponse.created(res, newUser, 'User created successfully');
   });
@@ -239,31 +181,7 @@ export class AdminController {
     // Ensure 'role' field is removed so Knex doesn't try to update a non-existent column
     delete userData.role;
 
-    const updatedUser = await db.transaction(async (trx) => {
-      // 1. Update primary user record
-      const updated = await UserModel.update(userId, userData, trx);
-
-      // 2. Update permissions if provided
-      if (permissions !== undefined) {
-        // Clear existing direct permissions
-        await trx('user_permissions').where('userId', userId).del();
-
-        if (permissions.length > 0) {
-          const permissionRecords = await trx('permissions')
-            .whereIn('key', permissions)
-            .select('id');
-
-          const userPerms = permissionRecords.map((p) => ({
-            userId: user.id,
-            permissionId: p.id,
-          }));
-
-          await trx('user_permissions').insert(userPerms);
-        }
-      }
-
-      return updated;
-    });
+    const updatedUser = await UserModel.update(userId, userData);
 
     return ApiResponse.success(res, updatedUser, 'User updated successfully');
   });
@@ -292,36 +210,6 @@ export class AdminController {
     await UserModel.delete(userId);
 
     return ApiResponse.success(res, null, 'User deleted successfully');
-  });
-
-  /**
-   * Get user permissions
-   * GET /admin/users/:userId/permissions
-   */
-  static getUserPermissions = asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      throw new NotFoundError('User not found');
-    }
-
-    // Business Level Security Check
-    if (req.user.role === 'ceo' && user.businessId !== req.user.businessId) {
-      throw new ForbiddenError('You do not have permission to view these permissions');
-    }
-
-    const permissions = await UserModel.getUserPermissionsDetailed(userId);
-
-    return ApiResponse.success(
-      res,
-      {
-        userId,
-        role: user.role?.toUpperCase(),
-        permissions,
-      },
-      'User permissions retrieved successfully'
-    );
   });
 
   /**

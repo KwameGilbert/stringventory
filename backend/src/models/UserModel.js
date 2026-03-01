@@ -184,64 +184,6 @@ class UserModelClass extends BaseModel {
 
     return this.comparePassword(password, user.passwordHash);
   }
-
-  /**
-   * Get all effective permissions for a user
-   */
-  async getUserPermissions(userId, trx = null) {
-    const q = trx ? trx : db;
-
-    // 1. Get user direct permissions
-    const directPermissions = await q('permissions as p')
-      .join('user_permissions as up', 'p.id', 'up.permissionId')
-      .where('up.userId', userId)
-      .select('p.key');
-
-    // 2. Get permissions from user's role
-    const user = await this.query(trx).where(this.primaryKey, userId).first();
-    let rolePermissions = [];
-
-    if (user && user.roleId) {
-      rolePermissions = await q('permissions as p')
-        .join('role_permissions as rp', 'p.id', 'rp.permissionId')
-        .where('rp.roleId', user.roleId)
-        .select('p.key');
-    }
-
-    // Combine and unique
-    const allKeys = [...directPermissions, ...rolePermissions].map((p) => p.key);
-    return [...new Set(allKeys)];
-  }
-
-  /**
-   * Get detailed effective permissions for a user
-   */
-  async getUserPermissionsDetailed(userId, trx = null) {
-    const q = trx ? trx : db;
-
-    const user = await this.query(trx).where(this.primaryKey, userId).first();
-    if (!user) return [];
-
-    // Fetch all permissions (direct and via role)
-    const permissions = await q('permissions as p')
-      .leftJoin('user_permissions as up', (join) => {
-        join.on('p.id', 'up.permissionId').andOn('up.userId', q.raw('?', [userId]));
-      })
-      .leftJoin('role_permissions as rp', (join) => {
-        join.on('p.id', 'rp.permissionId');
-        if (user.roleId) {
-          join.andOn('rp.roleId', q.raw('?', [user.roleId]));
-        } else {
-          join.onRaw('1=0'); // No roleId, no role permissions
-        }
-      })
-      .whereNotNull('up.id')
-      .orWhereNotNull('rp.id')
-      .select('p.id', 'p.key as name', 'p.description')
-      .distinct('p.id');
-
-    return permissions;
-  }
 }
 
 export const UserModel = new UserModelClass();

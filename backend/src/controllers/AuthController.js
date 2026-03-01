@@ -42,7 +42,7 @@ export class AuthController {
       phone,
       businessName,
       businessType,
-      role = 'user',
+      role = 'CEO',
     } = req.body;
 
     // Check if user already exists
@@ -54,7 +54,7 @@ export class AuthController {
     let user = null;
     let business = null;
 
-    // Use transaction to ensure business, user, and permissions are created together
+    // Use transaction to ensure business and user are created together
     await db.transaction(async (trx) => {
       // 0. Lookup the role ID
       const normalizedRole = role.toLowerCase();
@@ -102,43 +102,6 @@ export class AuthController {
         },
         trx
       );
-
-      // 3. Assign default permissions based on role
-      let defaultPermKeys;
-
-      if (normalizedRole === 'admin' || normalizedRole === 'ceo') {
-        // Admin/CEO get ALL permissions
-        const allPerms = await trx('permissions').select('id');
-        defaultPermKeys = allPerms;
-      } else {
-        // Other roles: look up the role-specific permissions
-        defaultPermKeys = await trx('role_permissions')
-          .where('roleId', roleRecord.id)
-          .select('permissionId as id');
-
-        if (defaultPermKeys.length === 0) {
-          // Fallback: give basic default permissions for unknown roles
-          defaultPermKeys = await trx('permissions')
-            .whereIn('key', [
-              'VIEW_DASHBOARD',
-              'VIEW_PRODUCTS',
-              'VIEW_ORDERS',
-              'VIEW_INVENTORY',
-              'VIEW_PROFILE',
-              'EDIT_PROFILE',
-              'VIEW_NOTIFICATIONS',
-            ])
-            .select('id');
-        }
-      }
-
-      if (defaultPermKeys && defaultPermKeys.length > 0) {
-        const userPerms = defaultPermKeys.map((p) => ({
-          userId: user.id,
-          permissionId: p.id,
-        }));
-        await trx('user_permissions').insert(userPerms);
-      }
     });
 
     // Generate auth tokens
@@ -173,15 +136,11 @@ export class AuthController {
       console.error('Failed to create session during registration:', error);
     }
 
-    // Fetch the user's assigned permissions
-    const permissions = await UserModel.getUserPermissions(user.id);
-
     const responseData = {
       user: {
         ...user,
         businessName: business.name,
         businessType: business.type,
-        permissions,
       },
       ...tokens,
       session,
@@ -271,9 +230,6 @@ export class AuthController {
       // 7. Get full user details including subscription
       const user = await UserModel.findUserWithDetails(userRaw.id);
 
-      // 8. Get user permissions
-      const permissions = await UserModel.getUserPermissions(userRaw.id);
-
       // 9. Success responses & Logging
       const tokenPayload = {
         id: user.id,
@@ -304,12 +260,11 @@ export class AuthController {
             lastName: user.lastName,
             email: user.email,
             phone: user.phone,
-            role: user.role?.toUpperCase(),
+            role: user.role, // Returns role as stored in DB (e.g. CEO, Manager, Sales)
             status: user.status,
             businessId: user.businessId,
             subscriptionPlan: user.subscriptionPlan || 'free',
             subscriptionStatus: user.subscriptionStatus || 'active',
-            permissions,
           },
           tokens: {
             accessToken,

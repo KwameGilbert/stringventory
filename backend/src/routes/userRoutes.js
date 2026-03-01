@@ -14,12 +14,12 @@ const router = Router();
 /**
  * @route GET /users
  * @desc List users
- * @access Admin
+ * @access Admin/CEO
  */
 router.get(
   '/',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateQuery(userSchemas.listQuery),
   UserController.list
 );
@@ -27,12 +27,12 @@ router.get(
 /**
  * @route POST /users
  * @desc Create a new user
- * @access Admin
+ * @access Admin/CEO
  */
 router.post(
   '/',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateBody(userSchemas.create),
   UserController.create
 );
@@ -40,12 +40,12 @@ router.post(
 /**
  * @route GET /users/:id
  * @desc Get user by ID
- * @access Admin
+ * @access Admin/CEO
  */
 router.get(
   '/:id',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateParams(userSchemas.params),
   UserController.getById
 );
@@ -53,12 +53,12 @@ router.get(
 /**
  * @route PATCH /users/:id
  * @desc Update user
- * @access Admin
+ * @access Admin/CEO
  */
 router.patch(
   '/:id',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validate({ params: userSchemas.params, body: userSchemas.update }),
   UserController.update
 );
@@ -66,12 +66,12 @@ router.patch(
 /**
  * @route DELETE /users/:id
  * @desc Delete user
- * @access Admin
+ * @access Admin/CEO
  */
 router.delete(
   '/:id',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateParams(userSchemas.params),
   UserController.delete
 );
@@ -79,12 +79,12 @@ router.delete(
 /**
  * @route POST /users/:id/restore
  * @desc Restore deleted user
- * @access Admin
+ * @access Admin/CEO
  */
 router.post(
   '/:id/restore',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateParams(userSchemas.params),
   UserController.restore
 );
@@ -92,12 +92,12 @@ router.post(
 /**
  * @route PATCH /users/:id/role
  * @desc Update user role
- * @access Super Admin only
+ * @access Super Admin/CEO only
  */
 router.patch(
   '/:id/role',
   authenticate,
-  requireRole('super_admin'),
+  requireRole('super_admin', 'ceo'),
   validate({ params: userSchemas.params, body: userSchemas.updateRole }),
   UserController.updateRole
 );
@@ -105,12 +105,12 @@ router.patch(
 /**
  * @route POST /users/:id/activate
  * @desc Activate user
- * @access Admin
+ * @access Admin/CEO
  */
 router.post(
   '/:id/activate',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateParams(userSchemas.params),
   UserController.activate
 );
@@ -118,12 +118,12 @@ router.post(
 /**
  * @route POST /users/:id/deactivate
  * @desc Deactivate user
- * @access Admin
+ * @access Admin/CEO
  */
 router.post(
   '/:id/deactivate',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateParams(userSchemas.params),
   UserController.deactivate
 );
@@ -131,12 +131,12 @@ router.post(
 /**
  * @route POST /users/:id/suspend
  * @desc Suspend user
- * @access Admin
+ * @access Admin/CEO
  */
 router.post(
   '/:id/suspend',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin', 'super_admin', 'ceo'),
   validateParams(userSchemas.params),
   UserController.suspend
 );

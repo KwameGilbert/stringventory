@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { CategoryController } from '../controllers/CategoryController.js';
-import { authenticate, requirePermission } from '../middlewares/auth.js';
+import { authenticate, requireRole } from '../middlewares/auth.js';
 import { validateBody, validateParams } from '../middlewares/validate.js';
 import { categorySchemas } from '../validators/schemas.js';
 
@@ -13,7 +13,7 @@ router.use(authenticate);
  * @route GET /categories
  * @access Private (VIEW_PRODUCTS)
  */
-router.get('/', requirePermission('VIEW_PRODUCTS'), CategoryController.getAllCategories);
+router.get('/', requireRole('ceo', 'manager', 'sales'), CategoryController.getAllCategories);
 
 /**
  * @route GET /categories/:categoryId
@@ -21,7 +21,7 @@ router.get('/', requirePermission('VIEW_PRODUCTS'), CategoryController.getAllCat
  */
 router.get(
   '/:categoryId',
-  requirePermission('VIEW_PRODUCTS'),
+  requireRole('ceo', 'manager', 'sales'),
   validateParams(categorySchemas.params),
   CategoryController.getCategoryById
 );
@@ -32,7 +32,7 @@ router.get(
  */
 router.post(
   '/',
-  requirePermission('MANAGE_PRODUCTS'),
+  requireRole('ceo', 'manager'),
   validateBody(categorySchemas.create),
   CategoryController.createCategory
 );
@@ -43,7 +43,7 @@ router.post(
  */
 router.put(
   '/:categoryId',
-  requirePermission('MANAGE_PRODUCTS'),
+  requireRole('ceo', 'manager'),
   validateParams(categorySchemas.params),
   validateBody(categorySchemas.update),
   CategoryController.updateCategory
@@ -55,7 +55,7 @@ router.put(
  */
 router.delete(
   '/:categoryId',
-  requirePermission('MANAGE_PRODUCTS'),
+  requireRole('ceo', 'manager'),
   validateParams(categorySchemas.params),
   CategoryController.deleteCategory
 );

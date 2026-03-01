@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { CustomerController } from '../controllers/CustomerController.js';
-import { authenticate, requirePermission } from '../middlewares/auth.js';
+import { authenticate, requireRole } from '../middlewares/auth.js';
 import { validateBody, validateParams } from '../middlewares/validate.js';
 import { customerSchemas } from '../validators/schemas.js';
 
@@ -12,7 +12,7 @@ router.use(authenticate);
  * @route GET /customers
  * @access Private (VIEW_CUSTOMERS)
  */
-router.get('/', requirePermission('VIEW_CUSTOMERS'), CustomerController.getAllCustomers);
+router.get('/', requireRole('ceo', 'manager', 'sales'), CustomerController.getAllCustomers);
 
 /**
  * @route POST /customers
@@ -20,7 +20,7 @@ router.get('/', requirePermission('VIEW_CUSTOMERS'), CustomerController.getAllCu
  */
 router.post(
   '/',
-  requirePermission('MANAGE_CUSTOMERS'),
+  requireRole('ceo', 'manager'),
   validateBody(customerSchemas.create),
   CustomerController.createCustomer
 );
@@ -31,7 +31,7 @@ router.post(
  */
 router.get(
   '/:customerId',
-  requirePermission('VIEW_CUSTOMERS'),
+  requireRole('ceo', 'manager', 'sales'),
   validateParams(customerSchemas.params),
   CustomerController.getCustomerById
 );
@@ -42,7 +42,7 @@ router.get(
  */
 router.put(
   '/:customerId',
-  requirePermission('MANAGE_CUSTOMERS'),
+  requireRole('ceo', 'manager'),
   validateParams(customerSchemas.params),
   validateBody(customerSchemas.update),
   CustomerController.updateCustomer
@@ -54,7 +54,7 @@ router.put(
  */
 router.delete(
   '/:customerId',
-  requirePermission('MANAGE_CUSTOMERS'),
+  requireRole('ceo', 'manager'),
   validateParams(customerSchemas.params),
   CustomerController.deleteCustomer
 );
@@ -65,7 +65,7 @@ router.delete(
  */
 router.get(
   '/:customerId/orders',
-  requirePermission('VIEW_CUSTOMERS'),
+  requireRole('ceo', 'manager', 'sales'),
   validateParams(customerSchemas.params),
   CustomerController.getCustomerOrders
 );

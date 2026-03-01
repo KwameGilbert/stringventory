@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { InventoryController } from '../controllers/InventoryController.js';
-import { authenticate, requirePermission } from '../middlewares/auth.js';
+import { authenticate, requireRole } from '../middlewares/auth.js';
 import { validateBody, validateParams } from '../middlewares/validate.js';
 import { inventorySchemas } from '../validators/schemas.js';
 
@@ -12,7 +12,7 @@ router.use(authenticate);
  * @route GET /inventory
  * @access Private (VIEW_INVENTORY)
  */
-router.get('/', requirePermission('VIEW_INVENTORY'), InventoryController.getInventory);
+router.get('/', requireRole('ceo', 'manager', 'sales'), InventoryController.getInventory);
 
 /**
  * @route GET /inventory/product/:productId
@@ -20,7 +20,7 @@ router.get('/', requirePermission('VIEW_INVENTORY'), InventoryController.getInve
  */
 router.get(
   '/product/:productId',
-  requirePermission('VIEW_INVENTORY'),
+  requireRole('ceo', 'manager', 'sales'),
   validateParams(inventorySchemas.productParams),
   InventoryController.getInventoryByProduct
 );
@@ -31,7 +31,7 @@ router.get(
  */
 router.post(
   '/add',
-  requirePermission('MANAGE_INVENTORY'),
+  requireRole('ceo', 'manager'),
   validateBody(inventorySchemas.add),
   InventoryController.addInventory
 );
@@ -42,7 +42,7 @@ router.post(
  */
 router.post(
   '/adjust',
-  requirePermission('MANAGE_INVENTORY'),
+  requireRole('ceo', 'manager'),
   validateBody(inventorySchemas.adjust),
   InventoryController.adjustInventory
 );
@@ -53,7 +53,7 @@ router.post(
  */
 router.post(
   '/transfer',
-  requirePermission('MANAGE_INVENTORY'),
+  requireRole('ceo', 'manager'),
   validateBody(inventorySchemas.transfer),
   InventoryController.transferInventory
 );

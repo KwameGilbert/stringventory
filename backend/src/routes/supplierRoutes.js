@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { SupplierController } from '../controllers/SupplierController.js';
-import { authenticate, requirePermission } from '../middlewares/auth.js';
+import { authenticate, requireRole } from '../middlewares/auth.js';
 import { validateBody, validateParams } from '../middlewares/validate.js';
 import { supplierSchemas } from '../validators/schemas.js';
 
@@ -12,7 +12,7 @@ router.use(authenticate);
  * @route GET /suppliers
  * @access Private (VIEW_SUPPLIERS)
  */
-router.get('/', requirePermission('VIEW_SUPPLIERS'), SupplierController.getAllSuppliers);
+router.get('/', requireRole('ceo', 'manager', 'sales'), SupplierController.getAllSuppliers);
 
 /**
  * @route GET /suppliers/:supplierId
@@ -20,7 +20,7 @@ router.get('/', requirePermission('VIEW_SUPPLIERS'), SupplierController.getAllSu
  */
 router.get(
   '/:supplierId',
-  requirePermission('VIEW_SUPPLIERS'),
+  requireRole('ceo', 'manager', 'sales'),
   validateParams(supplierSchemas.params),
   SupplierController.getSupplierById
 );
@@ -31,7 +31,7 @@ router.get(
  */
 router.post(
   '/',
-  requirePermission('MANAGE_SUPPLIERS'),
+  requireRole('ceo', 'manager'),
   validateBody(supplierSchemas.create),
   SupplierController.createSupplier
 );
@@ -42,7 +42,7 @@ router.post(
  */
 router.put(
   '/:supplierId',
-  requirePermission('MANAGE_SUPPLIERS'),
+  requireRole('ceo', 'manager'),
   validateParams(supplierSchemas.params),
   validateBody(supplierSchemas.update),
   SupplierController.updateSupplier
@@ -50,11 +50,11 @@ router.put(
 
 /**
  * @route DELETE /suppliers/:supplierId
- * @access Private (MANAGE_SUPPLIERS)
+ * @access Private
  */
 router.delete(
   '/:supplierId',
-  requirePermission('MANAGE_SUPPLIERS'),
+  requireRole('ceo', 'manager'),
   validateParams(supplierSchemas.params),
   SupplierController.deleteSupplier
 );
