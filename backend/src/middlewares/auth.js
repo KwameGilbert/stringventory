@@ -240,7 +240,6 @@ export default {
   authenticate,
   optionalAuth,
   requireRole,
-  requirePermission,
   requireOwnership,
   requireVerifiedEmail,
   generateTokens,
