@@ -16,13 +16,12 @@ export class SupplierModelClass extends BaseModel {
   async findAllWithStats(options = {}) {
     const q = options.trx || db;
 
-    // Joint with purchases to get totalOrders and totalSpent
     let query = q('suppliers as s')
-      .leftJoin('purchases as p', 's.id', 'p.supplierId')
+      .leftJoin('purchaseItems as pi', 's.id', 'pi.supplierId')
       .select(
         's.*',
-        db.raw('count(p.id) as totalOrders'),
-        db.raw('coalesce(sum(p.totalAmount), 0) as totalSpent')
+        db.raw('count(distinct pi."purchaseId") as totalOrders'),
+        db.raw('coalesce(sum(pi."totalCost"), 0) as totalSpent')
       )
       .groupBy('s.id');
 
@@ -81,11 +80,11 @@ export class SupplierModelClass extends BaseModel {
   async findByIdWithStats(id, trx = null) {
     const q = trx || db;
     const s = await q('suppliers as s')
-      .leftJoin('purchases as p', 's.id', 'p.supplierId')
+      .leftJoin('purchaseItems as pi', 's.id', 'pi.supplierId')
       .select(
         's.*',
-        db.raw('count(p.id) as totalOrders'),
-        db.raw('coalesce(sum(p.totalAmount), 0) as totalSpent')
+        db.raw('count(distinct pi."purchaseId") as totalOrders'),
+        db.raw('coalesce(sum(pi."totalCost"), 0) as totalSpent')
       )
       .where('s.id', id)
       .groupBy('s.id')

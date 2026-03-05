@@ -142,7 +142,7 @@ export class SupplierController {
 
     // Check if there are products or purchases associated
     const productsCount = await db('products').where({ supplierId }).count('* as count');
-    const purchasesCount = await db('purchases').where({ supplierId }).count('* as count');
+    const purchasesCount = await db('purchaseItems').where({ supplierId }).count('* as count');
 
     if (parseInt(productsCount[0].count) > 0 || parseInt(purchasesCount[0].count) > 0) {
       throw new ConflictError('Cannot delete supplier with associated products or purchases');

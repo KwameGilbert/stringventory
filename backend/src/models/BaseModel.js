@@ -141,7 +141,8 @@ export class BaseModel {
     let query = this.query(trx);
 
     for (const [key, value] of Object.entries(conditions)) {
-      query = query.where(`${this.tableName}.${key}`, value);
+      const qualifiedKey = key.includes('.') ? key : `${this.tableName}.${key}`;
+      query = query.where(qualifiedKey, value);
     }
 
     const record = await query.first();
@@ -206,7 +207,8 @@ export class BaseModel {
     let query = this.query(trx);
 
     for (const [key, value] of Object.entries(conditions)) {
-      query = query.where(`${this.tableName}.${key}`, value);
+      const qualifiedKey = key.includes('.') ? key : `${this.tableName}.${key}`;
+      query = query.where(qualifiedKey, value);
     }
 
     const record = this.prepareForUpdate(data);
@@ -271,7 +273,8 @@ export class BaseModel {
     let query = this.query(trx);
 
     for (const [key, value] of Object.entries(conditions)) {
-      query = query.where(`${this.tableName}.${key}`, value);
+      const qualifiedKey = key.includes('.') ? key : `${this.tableName}.${key}`;
+      query = query.where(qualifiedKey, value);
     }
 
     const result = await query.first();
@@ -285,7 +288,8 @@ export class BaseModel {
     let query = this.query(trx);
 
     for (const [key, value] of Object.entries(conditions)) {
-      query = query.where(`${this.tableName}.${key}`, value);
+      const qualifiedKey = key.includes('.') ? key : `${this.tableName}.${key}`;
+      query = query.where(qualifiedKey, value);
     }
 
     const countResult = await query.count(`${this.primaryKey} as count`);
@@ -352,41 +356,43 @@ export class BaseModel {
     for (const [key, value] of Object.entries(filters)) {
       if (value === undefined || value === null) continue;
 
+      const column = key.includes('.') ? key : `${this.tableName}.${key}`;
+
       // Handle operators
       if (typeof value === 'object' && !Array.isArray(value)) {
         const { op, val } = value;
         switch (op) {
           case 'gt':
-            query = query.where(`${this.tableName}.${key}`, '>', val);
+            query = query.where(column, '>', val);
             break;
           case 'gte':
-            query = query.where(`${this.tableName}.${key}`, '>=', val);
+            query = query.where(column, '>=', val);
             break;
           case 'lt':
-            query = query.where(`${this.tableName}.${key}`, '<', val);
+            query = query.where(column, '<', val);
             break;
           case 'lte':
-            query = query.where(`${this.tableName}.${key}`, '<=', val);
+            query = query.where(column, '<=', val);
             break;
           case 'ne':
-            query = query.whereNot(`${this.tableName}.${key}`, val);
+            query = query.whereNot(column, val);
             break;
           case 'in':
-            query = query.whereIn(`${this.tableName}.${key}`, val);
+            query = query.whereIn(column, val);
             break;
           case 'nin':
-            query = query.whereNotIn(`${this.tableName}.${key}`, val);
+            query = query.whereNotIn(column, val);
             break;
           case 'like':
-            query = query.whereILike(`${this.tableName}.${key}`, `%${val}%`);
+            query = query.whereILike(column, `%${val}%`);
             break;
           default:
-            query = query.where(`${this.tableName}.${key}`, val);
+            query = query.where(column, val);
         }
       } else if (Array.isArray(value)) {
-        query = query.whereIn(`${this.tableName}.${key}`, value);
+        query = query.whereIn(column, value);
       } else {
-        query = query.where(`${this.tableName}.${key}`, value);
+        query = query.where(column, value);
       }
     }
 
