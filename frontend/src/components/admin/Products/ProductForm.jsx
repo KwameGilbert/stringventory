@@ -34,18 +34,12 @@ const ProductForm = ({
 
   const [formData, setFormData] = useState({
     name: "",
-    sku: "",
     description: "",
     categoryId: "",
     supplierId: "",
-    price: 0,
-    cost: 0,
-    quantity: 0,
     unitOfMeasurementId: "",
     status: "active",
     reorderLevel: 10,
-    reorderQuantity: 10,
-    barcode: "",
     image: "",
     ...initialData,
   });
@@ -133,17 +127,12 @@ const ProductForm = ({
     const productData = {
       name: formData.name,
       description: formData.description,
-      productCode: formData.sku || `PRD-${Date.now().toString().slice(-6)}`,
+      productCode: formData.productCode || `PRD-${Date.now().toString().slice(-6)}`,
       categoryId: formData.categoryId,
       supplierId: formData.supplierId || undefined,
-      costPrice: parseFloat(formData.cost) || 0,
-      retailPrice: parseFloat(formData.price) || 0,
-      quantity: parseInt(formData.quantity) || 0,
       unitOfMeasurementId: formData.unitOfMeasurementId,
       status: formData.status,
       reorderLevel: parseInt(formData.reorderLevel) || 10,
-      reorderQuantity: parseInt(formData.reorderQuantity) || 10,
-      barcode: formData.barcode || undefined,
       image: formData.image || undefined,
     };
     onSubmit(productData);
@@ -182,21 +171,6 @@ const ProductForm = ({
           </div>
 
           <div className="p-6 space-y-5">
-            {/* Product Code */}
-            {isEdit && formData.code && (
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Product Code
-                </label>
-                <div className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 font-mono text-sm">
-                  {formData.code}
-                </div>
-                <p className="text-xs text-gray-400">
-                  Auto-generated, cannot be changed
-                </p>
-              </div>
-            )}
-
             {/* Product Name */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">
@@ -209,22 +183,6 @@ const ProductForm = ({
                 onChange={handleChange}
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 placeholder="e.g., Coca-Cola Classic"
-                required
-              />
-            </div>
-
-            {/* SKU */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
-                SKU <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="sku"
-                value={formData.sku}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                placeholder="e.g., CC-CLASSIC-001"
                 required
               />
             </div>
@@ -302,78 +260,25 @@ const ProductForm = ({
               />
             </div>
 
-            {/* Price and Cost */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Selling Price <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleChange}
-                  step="0.01"
-                  min="0"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  placeholder="0.00"
-                  required
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Cost Price <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="cost"
-                  value={formData.cost}
-                  onChange={handleChange}
-                  step="0.01"
-                  min="0"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  placeholder="0.00"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Unit of Measure and Quantity */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Unit of Measure <span className="text-rose-500">*</span>
-                </label>
-                <select
-                  name="unitOfMeasurementId"
-                  value={formData.unitOfMeasurementId || ""}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
-                  required
-                >
-                  <option value="">Select Unit</option>
-                  {uomList.map((uom) => (
-                    <option key={uom.id} value={uom.id}>
-                      {uom.name} ({uom.abbreviation})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Current Quantity <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  placeholder="0"
-                  required
-                />
-              </div>
+            {/* Unit of Measure */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">
+                Unit of Measure <span className="text-rose-500">*</span>
+              </label>
+              <select
+                name="unitOfMeasurementId"
+                value={formData.unitOfMeasurementId || ""}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
+                required
+              >
+                <option value="">Select Unit</option>
+                {uomList.map((uom) => (
+                  <option key={uom.id} value={uom.id}>
+                    {uom.name} ({uom.abbreviation})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
@@ -471,57 +376,23 @@ const ProductForm = ({
               </div>
             </div>
 
-            {/* Reorder Level and Quantity */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Reorder Level <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="reorderLevel"
-                  value={formData.reorderLevel}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  required
-                />
-                <p className="text-xs text-gray-400">
-                  You'll be alerted when stock falls below this level
-                </p>
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Reorder Quantity <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  name="reorderQuantity"
-                  value={formData.reorderQuantity}
-                  onChange={handleChange}
-                  min="0"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                  required
-                />
-                <p className="text-xs text-gray-400">
-                  Quantity to order when stock is low
-                </p>
-              </div>
-            </div>
-
-            {/* Barcode */}
+            {/* Reorder Level */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">
-                Barcode (Optional)
+                Reorder Level <span className="text-rose-500">*</span>
               </label>
               <input
-                type="text"
-                name="barcode"
-                value={formData.barcode}
+                type="number"
+                name="reorderLevel"
+                value={formData.reorderLevel}
                 onChange={handleChange}
+                min="0"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                placeholder="e.g., 9876543210123"
+                required
               />
+              <p className="text-xs text-gray-400">
+                You'll be alerted when stock falls below this level
+              </p>
             </div>
           </div>
         </div>

@@ -1479,7 +1479,8 @@
         "productName": "Laptop Pro",
         "sku": "LP-001",
         "quantity": 10,
-        "unitPrice": 450.00,
+        "costPrice": 450.00,
+        "sellingPrice": 550.00,
         "total": 4500.00
       }
     ],
@@ -1511,12 +1512,14 @@
     {
       "productId": "product_001",
       "quantity": 10,
-      "unitPrice": 450.00
+      "costPrice": 450.00,
+      "sellingPrice": 550.00
     },
     {
       "productId": "product_002",
       "quantity": 5,
-      "unitPrice": 350.00
+      "costPrice": 350.00,
+      "sellingPrice": 420.00
     }
   ],
   "tax": 120.00,

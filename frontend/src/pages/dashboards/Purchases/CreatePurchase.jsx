@@ -33,7 +33,7 @@ export default function CreatePurchase() {
   });
 
   const [items, setItems] = useState([
-    { productId: "", quantity: "", unitCost: "", expiryDate: "" }
+    { productId: "", quantity: "", costPrice: "", sellingPrice: "", expiryDate: "" }
   ]);
 
   useEffect(() => {
@@ -61,11 +61,12 @@ export default function CreatePurchase() {
 
     try {
       const cleanedItems = items
-        .filter((item) => item.productId && item.quantity && item.unitCost)
+        .filter((item) => item.productId && item.quantity && item.costPrice)
         .map((item) => ({
           productId: item.productId,
           quantity: Number(item.quantity),
-          unitCost: Number(item.unitCost),
+          costPrice: Number(item.costPrice),
+          sellingPrice: Number(item.sellingPrice),
           expiryDate: item.expiryDate || null,
         }));
 
@@ -86,7 +87,7 @@ export default function CreatePurchase() {
   };
 
   const addItem = () => {
-    setItems([...items, { productId: "", quantity: "", unitCost: "", expiryDate: "" }]);
+    setItems([...items, { productId: "", quantity: "", costPrice: "", sellingPrice: "", expiryDate: "" }]);
   };
 
   const removeItem = (index) => {
@@ -208,7 +209,7 @@ export default function CreatePurchase() {
                     <X size={16} />
                   </button>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Product
@@ -240,12 +241,26 @@ export default function CreatePurchase() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Unit Cost (GH₵)
+                      Cost Price (GH₵)
                     </label>
                     <input
                       type="number"
-                      value={item.unitCost}
-                      onChange={(e) => updateItem(index, 'unitCost', e.target.value)}
+                      value={item.costPrice}
+                      onChange={(e) => updateItem(index, 'costPrice', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Selling Price (GH₵)
+                    </label>
+                    <input
+                      type="number"
+                      value={item.sellingPrice}
+                      onChange={(e) => updateItem(index, 'sellingPrice', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                       step="0.01"
                       min="0"
