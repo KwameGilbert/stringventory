@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Edit2, Trash2, Eye, Image, ChevronLeft, ChevronRight, FolderOpen } from "lucide-react";
+import { Edit2, Trash2, Eye, Image, ChevronLeft, ChevronRight, FolderOpen, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 5;
@@ -38,6 +38,18 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      {canManage && (
+        <div className="px-6 py-3 border-b border-gray-100 flex justify-end bg-white">
+          <Link
+            to="/dashboard/categories/new"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+          >
+            <Plus size={16} />
+            Add Category
+          </Link>
+        </div>
+      )}
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { showError, showSuccess } from "../../../utils/alerts";
 import userService from "../../../services/userService";
 import roleService from "../../../services/roleService";
+import { BUSINESS_ROLES } from "../../../services/roleService";
 
 const extractRoles = (response) => {
   const payload = response?.data || response || {};
@@ -20,12 +21,13 @@ const extractRoles = (response) => {
 
 export default function AddUser() {
   const navigate = useNavigate();
-  const [roles, setRoles] = useState([]);
+  const [roles, setRoles] = useState(BUSINESS_ROLES);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
+    role: "",
     roleId: "",
     isActive: true,
     mfaEnabled: false,
@@ -37,39 +39,48 @@ export default function AddUser() {
       try {
         const response = await roleService.getRoles();
         const fetchedRoles = extractRoles(response);
-        setRoles(fetchedRoles);
-
-        if (fetchedRoles.length === 1) {
-          setFormData((prev) => ({ ...prev, roleId: String(fetchedRoles[0].id) }));
+        if (fetchedRoles.length > 0) {
+          setRoles(fetchedRoles);
         }
       } catch (error) {
         console.error("Failed to load roles", error);
-        showError(error?.message || "Failed to load roles");
       }
     };
 
     fetchRoles();
   }, []);
 
+  const handleRoleChange = (e) => {
+    const value = e.target.value;
+    const selectedRole = roles.find((r) => r.id === value || r.name === value);
+    setFormData({
+      ...formData,
+      role: selectedRole?.name || "",
+      roleId: selectedRole?._fallback ? "" : selectedRole?.id || "",
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!formData.roleId) {
+    if (!formData.role) {
       showError("Please select a role");
       return;
     }
 
     try {
-      await userService.createUser({
+      const payload = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         phone: formData.phone || undefined,
         password: formData.password,
-        roleId: formData.roleId,
+        role: formData.role,
         status: formData.isActive ? "active" : "inactive",
         twoFactorEnabled: formData.mfaEnabled,
-      });
+      };
+      if (formData.roleId) payload.roleId = formData.roleId;
+      await userService.createUser(payload);
 
       showSuccess("User created successfully");
       navigate("/dashboard/users");
@@ -177,14 +188,14 @@ export default function AddUser() {
                 <Shield className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <select
                   required
-                  value={formData.roleId}
-                  onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
+                  value={formData.roleId || formData.role}
+                  onChange={handleRoleChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none bg-white"
                 >
                   <option value="">Select a role</option>
                   {roles.map((role) => (
-                    <option key={role.id} value={role.id}>
-                      {role.name || role.displayName || role.id}
+                    <option key={role.id || role.name} value={role.id || role.name}>
+                      {role.name || role.displayName}
                     </option>
                   ))}
                 </select>

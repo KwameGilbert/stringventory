@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
 import { productService } from "../../../services/productService";
+import { apiClient, API_ENDPOINTS } from "../../../services/api.client";
 import { showError } from "../../../utils/alerts";
 
 const extractList = (response, key) => {
@@ -17,71 +18,134 @@ const extractList = (response, key) => {
   return [];
 };
 
-const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = false }) => {
+const ProductForm = ({
+  initialData = {},
+  onSubmit,
+  title,
+  subTitle,
+  isEdit = false,
+}) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState("");
   const [suppliers, setSuppliers] = useState([]);
-  const [uoms, setUoms] = useState([]);
-  
+  const [uomList, setUomList] = useState([]);
+
   const [formData, setFormData] = useState({
     name: "",
+    sku: "",
     description: "",
     categoryId: "",
     supplierId: "",
-    unit: "piece",
+    price: 0,
+    cost: 0,
+    quantity: 0,
+    unitOfMeasurementId: "",
     status: "active",
-    reorderThreshold: 10,
+    reorderLevel: 10,
+    reorderQuantity: 10,
+    barcode: "",
+    image: "",
     ...initialData,
   });
+  const [imagePreview, setImagePreview] = useState(initialData?.image || "");
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [catRes, supRes, productsRes] = await Promise.all([
-          categoryService.getCategories(),
-          supplierService.getSuppliers(),
-          productService.getProducts(),
-        ]);
+      setCategoriesLoading(true);
+      setCategoriesError("");
 
-        const fetchedCategories = extractList(catRes, "categories").filter(
-          (cat) => (cat.status || "active") === "active"
-        );
-        const fetchedSuppliers = extractList(supRes, "suppliers").filter(
-          (sup) => sup.isActive !== false && (sup.status || "active") === "active"
-        );
-        const fetchedProducts = extractList(productsRes, "products");
+      const [catRes, supRes] = await Promise.allSettled([
+        categoryService.getCategories(),
+        supplierService.getSuppliers(),
+      ]);
 
-        const unitOptions = Array.from(
-          new Set(
-            fetchedProducts
-              .map((product) => product.unit || product.unitOfMeasure)
-              .filter(Boolean)
-          )
-        );
+      const isActiveStatus = (status) => {
+        if (status === undefined || status === null || status === "") return true;
+        return String(status).toLowerCase() === "active";
+      };
 
+      if (catRes.status === "fulfilled") {
+        const fetchedCategories = extractList(catRes.value, "categories").filter(
+          (cat) => (cat?.isActive !== false) && isActiveStatus(cat?.status),
+        );
         setCategories(fetchedCategories);
+        setCategoriesLoading(false);
+      } else {
+        console.error("Error loading categories", catRes.reason);
+        const message = catRes.reason?.message || "Failed to load categories";
+        setCategoriesError(message);
+        setCategories([]);
+        setCategoriesLoading(false);
+        showError(message);
+      }
+
+      if (supRes.status === "fulfilled") {
+        const fetchedSuppliers = extractList(supRes.value, "suppliers").filter(
+          (sup) => sup?.isActive !== false && isActiveStatus(sup?.status),
+        );
         setSuppliers(fetchedSuppliers);
-        setUoms(unitOptions.length ? unitOptions : ["piece", "box", "kg", "litre"]);
-      } catch (error) {
-        console.error("Error loading form data", error);
-        showError(error?.message || "Failed to load product form data");
+      } else {
+        console.error("Error loading suppliers", supRes.reason);
+      }
+
+      // Fetch unit of measurements from API, fallback to local JSON
+      try {
+        const uomRes = await apiClient.get(API_ENDPOINTS.UNIT_OF_MEASUREMENTS.LIST);
+        const fetchedUoms = extractList(uomRes, "unitOfMeasurements");
+        if (fetchedUoms.length > 0) {
+          setUomList(fetchedUoms);
+        } else {
+          throw new Error("Empty UOM response");
+        }
+      } catch {
+        try {
+          const localRes = await fetch("/data/unit-of-measurements.json");
+          const localData = await localRes.json();
+          setUomList(localData);
+        } catch (err) {
+          console.error("Error loading unit of measurements", err);
+        }
       }
     };
     fetchData();
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, files } = e.target;
+    
+    if (type === "file" && files && files[0]) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData((prev) => ({ ...prev, image: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const productData = {
-      ...formData,
-      code: formData.code || `PRD-${Date.now().toString().slice(-6)}`,
+      name: formData.name,
+      description: formData.description,
+      productCode: formData.sku || `PRD-${Date.now().toString().slice(-6)}`,
+      categoryId: formData.categoryId,
+      supplierId: formData.supplierId || undefined,
+      costPrice: parseFloat(formData.cost) || 0,
+      retailPrice: parseFloat(formData.price) || 0,
+      quantity: parseInt(formData.quantity) || 0,
+      unitOfMeasurementId: formData.unitOfMeasurementId,
+      status: formData.status,
+      reorderLevel: parseInt(formData.reorderLevel) || 10,
+      reorderQuantity: parseInt(formData.reorderQuantity) || 10,
+      barcode: formData.barcode || undefined,
+      image: formData.image || undefined,
     };
-    // Clean up derived fields if any, ensure IDs are used
     onSubmit(productData);
   };
 
@@ -116,16 +180,20 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
             <h3 className="font-semibold text-gray-900">Basic Information</h3>
             <p className="text-sm text-gray-500">Enter the product details</p>
           </div>
-          
+
           <div className="p-6 space-y-5">
             {/* Product Code */}
             {isEdit && formData.code && (
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">Product Code</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Product Code
+                </label>
                 <div className="px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-200 text-gray-600 font-mono text-sm">
                   {formData.code}
                 </div>
-                <p className="text-xs text-gray-400">Auto-generated, cannot be changed</p>
+                <p className="text-xs text-gray-400">
+                  Auto-generated, cannot be changed
+                </p>
               </div>
             )}
 
@@ -145,6 +213,22 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
               />
             </div>
 
+            {/* SKU */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">
+                SKU <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="sku"
+                value={formData.sku}
+                onChange={handleChange}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                placeholder="e.g., CC-CLASSIC-001"
+                required
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Category */}
               <div className="space-y-1.5">
@@ -155,14 +239,30 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleChange}
+                  disabled={categoriesLoading}
                   className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
                   required
                 >
-                  <option value="">Select a category</option>
+                  <option value="">
+                    {categoriesLoading ? "Loading categories..." : "Select a category"}
+                  </option>
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    <option key={cat.id || cat._id} value={cat.id || cat._id}>
+                      {cat.name || cat.title}
+                    </option>
                   ))}
                 </select>
+                {categoriesLoading ? (
+                  <p className="text-xs text-gray-400">Loading categories...</p>
+                ) : categoriesError ? (
+                  <p className="text-xs text-rose-500">
+                    Could not load categories. Please refresh and try again.
+                  </p>
+                ) : categories.length === 0 ? (
+                  <p className="text-xs text-amber-600">
+                    No active categories found. Create a category first.
+                  </p>
+                ) : null}
               </div>
 
               {/* Supplier */}
@@ -179,7 +279,9 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
                 >
                   <option value="">Select a supplier</option>
                   {suppliers.map((sup) => (
-                    <option key={sup.id} value={sup.id}>{sup.name}</option>
+                    <option key={sup.id || sup._id} value={sup.id || sup._id}>
+                      {sup.name || sup.companyName}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -187,7 +289,9 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
 
             {/* Description */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Description (Optional)</label>
+              <label className="text-sm font-medium text-gray-700">
+                Description (Optional)
+              </label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -198,23 +302,78 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
               />
             </div>
 
-            {/* Unit of Measure */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
-                Unit of Measure <span className="text-rose-500">*</span>
-              </label>
-              <select
-                name="unit"
-                value={formData.unit || ""}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
-                required
-              >
-                <option value="">Select Unit</option>
-                {uoms.map((unit) => (
-                  <option key={unit} value={unit}>{unit}</option>
-                ))}
-              </select>
+            {/* Price and Cost */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Selling Price <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  step="0.01"
+                  min="0"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Cost Price <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="cost"
+                  value={formData.cost}
+                  onChange={handleChange}
+                  step="0.01"
+                  min="0"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Unit of Measure and Quantity */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Unit of Measure <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  name="unitOfMeasurementId"
+                  value={formData.unitOfMeasurementId || ""}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
+                  required
+                >
+                  <option value="">Select Unit</option>
+                  {uomList.map((uom) => (
+                    <option key={uom.id} value={uom.id}>
+                      {uom.name} ({uom.abbreviation})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Current Quantity <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={formData.quantity}
+                  onChange={handleChange}
+                  min="0"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  placeholder="0"
+                  required
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -225,8 +384,20 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
             <h3 className="font-semibold text-gray-900">Product Image</h3>
             <p className="text-sm text-gray-500">Upload an image (optional)</p>
           </div>
-          
-          <div className="p-6">
+
+          <div className="p-6 space-y-4">
+            {imagePreview && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Preview</p>
+                <div className="flex items-center justify-center">
+                  <img
+                    src={imagePreview}
+                    alt="Product preview"
+                    className="max-w-xs h-auto rounded-lg border border-gray-200 object-cover"
+                  />
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-center w-full">
               <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-200 border-dashed rounded-xl cursor-pointer bg-gray-50/50 hover:bg-gray-50 hover:border-gray-300 transition-all group">
                 <div className="flex flex-col items-center justify-center py-4">
@@ -234,11 +405,22 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
                     <Upload className="w-5 h-5 text-gray-400" />
                   </div>
                   <p className="text-sm text-gray-500">
-                    <span className="font-medium text-gray-700">Click to upload</span> or drag and drop
+                    <span className="font-medium text-gray-700">
+                      Click to upload
+                    </span>{" "}
+                    or drag and drop
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 2MB</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    PNG, JPG up to 2MB
+                  </p>
                 </div>
-                <input type="file" className="hidden" accept="image/*" />
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  name="image"
+                  onChange={handleChange}
+                />
               </label>
             </div>
           </div>
@@ -250,15 +432,19 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
             <h3 className="font-semibold text-gray-900">Product Controls</h3>
             <p className="text-sm text-gray-500">Configure stock settings</p>
           </div>
-          
+
           <div className="p-6 space-y-5">
             {/* Status */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Status</label>
+              <label className="text-sm font-medium text-gray-700">
+                Status
+              </label>
               <div className="flex gap-3">
                 <button
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, status: "active" }))}
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, status: "active" }))
+                  }
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border transition-all ${
                     formData.status === "active"
                       ? "border-emerald-500 bg-emerald-50 text-emerald-700"
@@ -270,7 +456,9 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
                 </button>
                 <button
                   type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, status: "inactive" }))}
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, status: "inactive" }))
+                  }
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border transition-all ${
                     formData.status === "inactive"
                       ? "border-gray-500 bg-gray-100 text-gray-700"
@@ -283,21 +471,57 @@ const ProductForm = ({ initialData = {}, onSubmit, title, subTitle, isEdit = fal
               </div>
             </div>
 
-            {/* Reorder Threshold */}
+            {/* Reorder Level and Quantity */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Reorder Level <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="reorderLevel"
+                  value={formData.reorderLevel}
+                  onChange={handleChange}
+                  min="0"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  required
+                />
+                <p className="text-xs text-gray-400">
+                  You'll be alerted when stock falls below this level
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Reorder Quantity <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  name="reorderQuantity"
+                  value={formData.reorderQuantity}
+                  onChange={handleChange}
+                  min="0"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  required
+                />
+                <p className="text-xs text-gray-400">
+                  Quantity to order when stock is low
+                </p>
+              </div>
+            </div>
+
+            {/* Barcode */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700">
-                Reorder Threshold <span className="text-rose-500">*</span>
+                Barcode (Optional)
               </label>
               <input
-                type="number"
-                name="reorderThreshold"
-                value={formData.reorderThreshold}
+                type="text"
+                name="barcode"
+                value={formData.barcode}
                 onChange={handleChange}
-                min="0"
                 className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                required
+                placeholder="e.g., 9876543210123"
               />
-              <p className="text-xs text-gray-400">You'll be alerted when stock falls below this level</p>
             </div>
           </div>
         </div>

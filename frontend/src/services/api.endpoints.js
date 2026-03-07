@@ -27,6 +27,12 @@ export const API_ENDPOINTS = {
     RESEND_VERIFICATION: (id) => `/admin/users/${id}/resend-verification`,
   },
 
+  // Roles
+  ROLES: {
+    LIST: '/roles',
+    GET: (id) => `/roles/${id}`,
+  },
+
   // Products
   PRODUCTS: {
     LIST: '/products',
@@ -36,6 +42,11 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `/products/${id}`,
     LOW_STOCK: '/products/low-stock',
     EXPIRING: '/products/expiring',
+  },
+
+  // Unit of Measurements
+  UNIT_OF_MEASUREMENTS: {
+    LIST: '/unit-of-measurements',
   },
 
   // Categories

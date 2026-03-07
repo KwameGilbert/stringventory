@@ -9,6 +9,12 @@ import {
   XCircle,
   ShieldCheck,
   Laptop,
+  Mail,
+  Phone,
+  Calendar,
+  Edit,
+  User,
+  Shield,
 } from "lucide-react";
 
 const toRoleLabel = (roleValue) => {
@@ -105,17 +111,24 @@ export default function ViewUser() {
 
   return (
     <div className="space-y-6 animate-fade-in pb-8">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mt-20">
         <button
           onClick={() => navigate("/dashboard/users")}
           className="p-2 hover:bg-white rounded-lg transition-colors"
         >
           <ArrowLeft size={20} className="text-gray-600" />
         </button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">User Profile</h1>
           <p className="text-gray-500 text-sm">View user account details</p>
         </div>
+        <button
+          onClick={() => navigate(`/dashboard/users/${id}/edit`)}
+          className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium transition-colors"
+        >
+          <Edit size={16} />
+          Edit User
+        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -156,20 +169,70 @@ export default function ViewUser() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                   <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
-                    <Clock size={16} />
+                    <Mail size={16} />
                   </div>
-                  <span>Last Login: {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</span>
+                  <div>
+                    <p className="text-xs text-gray-400">Email</p>
+                    <span>{user.email}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                    <Phone size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400">Phone</p>
+                    <span>{user.phone || "Not provided"}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                    <Shield size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400">Role</p>
+                    <span className="font-medium text-gray-700">{user.roleName}</span>
+                  </div>
+                </div>
+                {user.roleDesc && <p className="text-xs text-gray-500 pl-11">{user.roleDesc}</p>}
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                    <User size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400">Status</p>
+                    <span className={user.isActive ? "text-emerald-600 font-medium" : "text-gray-500 font-medium"}>
+                      {user.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3 text-sm text-gray-600">
                   <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
                     <ShieldCheck size={16} />
                   </div>
-                  <span>MFA: {user.mfaEnabled ? "Enabled" : "Disabled"}</span>
+                  <div>
+                    <p className="text-xs text-gray-400">Two-Factor Auth</p>
+                    <span>{user.mfaEnabled || user.twoFactorEnabled ? "Enabled" : "Disabled"}</span>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-600">
-                  <span className="font-medium text-gray-700">Role:</span> {user.roleName}
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                    <Clock size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400">Last Login</p>
+                    <span>{user.lastLoginAt || user.lastLogin ? new Date(user.lastLoginAt || user.lastLogin).toLocaleString() : "Never"}</span>
+                  </div>
                 </div>
-                {user.roleDesc && <p className="text-xs text-gray-500">{user.roleDesc}</p>}
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                    <Calendar size={16} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400">Account Created</p>
+                    <span>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}</span>
+                  </div>
+                </div>
               </div>
             </div>
 

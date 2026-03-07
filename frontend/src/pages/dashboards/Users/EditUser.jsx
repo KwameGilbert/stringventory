@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { showError, showSuccess } from "../../../utils/alerts";
 import userService from "../../../services/userService";
 import roleService from "../../../services/roleService";
+import { BUSINESS_ROLES } from "../../../services/roleService";
 
 const extractRoles = (response) => {
   const payload = response?.data || response || {};
@@ -31,12 +32,13 @@ export default function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
-  const [roles, setRoles] = useState([]);
+  const [roles, setRoles] = useState(BUSINESS_ROLES);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
+    role: "",
     roleId: "",
     isActive: true,
     mfaEnabled: false
@@ -52,7 +54,9 @@ export default function EditUser() {
 
         const user = extractUser(userRes);
         const fetchedRoles = extractRoles(rolesRes);
-        setRoles(fetchedRoles);
+        if (fetchedRoles.length > 0) {
+          setRoles(fetchedRoles);
+        }
 
         if (!user?.id && !user?.email) {
           showError("User not found");
@@ -61,12 +65,14 @@ export default function EditUser() {
         }
 
         const resolvedRoleId = user.roleId || user.role?.id || "";
+        const resolvedRoleName = user.role?.name || user.role || user.roleName || "";
 
         setFormData({
           firstName: user.firstName || "",
           lastName: user.lastName || "",
           email: user.email || "",
           phone: user.phone || "",
+          role: typeof resolvedRoleName === "string" ? resolvedRoleName : "",
           roleId: resolvedRoleId ? String(resolvedRoleId) : "",
           isActive: user?.isActive ?? String(user?.status || "").toLowerCase() === "active",
           mfaEnabled: user?.mfaEnabled ?? user?.twoFactorEnabled ?? false,
@@ -82,19 +88,31 @@ export default function EditUser() {
     if (id) fetchUser();
   }, [id, navigate]);
 
+  const handleRoleChange = (e) => {
+    const value = e.target.value;
+    const selectedRole = roles.find((r) => r.id === value || r.name === value);
+    setFormData({
+      ...formData,
+      role: selectedRole?.name || "",
+      roleId: selectedRole?._fallback ? "" : selectedRole?.id || "",
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await userService.updateUser(id, {
+      const payload = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         phone: formData.phone || undefined,
-        roleId: formData.roleId || undefined,
+        role: formData.role || undefined,
         status: formData.isActive ? "active" : "inactive",
         twoFactorEnabled: formData.mfaEnabled,
-      });
+      };
+      if (formData.roleId) payload.roleId = formData.roleId;
+      await userService.updateUser(id, payload);
 
       showSuccess("User updated successfully");
       navigate("/dashboard/users");
@@ -184,14 +202,14 @@ export default function EditUser() {
                 <div className="relative">
                   <Shield className="absolute left-3 top-2.5 text-gray-400" size={18} />
                   <select
-                    value={formData.roleId}
-                    onChange={(e) => setFormData({ ...formData, roleId: e.target.value })}
+                    value={formData.roleId || formData.role}
+                    onChange={handleRoleChange}
                     className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none bg-white"
                   >
                     <option value="">Select a role</option>
                     {roles.map((role) => (
-                      <option key={role.id} value={role.id}>
-                        {role.name || role.displayName || role.id}
+                      <option key={role.id || role.name} value={role.id || role.name}>
+                        {role.name || role.displayName}
                       </option>
                     ))}
                   </select>

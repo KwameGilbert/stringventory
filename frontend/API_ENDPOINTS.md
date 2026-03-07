@@ -462,7 +462,7 @@
   "barcode": "9876543210123",
   "supplierId": "supplier_001",
   "image": "https://example.com/images/tablet.jpg"
-}
+}pnpm
 ```
 - **Response (201 Created):**
 ```json
