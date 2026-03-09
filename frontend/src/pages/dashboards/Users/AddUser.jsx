@@ -6,6 +6,29 @@ import userService from "../../../services/userService";
 import roleService from "../../../services/roleService";
 import { BUSINESS_ROLES } from "../../../services/roleService";
 
+const COUNTRY_CODES = [
+  { code: "+233", flag: "🇬🇭", label: "GH" },
+  { code: "+234", flag: "🇳🇬", label: "NG" },
+  { code: "+44", flag: "🇬🇧", label: "UK" },
+  { code: "+1", flag: "🇺🇸", label: "US" },
+  { code: "+27", flag: "🇿🇦", label: "ZA" },
+  { code: "+91", flag: "🇮🇳", label: "IN" },
+  { code: "+254", flag: "🇰🇪", label: "KE" },
+  { code: "+256", flag: "🇺🇬", label: "UG" },
+  { code: "+255", flag: "🇹🇿", label: "TZ" },
+  { code: "+237", flag: "🇨🇲", label: "CM" },
+  { code: "+225", flag: "🇨🇮", label: "CI" },
+  { code: "+228", flag: "🇹🇬", label: "TG" },
+  { code: "+229", flag: "🇧🇯", label: "BJ" },
+  { code: "+221", flag: "🇸🇳", label: "SN" },
+  { code: "+49", flag: "🇩🇪", label: "DE" },
+  { code: "+33", flag: "🇫🇷", label: "FR" },
+  { code: "+61", flag: "🇦🇺", label: "AU" },
+  { code: "+86", flag: "🇨🇳", label: "CN" },
+  { code: "+971", flag: "🇦🇪", label: "AE" },
+  { code: "+966", flag: "🇸🇦", label: "SA" },
+];
+
 const extractRoles = (response) => {
   const payload = response?.data || response || {};
 
@@ -26,6 +49,7 @@ export default function AddUser() {
     firstName: "",
     lastName: "",
     email: "",
+    countryCode: "+233",
     phone: "",
     role: "",
     roleId: "",
@@ -73,7 +97,7 @@ export default function AddUser() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
-        phone: formData.phone || undefined,
+        phone: formData.phone ? `${formData.countryCode}${formData.phone}` : undefined,
         password: formData.password,
         role: formData.role,
         status: formData.isActive ? "active" : "inactive",
@@ -92,7 +116,7 @@ export default function AddUser() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto pb-12 animate-fade-in">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mt-20">
         <button
           onClick={() => navigate("/dashboard/users")}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
@@ -155,14 +179,29 @@ export default function AddUser() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Phone</label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-2.5 text-gray-400" size={18} />
+              <div className="flex gap-2">
+                <div className="relative shrink-0">
+                  <Phone className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                  <select
+                    value={formData.countryCode}
+                    onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
+                    className="pl-10 pr-2 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none bg-white text-sm w-28"
+                  >
+                    {COUNTRY_CODES.map((c) => (
+                      <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
+                    ))}
+                  </select>
+                </div>
                 <input
-                  type="text"
+                  type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                  placeholder="+1 234 567 890"
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                    setFormData({ ...formData, phone: value });
+                  }}
+                  className="flex-1 min-w-0 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                  placeholder="XX XXX XXXX"
+                  maxLength={10}
                 />
               </div>
             </div>
