@@ -267,7 +267,7 @@ export default function Reports() {
 
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6">
+    <div className="pb-8 animate-fade-in space-y-6 mt-20">
       {/* Header */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

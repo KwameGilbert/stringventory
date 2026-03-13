@@ -4,6 +4,14 @@ import { Link } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 5;
 
+const renderText = (value, fallback = "—") => {
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  if (value && typeof value === "object") {
+    return value.name || value.title || value.label || fallback;
+  }
+  return fallback;
+};
+
 const ProductsTable = ({ products, onDelete, canManage = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -60,7 +68,7 @@ const ProductsTable = ({ products, onDelete, canManage = true }) => {
               return (
                 <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
                   {/* Product with Image */}
-                  <td className="px-6 py-3">
+                  <td className="px-3 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
                         {product.image ? (
@@ -82,18 +90,18 @@ const ProductsTable = ({ products, onDelete, canManage = true }) => {
                   </td>
                   
                   {/* SKU */}
-                  <td className="px-4 py-3">
+                  <td className=" py-3">
                     <span className="text-xs text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">{product.sku || "—"}</span>
                   </td>
                   
                   {/* Category */}
                   <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">{product.category}</span>
+                    <span className="text-sm text-gray-600">{renderText(product.category, "Unknown")}</span>
                   </td>
                   
                   {/* Supplier */}
                   <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">{product.supplier || "—"}</span>
+                    <span className="text-sm text-gray-600">{renderText(product.supplier)}</span>
                   </td>
                   
                   {/* Cost Price */}

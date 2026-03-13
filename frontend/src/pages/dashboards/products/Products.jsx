@@ -29,6 +29,17 @@ const isForbiddenError = (error) => {
   return statusCode === 403 || message.includes("insufficient permissions") || message.includes("forbidden");
 };
 
+const toDisplayText = (value, fallback = "Unknown") => {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  if (value && typeof value === "object") {
+    if (typeof value.name === "string") return value.name;
+    if (typeof value.title === "string") return value.title;
+    if (typeof value.label === "string") return value.label;
+  }
+  return fallback;
+};
+
 export default function Products() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -63,13 +74,13 @@ export default function Products() {
           currentStock: Number(product.currentStock ?? product.quantity ?? 0),
           reorderThreshold: Number(product.reorderThreshold ?? product.reorderLevel ?? 0),
           category:
-            product.category ||
-            product.categoryName ||
+            toDisplayText(product.category, "") ||
+            toDisplayText(product.categoryName, "") ||
             fetchedCategories.find((c) => String(c.id) === String(product.categoryId))?.name ||
             "Unknown",
           supplier:
-            product.supplier ||
-            product.supplierName ||
+            toDisplayText(product.supplier, "") ||
+            toDisplayText(product.supplierName, "") ||
             fetchedSuppliers.find((s) => String(s.id) === String(product.supplierId))?.name ||
             "Unknown",
           unitOfMeasure: product.unitOfMeasure || product.unit || "N/A",
@@ -100,12 +111,17 @@ export default function Products() {
 
   // Filter products based on search and category
   const filteredProducts = products.filter((product) => {
+    const productName = String(product.name || "").toLowerCase();
+    const productCode = String(product.code || "").toLowerCase();
+    const productSku = String(product.sku || "").toLowerCase();
+    const productCategory = String(product.category || "");
+
     const matchesSearch =
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (product.sku && product.sku.toLowerCase().includes(searchQuery.toLowerCase()));
+      productName.includes(searchQuery.toLowerCase()) ||
+      productCode.includes(searchQuery.toLowerCase()) ||
+      productSku.includes(searchQuery.toLowerCase());
     const matchesCategory =
-      !categoryFilter || product.category === categoryFilter;
+      !categoryFilter || productCategory === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 

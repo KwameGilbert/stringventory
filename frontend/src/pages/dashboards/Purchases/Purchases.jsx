@@ -18,11 +18,24 @@ const extractPurchases = (response) => {
   return [];
 };
 
+const extractPagination = (response) => {
+  const payload = response?.data || response || {};
+  const pagination = payload?.pagination || payload?.data?.pagination || {};
+
+  return {
+    page: Number(pagination?.page || 1),
+    limit: Number(pagination?.limit || 20),
+    total: Number(pagination?.total || 0),
+    totalPages: Number(pagination?.totalPages || 1),
+  };
+};
+
 const normalizePurchase = (purchase) => ({
   ...purchase,
+  waybillNumber: purchase?.waybillNumber || "",
   supplierName: purchase?.supplierName || purchase?.supplier?.name || "Unknown Supplier",
-  purchaseDate: purchase?.purchaseDate || purchase?.createdAt,
-  totalAmount: Number(purchase?.totalAmount ?? purchase?.amount ?? 0),
+  purchaseDate: purchase?.purchaseDate || purchase?.date || purchase?.createdAt,
+  totalAmount: Number(purchase?.totalAmount ?? purchase?.total ?? purchase?.amount ?? 0),
   createdBy: purchase?.createdBy || purchase?.createdByName || "System",
   status: String(purchase?.status || "pending").toLowerCase(),
 });
@@ -31,13 +44,30 @@ export default function Purchases() {
   const [purchases, setPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await purchaseService.getPurchases();
+        const response = await purchaseService.getPurchases({
+          page: currentPage,
+          limit: pagination.limit,
+          search: searchQuery || undefined,
+          status: statusFilter || undefined,
+        });
         setPurchases(extractPurchases(response).map(normalizePurchase));
+        setPagination((prev) => ({
+          ...prev,
+          ...extractPagination(response),
+        }));
       } catch (error) {
         console.error("Error loading purchases", error);
         showError(error?.message || "Failed to load purchases");
@@ -46,22 +76,17 @@ export default function Purchases() {
       }
     };
     fetchData();
-  }, []);
+  }, [currentPage, searchQuery, statusFilter, pagination.limit]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
 
   // Calculate stats
-  const totalPurchases = purchases.length;
+  const totalPurchases = pagination.total || purchases.length;
   const pendingPurchases = purchases.filter(p => p.status === "pending").length;
   const receivedPurchases = purchases.filter(p => p.status === "received").length;
   const partialPurchases = purchases.filter(p => p.status === "partial").length;
-
-  // Filter purchases
-  const filteredPurchases = purchases.filter((purchase) => {
-    const matchesSearch =
-      String(purchase.waybillNumber || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      String(purchase.supplierName || "").toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = !statusFilter || purchase.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
 
   const handleDelete = async (id) => {
     const result = await confirmDelete("this purchase");
@@ -69,6 +94,10 @@ export default function Purchases() {
       try {
         await purchaseService.deletePurchase(id);
         setPurchases((prev) => prev.filter((p) => String(p.id) !== String(id)));
+        setPagination((prev) => ({
+          ...prev,
+          total: Math.max(0, prev.total - 1),
+        }));
         showSuccess("Purchase deleted successfully");
       } catch (error) {
         console.error("Failed to delete purchase", error);
@@ -157,7 +186,15 @@ export default function Purchases() {
       </div>
 
       {/* Purchases Table */}
-      <PurchasesTable purchases={filteredPurchases} onDelete={handleDelete} />
+      <PurchasesTable
+        purchases={purchases}
+        onDelete={handleDelete}
+        currentPage={pagination.page || currentPage}
+        totalPages={pagination.totalPages || 1}
+        totalItems={pagination.total || purchases.length}
+        pageSize={pagination.limit || 20}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

@@ -27,6 +27,17 @@ const isForbiddenError = (error) => {
   return statusCode === 403 || message.includes("insufficient permissions") || message.includes("forbidden");
 };
 
+const toDisplayText = (value, fallback = "Unknown") => {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  if (value && typeof value === "object") {
+    if (typeof value.name === "string") return value.name;
+    if (typeof value.title === "string") return value.title;
+    if (typeof value.label === "string") return value.label;
+  }
+  return fallback;
+};
+
 export default function ViewProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -52,12 +63,22 @@ export default function ViewProduct() {
 
           setProduct({
             ...found,
-            code: found.code || found.sku || "—",
+            name: toDisplayText(found.name, "Unnamed Product"),
+            description: toDisplayText(found.description, "No description provided for this product."),
+            code: toDisplayText(found.code || found.sku, "—"),
             currentStock: Number(found.currentStock ?? found.quantity ?? 0),
             reorderThreshold: Number(found.reorderThreshold ?? found.reorderLevel ?? 0),
-            category: found.category || found.categoryName || category?.name || "Unknown",
-            supplier: found.supplier || found.supplierName || supplier?.name || "Unknown",
-            unitOfMeasure: found.unitOfMeasure || found.unit || "N/A",
+            category:
+              toDisplayText(found.category, "") ||
+              toDisplayText(found.categoryName, "") ||
+              category?.name ||
+              "Unknown",
+            supplier:
+              toDisplayText(found.supplier, "") ||
+              toDisplayText(found.supplierName, "") ||
+              supplier?.name ||
+              "Unknown",
+            unitOfMeasure: toDisplayText(found.unitOfMeasure || found.unit, "N/A"),
             createdAt: found.createdAt || null,
           });
         }
@@ -89,7 +110,7 @@ export default function ViewProduct() {
 
   if (permissionDenied) {
     return (
-      <div className="py-16 animate-fade-in">
+      <div className="py-16 animate-fade-in mt-20">
         <div className="max-w-xl mx-auto bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center space-y-3">
           <h2 className="text-xl font-semibold text-gray-900">Insufficient permissions</h2>
           <p className="text-sm text-gray-500">You do not have access to view this product. Contact your administrator for the required permissions.</p>

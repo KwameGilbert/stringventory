@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit2, Trash2, Calendar, Clock, Hash, Image, Package } from "lucide-react";
 import categoryService from "../../../services/categoryService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
 
 const extractCategory = (response) => {
   const payload = response?.data || response || {};
@@ -24,7 +25,9 @@ export default function ViewCategory() {
         if (found?.id) {
           setCategory({
             ...found,
-            image: found.image || found.imageUrl || null,
+            image: resolveApiMediaUrl(
+              found?.image || found?.imageUrl || found?.image_url || found?.thumbnail || found?.photo || null
+            ),
             productsCount:
               found.productsCount ??
               found.products_count ??
@@ -114,11 +117,17 @@ export default function ViewCategory() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* Category Image */}
-              <div className="w-20 h-20 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden">
-                {category.image ? (
-                  <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
-                ) : (
-                  <Image className="w-8 h-8 text-gray-400" />
+              <div className="w-20 h-20 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden relative">
+                <Image className="w-8 h-8 text-gray-400 absolute" />
+                {category.image && (
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover relative z-10"
+                    onError={(event) => {
+                      event.currentTarget.style.display = "none";
+                    }}
+                  />
                 )}
               </div>
               <div>

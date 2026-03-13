@@ -6,6 +6,7 @@ import categoryService from "../../../services/categoryService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
 import { canManageCatalog } from "../../../utils/accessControl";
+import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
 
 const extractCategories = (response) => {
   const payload = response?.data || response || {};
@@ -20,6 +21,16 @@ const extractCategories = (response) => {
   return [];
 };
 
+const resolveCategoryImageUrl = (category) =>
+  resolveApiMediaUrl(
+    category?.image ||
+      category?.imageUrl ||
+      category?.image_url ||
+      category?.thumbnail ||
+      category?.photo ||
+      null
+  );
+
 const normalizeCategory = (category) => ({
   ...category,
   productsCount:
@@ -27,7 +38,7 @@ const normalizeCategory = (category) => ({
     category?.products_count ??
     category?.productCount ??
     0,
-  image: category?.image || category?.imageUrl || null,
+  image: resolveCategoryImageUrl(category),
   status: category?.status || "active",
 });
 

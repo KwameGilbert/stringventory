@@ -6,6 +6,36 @@
 import axios from 'axios';
 import { API_ENDPOINTS, BASE_URL } from './api.endpoints';
 
+const getFirstString = (...values) => values.find((value) => typeof value === 'string' && value.trim());
+
+const extractAuthTokens = (source = {}) => {
+  const payload = source?.data || source || {};
+  const nestedData = payload?.data || {};
+  const tokenPayload = payload?.tokens || nestedData?.tokens || {};
+
+  return {
+    accessToken: getFirstString(
+      tokenPayload?.accessToken,
+      tokenPayload?.access_token,
+      tokenPayload?.token,
+      nestedData?.accessToken,
+      nestedData?.access_token,
+      nestedData?.token,
+      payload?.accessToken,
+      payload?.access_token,
+      payload?.token,
+    ),
+    refreshToken: getFirstString(
+      tokenPayload?.refreshToken,
+      tokenPayload?.refresh_token,
+      nestedData?.refreshToken,
+      nestedData?.refresh_token,
+      payload?.refreshToken,
+      payload?.refresh_token,
+    ),
+  };
+};
+
 // Get tokens from localStorage
 const getAccessToken = () => localStorage.getItem(import.meta.env.VITE_AUTH_TOKEN_KEY || 'stringventory_access_token');
 const getRefreshToken = () => localStorage.getItem(import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || 'stringventory_refresh_token');
@@ -95,14 +125,16 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshToken = getRefreshToken();
+          if (!refreshToken) {
+            throw new Error('No refresh token available');
+          }
+
         const response = await axios.post(`${BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
           refreshToken,
+            refresh_token: refreshToken,
         });
 
-        const payload = response?.data?.data || response?.data || {};
-        const tokenPayload = payload?.tokens || response?.data?.tokens || {};
-        const accessToken = tokenPayload?.accessToken || payload?.accessToken;
-        const nextRefreshToken = tokenPayload?.refreshToken || payload?.refreshToken;
+          const { accessToken, refreshToken: nextRefreshToken } = extractAuthTokens(response);
 
         if (!accessToken) {
           throw new Error('No access token returned from refresh endpoint');
@@ -142,5 +174,6 @@ export {
   getRefreshToken,
   setTokens,
   clearTokens,
+  extractAuthTokens,
   API_ENDPOINTS,
 };

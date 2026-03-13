@@ -36,16 +36,20 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete, canManage = true }
           >
             {/* Card Header with Image */}
             <div className="relative h-40 overflow-hidden bg-gray-100">
+              <div className={`absolute inset-0 bg-linear-to-br ${colors.bg} flex items-center justify-center`}>
+                <IconComponent className="text-white" size={48} />
+              </div>
               {category.image ? (
                 <img 
                   src={category.image} 
                   alt={category.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 relative z-10"
+                  onError={(event) => {
+                    event.currentTarget.style.display = "none";
+                  }}
                 />
               ) : (
-                <div className={`w-full h-full bg-linear-to-br ${colors.bg} flex items-center justify-center`}>
-                  <IconComponent className="text-white" size={48} />
-                </div>
+                <div className="relative z-10" />
               )}
               
               {/* Actions Menu - Positioned over image */}

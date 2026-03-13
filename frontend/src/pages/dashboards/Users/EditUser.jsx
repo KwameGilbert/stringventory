@@ -51,6 +51,23 @@ const extractUser = (response) => {
   return payload;
 };
 
+const normalizeRoleForApi = (roleValue) => {
+  const raw = String(roleValue || "").trim().toLowerCase();
+  if (!raw) return "";
+
+  if (["ceo", "owner", "admin", "administrator", "superadmin", "super_admin"].includes(raw)) {
+    return "ceo";
+  }
+  if (["manager", "management"].includes(raw)) {
+    return "manager";
+  }
+  if (["sales", "salesperson", "sales_person", "sales rep", "sales_rep"].includes(raw)) {
+    return "salesperson";
+  }
+
+  return raw;
+};
+
 export default function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -127,11 +144,11 @@ export default function EditUser() {
 
   const handleRoleChange = (e) => {
     const value = e.target.value;
-    const selectedRole = roles.find((r) => r.id === value || r.name === value);
+    const selectedRole = roles.find((r) => String(r.id) === value || String(r.name) === value);
     setFormData({
       ...formData,
       role: selectedRole?.name || "",
-      roleId: selectedRole?._fallback ? "" : selectedRole?.id || "",
+      roleId: selectedRole?._fallback ? "" : String(selectedRole?.id || ""),
     });
   };
 
@@ -144,7 +161,7 @@ export default function EditUser() {
         lastName: formData.lastName,
         email: formData.email,
         phone: formData.phone ? `${formData.countryCode}${formData.phone}` : undefined,
-        role: formData.role || undefined,
+        role: formData.role ? normalizeRoleForApi(formData.role) : undefined,
         status: formData.isActive ? "active" : "inactive",
         twoFactorEnabled: formData.mfaEnabled,
       };

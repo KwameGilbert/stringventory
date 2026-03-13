@@ -3,7 +3,7 @@
  * Handles all authentication-related API calls
  */
 
-import { apiClient, API_ENDPOINTS, setTokens, clearTokens } from './api.client';
+import { apiClient, API_ENDPOINTS, setTokens, clearTokens, extractAuthTokens } from './api.client';
 
 /**
  * Register a new user
@@ -23,10 +23,7 @@ export const authService = {
       password,
     });
 
-    const payload = response?.data || response || {};
-    const tokenPayload = response?.tokens || payload?.tokens || {};
-    const accessToken = tokenPayload?.accessToken || payload?.accessToken;
-    const refreshToken = tokenPayload?.refreshToken || payload?.refreshToken;
+    const { accessToken, refreshToken } = extractAuthTokens(response);
 
     if (accessToken) {
       setTokens(accessToken, refreshToken);
@@ -54,12 +51,13 @@ export const authService = {
   refreshToken: async (refreshToken) => {
     const response = await apiClient.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, {
       refreshToken,
+      refresh_token: refreshToken,
     });
 
-    const payload = response?.data || response || {};
-    const tokenPayload = response?.tokens || payload?.tokens || {};
-    const nextAccessToken = tokenPayload?.accessToken || payload?.accessToken;
-    const nextRefreshToken = tokenPayload?.refreshToken || payload?.refreshToken;
+    const {
+      accessToken: nextAccessToken,
+      refreshToken: nextRefreshToken,
+    } = extractAuthTokens(response);
 
     if (nextAccessToken) {
       setTokens(nextAccessToken, nextRefreshToken);
@@ -89,8 +87,8 @@ export const authService = {
   /**
    * Verify email with token
    */
-  verifyEmail: async (token) => {
-    return await apiClient.post(API_ENDPOINTS.AUTH.VERIFY_EMAIL, { token });
+  verifyEmail: async (email, token) => {
+    return await apiClient.get(API_ENDPOINTS.AUTH.VERIFY_EMAIL(email, token));
   },
 };
 

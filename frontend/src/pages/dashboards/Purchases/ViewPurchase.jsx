@@ -9,6 +9,27 @@ const extractPurchase = (response) => {
   return payload?.purchase || payload?.data?.purchase || payload?.data || payload;
 };
 
+const toNumber = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const normalizePurchaseItem = (item) => {
+  const quantity = toNumber(item?.quantity);
+  const unitCost = toNumber(item?.unitCost ?? item?.costPrice);
+  const sellingPrice = toNumber(item?.sellingPrice);
+  const subtotal = toNumber(item?.subtotal ?? item?.lineTotal ?? item?.total);
+
+  return {
+    ...item,
+    quantity,
+    unitCost,
+    sellingPrice,
+    subtotal: subtotal || quantity * unitCost,
+    expiryDate: item?.expiryDate || item?.expiry || item?.expirationDate || item?.expiresAt || null,
+  };
+};
+
 export default function ViewPurchase() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -25,11 +46,12 @@ export default function ViewPurchase() {
             ...found,
             status: String(found.status || "pending").toLowerCase(),
             supplierName: found.supplierName || found.supplier?.name || "Unknown Supplier",
-            purchaseDate: found.purchaseDate || found.createdAt,
-            totalAmount: Number(found.totalAmount ?? found.amount ?? 0),
+            purchaseDate: found.purchaseDate || found.date || found.createdAt,
+            totalAmount: toNumber(found.totalAmount ?? found.total ?? found.amount),
             createdBy: found.createdBy || found.createdByName || "System",
           });
-          setItems(found.purchaseItems || found.items || []);
+          const purchaseItems = found.purchaseItems || found.items || [];
+          setItems(purchaseItems.map(normalizePurchaseItem));
         }
       } catch (error) {
         console.error("Error fetching purchase", error);
@@ -67,7 +89,7 @@ export default function ViewPurchase() {
       style: "currency",
       currency: "GHS",
       minimumFractionDigits: 2,
-    }).format(amount);
+    }).format(toNumber(amount));
   };
 
   const formatDate = (dateString) => {
@@ -77,6 +99,8 @@ export default function ViewPurchase() {
       year: "numeric",
     });
   };
+
+  const purchaseReference = purchase?.waybillNumber || purchase?.purchaseNumber || "";
 
   if (!purchase) {
     return (
@@ -90,7 +114,7 @@ export default function ViewPurchase() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto pb-8 animate-fade-in">
+    <div className="max-w-6xl mx-auto pb-8 animate-fade-in mt-20">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/purchases")}
@@ -107,7 +131,7 @@ export default function ViewPurchase() {
         <div className="px-6 py-5 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{purchase.waybillNumber}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{purchaseReference}</h1>
               <div className="flex items-center gap-3 mt-2">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(purchase.status)}`}>
                   {purchase.status.charAt(0).toUpperCase() + purchase.status.slice(1)}
@@ -154,13 +178,14 @@ export default function ViewPurchase() {
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Product</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Qty</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Unit Cost</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Selling Price</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Subtotal</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Expiry</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {items.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50/50">
+                    <tr key={item.id || index} className="hover:bg-gray-50/50">
                       <td className="px-6 py-3">
                         <span className="text-sm font-medium text-gray-900">{item.productName || item.product?.name || `Product ${index + 1}`}</span>
                       </td>
@@ -171,7 +196,10 @@ export default function ViewPurchase() {
                         <span className="text-sm text-gray-900">{formatCurrency(item.unitCost)}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.subtotal ?? Number(item.quantity || 0) * Number(item.unitCost || 0))}</span>
+                        <span className="text-sm text-gray-900">{formatCurrency(item.sellingPrice)}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.subtotal)}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm text-gray-600">{item.expiryDate ? formatDate(item.expiryDate) : "—"}</span>
@@ -218,7 +246,7 @@ export default function ViewPurchase() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium">Waybill Number</p>
-                  <p className="text-sm font-semibold text-gray-900 font-mono">{purchase.waybillNumber}</p>
+                  <p className="text-sm font-semibold text-gray-900 font-mono">{purchaseReference}</p>
                 </div>
               </div>
 

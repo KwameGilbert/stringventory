@@ -24,6 +24,15 @@ const extractPurchase = (response) => {
   return payload?.purchase || payload?.data?.purchase || payload?.data || payload;
 };
 
+const normalizeEditItem = (item = {}) => ({
+  ...item,
+  productId: item.productId || item.product?.id || "",
+  quantity: item.quantity ?? "",
+  unitCost: item.unitCost ?? item.costPrice ?? "",
+  sellingPrice: item.sellingPrice ?? "",
+  expiryDate: item.expiryDate || item.expiry || item.expirationDate || item.expiresAt || "",
+});
+
 export default function EditPurchase() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,7 +48,7 @@ export default function EditPurchase() {
     status: "pending"
   });
 
-  const [items, setItems] = useState([{ productId: "", quantity: "", unitCost: "", expiryDate: "" }]);
+  const [items, setItems] = useState([{ productId: "", quantity: "", unitCost: "", sellingPrice: "", expiryDate: "" }]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,16 +65,16 @@ export default function EditPurchase() {
         const purchase = extractPurchase(purchaseRes);
         if (purchase?.id) {
           setFormData({
-            waybillNumber: purchase.waybillNumber,
+            waybillNumber: purchase.waybillNumber || purchase.purchaseNumber || "",
             supplierId: purchase.supplierId,
-            purchaseDate: purchase.purchaseDate || (purchase.createdAt ? purchase.createdAt.split('T')[0] : ""),
+            purchaseDate: purchase.purchaseDate || purchase.date || (purchase.createdAt ? purchase.createdAt.split('T')[0] : ""),
             notes: purchase.notes || "",
             status: String(purchase.status || "pending").toLowerCase(),
           });
 
           const purchaseItems = purchase.purchaseItems || purchase.items || [];
-          setItems(purchaseItems.length > 0 ? purchaseItems : [
-            { productId: "", quantity: "", unitCost: "", expiryDate: "" }
+          setItems(purchaseItems.length > 0 ? purchaseItems.map(normalizeEditItem) : [
+            { productId: "", quantity: "", unitCost: "", sellingPrice: "", expiryDate: "" }
           ]);
         }
       } catch (error) {
@@ -88,14 +97,15 @@ export default function EditPurchase() {
         .map((item) => ({
           productId: item.productId,
           quantity: Number(item.quantity),
-          unitCost: Number(item.unitCost),
+          costPrice: Number(item.unitCost),
+          sellingPrice: item.sellingPrice === "" ? 0 : Number(item.sellingPrice),
           expiryDate: item.expiryDate || null,
         }));
 
       await purchaseService.updatePurchase(id, {
         ...formData,
         status: String(formData.status || "pending").toLowerCase(),
-        purchaseItems: cleanedItems,
+        items: cleanedItems,
       });
 
       showSuccess("Purchase updated successfully");
@@ -109,7 +119,7 @@ export default function EditPurchase() {
   };
 
   const addItem = () => {
-    setItems([...items, { productId: "", quantity: "", unitCost: "", expiryDate: "" }]);
+    setItems([...items, { productId: "", quantity: "", unitCost: "", sellingPrice: "", expiryDate: "" }]);
   };
 
   const removeItem = (index) => {
@@ -134,7 +144,7 @@ export default function EditPurchase() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 animate-fade-in">
+    <div className="max-w-4xl mx-auto pb-8 animate-fade-in mt-20">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/purchases")}
@@ -280,6 +290,20 @@ export default function EditPurchase() {
                       type="number"
                       value={item.unitCost}
                       onChange={(e) => updateItem(index, 'unitCost', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Selling Price (GH₵)
+                    </label>
+                    <input
+                      type="number"
+                      value={item.sellingPrice}
+                      onChange={(e) => updateItem(index, 'sellingPrice', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                       step="0.01"
                       min="0"

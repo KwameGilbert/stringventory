@@ -3,28 +3,29 @@
  * Centralized endpoint paths for all API calls
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://stringventory.onrender.com/v1/';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://stringventory-api.onrender.com';
 
 export const API_ENDPOINTS = {
   // Authentication
   AUTH: {
-    REGISTER: '/auth/register',
-    LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout',
-    REFRESH_TOKEN: '/auth/refresh-token',
-    FORGOT_PASSWORD: '/auth/forgot-password',
-    RESET_PASSWORD: '/auth/reset-password',
-    VERIFY_EMAIL: '/auth/verify-email',
+    REGISTER: '/v1/auth/register',
+    LOGIN: '/v1/auth/login',
+    LOGOUT: '/v1/auth/logout',
+    REFRESH_TOKEN: '/v1/auth/refresh',
+    FORGOT_PASSWORD: '/v1/auth/password/forgot',
+    RESET_PASSWORD: '/v1/auth/password/reset',
+    VERIFY_EMAIL: (email, token) =>
+      `/v1/auth/verify-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`,
   },
 
   // User Management
   USERS: {
-    LIST: '/admin/users',
-    GET: (id) => `/admin/users/${id}`,
-    CREATE: '/admin/users',
-    UPDATE: (id) => `/admin/users/${id}`,
-    DELETE: (id) => `/admin/users/${id}`,
-    RESEND_VERIFICATION: (id) => `/admin/users/${id}/resend-verification`,
+    LIST: '/v1/users',
+    GET: (id) => `/v1/users/${id}`,
+    CREATE: '/v1/users',
+    UPDATE: (id) => `/v1/users/${id}`,
+    DELETE: (id) => `/v1/users/${id}`,
+    RESEND_VERIFICATION: (id) => `/v1/users/${id}/resend-verification`,
   },
 
   // Roles
@@ -35,13 +36,13 @@ export const API_ENDPOINTS = {
 
   // Products
   PRODUCTS: {
-    LIST: '/products',
-    GET: (id) => `/products/${id}`,
-    CREATE: '/products',
-    UPDATE: (id) => `/products/${id}`,
-    DELETE: (id) => `/products/${id}`,
-    LOW_STOCK: '/products/low-stock',
-    EXPIRING: '/products/expiring',
+    LIST: '/v1/products',
+    GET: (id) => `/v1/products/${id}`,
+    CREATE: '/v1/products',
+    UPDATE: (id) => `/v1/products/${id}`,
+    DELETE: (id) => `/v1/products/${id}`,
+    LOW_STOCK: '/v1/products/low-stock',
+    EXPIRING: '/v1/products/expiring',
   },
 
   // Unit of Measurements
@@ -51,16 +52,16 @@ export const API_ENDPOINTS = {
 
   // Categories
   CATEGORIES: {
-    LIST: '/categories',
-    GET: (id) => `/categories/${id}`,
-    CREATE: '/categories',
-    UPDATE: (id) => `/categories/${id}`,
-    DELETE: (id) => `/categories/${id}`,
+    LIST: '/v1/categories',
+    GET: (id) => `/v1/categories/${id}`,
+    CREATE: '/v1/categories',
+    UPDATE: (id) => `/v1/categories/${id}`,
+    DELETE: (id) => `/v1/categories/${id}`,
   },
 
   // Inventory
   INVENTORY: {
-    LIST: '/inventory',
+    LIST: '/v1/inventory',
     GET_BY_PRODUCT: (productId) => `/inventory/product/${productId}`,
     ADD: '/inventory/add',
     ADJUST: '/inventory/adjust',
@@ -69,51 +70,53 @@ export const API_ENDPOINTS = {
 
   // Customers
   CUSTOMERS: {
-    LIST: '/customers',
-    GET: (id) => `/customers/${id}`,
-    CREATE: '/customers',
-    UPDATE: (id) => `/customers/${id}`,
-    DELETE: (id) => `/customers/${id}`,
-    ORDERS: (id) => `/customers/${id}/orders`,
+    LIST: '/v1/customers',
+    GET: (id) => `/v1/customers/${id}`,
+    CREATE: '/v1/customers',
+    UPDATE: (id) => `/v1/customers/${id}`,
+    DELETE: (id) => `/v1/customers/${id}`,
+    ORDERS: (id) => `/v1/customers/${id}/orders`,
   },
 
   // Orders
   ORDERS: {
-    LIST: '/orders',
-    GET: (id) => `/orders/${id}`,
-    CREATE: '/orders',
-    UPDATE: (id) => `/orders/${id}`,
-    DELETE: (id) => `/orders/${id}`,
-    CREATE_REFUND: (id) => `/orders/${id}/refund`,
+    LIST: '/v1/sales',
+    GET: (id) => `/v1/sales/${id}`,
+    CREATE: '/v1/orders',
+    UPDATE: (id) => `/v1/orders/${id}`,
+    DELETE: (id) => `/v1/orders/${id}`,
+    CREATE_REFUND: (id) => `/v1/orders/${id}/refund`,
   },
 
   // Suppliers
   SUPPLIERS: {
-    LIST: '/suppliers',
-    GET: (id) => `/suppliers/${id}`,
-    CREATE: '/suppliers',
-    UPDATE: (id) => `/suppliers/${id}`,
-    DELETE: (id) => `/suppliers/${id}`,
+    LIST: '/v1/suppliers',
+    GET: (id) => `/v1/suppliers/${id}`,
+    CREATE: '/v1/suppliers',
+    UPDATE: (id) => `/v1/suppliers/${id}`,
+    DELETE: (id) => `/v1/suppliers/${id}`,
   },
 
   // Purchases
   PURCHASES: {
-    LIST: '/purchases',
-    GET: (id) => `/purchases/${id}`,
-    CREATE: '/purchases',
-    UPDATE: (id) => `/purchases/${id}`,
-    DELETE: (id) => `/purchases/${id}`,
+    LIST: '/v1/purchases',
+    GET: (id) => `/v1/purchases/${id}`,
+    CREATE: '/v1/purchases',
+    UPDATE: (id) => `/v1/purchases/${id}`,
+    DELETE: (id) => `/v1/purchases/${id}`,
   },
 
   // Expenses
   EXPENSES: {
-    LIST: '/expenses',
-    GET: (id) => `/expenses/${id}`,
-    CREATE: '/expenses',
-    UPDATE: (id) => `/expenses/${id}`,
-    DELETE: (id) => `/expenses/${id}`,
-    CATEGORIES: '/expense-categories',
-    CREATE_CATEGORY: '/expense-categories',
+    LIST: '/v1/expenses',
+    GET: (id) => `/v1/expenses/${id}`,
+    CREATE: '/v1/expenses',
+    UPDATE: (id) => `/v1/expenses/${id}`,
+    DELETE: (id) => `/v1/expenses/${id}`,
+    CATEGORIES: '/v1/expense-categories',
+    CREATE_CATEGORY: '/v1/expense-categories',
+    UPDATE_CATEGORY: (id) => `/v1/expense-categories/${id}`,
+    DELETE_CATEGORY: (id) => `/v1/expense-categories/${id}`,
   },
 
   // Sales
@@ -127,32 +130,32 @@ export const API_ENDPOINTS = {
 
   // Reports & Analytics
   ANALYTICS: {
-    DASHBOARD: '/analytics/dashboard',
-    SALES_REPORT: '/analytics/sales-report',
-    INVENTORY_REPORT: '/analytics/inventory-report',
-    FINANCIAL_REPORT: '/analytics/financial-report',
-    CUSTOMER_REPORT: '/analytics/customer-report',
-    EXPENSE_REPORT: '/analytics/expense-report',
-    EXPORT: (type) => `/analytics/export/${type}`,
+    DASHBOARD: '/v1/analytics/dashboard',
+    SALES_REPORT: '/v1/analytics/sales-report',
+    INVENTORY_REPORT: '/v1/analytics/inventory-report',
+    FINANCIAL_REPORT: '/v1/analytics/financial-report',
+    CUSTOMER_REPORT: '/v1/analytics/customer-report',
+    EXPENSE_REPORT: '/v1/analytics/expense-report',
+    EXPORT: (type) => `/v1/analytics/export/${type}`,
   },
 
   // Messaging
   MESSAGING: {
-    MESSAGES_LIST: '/messaging/messages',
-    MESSAGE_GET: (id) => `/messaging/messages/${id}`,
-    MESSAGE_SEND: '/messaging/messages',
-    BULK_SEND: '/messaging/bulk-messages',
-    TEMPLATES: '/messaging/templates',
-    CREATE_TEMPLATE: '/messaging/templates',
+    MESSAGES_LIST: '/v1/messaging/messages',
+    MESSAGE_GET: (id) => `/v1/messaging/messages/${id}`,
+    MESSAGE_SEND: '/v1/messaging/messages',
+    BULK_SEND: '/v1/messaging/bulk-messages',
+    TEMPLATES: '/v1/messaging/templates',
+    CREATE_TEMPLATE: '/v1/messaging/templates',
   },
 
   // Settings
   SETTINGS: {
-    BUSINESS: '/settings/business',
-    NOTIFICATIONS: '/settings/notifications',
-    PAYMENT: '/settings/payment',
-    API: '/settings/api',
-    REGENERATE_API_KEY: '/settings/api/regenerate-key',
+    BUSINESS: '/v1/settings/business',
+    NOTIFICATIONS: '/v1/settings/notifications',
+    PAYMENT: '/v1/settings/payment',
+    API: '/v1/settings/api',
+    REGENERATE_API_KEY: '/v1/settings/api/regenerate-key',
   },
 
   // Superadmin - Businesses

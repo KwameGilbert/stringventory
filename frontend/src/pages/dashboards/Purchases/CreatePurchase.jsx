@@ -72,8 +72,9 @@ export default function CreatePurchase() {
 
       await purchaseService.createPurchase({
         ...formData,
+        supplierId: Number(formData.supplierId),
         status: String(formData.status || "pending").toLowerCase(),
-        purchaseItems: cleanedItems,
+        items: cleanedItems,
       });
 
       showSuccess("Purchase created successfully");
@@ -101,7 +102,7 @@ export default function CreatePurchase() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 animate-fade-in">
+    <div className="max-w-4xl mx-auto pb-8 animate-fade-in mt-20">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/purchases")}

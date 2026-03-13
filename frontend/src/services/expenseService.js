@@ -34,11 +34,11 @@ export const expenseService = {
   },
 
   updateExpenseCategory: async (categoryId, categoryData) => {
-    return await apiClient.put(`/expense-categories/${categoryId}`, categoryData);
+    return await apiClient.put(API_ENDPOINTS.EXPENSES.UPDATE_CATEGORY(categoryId), categoryData);
   },
 
   deleteExpenseCategory: async (categoryId) => {
-    return await apiClient.delete(`/expense-categories/${categoryId}`);
+    return await apiClient.delete(API_ENDPOINTS.EXPENSES.DELETE_CATEGORY(categoryId));
   },
 
   getPaymentSettings: async () => {

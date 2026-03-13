@@ -42,6 +42,23 @@ const extractRoles = (response) => {
   return [];
 };
 
+const normalizeRoleForApi = (roleValue) => {
+  const raw = String(roleValue || "").trim().toLowerCase();
+  if (!raw) return "";
+
+  if (["ceo", "owner", "admin", "administrator", "superadmin", "super_admin"].includes(raw)) {
+    return "ceo";
+  }
+  if (["manager", "management"].includes(raw)) {
+    return "manager";
+  }
+  if (["sales", "salesperson", "sales_person", "sales rep", "sales_rep"].includes(raw)) {
+    return "salesperson";
+  }
+
+  return raw;
+};
+
 export default function AddUser() {
   const navigate = useNavigate();
   const [roles, setRoles] = useState(BUSINESS_ROLES);
@@ -76,11 +93,11 @@ export default function AddUser() {
 
   const handleRoleChange = (e) => {
     const value = e.target.value;
-    const selectedRole = roles.find((r) => r.id === value || r.name === value);
+    const selectedRole = roles.find((r) => String(r.id) === value || String(r.name) === value);
     setFormData({
       ...formData,
       role: selectedRole?.name || "",
-      roleId: selectedRole?._fallback ? "" : selectedRole?.id || "",
+      roleId: selectedRole?._fallback ? "" : String(selectedRole?.id || ""),
     });
   };
 
@@ -99,7 +116,7 @@ export default function AddUser() {
         email: formData.email,
         phone: formData.phone ? `${formData.countryCode}${formData.phone}` : undefined,
         password: formData.password,
-        role: formData.role,
+        role: normalizeRoleForApi(formData.role),
         status: formData.isActive ? "active" : "inactive",
         twoFactorEnabled: formData.mfaEnabled,
       };

@@ -70,11 +70,17 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-3">
                       {/* Category Image */}
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
-                        {category.image ? (
-                          <img src={category.image} alt={category.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Image className="w-4 h-4 text-gray-400" />
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden relative">
+                        <Image className="w-4 h-4 text-gray-400 absolute" />
+                        {category.image && (
+                          <img
+                            src={category.image}
+                            alt={category.name}
+                            className="w-full h-full object-cover relative z-10"
+                            onError={(event) => {
+                              event.currentTarget.style.display = "none";
+                            }}
+                          />
                         )}
                       </div>
                       <Link 
