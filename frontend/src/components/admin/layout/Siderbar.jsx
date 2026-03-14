@@ -25,14 +25,13 @@ import {
   X,
 } from "lucide-react";
 
-const Sidebar = ({ mobileOpen, onClose }) => {
+const Sidebar = ({ mobileOpen, onClose, isOpen, onToggle }) => {
   useTheme(); // Hook maintained for potential future use
   const { user } = useAuth();
-  const [isOpen, setIsOpen] = useState(true);
   const location = useLocation();
 
   const toggleSidebar = () => {
-    setIsOpen(!isOpen);
+    if (onToggle) onToggle();
   };
 
   const handleNavClick = () => {
@@ -110,7 +109,7 @@ const Sidebar = ({ mobileOpen, onClose }) => {
       </div>
 
       {/* Navigation Menu */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto custom-scrollbar">
+      <nav className="flex-1 min-h-0 px-3 py-4 overflow-y-auto custom-scrollbar">
         <div className="space-y-1">
           {filteredMenuItems.map((item, index) => {
             const Icon = item.icon;

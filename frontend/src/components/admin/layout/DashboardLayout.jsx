@@ -5,9 +5,11 @@ import Footer from "./Footer";
 
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
-  const closeSidebar = () => setSidebarOpen(false);
+  const toggleMobileSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleDesktopSidebar = () => setIsSidebarExpanded(!isSidebarExpanded);
+  const closeMobileSidebar = () => setSidebarOpen(false);
 
   return (
     <div className={`flex min-h-screen transition-colors duration-500 ease-in-out`}>
@@ -15,23 +17,28 @@ const DashboardLayout = ({ children }) => {
       {sidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={closeSidebar}
+          onClick={closeMobileSidebar}
         />
       )}
 
       {/* Sidebar */}
       <Sidebar 
         mobileOpen={sidebarOpen} 
-        onClose={closeSidebar} 
+        onClose={closeMobileSidebar}
+        isOpen={isSidebarExpanded}
+        onToggle={toggleDesktopSidebar}
       />
 
       {/* Main Content Area - responsive margin */}
-      <div className="flex-1 ml-0 lg:ml-64 transition-all duration-300">
+      <div className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
         {/* Header with mobile menu toggle */}
-        <Header onMenuToggle={toggleSidebar} />
+        <Header 
+          onMenuToggle={toggleMobileSidebar} 
+          isSidebarExpanded={isSidebarExpanded}
+        />
 
         {/* Page Content */}
-        <main className="pt-20 px-4 sm:px-6 py-4 sm:py-6 pb-20 min-h-screen">
+        <main className="pt-24 px-4 sm:px-6 pb-12 min-h-screen">
           {children}
         </main>
 
