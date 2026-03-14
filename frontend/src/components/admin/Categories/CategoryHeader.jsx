@@ -1,9 +1,9 @@
 import { Plus, Download, FileText, LayoutGrid, List } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const CategoryHeader = ({ view, setView, totalCategories }) => {
+const CategoryHeader = ({ view, setView, totalCategories, canManage = true }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mt-20">
       {/* Title Row */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -48,14 +48,15 @@ const CategoryHeader = ({ view, setView, totalCategories }) => {
             </button>
           </div>
 
-          {/* Add Category Button */}
-          <Link
-            to="/dashboard/categories/new"
-            className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
-          >
-            <Plus size={16} />
-            Add Category
-          </Link>
+          {canManage && (
+            <Link
+              to="/dashboard/categories/new"
+              className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
+            >
+              <Plus size={16} />
+              Add Category
+            </Link>
+          )}
         </div>
       </div>
     </div>

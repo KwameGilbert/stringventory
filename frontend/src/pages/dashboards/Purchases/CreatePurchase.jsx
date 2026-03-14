@@ -1,9 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, X } from "lucide-react";
+import purchaseService from "../../../services/purchaseService";
+import supplierService from "../../../services/supplierService";
+import { productService } from "../../../services/productService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+  return [];
+};
 
 export default function CreatePurchase() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [suppliers, setSuppliers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     waybillNumber: "",
     supplierId: "",
@@ -13,17 +33,62 @@ export default function CreatePurchase() {
   });
 
   const [items, setItems] = useState([
-    { productId: "", quantity: "", unitCost: "", expiryDate: "" }
+    { productId: "", quantity: "", costPrice: "", sellingPrice: "", expiryDate: "" }
   ]);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [suppliersRes, productsRes] = await Promise.all([
+          supplierService.getSuppliers(),
+          productService.getProducts(),
+        ]);
+
+        setSuppliers(extractList(suppliersRes, "suppliers"));
+        setProducts(extractList(productsRes, "products"));
+      } catch (error) {
+        console.error("Failed to load purchase options", error);
+        showError(error?.message || "Failed to load suppliers/products");
+      }
+    };
+
+    fetchOptions();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Creating purchase:", { formData, items });
-    navigate("/dashboard/purchases");
+    setLoading(true);
+
+    try {
+      const cleanedItems = items
+        .filter((item) => item.productId && item.quantity && item.costPrice)
+        .map((item) => ({
+          productId: item.productId,
+          quantity: Number(item.quantity),
+          costPrice: Number(item.costPrice),
+          sellingPrice: Number(item.sellingPrice),
+          expiryDate: item.expiryDate || null,
+        }));
+
+      await purchaseService.createPurchase({
+        ...formData,
+        supplierId: Number(formData.supplierId),
+        status: String(formData.status || "pending").toLowerCase(),
+        items: cleanedItems,
+      });
+
+      showSuccess("Purchase created successfully");
+      navigate("/dashboard/purchases");
+    } catch (error) {
+      console.error("Failed to create purchase", error);
+      showError(error?.message || "Failed to create purchase");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addItem = () => {
-    setItems([...items, { productId: "", quantity: "", unitCost: "", expiryDate: "" }]);
+    setItems([...items, { productId: "", quantity: "", costPrice: "", sellingPrice: "", expiryDate: "" }]);
   };
 
   const removeItem = (index) => {
@@ -37,7 +102,7 @@ export default function CreatePurchase() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 animate-fade-in">
+    <div className="max-w-4xl mx-auto pb-8 animate-fade-in mt-20">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/purchases")}
@@ -73,6 +138,23 @@ export default function CreatePurchase() {
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Supplier *
+              </label>
+              <select
+                value={formData.supplierId}
+                onChange={(e) => setFormData({ ...formData, supplierId: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                required
+              >
+                <option value="">Select supplier</option>
+                {suppliers.map((supplier) => (
+                  <option key={supplier.id} value={supplier.id}>{supplier.name}</option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -128,18 +210,21 @@ export default function CreatePurchase() {
                     <X size={16} />
                   </button>
                 )}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Product
                     </label>
-                    <input
-                      type="text"
+                    <select
                       value={item.productId}
                       onChange={(e) => updateItem(index, 'productId', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
-                      placeholder="Select product..."
-                    />
+                    >
+                      <option value="">Select product...</option>
+                      {products.map((product) => (
+                        <option key={product.id} value={product.id}>{product.name}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
@@ -157,12 +242,26 @@ export default function CreatePurchase() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Unit Cost (GH₵)
+                      Cost Price (GH₵)
                     </label>
                     <input
                       type="number"
-                      value={item.unitCost}
-                      onChange={(e) => updateItem(index, 'unitCost', e.target.value)}
+                      value={item.costPrice}
+                      onChange={(e) => updateItem(index, 'costPrice', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Selling Price (GH₵)
+                    </label>
+                    <input
+                      type="number"
+                      value={item.sellingPrice}
+                      onChange={(e) => updateItem(index, 'sellingPrice', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                       step="0.01"
                       min="0"
@@ -197,9 +296,10 @@ export default function CreatePurchase() {
           </button>
           <button
             type="submit"
+            disabled={loading}
             className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
           >
-            Create Purchase
+            {loading ? "Creating..." : "Create Purchase"}
           </button>
         </div>
       </form>

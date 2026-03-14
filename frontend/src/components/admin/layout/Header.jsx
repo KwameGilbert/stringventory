@@ -3,7 +3,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import { Search, ChevronDown, Calendar, Bell, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Header = ({ onMenuToggle }) => {
+const Header = ({ onMenuToggle, isSidebarExpanded }) => {
   const { themeColors } = useTheme();
   const [currency, setCurrency] = useState("GHS");
   const [startDate, setStartDate] = useState("2025-07-12");
@@ -14,7 +14,7 @@ const Header = ({ onMenuToggle }) => {
   const currencies = ["GHS", "GBP", "USD", "EUR"];
 
   return (
-    <header className="fixed top-0 right-0 left-0 bg-white border-b border-gray-200 z-40 ml-0 lg:ml-64 transition-all duration-300">
+    <header className={`fixed top-0 right-0 left-0 bg-white border-b border-gray-200 z-40 transition-all duration-300 ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
       <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 gap-2 sm:gap-4">
         {/* Mobile menu button */}
         <button

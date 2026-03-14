@@ -7,10 +7,11 @@ const ProductsHeader = ({
   categoryFilter, 
   setCategoryFilter, 
   categories,
-  totalProducts 
+  totalProducts,
+  canManage = true,
 }) => {
   return (
-    <div className="space-y-4 mb-6">
+    <div className="space-y-4 mb-6 mt-20">
       {/* Title Row */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -29,14 +30,15 @@ const ProductsHeader = ({
             PDF
           </button>
 
-          {/* Add Product Button */}
-          <Link
-            to="/dashboard/products/new"
-            className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
-          >
-            <Plus size={16} />
-            Add Product
-          </Link>
+          {canManage && (
+            <Link
+              to="/dashboard/products/new"
+              className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
+            >
+              <Plus size={16} />
+              Add Product
+            </Link>
+          )}
         </div>
       </div>
 
@@ -60,7 +62,7 @@ const ProductsHeader = ({
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="pl-9 pr-8 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all text-sm bg-white min-w-[160px]"
+            className="pl-9 pr-8 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all text-sm bg-white min-w-40"
           >
             <option value="">All Categories</option>
             {categories.map((cat) => (

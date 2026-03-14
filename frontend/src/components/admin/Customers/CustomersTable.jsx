@@ -5,7 +5,7 @@ import SendMessageModal from "./SendMessageModal";
 
 const ITEMS_PER_PAGE = 8;
 
-const CustomersTable = ({ customers }) => {
+const CustomersTable = ({ customers, canManage = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [messageModal, setMessageModal] = useState({ isOpen: false, customer: null });
 
@@ -50,12 +50,14 @@ const CustomersTable = ({ customers }) => {
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-1">No customers found</h3>
         <p className="text-gray-500 text-sm mb-4">Add your first customer to get started</p>
-        <Link
-          to="/dashboard/customers/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
-        >
-          Add Customer
-        </Link>
+        {canManage && (
+          <Link
+            to="/dashboard/customers/new"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+          >
+            Add Customer
+          </Link>
+        )}
       </div>
     );
   }
@@ -80,7 +82,7 @@ const CustomersTable = ({ customers }) => {
                 {/* Customer */}
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getAvatarColor(customer.name)} flex items-center justify-center text-white text-sm font-bold`}>
+                    <div className={`w-10 h-10 rounded-full bg-linear-to-br ${getAvatarColor(customer.name)} flex items-center justify-center text-white text-sm font-bold`}>
                       {getInitials(customer.name)}
                     </div>
                     <div>
@@ -113,8 +115,8 @@ const CustomersTable = ({ customers }) => {
                 {/* Address */}
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                    <MapPin size={12} className="text-gray-400 flex-shrink-0" />
-                    <span className="truncate max-w-[200px]">{customer.address}</span>
+                    <MapPin size={12} className="text-gray-400 shrink-0" />
+                    <span className="truncate max-w-50">{customer.address}</span>
                   </div>
                 </td>
 
@@ -138,13 +140,15 @@ const CustomersTable = ({ customers }) => {
                     >
                       <Eye size={16} />
                     </Link>
-                    <Link
-                      to={`/dashboard/customers/${customer.id}/edit`}
-                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-                      title="Edit"
-                    >
-                      <Edit2 size={16} />
-                    </Link>
+                    {canManage && (
+                      <Link
+                        to={`/dashboard/customers/${customer.id}/edit`}
+                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                        title="Edit"
+                      >
+                        <Edit2 size={16} />
+                      </Link>
+                    )}
                     <button 
                       onClick={() => setMessageModal({ isOpen: true, customer })}
                       className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"

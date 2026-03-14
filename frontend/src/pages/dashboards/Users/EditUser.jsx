@@ -1,70 +1,186 @@
 import { useState, useEffect } from "react";
 import { User, Mail, Shield, CheckCircle, Phone, Save, ArrowLeft, ShieldCheck } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { showSuccess } from "../../../utils/alerts";
+import { showError, showSuccess } from "../../../utils/alerts";
+import userService from "../../../services/userService";
+import roleService from "../../../services/roleService";
+import { BUSINESS_ROLES } from "../../../services/roleService";
+
+const COUNTRY_CODES = [
+  { code: "+233", flag: "🇬🇭", label: "GH" },
+  { code: "+234", flag: "🇳🇬", label: "NG" },
+  { code: "+44", flag: "🇬🇧", label: "UK" },
+  { code: "+1", flag: "🇺🇸", label: "US" },
+  { code: "+27", flag: "🇿🇦", label: "ZA" },
+  { code: "+91", flag: "🇮🇳", label: "IN" },
+  { code: "+254", flag: "🇰🇪", label: "KE" },
+  { code: "+256", flag: "🇺🇬", label: "UG" },
+  { code: "+255", flag: "🇹🇿", label: "TZ" },
+  { code: "+237", flag: "🇨🇲", label: "CM" },
+  { code: "+225", flag: "🇨🇮", label: "CI" },
+  { code: "+228", flag: "🇹🇬", label: "TG" },
+  { code: "+229", flag: "🇧🇯", label: "BJ" },
+  { code: "+221", flag: "🇸🇳", label: "SN" },
+  { code: "+49", flag: "🇩🇪", label: "DE" },
+  { code: "+33", flag: "🇫🇷", label: "FR" },
+  { code: "+61", flag: "🇦🇺", label: "AU" },
+  { code: "+86", flag: "🇨🇳", label: "CN" },
+  { code: "+971", flag: "🇦🇪", label: "AE" },
+  { code: "+966", flag: "🇸🇦", label: "SA" },
+];
+
+const extractRoles = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.roles)) return payload.roles;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.roles)) return payload.data.roles;
+
+  return [];
+};
+
+const extractUser = (response) => {
+  const payload = response?.data || response || {};
+
+  if (payload?.user) return payload.user;
+  if (payload?.data?.user) return payload.data.user;
+  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
+  return payload;
+};
+
+const normalizeRoleForApi = (roleValue) => {
+  const raw = String(roleValue || "").trim().toLowerCase();
+  if (!raw) return "";
+
+  if (["ceo", "owner", "admin", "administrator", "superadmin", "super_admin"].includes(raw)) {
+    return "ceo";
+  }
+  if (["manager", "management"].includes(raw)) {
+    return "manager";
+  }
+  if (["sales", "salesperson", "sales_person", "sales rep", "sales_rep"].includes(raw)) {
+    return "salesperson";
+  }
+
+  return raw;
+};
 
 export default function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
+  const [roles, setRoles] = useState(BUSINESS_ROLES);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
+    countryCode: "+233",
     phone: "",
-    roleName: "",
+    role: "",
+    roleId: "",
     isActive: true,
-    mfaEnabled: false,
-    permissions: [] // Kept for state consistency, though not edited here
+    mfaEnabled: false
   });
 
   useEffect(() => {
-    // Determine source
     const fetchUser = async () => {
-        try {
-            // Mock fetching from local "database" or JSON
-            // For now, we will try to find in the local cache or default to dummy if not found
-            // In real app, this is an API call: await axios.get(`/api/users/${id}`)
-            
-            // Simulating fetch
-            const usersRes = await axios.get("/data/users.json");
-            const user = usersRes.data.find(u => u.id === parseInt(id) || u.id === id);
-            
-            if (user) {
-                setFormData({
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    phone: user.phone || "",
-                    roleName: user.roleName || user.role || "",
-                    isActive: user.isActive !== false, // default true
-                    mfaEnabled: user.mfaEnabled || false,
-                    permissions: user.permissions || []
-                });
-            }
-        } catch (error) {
-            console.error("Error fetching user", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
-    if (id) fetchUser();
-  }, [id]);
+      try {
+        const [userRes, rolesRes] = await Promise.all([
+          userService.getUserById(id),
+          roleService.getRoles(),
+        ]);
 
-  const handleSubmit = (e) => {
+        const user = extractUser(userRes);
+        const fetchedRoles = extractRoles(rolesRes);
+        if (fetchedRoles.length > 0) {
+          setRoles(fetchedRoles);
+        }
+
+        if (!user?.id && !user?.email) {
+          showError("User not found");
+          navigate("/dashboard/users");
+          return;
+        }
+
+        const resolvedRoleId = user.roleId || user.role?.id || "";
+        const resolvedRoleName = user.role?.name || user.role || user.roleName || "";
+
+        const existingPhone = user.phone || "";
+        const knownCodes = COUNTRY_CODES.map((c) => c.code).sort((a, b) => b.length - a.length);
+        let parsedCode = "+233";
+        let parsedNumber = existingPhone;
+        for (const code of knownCodes) {
+          if (existingPhone.startsWith(code)) {
+            parsedCode = code;
+            parsedNumber = existingPhone.slice(code.length);
+            break;
+          }
+        }
+
+        setFormData({
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
+          email: user.email || "",
+          countryCode: parsedCode,
+          phone: parsedNumber,
+          role: typeof resolvedRoleName === "string" ? resolvedRoleName : "",
+          roleId: resolvedRoleId ? String(resolvedRoleId) : "",
+          isActive: user?.isActive ?? String(user?.status || "").toLowerCase() === "active",
+          mfaEnabled: user?.mfaEnabled ?? user?.twoFactorEnabled ?? false,
+        });
+      } catch (error) {
+        console.error("Error fetching user", error);
+        showError(error?.message || "Failed to load user");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) fetchUser();
+  }, [id, navigate]);
+
+  const handleRoleChange = (e) => {
+    const value = e.target.value;
+    const selectedRole = roles.find((r) => String(r.id) === value || String(r.name) === value);
+    setFormData({
+      ...formData,
+      role: selectedRole?.name || "",
+      roleId: selectedRole?._fallback ? "" : String(selectedRole?.id || ""),
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updating user:", id, formData);
-    showSuccess("User updated successfully");
-    navigate("/dashboard/users");
+
+    try {
+      const payload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone ? `${formData.countryCode}${formData.phone}` : undefined,
+        role: formData.role ? normalizeRoleForApi(formData.role) : undefined,
+        status: formData.isActive ? "active" : "inactive",
+        twoFactorEnabled: formData.mfaEnabled,
+      };
+      if (formData.roleId) payload.roleId = formData.roleId;
+      await userService.updateUser(id, payload);
+
+      showSuccess("User updated successfully");
+      navigate("/dashboard/users");
+    } catch (error) {
+      console.error("Failed to update user", error);
+      showError(error?.message || "Failed to update user");
+    }
   };
 
   if (loading) return <div className="p-8 text-center text-gray-500">Loading user data...</div>;
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto pb-12 animate-fade-in">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mt-20">
         <button 
           onClick={() => navigate("/dashboard/users")}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-500"
@@ -124,27 +240,49 @@ export default function EditUser() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Phone</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <div className="flex gap-2">
+                  <div className="relative shrink-0">
+                    <Phone className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                    <select
+                      value={formData.countryCode}
+                      onChange={(e) => setFormData({...formData, countryCode: e.target.value})}
+                      className="pl-10 pr-2 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none bg-white text-sm w-28"
+                    >
+                      {COUNTRY_CODES.map((c) => (
+                        <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
+                      ))}
+                    </select>
+                  </div>
                   <input
-                    type="text"
+                    type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                      setFormData({...formData, phone: value});
+                    }}
+                    className="flex-1 min-w-0 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    placeholder="XX XXX XXXX"
+                    maxLength={10}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Role Title</label>
+                <label className="text-sm font-medium text-gray-700">Role</label>
                 <div className="relative">
                   <Shield className="absolute left-3 top-2.5 text-gray-400" size={18} />
-                  <input
-                    type="text"
-                    value={formData.roleName}
-                    onChange={(e) => setFormData({...formData, roleName: e.target.value})}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                  />
+                  <select
+                    value={formData.roleId || formData.role}
+                    onChange={handleRoleChange}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none bg-white"
+                  >
+                    <option value="">Select a role</option>
+                    {roles.map((role) => (
+                      <option key={role.id || role.name} value={role.id || role.name}>
+                        {role.name || role.displayName}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -179,7 +317,7 @@ export default function EditUser() {
                       onChange={(e) => setFormData({...formData, mfaEnabled: e.target.checked})}
                       className="sr-only peer" 
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
                   </label>
                 </div>
               </div>

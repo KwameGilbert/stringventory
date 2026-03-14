@@ -4,7 +4,15 @@ import { Link } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 5;
 
-const ProductsTable = ({ products, onDelete }) => {
+const renderText = (value, fallback = "—") => {
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  if (value && typeof value === "object") {
+    return value.name || value.title || value.label || fallback;
+  }
+  return fallback;
+};
+
+const ProductsTable = ({ products, onDelete, canManage = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Pagination logic
@@ -24,12 +32,14 @@ const ProductsTable = ({ products, onDelete }) => {
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-1">No products found</h3>
         <p className="text-gray-500 text-sm mb-4">Try adjusting your search or filter criteria</p>
-        <Link
-          to="/dashboard/products/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
-        >
-          Add your first product
-        </Link>
+        {canManage && (
+          <Link
+            to="/dashboard/products/new"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+          >
+            Add your first product
+          </Link>
+        )}
       </div>
     );
   }
@@ -58,9 +68,9 @@ const ProductsTable = ({ products, onDelete }) => {
               return (
                 <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
                   {/* Product with Image */}
-                  <td className="px-6 py-3">
+                  <td className="px-3 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
                         {product.image ? (
                           <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                         ) : (
@@ -80,18 +90,18 @@ const ProductsTable = ({ products, onDelete }) => {
                   </td>
                   
                   {/* SKU */}
-                  <td className="px-4 py-3">
+                  <td className=" py-3">
                     <span className="text-xs text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">{product.sku || "—"}</span>
                   </td>
                   
                   {/* Category */}
                   <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">{product.category}</span>
+                    <span className="text-sm text-gray-600">{renderText(product.category, "Unknown")}</span>
                   </td>
                   
                   {/* Supplier */}
                   <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">{product.supplier || "—"}</span>
+                    <span className="text-sm text-gray-600">{renderText(product.supplier)}</span>
                   </td>
                   
                   {/* Cost Price */}
@@ -149,20 +159,24 @@ const ProductsTable = ({ products, onDelete }) => {
                       >
                         <Eye size={16} />
                       </Link>
-                      <Link
-                        to={`/dashboard/products/${product.id}/edit`}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-                        title="Edit"
-                      >
-                        <Edit2 size={16} />
-                      </Link>
-                      <button 
-                        onClick={() => onDelete && onDelete(product.id)}
-                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                      {canManage && (
+                        <>
+                          <Link
+                            to={`/dashboard/products/${product.id}/edit`}
+                            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 size={16} />
+                          </Link>
+                          <button 
+                            onClick={() => onDelete && onDelete(product.id)}
+                            className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, AlertCircle, Package, DollarSign } from "lucide-react";
-import axios from "axios";
-import Swal from "sweetalert2";
+import orderService from "../../../services/orderService";
+import { confirmAction, showError, showSuccess } from "../../../utils/alerts";
 
 export default function SalesRefund() {
   const { id } = useParams();
@@ -16,15 +16,27 @@ export default function SalesRefund() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [salesRes, itemsRes] = await Promise.all([
-          axios.get('/data/sales.json'),
-          axios.get('/data/sale-items.json')
-        ]);
-        
-        const found = salesRes.data.find(s => s.id === id);
+        const response = await orderService.getOrderById(id);
+        const payload = response?.data || response || {};
+        const rawOrder = payload?.order || payload?.data?.order || payload?.data || payload;
+
+        const found = rawOrder?.id
+          ? {
+              id: rawOrder.id,
+              amount: Number(rawOrder.total || 0),
+            }
+          : null;
+
         if (found) {
           setSale(found);
-          const saleItems = itemsRes.data.filter(item => item.saleId === id);
+          const saleItems = Array.isArray(rawOrder?.items)
+            ? rawOrder.items.map((item, index) => ({
+                id: item.id || item.orderItemId || `${rawOrder.id}-${index}`,
+                productName: item.productName || "Product",
+                quantity: Number(item.quantity || 0),
+                unitPrice: Number(item.unitPrice || 0),
+              }))
+            : [];
           setItems(saleItems);
           
           // Initialize refund items with 0
@@ -37,6 +49,7 @@ export default function SalesRefund() {
         }
       } catch (error) {
         console.error("Error fetching sale details", error);
+        showError(error?.message || "Failed to fetch sale details");
       } finally {
         setLoading(false);
       }
@@ -67,33 +80,43 @@ export default function SalesRefund() {
     }).format(value);
   };
 
-  const handleProcessRefund = (e) => {
+  const handleProcessRefund = async (e) => {
     e.preventDefault();
     
     if (totalRefundAmount <= 0) {
-      Swal.fire("Error", "Please select at least one item to refund", "error");
+      showError("Please select at least one item to refund");
       return;
     }
 
-    Swal.fire({
-      title: 'Process Refund?',
-      text: `Are you sure you want to refund ${formatCurrency(totalRefundAmount)}?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#10b981',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, process refund'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire(
-          'Refunded!',
-          'The refund has been processed successfully.',
-          'success'
-        ).then(() => {
-          navigate(`/dashboard/sales/history`);
-        });
-      }
-    });
+    const confirmation = await confirmAction(
+      "Process Refund?",
+      `Are you sure you want to refund ${formatCurrency(totalRefundAmount)}?`,
+      "Yes, process refund"
+    );
+    if (!confirmation.isConfirmed) return;
+
+    try {
+      const selectedItems = items
+        .filter((item) => Number(refundItems[item.id] || 0) > 0)
+        .map((item) => ({
+          orderItemId: item.id,
+          quantity: Number(refundItems[item.id]),
+        }));
+
+      await orderService.createRefund(id, {
+        refundType: totalRefundAmount >= Number(sale?.amount || 0) ? "full" : "partial",
+        amount: Number(totalRefundAmount.toFixed(2)),
+        reason: refundReason || "customer_request",
+        items: selectedItems,
+        notes: refundReason || undefined,
+      });
+
+      showSuccess("The refund has been processed successfully.", "Refunded!");
+      navigate(`/dashboard/sales/history`);
+    } catch (error) {
+      console.error("Failed to process refund", error);
+      showError(error?.message || "Failed to process refund");
+    }
   };
   
 
@@ -172,7 +195,7 @@ export default function SalesRefund() {
                                         className="w-20 px-2 py-1 text-center border-gray-300 rounded-md focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                     />
                                 </div>
-                                <div className="text-right min-w-[80px]">
+                                <div className="text-right min-w-20">
                                     <p className="text-xs text-gray-500 mb-1">Refund</p>
                                     <p className="font-semibold text-rose-600">
                                         {formatCurrency((refundItems[item.id] || 0) * item.unitPrice)}
@@ -231,7 +254,7 @@ export default function SalesRefund() {
                     </button>
                     
                      <div className="bg-yellow-50 rounded-lg p-3 flex gap-2 items-start mt-4">
-                        <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                        <AlertCircle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
                         <p className="text-xs text-yellow-700">
                             This action will update inventory counts and financial records properly.
                         </p>

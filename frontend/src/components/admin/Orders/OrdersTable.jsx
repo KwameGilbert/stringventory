@@ -115,6 +115,16 @@ const OrdersTable = ({ orders }) => {
             {paginatedOrders.map((order) => {
               const status = statusConfig[order.status] || statusConfig.pending;
               const StatusIcon = status.icon;
+              const customerName = order?.customer?.name || order?.customerName || "Walk-in Customer";
+              const customerPhone = order?.customer?.phone || order?.customerPhone || "-";
+              const customerInitials = customerName
+                .split(" ")
+                .filter(Boolean)
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase() || "WC";
+              const paymentMethodLabel = String(order?.paymentMethod || "cash").replace("_", " ");
 
               return (
                 <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
@@ -129,11 +139,11 @@ const OrdersTable = ({ orders }) => {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
-                        {order.customer.name.split(' ').map(n => n[0]).join('')}
+                        {customerInitials}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{order.customer.name}</p>
-                        <p className="text-xs text-gray-400">{order.customer.phone}</p>
+                        <p className="text-sm font-medium text-gray-900">{customerName}</p>
+                        <p className="text-xs text-gray-400">{customerPhone}</p>
                       </div>
                     </div>
                   </td>
@@ -148,7 +158,7 @@ const OrdersTable = ({ orders }) => {
 
                   {/* Items Count */}
                   <td className="px-4 py-3 text-center">
-                    <span className="text-sm font-medium text-gray-900">-</span>
+                    <span className="text-sm font-medium text-gray-900">{order.itemCount}</span>
                   </td>
 
                   {/* Total */}
@@ -162,7 +172,7 @@ const OrdersTable = ({ orders }) => {
                   {/* Payment Method */}
                   <td className="px-4 py-3 text-center">
                     <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full capitalize">
-                      {order.paymentMethod.replace('_', ' ')}
+                      {paymentMethodLabel}
                     </span>
                   </td>
 

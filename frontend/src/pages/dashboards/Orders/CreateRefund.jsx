@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, AlertCircle, CheckCircle, Package, DollarSign } from "lucide-react";
-import axios from "axios";
-import Swal from "sweetalert2";
+import orderService from "../../../services/orderService";
+import { confirmAction, showError, showSuccess } from "../../../utils/alerts";
 
 export default function CreateRefund() {
   const { id } = useParams();
@@ -12,33 +12,51 @@ export default function CreateRefund() {
   const [loading, setLoading] = useState(true);
   const [refundReason, setRefundReason] = useState("");
   const [refundItems, setRefundItems] = useState({}); // { itemId: quantity }
+  const [submitting, setSubmitting] = useState(false);
 
-  console.log("CreateRefund component mounted with ID:", id); // Debug Log
+  const extractOrder = (response) => {
+    const payload = response?.data || response || {};
+    return payload?.order || payload?.data?.order || payload?.data || payload;
+  };
+
+  const normalizeOrder = (rawOrder) => {
+    if (!rawOrder) return null;
+
+    return {
+      ...rawOrder,
+      total: Number(rawOrder?.total ?? 0),
+      items: Array.isArray(rawOrder?.items)
+        ? rawOrder.items.map((item) => ({
+            ...item,
+            id: item?.id || item?.orderItemId || item?.productId,
+            productName: item?.productName || "Product",
+            quantity: Number(item?.quantity ?? 0),
+            unitPrice: Number(item?.unitPrice ?? 0),
+          }))
+        : [],
+    };
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ordersRes, itemsRes] = await Promise.all([
-          axios.get('/data/orders.json'),
-          axios.get('/data/order-items.json')
-        ]);
-        
-        const found = ordersRes.data.find(o => o.id === id);
+        const orderRes = await orderService.getOrderById(id);
+        const found = normalizeOrder(extractOrder(orderRes));
         if (found) {
           setOrder(found);
-          const orderItems = itemsRes.data.filter(item => item.orderId === id);
+          const orderItems = found.items || [];
           setItems(orderItems);
           
           // Initialize refund items with 0
           const initialRefund = {};
-          orderItems.forEach((item, index) => {
-             // Using index as key since simple mock data might not have unique item IDs
-             initialRefund[index] = 0;
+          orderItems.forEach((item) => {
+             initialRefund[item.id] = 0;
           });
           setRefundItems(initialRefund);
         }
       } catch (error) {
         console.error("Error fetching order details", error);
+        showError(error?.message || "Failed to fetch sale details");
       } finally {
         setLoading(false);
       }
@@ -46,48 +64,63 @@ export default function CreateRefund() {
     fetchData();
   }, [id]);
 
-  const handleQuantityChange = (index, value, max) => {
+  const handleQuantityChange = (itemId, value, max) => {
     const qty = Math.max(0, Math.min(max, parseInt(value) || 0));
     setRefundItems(prev => ({
       ...prev,
-      [index]: qty
+      [itemId]: qty
     }));
   };
 
   const totalRefundAmount = useMemo(() => {
-    return items.reduce((total, item, index) => {
-      const qty = refundItems[index] || 0;
+    return items.reduce((total, item) => {
+      const qty = refundItems[item.id] || 0;
       return total + (qty * item.unitPrice);
     }, 0);
   }, [items, refundItems]);
 
-  const handleProcessRefund = (e) => {
+  const handleProcessRefund = async (e) => {
     e.preventDefault();
     
     if (totalRefundAmount <= 0) {
-      Swal.fire("Error", "Please select at least one item to refund", "error");
+      showError("Please select at least one item to refund");
       return;
     }
 
-    Swal.fire({
-      title: 'Process Refund?',
-      text: `Are you sure you want to refund ${formatCurrency(totalRefundAmount)}?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#10b981',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, process refund'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire(
-          'Refunded!',
-          'The refund has been processed successfully.',
-          'success'
-        ).then(() => {
-          navigate(`/dashboard/orders/${id}`);
-        });
-      }
-    });
+    const confirmation = await confirmAction(
+      "Process Refund?",
+      `Are you sure you want to refund ${formatCurrency(totalRefundAmount)}?`,
+      "Yes, process refund"
+    );
+
+    if (!confirmation.isConfirmed) return;
+
+    try {
+      setSubmitting(true);
+
+      const selectedItems = items
+        .filter((item) => Number(refundItems[item.id] || 0) > 0)
+        .map((item) => ({
+          orderItemId: item.id,
+          quantity: Number(refundItems[item.id]),
+        }));
+
+      await orderService.createRefund(id, {
+        refundType: totalRefundAmount >= Number(order?.total || 0) ? "full" : "partial",
+        amount: Number(totalRefundAmount.toFixed(2)),
+        reason: refundReason || "customer_request",
+        items: selectedItems,
+        notes: refundReason || undefined,
+      });
+
+      showSuccess("The refund has been processed successfully.", "Refunded!");
+      navigate(`/dashboard/orders/${id}`);
+    } catch (error) {
+      console.error("Failed to process refund", error);
+      showError(error?.message || "Failed to process refund");
+    } finally {
+      setSubmitting(false);
+    }
   };
   
   const formatCurrency = (value) => {
@@ -154,8 +187,8 @@ export default function CreateRefund() {
                     </h3>
                 </div>
                 <div className="divide-y divide-gray-100">
-                    {items.map((item, index) => (
-                        <div key={index} className="p-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-gray-50 transition-colors">
+                    {items.map((item) => (
+                      <div key={item.id} className="p-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-gray-50 transition-colors">
                             <div className="flex-1">
                                 <p className="font-medium text-gray-900">{item.productName}</p>
                                 <p className="text-sm text-gray-500 mt-1">
@@ -170,15 +203,15 @@ export default function CreateRefund() {
                                         type="number" 
                                         min="0"
                                         max={item.quantity}
-                                        value={refundItems[index] || 0}
-                                        onChange={(e) => handleQuantityChange(index, e.target.value, item.quantity)}
+                                        value={refundItems[item.id] || 0}
+                                        onChange={(e) => handleQuantityChange(item.id, e.target.value, item.quantity)}
                                         className="w-20 px-2 py-1 text-center border-gray-300 rounded-md focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                     />
                                 </div>
-                                <div className="text-right min-w-[80px]">
+                                <div className="text-right min-w-20">
                                     <p className="text-xs text-gray-500 mb-1">Refund</p>
                                     <p className="font-semibold text-rose-600">
-                                        {formatCurrency((refundItems[index] || 0) * item.unitPrice)}
+                                        {formatCurrency((refundItems[item.id] || 0) * item.unitPrice)}
                                     </p>
                                 </div>
                             </div>
@@ -226,15 +259,15 @@ export default function CreateRefund() {
 
                     <button
                         onClick={handleProcessRefund}
-                        disabled={totalRefundAmount <= 0}
+                        disabled={submitting || totalRefundAmount <= 0}
                         className="w-full mt-4 flex justify-center items-center gap-2 px-4 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                     >
                         <RefreshCw size={18} />
-                        Process Refund
+                        {submitting ? "Processing..." : "Process Refund"}
                     </button>
                     
                      <div className="bg-yellow-50 rounded-lg p-3 flex gap-2 items-start mt-4">
-                        <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+                        <AlertCircle className="w-4 h-4 text-yellow-600 shrink-0 mt-0.5" />
                         <p className="text-xs text-yellow-700">
                             This action will create a refund record and update inventory. It cannot be undone.
                         </p>

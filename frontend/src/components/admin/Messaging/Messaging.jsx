@@ -1,10 +1,38 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { MessageSquare, Clock, Send, Users } from "lucide-react";
 import CustomerSelector from "./CustomerSelector";
 import Composer from "./Composer";
 import MessageHistory from "./MessageHistory";
 import MessageDetails from "./MessageDetails";
+import customerService from "../../../services/customerService";
+import messagingService from "../../../services/messagingService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+const extractCustomers = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.customers)) return payload.customers;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.customers)) return payload.data.customers;
+
+  return [];
+};
+
+const normalizeCustomer = (customer) => {
+  const firstName = customer?.firstName || "";
+  const lastName = customer?.lastName || "";
+  const fullName = `${firstName} ${lastName}`.trim();
+
+  return {
+    ...customer,
+    id: customer?.id,
+    customerName: customer?.customerName || customer?.name || fullName || customer?.email || "Unknown",
+    email: customer?.email || "",
+  };
+};
 
 export default function Messaging() {
   const [activeTab, setActiveTab] = useState("compose");
@@ -13,10 +41,17 @@ export default function Messaging() {
   const [selectedMessage, setSelectedMessage] = useState(null); // For details modal
 
   useEffect(() => {
-    // Load customers for the selector
-    axios.get("/data/customers.json")
-      .then(res => setCustomers(res.data))
-      .catch(err => console.error("Error loading customers", err));
+    const fetchCustomers = async () => {
+      try {
+        const response = await customerService.getCustomers();
+        setCustomers(extractCustomers(response).map(normalizeCustomer));
+      } catch (error) {
+        console.error("Error loading customers", error);
+        showError(error?.message || "Failed to load customers");
+      }
+    };
+
+    fetchCustomers();
   }, []);
 
   const handleSelectCustomer = (id) => {
@@ -33,17 +68,26 @@ export default function Messaging() {
     }
   };
 
-  const handleSendMessage = (messageBody) => {
-    // Mock send logic
-    alert(`Sending message to ${selectedCustomerIds.length} recipients:\n\n${messageBody}`);
-    // In a real app, we would POST to an API here
-    // Then clear selection or switch to history
-    setSelectedCustomerIds([]);
-    setActiveTab("history");
+  const handleSendMessage = async (messageBody) => {
+    if (!selectedCustomerIds.length || !messageBody?.trim()) return;
+
+    try {
+      await messagingService.sendBulkMessage({
+        recipientIds: selectedCustomerIds,
+        body: messageBody,
+      });
+
+      showSuccess(`Successfully sent to ${selectedCustomerIds.length} customers`);
+      setSelectedCustomerIds([]);
+      setActiveTab("history");
+    } catch (error) {
+      console.error("Failed to send messages", error);
+      showError(error?.message || "Failed to send messages");
+    }
   };
 
   return (
-    <div className="p-8 max-w-[1600px] mx-auto h-[calc(100vh-64px)] flex flex-col">
+    <div className="p-8 max-w-400 mx-auto h-[calc(100vh-64px)] flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>

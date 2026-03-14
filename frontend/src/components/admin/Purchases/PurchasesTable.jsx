@@ -1,19 +1,21 @@
-import { useState } from "react";
 import { Eye, Edit2, Trash2, Package, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const ITEMS_PER_PAGE = 5;
-
-const PurchasesTable = ({ purchases, onDelete }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // Pagination logic
-  const totalPages = Math.ceil(purchases.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedPurchases = purchases.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+const PurchasesTable = ({
+  purchases,
+  onDelete,
+  currentPage = 1,
+  totalPages = 1,
+  totalItems = 0,
+  pageSize = 20,
+  onPageChange,
+}) => {
+  const startIndex = totalItems > 0 ? (currentPage - 1) * pageSize + 1 : 0;
+  const endIndex = totalItems > 0 ? Math.min(currentPage * pageSize, totalItems) : 0;
 
   const goToPage = (page) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+    const nextPage = Math.max(1, Math.min(page, totalPages));
+    if (onPageChange) onPageChange(nextPage);
   };
 
   const getStatusBadge = (status) => {
@@ -75,7 +77,7 @@ const PurchasesTable = ({ purchases, onDelete }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {paginatedPurchases.map((purchase) => (
+            {purchases.map((purchase) => (
               <tr key={purchase.id} className="hover:bg-gray-50/50 transition-colors">
                 {/* Waybill Number */}
                 <td className="px-6 py-3">
@@ -83,7 +85,7 @@ const PurchasesTable = ({ purchases, onDelete }) => {
                     to={`/dashboard/purchases/${purchase.id}`}
                     className="font-medium text-gray-900 hover:text-blue-600 transition-colors text-sm font-mono"
                   >
-                    {purchase.waybillNumber}
+                    {purchase.waybillNumber || ""}
                   </Link>
                 </td>
 
@@ -153,9 +155,9 @@ const PurchasesTable = ({ purchases, onDelete }) => {
       {/* Table Footer with Pagination */}
       <div className="px-6 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
         <p className="text-sm text-gray-500">
-          Showing <span className="font-medium text-gray-700">{startIndex + 1}</span> to{" "}
-          <span className="font-medium text-gray-700">{Math.min(startIndex + ITEMS_PER_PAGE, purchases.length)}</span> of{" "}
-          <span className="font-medium text-gray-700">{purchases.length}</span> purchases
+          Showing <span className="font-medium text-gray-700">{startIndex}</span> to{" "}
+          <span className="font-medium text-gray-700">{endIndex}</span> of{" "}
+          <span className="font-medium text-gray-700">{totalItems}</span> purchases
         </p>
 
         {totalPages > 1 && (

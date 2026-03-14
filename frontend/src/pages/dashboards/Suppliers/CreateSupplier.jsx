@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Save, Building2, User, Mail, Phone, MapPin, Truck } from "lucide-react";
-import Swal from "sweetalert2";
+import supplierService from "../../../services/supplierService";
+import { showError, showSuccess } from "../../../utils/alerts";
 
 export default function CreateSupplier() {
   const navigate = useNavigate();
@@ -27,19 +28,20 @@ export default function CreateSupplier() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-        setLoading(false);
-        Swal.fire({
-            icon: 'success',
-            title: 'Supplier Added',
-            text: 'New supplier has been successfully added.',
-            confirmButtonColor: '#10b981'
-        }).then(() => {
+
+        try {
+            await supplierService.createSupplier({
+                ...formData,
+                status: formData.status?.toLowerCase() === "active" ? "active" : "inactive",
+            });
+            showSuccess("New supplier has been successfully added.");
             navigate('/dashboard/suppliers');
-        });
-    }, 1000);
+        } catch (error) {
+            console.error("Failed to create supplier", error);
+            showError(error?.message || "Failed to create supplier");
+        } finally {
+            setLoading(false);
+        }
   };
 
   return (

@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   AreaChart,
   Area,
@@ -11,6 +10,8 @@ import {
   Legend,
 } from "recharts";
 import { TrendingUp } from "lucide-react";
+import analyticsService from "../../../services/analyticsService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const SalesExpensesChart = ({ dateRange }) => {
   const [data, setData] = useState([]);
@@ -19,11 +20,24 @@ const SalesExpensesChart = ({ dateRange }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch sales and expenses data
-        const response = await axios.get("/data/sales-expenses-chart.json");
-        setData(response.data);
+        const params = getDashboardDateParams(dateRange);
+        const response = await analyticsService.getDashboardOverview(params);
+        const payload = response?.data || response || {};
+        const dashboardData = payload?.data || payload;
+        const chartRows = dashboardData?.charts?.revenueByDate || [];
+
+        const mapped = chartRows.map((row) => ({
+          month: row?.date
+            ? new Date(row.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            : "—",
+          sales: Number(row?.revenue ?? 0),
+          expenses: Number(row?.expenses ?? 0),
+        }));
+
+        setData(mapped);
       } catch (error) {
         console.error("Error fetching chart data:", error);
+        setData([]);
       } finally {
         setLoading(false);
       }

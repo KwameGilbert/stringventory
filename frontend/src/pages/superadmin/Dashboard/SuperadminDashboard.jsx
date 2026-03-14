@@ -11,7 +11,61 @@ import {
 } from 'lucide-react';
 import KPICard from '../../../components/superadmin/Dashboard/KPICard';
 import RecentBusinessesTable from '../../../components/superadmin/Dashboard/RecentBusinessesTable';
-import axios from 'axios';
+import superadminService from '../../../services/superadminService';
+import { showError } from '../../../utils/alerts';
+
+const extractBusinesses = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.businesses)) return payload.businesses;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.businesses)) return payload.data.businesses;
+
+  return [];
+};
+
+const extractAnalytics = (response) => {
+  const payload = response?.data || response || {};
+
+  if (payload?.analytics) return payload.analytics;
+  if (payload?.data?.analytics) return payload.data.analytics;
+  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
+
+  return payload;
+};
+
+const normalizeBusiness = (business) => ({
+  ...business,
+  id: business?.id,
+  name: business?.name || business?.businessName || 'Unnamed Business',
+  email: business?.email || business?.ownerEmail || '',
+  subscription_plan: business?.subscription_plan || business?.subscriptionPlan || business?.plan || 'starter',
+  status: String(business?.status || 'active').toLowerCase(),
+  current_usage: {
+    total_users:
+      Number(business?.current_usage?.total_users) ||
+      Number(business?.currentUsage?.totalUsers) ||
+      Number(business?.totalUsers) ||
+      0,
+  },
+  usage_limits: {
+    maxUsers:
+      Number(business?.usage_limits?.maxUsers) ||
+      Number(business?.usageLimits?.maxUsers) ||
+      Number(business?.planLimits?.maxUsers) ||
+      0,
+  },
+  mrr:
+    Number(business?.mrr) ||
+    Number(business?.monthlyRecurringRevenue) ||
+    Number(business?.revenue?.mrr) ||
+    0,
+  created_at: business?.created_at || business?.createdAt || new Date().toISOString(),
+  logo_url: business?.logo_url || business?.logoUrl || null,
+});
 
 export default function SuperadminDashboard() {
   const [stats, setStats] = useState({
@@ -27,33 +81,9 @@ export default function SuperadminDashboard() {
 
   const [recentBusinesses, setRecentBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Mock revenue data for chart
-  const revenueData = [
-    { month: 'Jan', revenue: 28500, subscriptions: 218 },
-    { month: 'Feb', revenue: 31200, subscriptions: 235 },
-    { month: 'Mar', revenue: 33800, subscriptions: 248 },
-    { month: 'Apr', revenue: 35600, subscriptions: 257 },
-    { month: 'May', revenue: 37200, subscriptions: 272 },
-    { month: 'Jun', revenue: 42850, subscriptions: 284 }
-  ];
-
-  // Mock plan distribution
-  const planDistribution = [
-    { plan: 'Enterprise', count: 23, percentage: 8.1, revenue: 11477, color: 'bg-emerald-500' },
-    { plan: 'Professional', count: 89, percentage: 31.3, revenue: 13261, color: 'bg-blue-500' },
-    { plan: 'Starter', count: 142, percentage: 50.0, revenue: 6958, color: 'bg-emerald-500' },
-    { plan: 'Free Trial', count: 30, percentage: 10.6, revenue: 0, color: 'bg-gray-400' }
-  ];
-
-  // Mock recent activity
-  const recentActivity = [
-    { id: 1, type: 'signup', business: 'TechStart Solutions', time: '5 minutes ago', icon: Users, color: 'text-emerald-600 bg-emerald-50' },
-    { id: 2, type: 'upgrade', business: 'Acme Innovations', plan: 'Enterprise', time: '12 minutes ago', icon: ArrowUp, color: 'text-blue-600 bg-blue-50' },
-    { id: 3, type: 'payment', business: 'Global Retail Co.', amount: 499, time: '23 minutes ago', icon: DollarSign, color: 'text-emerald-600 bg-emerald-50' },
-    { id: 4, type: 'signup', business: 'Digital Ventures', time: '1 hour ago', icon: Users, color: 'text-emerald-600 bg-emerald-50' },
-    { id: 5, type: 'cancellation', business: 'OldBiz Corp', time: '2 hours ago', icon: ArrowDown, color: 'text-red-600 bg-red-50' }
-  ];
+  const [revenueData, setRevenueData] = useState([]);
+  const [planDistribution, setPlanDistribution] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -62,90 +92,109 @@ export default function SuperadminDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [statsRes, businessesRes] = await Promise.all([
-        axios.get('/data/platform-stats.json'),
-        axios.get('/data/businesses.json')
+      const [analyticsRes, businessesRes] = await Promise.all([
+        superadminService.getPlatformAnalytics(),
+        superadminService.getBusinesses(),
       ]);
 
-      setStats(statsRes.data);
-      setRecentBusinesses(businessesRes.data.slice(0, 5));
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-      // Set mock data if files don't exist yet
+      const analytics = extractAnalytics(analyticsRes);
+      const businesses = extractBusinesses(businessesRes).map(normalizeBusiness);
+
+      const computedMRR = businesses.reduce((sum, business) => sum + (Number(business.mrr) || 0), 0);
+      const totalUsers = businesses.reduce((sum, business) => sum + (Number(business.current_usage?.total_users) || 0), 0);
+      const activeSubscriptions = businesses.filter((business) => business.status === 'active').length;
+
       setStats({
-        totalBusinesses: 284,
-        activeSubscriptions: 267,
-        monthlyRecurringRevenue: 42850,
-        totalUsers: 1847,
-        businessesChange: 12,
-        subscriptionsChange: 8,
-        mrrChange: 15,
-        usersChange: 9
+        totalBusinesses: Number(analytics?.totalBusinesses) || businesses.length,
+        activeSubscriptions: Number(analytics?.activeSubscriptions) || activeSubscriptions,
+        monthlyRecurringRevenue: Number(analytics?.monthlyRecurringRevenue) || computedMRR,
+        totalUsers: Number(analytics?.totalUsers) || totalUsers,
+        businessesChange: Number(analytics?.businessesChange) || 0,
+        subscriptionsChange: Number(analytics?.subscriptionsChange) || 0,
+        mrrChange: Number(analytics?.mrrChange) || 0,
+        usersChange: Number(analytics?.usersChange) || 0,
       });
 
-      // Mock businesses data
-      setRecentBusinesses([
-        {
-          id: '1',
-          name: 'Acme Innovations Inc.',
-          email: 'contact@acme.com',
-          subscription_plan: 'professional',
-          status: 'active',
-          current_usage: { total_users: 8 },
-          usage_limits: { maxUsers: 15 },
-          mrr: 149,
-          created_at: '2023-10-26',
-          logo_url: null
-        },
-        {
-          id: '2',
-          name: 'TechStart Solutions',
-          email: 'hello@techstart.com',
-          subscription_plan: 'starter',
-          status: 'active',
-          current_usage: { total_users: 3 },
-          usage_limits: { maxUsers: 5 },
-          mrr: 49,
-          created_at: '2023-10-25',
-          logo_url: null
-        },
-        {
-          id: '3',
-          name: 'Global Retail Co.',
-          email: 'admin@globalretail.com',
-          subscription_plan: 'enterprise',
-          status: 'active',
-          current_usage: { total_users: 25 },
-          usage_limits: { maxUsers: -1 },
-          mrr: 499,
-          created_at: '2023-10-24',
-          logo_url: null
-        },
-        {
-          id: '4',
-          name: 'SmallBiz Store',
-          email: 'owner@smallbiz.com',
-          subscription_plan: 'starter',
-          status: 'trial',
-          current_usage: { total_users: 1 },
-          usage_limits: { maxUsers: 5 },
-          mrr: 0,
-          created_at: '2023-10-23',
-          logo_url: null
-        },
-        {
-          id: '5',
-          name: 'Enterprise Corp',
-          email: 'it@enterprise.com',
-          subscription_plan: 'professional',
-          status: 'active',
-          current_usage: { total_users: 12 },
-          usage_limits: { maxUsers: 15 },
-          mrr: 149,
-          created_at: '2023-10-22',
-          logo_url: null
-        }
-      ]);
+      const trendSource = Array.isArray(analytics?.revenueTrends) ? analytics.revenueTrends : [];
+      setRevenueData(
+        trendSource.map((entry) => ({
+          month: entry?.month || entry?.date || 'N/A',
+          revenue: Number(entry?.revenue) || Number(entry?.mrr) || 0,
+          subscriptions: Number(entry?.subscriptions) || 0,
+        }))
+      );
+
+      const rawPlanDistribution = Array.isArray(analytics?.planDistribution)
+        ? analytics.planDistribution
+        : Array.isArray(analytics?.revenueByPlan)
+          ? analytics.revenueByPlan
+          : [];
+
+      const totalPlanCount = rawPlanDistribution.reduce(
+        (acc, item) => acc + (Number(item?.count) || Number(item?.businesses) || 0),
+        0
+      );
+
+      setPlanDistribution(
+        rawPlanDistribution.map((item, index) => {
+          const count = Number(item?.count) || Number(item?.businesses) || 0;
+          const percentage = Number(item?.percentage) || (totalPlanCount ? Number(((count / totalPlanCount) * 100).toFixed(1)) : 0);
+          return {
+            plan: item?.plan || item?.name || 'Unknown',
+            count,
+            percentage,
+            revenue: Number(item?.revenue) || 0,
+            color: item?.color || ['bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 'bg-gray-400'][index % 4],
+          };
+        })
+      );
+
+      const activitySource = Array.isArray(analytics?.recentActivity) ? analytics.recentActivity : [];
+      setRecentActivity(
+        activitySource.map((item, index) => ({
+          id: item?.id || index + 1,
+          type: item?.type || 'signup',
+          business: item?.business || item?.businessName || 'Business',
+          plan: item?.plan,
+          amount: Number(item?.amount) || 0,
+          time: item?.time || item?.createdAt || item?.timestamp || 'Recently',
+          icon:
+            item?.type === 'upgrade'
+              ? ArrowUp
+              : item?.type === 'payment'
+                ? DollarSign
+                : item?.type === 'cancellation'
+                  ? ArrowDown
+                  : Users,
+          color:
+            item?.type === 'upgrade'
+              ? 'text-blue-600 bg-blue-50'
+              : item?.type === 'payment'
+                ? 'text-emerald-600 bg-emerald-50'
+                : item?.type === 'cancellation'
+                  ? 'text-red-600 bg-red-50'
+                  : 'text-emerald-600 bg-emerald-50',
+        }))
+      );
+
+      setRecentBusinesses(businesses.slice(0, 5));
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      showError(error?.message || 'Failed to load platform dashboard');
+      setStats({
+        totalBusinesses: 0,
+        activeSubscriptions: 0,
+        monthlyRecurringRevenue: 0,
+        totalUsers: 0,
+        businessesChange: 0,
+        subscriptionsChange: 0,
+        mrrChange: 0,
+        usersChange: 0,
+      });
+      setRecentBusinesses([]);
+      setRevenueData([]);
+      setPlanDistribution([]);
+      setRecentActivity([]);
     } finally {
       setLoading(false);
     }
@@ -167,7 +216,7 @@ export default function SuperadminDashboard() {
     );
   }
 
-  const maxRevenue = Math.max(...revenueData.map(d => d.revenue));
+  const maxRevenue = Math.max(...revenueData.map(d => d.revenue), 1);
 
   return (
     <div className="space-y-8">
@@ -240,7 +289,7 @@ export default function SuperadminDashboard() {
                 </div>
                 <div className="relative h-8 bg-gray-100 rounded-lg overflow-hidden">
                   <div 
-                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-700 to-emerald-600 transition-all duration-500 rounded-lg"
+                    className="absolute inset-y-0 left-0 bg-linear-to-r from-emerald-700 to-emerald-600 transition-all duration-500 rounded-lg"
                     style={{ width: `${(data.revenue / maxRevenue) * 100}%` }}
                   >
                     <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>

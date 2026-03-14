@@ -1,11 +1,27 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Package, DollarSign, Clock } from "lucide-react";
 import InventoryHeader from "../../../components/admin/Inventory/InventoryHeader";
 import InventoryTable from "../../../components/admin/Inventory/InventoryTable";
-import { confirmDelete, showSuccess } from "../../../utils/alerts";
+import inventoryService from "../../../services/inventoryService";
+import { productService } from "../../../services/productService";
+import categoryService from "../../../services/categoryService";
+import supplierService from "../../../services/supplierService";
+import { confirmDelete, showError, showSuccess, showInfo } from "../../../utils/alerts";
 
 import StockAdjustmentModal from "../../../components/admin/Inventory/StockAdjustmentModal";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+  return [];
+};
 
 export default function Inventory() {
   const [inventory, setInventory] = useState([]);
@@ -21,14 +37,46 @@ export default function Inventory() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventoryRes, categoriesRes] = await Promise.all([
-          axios.get("/data/inventory.json"),
-          axios.get("/data/categories.json"),
+        const [inventoryRes, categoriesRes, productsRes, suppliersRes] = await Promise.all([
+          inventoryService.getInventory(),
+          categoryService.getCategories(),
+          productService.getProducts(),
+          supplierService.getSuppliers(),
         ]);
-        setInventory(inventoryRes.data);
-        setCategories(categoriesRes.data);
+
+        const fetchedInventory = extractList(inventoryRes, "inventory");
+        const fetchedCategories = extractList(categoriesRes, "categories");
+        const fetchedProducts = extractList(productsRes, "products");
+        const fetchedSuppliers = extractList(suppliersRes, "suppliers");
+
+        const normalizedInventory = fetchedInventory.map((item) => {
+          const product = fetchedProducts.find((p) => String(p.id) === String(item.productId));
+          const category = fetchedCategories.find((c) => String(c.id) === String(product?.categoryId));
+          const supplier = fetchedSuppliers.find((s) => String(s.id) === String(product?.supplierId));
+
+          const unitCost = Number(item.unitCost ?? product?.costPrice ?? product?.cost ?? 0);
+          const quantity = Number(item.quantity ?? item.currentStock ?? 0);
+
+          return {
+            ...item,
+            productName: item.productName || product?.name || "Unknown Product",
+            category: item.category || item.categoryName || product?.categoryName || category?.name || "Uncategorized",
+            batchNumber: item.batchNumber || item.reference || `BATCH-${item.id}`,
+            supplier: item.supplier || item.supplierName || product?.supplierName || supplier?.name || "Unknown Supplier",
+            unitCost,
+            quantity,
+            totalValue: Number(item.totalValue ?? quantity * unitCost),
+            entryDate: item.entryDate || item.lastStockCheck || item.createdAt || new Date().toISOString(),
+            expiryDate: item.expiryDate || null,
+            productId: item.productId || product?.id,
+          };
+        });
+
+        setInventory(normalizedInventory);
+        setCategories(fetchedCategories);
       } catch (error) {
         console.error("Error loading data", error);
+        showError(error?.message || "Failed to load inventory");
       } finally {
         setLoading(false);
       }
@@ -52,9 +100,9 @@ export default function Inventory() {
   // Filter inventory
   const filteredInventory = inventory.filter((item) => {
     const matchesSearch =
-      item.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.batchNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.supplier.toLowerCase().includes(searchQuery.toLowerCase());
+      String(item.productName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(item.batchNumber || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(item.supplier || "").toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
       !categoryFilter || item.category === categoryFilter;
     return matchesSearch && matchesCategory;
@@ -63,8 +111,8 @@ export default function Inventory() {
   const handleDelete = async (id) => {
     const result = await confirmDelete("this inventory entry");
     if (result.isConfirmed) {
-      setInventory((prev) => prev.filter((item) => item.id !== id));
-      showSuccess("Inventory entry deleted successfully");
+      setInventory((prev) => prev.filter((item) => String(item.id) !== String(id)));
+      showInfo("Inventory delete endpoint is not available yet; removed from current view only.");
     }
   };
 
@@ -73,28 +121,39 @@ export default function Inventory() {
     setAdjustModalOpen(true);
   };
 
-  const handleConfirmAdjustment = ({ itemId, type, reason, quantity, notes }) => {
-    setInventory(prev => prev.map(item => {
-      if (item.id === itemId) {
-        const newQuantity = type === 'increase' 
-          ? item.quantity + quantity 
-          : Math.max(0, item.quantity - quantity);
-        
-        // Recalculate total value based on new quantity
-        const newTotalValue = newQuantity * item.unitCost;
+  const handleConfirmAdjustment = async ({ itemId, type, reason, quantity, notes }) => {
+    const currentItem = inventory.find((item) => String(item.id) === String(itemId));
+    if (!currentItem) return;
 
-        return {
-          ...item,
-          quantity: newQuantity,
-          totalValue: newTotalValue
-        };
-      }
-      return item;
-    }));
+    try {
+      await inventoryService.adjustInventory({
+        productId: currentItem.productId,
+        adjustmentType: type,
+        quantity,
+        reason,
+        notes,
+      });
 
-    showSuccess(`Stock ${type}d successfully`);
-    console.log("Stock Adjustment Log:", { itemId, type, reason, quantity, notes, date: new Date().toISOString() });
-    setAdjustModalOpen(false);
+      setInventory((prev) =>
+        prev.map((item) => {
+          if (String(item.id) !== String(itemId)) return item;
+          const newQuantity = type === 'increase'
+            ? item.quantity + quantity
+            : Math.max(0, item.quantity - quantity);
+          return {
+            ...item,
+            quantity: newQuantity,
+            totalValue: newQuantity * item.unitCost,
+          };
+        })
+      );
+
+      showSuccess(`Stock ${type}d successfully`);
+      setAdjustModalOpen(false);
+    } catch (error) {
+      console.error("Failed to adjust stock", error);
+      showError(error?.message || "Failed to adjust stock");
+    }
   };
 
   const formatCurrency = (value) => {

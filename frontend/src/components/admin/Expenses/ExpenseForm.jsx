@@ -1,7 +1,44 @@
 import { useState, useEffect } from "react";
 import { Save, ArrowLeft, DollarSign, Calendar, FileText, Link as LinkIcon, Paperclip, RefreshCcw, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import expenseService from "../../../services/expenseService";
+import { showError } from "../../../utils/alerts";
+
+const extractCategories = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.categories)) return payload.categories;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.categories)) return payload.data.categories;
+
+  return [];
+};
+
+const extractPaymentMethods = (response) => {
+  const payload = response?.data || response || {};
+  const settings = payload?.settings || payload?.data?.settings || payload?.data || payload;
+  const methods = Array.isArray(settings?.paymentMethods) ? settings.paymentMethods : [];
+
+  const mappedMethods = methods
+    .filter((method) => method?.enabled !== false)
+    .map((method) => ({
+      id: method?.id || method?.type || method?.name,
+      name: method?.name || method?.type || "Payment Method",
+      value: method?.type || String(method?.name || "").toLowerCase().replace(/\s+/g, "_"),
+    }));
+
+  if (mappedMethods.length > 0) return mappedMethods;
+
+  return [
+    { id: "cash", name: "Cash", value: "cash" },
+    { id: "bank_transfer", name: "Bank Transfer", value: "bank_transfer" },
+    { id: "mobile_money", name: "Mobile Money", value: "mobile_money" },
+    { id: "credit_card", name: "Credit Card", value: "credit_card" },
+  ];
+};
 
 const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
   const navigate = useNavigate();
@@ -13,7 +50,7 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
   
   const [formData, setFormData] = useState({
     expenseCategoryId: "",
-    paymentMethodId: "",
+    paymentMethod: "",
     amount: "",
     date: today,
     reference: "",
@@ -24,6 +61,7 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
     recurringFrequency: "monthly",
     recurringInterval: 1,
     recurringEndDate: "",
+    attachmentFile: null,
     hasAttachment: false,
     status: "pending",
     ...initialData,
@@ -31,15 +69,25 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [catRes, pmRes] = await Promise.all([
-          axios.get("/data/expense-categories.json"),
-          axios.get("/data/payment-methods.json")
-        ]);
-        setCategories(catRes.data);
-        setPaymentMethods(pmRes.data.filter(pm => pm.isActive));
-      } catch (error) {
-        console.error("Error loading data", error);
+      const [catRes, paymentSettingsRes] = await Promise.allSettled([
+        expenseService.getExpenseCategories(),
+        expenseService.getPaymentSettings(),
+      ]);
+
+      if (catRes.status === "fulfilled") {
+        setCategories(extractCategories(catRes.value));
+      } else {
+        console.error("Error loading categories", catRes.reason);
+        showError(catRes.reason?.message || "Failed to load expense categories");
+        setCategories([]);
+      }
+
+      if (paymentSettingsRes.status === "fulfilled") {
+        setPaymentMethods(extractPaymentMethods(paymentSettingsRes.value));
+      } else {
+        console.error("Error loading payment settings", paymentSettingsRes.reason);
+        // Fallback to default methods if settings endpoint fails.
+        setPaymentMethods(extractPaymentMethods({}));
       }
     };
     fetchData();
@@ -47,6 +95,17 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    if (type === "file") {
+      const file = e.target.files?.[0] || null;
+      setFormData((prev) => ({
+        ...prev,
+        attachmentFile: file,
+        hasAttachment: Boolean(file) || Boolean(prev.hasAttachment),
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -81,7 +140,7 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Main Details Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-rose-50 to-pink-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-rose-50 to-pink-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-rose-100">
                 <DollarSign className="w-5 h-5 text-rose-600" />
@@ -166,15 +225,15 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                   Payment Method <span className="text-rose-500">*</span>
                 </label>
                 <select
-                  name="paymentMethodId"
-                  value={formData.paymentMethodId}
+                  name="paymentMethod"
+                  value={formData.paymentMethod}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 transition-all text-sm bg-white"
                   required
                 >
                   <option value="">Select Method</option>
                   {paymentMethods.map((pm) => (
-                    <option key={pm.id} value={pm.id}>{pm.name}</option>
+                    <option key={pm.id} value={pm.value}>{pm.name}</option>
                   ))}
                 </select>
               </div>
@@ -200,7 +259,7 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
         {/* Additional Info Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-slate-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-gray-50 to-slate-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-gray-100">
                 <LinkIcon className="w-5 h-5 text-gray-600" />
@@ -258,13 +317,28 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
             </div>
 
             {/* Attachment Placeholder */}
-            <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group">
+            <label className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group">
+              <input
+                type="file"
+                name="attachmentFile"
+                onChange={handleChange}
+                className="hidden"
+                accept=".pdf,.png,.jpg,.jpeg,.webp"
+              />
               <div className="p-3 rounded-full bg-gray-50 group-hover:bg-gray-100 mb-3 transition-colors">
                 <Paperclip className="w-6 h-6 text-gray-400 group-hover:text-gray-600" />
               </div>
               <p className="text-sm font-medium text-gray-700">Click to upload evidence</p>
               <p className="text-xs text-gray-500 mt-1">Receipts, invoices, or other documents</p>
-            </div>
+              {formData.attachmentFile && (
+                <p className="text-xs text-emerald-600 mt-2 truncate max-w-full">
+                  Selected: {formData.attachmentFile.name}
+                </p>
+              )}
+              {!formData.attachmentFile && formData.hasAttachment && (
+                <p className="text-xs text-blue-600 mt-2">Existing attachment detected</p>
+              )}
+            </label>
 
             {/* Recurring Toggle */}
             <div className="rounded-xl bg-blue-50 border border-blue-100 overflow-hidden">
@@ -284,7 +358,7 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                         onChange={handleChange}
                         className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     </label>
                 </div>
 

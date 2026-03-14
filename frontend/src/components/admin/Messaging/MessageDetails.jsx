@@ -1,6 +1,40 @@
 import { useState, useEffect } from "react";
 import { X, Search, CheckCircle, AlertCircle, Clock, MailOpen, User } from "lucide-react";
-import axios from "axios";
+import messagingService from "../../../services/messagingService";
+import customerService from "../../../services/customerService";
+import { showError } from "../../../utils/alerts";
+
+const extractCustomers = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.customers)) return payload.customers;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.customers)) return payload.data.customers;
+
+  return [];
+};
+
+const extractMessage = (response) => {
+  const payload = response?.data || response || {};
+
+  if (payload?.message) return payload.message;
+  if (payload?.data?.message) return payload.data.message;
+  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
+
+  return payload;
+};
+
+const extractRecipients = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.recipients)) return value.recipients;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.data?.recipients)) return value.data.recipients;
+
+  return [];
+};
 
 export default function MessageDetails({ message, onClose }) {
   const [recipients, setRecipients] = useState([]);
@@ -8,36 +42,45 @@ export default function MessageDetails({ message, onClose }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    // Determine which recipients belong to this message
-    // In a real app we would fetch by message ID.
-    // Here we'll simulate a join with customers
-    
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [recipientsRes, customersRes] = await Promise.all([
-          axios.get("/data/message-recipients.json"),
-          axios.get("/data/customers.json")
+        const [messageRes, customersRes] = await Promise.all([
+          messagingService.getMessageById(message.id),
+          customerService.getCustomers(),
         ]);
 
-        const allRecipients = recipientsRes.data.filter(r => r.messageId === message.id);
-        const customers = customersRes.data;
+        const detailsMessage = extractMessage(messageRes);
+        const recipientsSource = extractRecipients(detailsMessage);
+        const customers = extractCustomers(customersRes);
+        const customerMap = new Map(customers.map((customer) => [String(customer.id), customer]));
 
-        // Merge data
-        const enrichedRecipients = allRecipients.map(r => {
-          const customer = customers.find(c => c.id === r.customerId) || { customerName: "Unknown", email: "N/A" };
-          return { ...r, ...customer };
+        const enrichedRecipients = recipientsSource.map((recipient, index) => {
+          const linkedCustomer = customerMap.get(String(recipient?.customerId || recipient?.id || "")) || {};
+          const firstName = linkedCustomer?.firstName || "";
+          const lastName = linkedCustomer?.lastName || "";
+          const fullName = `${firstName} ${lastName}`.trim();
+
+          return {
+            ...recipient,
+            id: recipient?.id || `${message.id}-${index}`,
+            customerName:
+              recipient?.customerName ||
+              linkedCustomer?.customerName ||
+              linkedCustomer?.name ||
+              fullName ||
+              recipient?.name ||
+              "Unknown",
+            email: recipient?.email || linkedCustomer?.email || "N/A",
+            status: recipient?.status || "pending",
+            sentAt: recipient?.sentAt || recipient?.createdAt || null,
+          };
         });
-
-        // If no recipients found (mock data limitation), generate some dummies based on count
-        if (enrichedRecipients.length === 0 && message.recipientCount > 0) {
-             // Fallback for demo purposes if mock data doesn't align perfectly
-             // We won't do this to avoid confusion, just show empty or what we have.
-        }
 
         setRecipients(enrichedRecipients);
       } catch (error) {
         console.error("Error fetching details:", error);
+        showError(error?.message || "Failed to load message details");
       } finally {
         setLoading(false);
       }

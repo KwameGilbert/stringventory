@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Filter, ArrowLeft, Download, Calendar } from "lucide-react";
-import axios from "axios";
 import SalesTable from "../../../components/admin/Sales/SalesTable";
+import orderService from "../../../services/orderService";
 
 export default function ViewSales() {
   const [sales, setSales] = useState([]);
@@ -13,11 +13,37 @@ export default function ViewSales() {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        // Fetch from the new sales.json
-        const response = await axios.get("/data/sales.json");
-        setSales(response.data);
+        const response = await orderService.getOrders({ limit: 200, sortBy: "date", sortOrder: "desc" });
+        const payload = response?.data || response || {};
+        const orders = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload.orders)
+            ? payload.orders
+            : Array.isArray(payload.data)
+              ? payload.data
+              : [];
+
+        const toStatusLabel = (statusValue) => {
+          const value = String(statusValue || "pending").toLowerCase();
+          if (value === "fulfilled" || value === "completed") return "Completed";
+          if (value === "refunded") return "Refunded";
+          if (value === "cancelled") return "Cancelled";
+          return "Pending";
+        };
+
+        setSales(
+          orders.map((order) => ({
+            id: order.id,
+            date: order.orderDate || order.date || order.createdAt || "—",
+            customer: order.customer?.name || order.customerName || "Walk-in Customer",
+            method: String(order.paymentMethod || "cash").replace(/_/g, " "),
+            status: toStatusLabel(order.status),
+            amount: Number(order.total || 0),
+          }))
+        );
       } catch (error) {
         console.error("Error fetching sales:", error);
+        setSales([]);
       } finally {
         setLoading(false);
       }

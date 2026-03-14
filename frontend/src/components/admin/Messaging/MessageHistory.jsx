@@ -1,6 +1,49 @@
 import { useState, useEffect } from "react";
 import { Search, Mail, MessageSquare, ExternalLink, Calendar, CheckCircle, AlertCircle, Clock } from "lucide-react";
-import axios from "axios";
+import messagingService from "../../../services/messagingService";
+import { showError } from "../../../utils/alerts";
+
+const extractMessages = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.messages)) return payload.messages;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.messages)) return payload.data.messages;
+
+  return [];
+};
+
+const normalizeMessage = (message) => {
+  const subject = message?.subject || message?.title || "Untitled message";
+  const body = message?.body || message?.content || message?.message || "";
+  const type = String(message?.type || message?.channel || "SMS").toUpperCase();
+  const recipientCount =
+    Number(message?.recipientCount) ||
+    Number(message?.totalRecipients) ||
+    (Array.isArray(message?.recipients) ? message.recipients.length : 0);
+  const successCount =
+    Number(message?.successCount) ||
+    Number(message?.deliveredCount) ||
+    Number(message?.sentCount) ||
+    0;
+  const failureCount = Number(message?.failureCount) || Number(message?.failedCount) || 0;
+
+  return {
+    ...message,
+    id: message?.id,
+    subject,
+    body,
+    type,
+    recipientCount,
+    successCount,
+    failureCount,
+    status: message?.status || "Sent",
+    createdAt: message?.createdAt || message?.sentAt || message?.updatedAt || new Date().toISOString(),
+  };
+};
 
 export default function MessageHistory({ onViewDetails }) {
   const [messages, setMessages] = useState([]);
@@ -8,10 +51,17 @@ export default function MessageHistory({ onViewDetails }) {
   const [filterType, setFilterType] = useState("all");
 
   useEffect(() => {
-    // Fetch bulk messages
-    axios.get("/data/bulk-messages.json")
-      .then(response => setMessages(response.data))
-      .catch(err => console.error("Error loading messages:", err));
+    const fetchMessages = async () => {
+      try {
+        const response = await messagingService.getMessages();
+        setMessages(extractMessages(response).map(normalizeMessage));
+      } catch (error) {
+        console.error("Error loading messages:", error);
+        showError(error?.message || "Failed to load message history");
+      }
+    };
+
+    fetchMessages();
   }, []);
 
   const getStatusColor = (status) => {
@@ -82,7 +132,6 @@ export default function MessageHistory({ onViewDetails }) {
           <tbody className="divide-y divide-gray-100">
             {filteredMessages.map((msg) => (
               <tr key={msg.id} className="hover:bg-gray-50/50 transition-colors group">
-                <div className="hidden">{/* This div is structurally invalid in tbody, but needed for map? No, remove. */}</div>
                 <td className="px-6 py-4">
                   <p className="font-medium text-gray-900 mb-1">{msg.subject}</p>
                   <p className="text-xs text-gray-500 truncate max-w-sm">{msg.body}</p>

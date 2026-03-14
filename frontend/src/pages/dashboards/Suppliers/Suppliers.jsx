@@ -4,8 +4,36 @@ import {
   Plus, Search, Filter, MoreVertical, Edit, Eye, Trash2, 
   Truck, Phone, Mail, MapPin, Building2 
 } from "lucide-react";
-import axios from "axios";
-import Swal from "sweetalert2";
+import supplierService from "../../../services/supplierService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractSuppliers = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.suppliers)) return payload.suppliers;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.suppliers)) return payload.data.suppliers;
+
+  return [];
+};
+
+const normalizeSupplier = (supplier) => ({
+  ...supplier,
+  status:
+    supplier?.status === "active" || supplier?.isActive === true
+      ? "Active"
+      : supplier?.status === "inactive" || supplier?.isActive === false
+        ? "Inactive"
+        : supplier?.status || "Active",
+  productsCount:
+    supplier?.productsCount ??
+    supplier?.products_count ??
+    supplier?.productCount ??
+    0,
+});
 
 export default function Suppliers() {
   const [suppliers, setSuppliers] = useState([]);
@@ -16,14 +44,12 @@ export default function Suppliers() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Simulating API loading delay
-        setTimeout(async () => {
-          const response = await axios.get("/data/suppliers.json");
-          setSuppliers(response.data);
-          setLoading(false);
-        }, 500);
+        const response = await supplierService.getSuppliers();
+        setSuppliers(extractSuppliers(response).map(normalizeSupplier));
       } catch (error) {
         console.error("Error fetching suppliers:", error);
+        showError(error?.message || "Failed to load suppliers");
+      } finally {
         setLoading(false);
       }
     };
@@ -41,25 +67,18 @@ export default function Suppliers() {
     return matchesSearch && matchesStatus;
   });
 
-  const handleDelete = (id) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setSuppliers(prev => prev.filter(s => s.id !== id));
-        Swal.fire(
-          'Deleted!',
-          'Supplier has been deleted.',
-          'success'
-        );
-      }
-    });
+  const handleDelete = async (id) => {
+    const result = await confirmDelete("this supplier");
+    if (!result.isConfirmed) return;
+
+    try {
+      await supplierService.deleteSupplier(id);
+      setSuppliers((prev) => prev.filter((supplier) => String(supplier.id) !== String(id)));
+      showSuccess("Supplier deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete supplier", error);
+      showError(error?.message || "Failed to delete supplier");
+    }
   };
 
   if (loading) {
@@ -73,7 +92,7 @@ export default function Suppliers() {
   return (
     <div className="animate-fade-in pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-16 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <Truck className="w-8 h-8 text-emerald-600" />

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { ShoppingCart, Package, AlertTriangle, Clock } from "lucide-react";
+import analyticsService from "../../../services/analyticsService";
+import { productService } from "../../../services/productService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const OperationalOverview = ({ dateRange }) => {
   const [data, setData] = useState(null);
@@ -10,10 +12,64 @@ const OperationalOverview = ({ dateRange }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/operational-overview.json");
-        setData(response.data);
+        const params = getDashboardDateParams(dateRange);
+        const [dashboardRes, inventoryRes, expiringRes] = await Promise.all([
+          analyticsService.getDashboardOverview(params),
+          analyticsService.getInventoryReport(params),
+          productService.getExpiringProducts({ limit: 200 }),
+        ]);
+
+        const dashboardPayload = dashboardRes?.data || dashboardRes || {};
+        const dashboardData = dashboardPayload?.data || dashboardPayload;
+        const metrics = dashboardData?.metrics || {};
+
+        const inventoryPayload = inventoryRes?.data || inventoryRes || {};
+        const inventoryData = inventoryPayload?.data || inventoryPayload;
+        const inventorySummary = inventoryData?.summary || {};
+
+        const expiringPayload = expiringRes?.data || expiringRes || {};
+        const expiringItems = Array.isArray(expiringPayload)
+          ? expiringPayload
+          : Array.isArray(expiringPayload.products)
+            ? expiringPayload.products
+            : Array.isArray(expiringPayload.data)
+              ? expiringPayload.data
+              : [];
+
+        const daysCounter = { next30Days: 0, next60Days: 0, next90Days: 0 };
+        expiringItems.forEach((item) => {
+          const existingDays = Number(item?.daysUntilExpiry ?? NaN);
+          const fallbackDate = item?.expiryDate || item?.expirationDate;
+          const computedDays = Number.isFinite(existingDays)
+            ? existingDays
+            : fallbackDate
+              ? Math.max(0, Math.ceil((new Date(fallbackDate) - new Date()) / (1000 * 60 * 60 * 24)))
+              : 0;
+
+          if (computedDays <= 30) daysCounter.next30Days += 1;
+          if (computedDays <= 60) daysCounter.next60Days += 1;
+          if (computedDays <= 90) daysCounter.next90Days += 1;
+        });
+
+        setData({
+          totalOrders: {
+            value: Number(metrics?.totalOrders?.value ?? 0),
+            change: Number(metrics?.totalOrders?.change ?? 0),
+            trend: metrics?.totalOrders?.trend || "up",
+          },
+          stockOnHand: {
+            units: Number(inventorySummary?.totalQuantity ?? 0),
+            value: Number(inventorySummary?.totalValue ?? metrics?.inventoryValue?.value ?? 0),
+          },
+          lowStockAlerts: {
+            count: Number(inventorySummary?.lowStockItems ?? metrics?.lowStockItems ?? 0),
+            critical: Number(inventorySummary?.outOfStockItems ?? 0),
+          },
+          expiringStock: daysCounter,
+        });
       } catch (error) {
         console.error("Error fetching operational data:", error);
+        setData(null);
       } finally {
         setLoading(false);
       }

@@ -1,22 +1,23 @@
 [
   {
-    "id": "550e8400-e29b-41d4-a716-446655440001",
-    "name": "admin",
-    "description": "Full system access with security controls"
+    "id": "role_ceo",
+    "name": "CEO",
+    "description": "Full access to all dashboard modules and actions",
+    "level": "business",
+    "isSystemRole": true
   },
   {
-    "id": "550e8400-e29b-41d4-a716-446655440002",
-    "name": "admin",
-    "description": "Administrative access excluding sensitive security settings"
+    "id": "role_manager",
+    "name": "Manager",
+    "description": "Full access except adding users",
+    "level": "business",
+    "isSystemRole": true
   },
   {
-    "id": "550e8400-e29b-41d4-a716-446655440003",
-    "name": "sales",
-    "description": "Can manage inventory, orders, and staff"
-  },
-  {
-    "id": "550e8400-e29b-41d4-a716-446655440004",
-    "name": "wholesale",
-    "description": "Basic access for sales and viewing inventory"
+    "id": "role_sales",
+    "name": "Sales",
+    "description": "Dashboard + view products/categories/customers + create sale",
+    "level": "business",
+    "isSystemRole": true
   }
 ]

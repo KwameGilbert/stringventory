@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Search, ShoppingCart, Plus, Minus, Trash2, CreditCard, DollarSign, Package, CheckCircle } from "lucide-react";
-import axios from "axios";
 import Swal from "sweetalert2";
+import { productService } from "../../../services/productService";
 
 export default function Sales() {
   const [products, setProducts] = useState([]);
@@ -16,10 +16,25 @@ export default function Sales() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/data/products.json");
-        setProducts(response.data);
+        const response = await productService.getProducts();
+        const payload = response?.data || response || {};
+        const list = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload.products)
+            ? payload.products
+            : Array.isArray(payload.data)
+              ? payload.data
+              : [];
+
+        setProducts(
+          list.map((product) => ({
+            ...product,
+            price: Number(product?.price ?? product?.sellingPrice ?? 0),
+          }))
+        );
       } catch (error) {
         console.error("Error loading products", error);
+        setProducts([]);
       } finally {
         setLoading(false);
       }

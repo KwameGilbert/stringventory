@@ -1,50 +1,108 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { FileText, Package, AlertCircle, CheckCircle } from "lucide-react";
 import PurchasesHeader from "../../../components/admin/Purchases/PurchasesHeader";
 import PurchasesTable from "../../../components/admin/Purchases/PurchasesTable";
-import { confirmDelete, showSuccess } from "../../../utils/alerts";
+import purchaseService from "../../../services/purchaseService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractPurchases = (response) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload.purchases)) return payload.purchases;
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.purchases)) return payload.data.purchases;
+
+  return [];
+};
+
+const extractPagination = (response) => {
+  const payload = response?.data || response || {};
+  const pagination = payload?.pagination || payload?.data?.pagination || {};
+
+  return {
+    page: Number(pagination?.page || 1),
+    limit: Number(pagination?.limit || 20),
+    total: Number(pagination?.total || 0),
+    totalPages: Number(pagination?.totalPages || 1),
+  };
+};
+
+const normalizePurchase = (purchase) => ({
+  ...purchase,
+  waybillNumber: purchase?.waybillNumber || "",
+  supplierName: purchase?.supplierName || purchase?.supplier?.name || "Unknown Supplier",
+  purchaseDate: purchase?.purchaseDate || purchase?.date || purchase?.createdAt,
+  totalAmount: Number(purchase?.totalAmount ?? purchase?.total ?? purchase?.amount ?? 0),
+  createdBy: purchase?.createdBy || purchase?.createdByName || "System",
+  status: String(purchase?.status || "pending").toLowerCase(),
+});
 
 export default function Purchases() {
   const [purchases, setPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get("/data/purchases.json");
-        setPurchases(response.data);
+        const response = await purchaseService.getPurchases({
+          page: currentPage,
+          limit: pagination.limit,
+          search: searchQuery || undefined,
+          status: statusFilter || undefined,
+        });
+        setPurchases(extractPurchases(response).map(normalizePurchase));
+        setPagination((prev) => ({
+          ...prev,
+          ...extractPagination(response),
+        }));
       } catch (error) {
         console.error("Error loading purchases", error);
+        showError(error?.message || "Failed to load purchases");
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [currentPage, searchQuery, statusFilter, pagination.limit]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
 
   // Calculate stats
-  const totalPurchases = purchases.length;
+  const totalPurchases = pagination.total || purchases.length;
   const pendingPurchases = purchases.filter(p => p.status === "pending").length;
   const receivedPurchases = purchases.filter(p => p.status === "received").length;
   const partialPurchases = purchases.filter(p => p.status === "partial").length;
 
-  // Filter purchases
-  const filteredPurchases = purchases.filter((purchase) => {
-    const matchesSearch =
-      purchase.waybillNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      purchase.supplierName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = !statusFilter || purchase.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
-
   const handleDelete = async (id) => {
     const result = await confirmDelete("this purchase");
     if (result.isConfirmed) {
-      setPurchases((prev) => prev.filter((p) => p.id !== id));
-      showSuccess("Purchase deleted successfully");
+      try {
+        await purchaseService.deletePurchase(id);
+        setPurchases((prev) => prev.filter((p) => String(p.id) !== String(id)));
+        setPagination((prev) => ({
+          ...prev,
+          total: Math.max(0, prev.total - 1),
+        }));
+        showSuccess("Purchase deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete purchase", error);
+        showError(error?.message || "Failed to delete purchase");
+      }
     }
   };
 
@@ -128,7 +186,15 @@ export default function Purchases() {
       </div>
 
       {/* Purchases Table */}
-      <PurchasesTable purchases={filteredPurchases} onDelete={handleDelete} />
+      <PurchasesTable
+        purchases={purchases}
+        onDelete={handleDelete}
+        currentPage={pagination.page || currentPage}
+        totalPages={pagination.totalPages || 1}
+        totalItems={pagination.total || purchases.length}
+        pageSize={pagination.limit || 20}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

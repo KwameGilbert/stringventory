@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { DollarSign, ShoppingBag, TrendingUp, Plus, Search, Filter, ArrowRight } from "lucide-react";
 // import SalesTable from "../../../components/admin/Sales/SalesTable"; // REMOVED
 import OrdersTable from "../../../components/admin/Orders/OrdersTable"; // ADDED
-import axios from "axios";
+import orderService from "../../../services/orderService";
 
 export default function SalesMain() {
   const [stats, setStats] = useState([
@@ -15,15 +15,21 @@ export default function SalesMain() {
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    // Fetch orders data instead of sales
-    axios.get("/data/orders.json")
+    orderService.getOrders({ limit: 20, sortBy: "date", sortOrder: "desc" })
       .then(res => {
-        const orders = res.data;
+        const payload = res?.data || res || {};
+        const orders = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload.orders)
+            ? payload.orders
+            : Array.isArray(payload.data)
+              ? payload.data
+              : [];
         
         // Calculate Stats
         const totalRevenue = orders
             .filter(o => o.status !== 'cancelled' && o.status !== 'refunded')
-            .reduce((sum, o) => sum + o.total, 0);
+            .reduce((sum, o) => sum + Number(o.total || 0), 0);
         const totalOrders = orders.length;
         const avgTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
@@ -35,9 +41,20 @@ export default function SalesMain() {
             { title: "Avg. Ticket Size", value: formatCurrency(avgTicket), icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
         ]);
 
-        // Use raw orders data for OrdersTable (it handles structure correctly)
-        // Just slice the most recent 5
-        setTransactions(orders.slice(0, 5));
+        setTransactions(
+          orders.slice(0, 5).map((order) => ({
+            ...order,
+            orderNumber: order.orderNumber || order.id,
+            orderDate: order.orderDate || order.date || order.createdAt,
+            customer: {
+              name: order.customer?.name || order.customerName || "Unknown Customer",
+              phone: order.customer?.phone || order.customerPhone || "",
+            },
+            total: Number(order.total || 0),
+            paymentMethod: order.paymentMethod || "cash",
+            discountAmount: Number(order.discountAmount ?? order.discount ?? 0),
+          }))
+        );
       })
       .catch(err => console.error("Error loading orders:", err));
   }, []);

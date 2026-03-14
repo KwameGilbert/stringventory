@@ -1,7 +1,34 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit2, Trash2, Calendar, User, FileText, Package } from "lucide-react";
-import axios from "axios";
+import purchaseService from "../../../services/purchaseService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractPurchase = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.purchase || payload?.data?.purchase || payload?.data || payload;
+};
+
+const toNumber = (value) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const normalizePurchaseItem = (item) => {
+  const quantity = toNumber(item?.quantity);
+  const unitCost = toNumber(item?.unitCost ?? item?.costPrice);
+  const sellingPrice = toNumber(item?.sellingPrice);
+  const subtotal = toNumber(item?.subtotal ?? item?.lineTotal ?? item?.total);
+
+  return {
+    ...item,
+    quantity,
+    unitCost,
+    sellingPrice,
+    subtotal: subtotal || quantity * unitCost,
+    expiryDate: item?.expiryDate || item?.expiry || item?.expirationDate || item?.expiresAt || null,
+  };
+};
 
 export default function ViewPurchase() {
   const { id } = useParams();
@@ -12,23 +39,41 @@ export default function ViewPurchase() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [purchasesRes, itemsRes] = await Promise.all([
-          axios.get("/data/purchases.json"),
-          axios.get("/data/purchase-items.json")
-        ]);
-        
-        const found = purchasesRes.data.find((p) => p.id === id);
-        if (found) {
-          setPurchase(found);
-          const purchaseItems = itemsRes.data.filter(item => item.purchaseId === id);
-          setItems(purchaseItems);
+        const response = await purchaseService.getPurchaseById(id);
+        const found = extractPurchase(response);
+        if (found?.id) {
+          setPurchase({
+            ...found,
+            status: String(found.status || "pending").toLowerCase(),
+            supplierName: found.supplierName || found.supplier?.name || "Unknown Supplier",
+            purchaseDate: found.purchaseDate || found.date || found.createdAt,
+            totalAmount: toNumber(found.totalAmount ?? found.total ?? found.amount),
+            createdBy: found.createdBy || found.createdByName || "System",
+          });
+          const purchaseItems = found.purchaseItems || found.items || [];
+          setItems(purchaseItems.map(normalizePurchaseItem));
         }
       } catch (error) {
         console.error("Error fetching purchase", error);
+        showError(error?.message || "Failed to fetch purchase details");
       }
     };
     fetchData();
   }, [id]);
+
+  const handleDelete = async () => {
+    const result = await confirmDelete("this purchase");
+    if (!result.isConfirmed) return;
+
+    try {
+      await purchaseService.deletePurchase(id);
+      showSuccess("Purchase deleted successfully");
+      navigate("/dashboard/purchases");
+    } catch (error) {
+      console.error("Failed to delete purchase", error);
+      showError(error?.message || "Failed to delete purchase");
+    }
+  };
 
   const getStatusBadge = (status) => {
     const badges = {
@@ -44,7 +89,7 @@ export default function ViewPurchase() {
       style: "currency",
       currency: "GHS",
       minimumFractionDigits: 2,
-    }).format(amount);
+    }).format(toNumber(amount));
   };
 
   const formatDate = (dateString) => {
@@ -54,6 +99,8 @@ export default function ViewPurchase() {
       year: "numeric",
     });
   };
+
+  const purchaseReference = purchase?.waybillNumber || purchase?.purchaseNumber || "";
 
   if (!purchase) {
     return (
@@ -67,7 +114,7 @@ export default function ViewPurchase() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto pb-8 animate-fade-in">
+    <div className="max-w-6xl mx-auto pb-8 animate-fade-in mt-20">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/purchases")}
@@ -84,7 +131,7 @@ export default function ViewPurchase() {
         <div className="px-6 py-5 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{purchase.waybillNumber}</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{purchaseReference}</h1>
               <div className="flex items-center gap-3 mt-2">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(purchase.status)}`}>
                   {purchase.status.charAt(0).toUpperCase() + purchase.status.slice(1)}
@@ -103,7 +150,10 @@ export default function ViewPurchase() {
                   Edit
                 </Link>
               )}
-              <button className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
+              >
                 <Trash2 size={16} />
                 Delete
               </button>
@@ -128,15 +178,16 @@ export default function ViewPurchase() {
                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Product</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Qty</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Unit Cost</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Selling Price</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Subtotal</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Expiry</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {items.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50/50">
+                  {items.map((item, index) => (
+                    <tr key={item.id || index} className="hover:bg-gray-50/50">
                       <td className="px-6 py-3">
-                        <span className="text-sm font-medium text-gray-900">{item.productName}</span>
+                        <span className="text-sm font-medium text-gray-900">{item.productName || item.product?.name || `Product ${index + 1}`}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
                         <span className="text-sm text-gray-600">{item.quantity}</span>
@@ -145,10 +196,13 @@ export default function ViewPurchase() {
                         <span className="text-sm text-gray-900">{formatCurrency(item.unitCost)}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
+                        <span className="text-sm text-gray-900">{formatCurrency(item.sellingPrice)}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
                         <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.subtotal)}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-600">{formatDate(item.expiryDate)}</span>
+                        <span className="text-sm text-gray-600">{item.expiryDate ? formatDate(item.expiryDate) : "—"}</span>
                       </td>
                     </tr>
                   ))}
@@ -192,7 +246,7 @@ export default function ViewPurchase() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium">Waybill Number</p>
-                  <p className="text-sm font-semibold text-gray-900 font-mono">{purchase.waybillNumber}</p>
+                  <p className="text-sm font-semibold text-gray-900 font-mono">{purchaseReference}</p>
                 </div>
               </div>
 

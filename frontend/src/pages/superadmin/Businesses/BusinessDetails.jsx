@@ -8,12 +8,103 @@ import {
   Clock,
   Shield,
 } from 'lucide-react';
-import axios from 'axios';
 import Swal from 'sweetalert2';
 import BusinessOverview from './tabs/BusinessOverview';
 import BusinessUsers from './tabs/BusinessUsers';
 import BusinessActivity from './tabs/BusinessActivity';
 import BusinessSettings from './tabs/BusinessSettings';
+import superadminService from '../../../services/superadminService';
+
+const extractBusiness = (response) => {
+  const payload = response?.data || response || {};
+
+  if (payload?.business) return payload.business;
+  if (payload?.data?.business) return payload.data.business;
+  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
+
+  return payload;
+};
+
+const normalizeBusiness = (business) => ({
+  ...business,
+  id: business?.id,
+  name: business?.name || business?.businessName || 'Unnamed Business',
+  email: business?.email || business?.ownerEmail || '',
+  owner_name: business?.owner_name || business?.ownerName || business?.owner?.name || 'Owner',
+  phone: business?.phone || business?.ownerPhone || 'N/A',
+  industry: business?.industry || 'N/A',
+  country: business?.country || 'N/A',
+  subscription_plan: business?.subscription_plan || business?.subscriptionPlan || business?.plan || 'starter',
+  status: String(business?.status || 'active').toLowerCase(),
+  current_usage: {
+    total_users:
+      Number(business?.current_usage?.total_users) ||
+      Number(business?.currentUsage?.totalUsers) ||
+      Number(business?.totalUsers) ||
+      0,
+    total_products:
+      Number(business?.current_usage?.total_products) ||
+      Number(business?.currentUsage?.totalProducts) ||
+      Number(business?.totalProducts) ||
+      0,
+    storage_used:
+      Number(business?.current_usage?.storage_used) ||
+      Number(business?.currentUsage?.storageUsed) ||
+      0,
+  },
+  usage_limits: {
+    maxUsers:
+      Number(business?.usage_limits?.maxUsers) ||
+      Number(business?.usageLimits?.maxUsers) ||
+      Number(business?.planLimits?.maxUsers) ||
+      0,
+    maxProducts:
+      Number(business?.usage_limits?.maxProducts) ||
+      Number(business?.usageLimits?.maxProducts) ||
+      Number(business?.planLimits?.maxProducts) ||
+      0,
+    maxStorage:
+      Number(business?.usage_limits?.maxStorage) ||
+      Number(business?.usageLimits?.maxStorage) ||
+      Number(business?.planLimits?.maxStorage) ||
+      0,
+  },
+  mrr:
+    Number(business?.mrr) ||
+    Number(business?.monthlyRecurringRevenue) ||
+    Number(business?.revenue?.mrr) ||
+    0,
+  next_billing_date: business?.next_billing_date || business?.nextBillingDate || null,
+  created_at: business?.created_at || business?.createdAt || new Date().toISOString(),
+});
+
+const normalizeBusinessUsers = (business) => {
+  const users = business?.users || business?.teamMembers || [];
+
+  if (!Array.isArray(users)) return [];
+
+  return users.map((user, index) => ({
+    id: user?.id || index + 1,
+    name: user?.name || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.email || 'Unknown User',
+    email: user?.email || 'N/A',
+    role: user?.role || user?.roleName || 'Member',
+    status: String(user?.status || 'active').toLowerCase() === 'active' ? 'Active' : 'Inactive',
+    lastActive: user?.lastActive || user?.lastLoginAt || 'N/A',
+  }));
+};
+
+const normalizeActivityLogs = (business) => {
+  const logs = business?.activityLogs || business?.activities || [];
+  if (!Array.isArray(logs)) return [];
+
+  return logs.map((log, index) => ({
+    id: log?.id || index + 1,
+    action: log?.action || log?.title || 'Activity',
+    description: log?.description || log?.message || 'No description',
+    timestamp: log?.timestamp || log?.createdAt || new Date().toISOString(),
+    type: log?.type || 'settings',
+  }));
+};
 
 export default function BusinessDetails() {
   const { id } = useParams();
@@ -22,7 +113,6 @@ export default function BusinessDetails() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Mock Data Extension
   const [users, setUsers] = useState([]);
   const [settings, setSettings] = useState({
     betaFeatures: false,
@@ -31,17 +121,7 @@ export default function BusinessDetails() {
     maintenanceMode: false,
     verifiedStatus: true
   });
-
-
-  // Mock analytics/activity data
-  const [activityLogs] = useState([
-    { id: 1, action: 'User added', description: 'John Doe added to team', timestamp: '2023-10-28T14:30:00Z', type: 'user' },
-    { id: 2, action: 'Subscription updated', description: 'Plan upgraded to Professional', timestamp: '2023-10-28T10:00:00Z', type: 'subscription' },
-    { id: 3, action: 'Product added', description: 'Batch upload: 50 products', timestamp: '2023-10-27T15:20:00Z', type: 'product' },
-    { id: 4, action: 'Settings updated', description: 'Business profile updated', timestamp: '2023-10-26T09:15:00Z', type: 'settings' },
-    { id: 5, action: 'Login detected', description: 'New device login from NY, USA', timestamp: '2023-10-25T11:00:00Z', type: 'security' },
-    { id: 6, action: 'Invoice generated', description: 'Invoice #INV-2023-001 created', timestamp: '2023-10-25T00:00:00Z', type: 'billing' }
-  ]);
+  const [activityLogs, setActivityLogs] = useState([]);
 
   useEffect(() => {
     fetchBusinessDetails();
@@ -50,22 +130,22 @@ export default function BusinessDetails() {
   const fetchBusinessDetails = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/data/businesses.json');
-      const found = response.data.find(b => b.id === id);
-      
-      if (found) {
-        setBusiness(found);
-        
-        // Generate mock sub-data based on the business
-        setUsers([
-          { id: 1, name: found.owner_name, email: found.email, role: 'Owner', status: 'Active', lastActive: '2 mins ago' },
-          { id: 2, name: 'Sarah Miller', email: 'sarah.m@example.com', role: 'Admin', status: 'Active', lastActive: '2 days ago' },
-          { id: 3, name: 'Mike Wilson', email: 'mike.w@example.com', role: 'Editor', status: 'Inactive', lastActive: '1 week ago' },
-        ]);
+      const response = await superadminService.getBusinessById(id);
+      const found = normalizeBusiness(extractBusiness(response));
 
+      if (!found?.id) {
+        navigate('/superadmin/businesses');
+        return;
       }
+
+      setBusiness(found);
+      setUsers(normalizeBusinessUsers(found));
+      setActivityLogs(normalizeActivityLogs(found));
     } catch (error) {
       console.error('Error fetching business details:', error);
+      Swal.fire('Failed to load business details', error?.message || 'Please try again later.', 'error').then(() => {
+        navigate('/superadmin/businesses');
+      });
     } finally {
       setLoading(false);
     }
@@ -100,10 +180,23 @@ export default function BusinessDetails() {
             confirmButtonColor: isSuspended ? '#10b981' : '#ef4444',
             confirmButtonText: isSuspended ? 'Yes, Activate' : 'Yes, Suspend'
         }).then((result) => {
-            if (result.isConfirmed) {
+            if (!result.isConfirmed) return;
+
+            const run = async () => {
+              try {
+                if (isSuspended) {
+                  await superadminService.reactivateBusiness(id);
+                } else {
+                  await superadminService.suspendBusiness(id);
+                }
                 setBusiness(prev => ({ ...prev, status: isSuspended ? 'active' : 'suspended' }));
                 Swal.fire('Updated!', `Business has been ${isSuspended ? 'activated' : 'suspended'}.`, 'success');
-            }
+              } catch (error) {
+                Swal.fire('Update failed', error?.message || 'Unable to update business status.', 'error');
+              }
+            };
+
+            run();
         });
         break;
       case 'delete':
@@ -116,9 +209,18 @@ export default function BusinessDetails() {
             confirmButtonText: 'Yes, Delete Permanently'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('Deleted!', 'Business has been deleted.', 'success').then(() => {
-                    navigate('/superadmin/businesses');
-                });
+                const run = async () => {
+                  try {
+                    await superadminService.deleteBusiness(id);
+                    Swal.fire('Deleted!', 'Business has been deleted.', 'success').then(() => {
+                        navigate('/superadmin/businesses');
+                    });
+                  } catch (error) {
+                    Swal.fire('Delete failed', error?.message || 'Unable to delete business.', 'error');
+                  }
+                };
+
+                run();
             }
         });
         break;
@@ -205,7 +307,7 @@ export default function BusinessDetails() {
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[400px]">
+      <div className="min-h-100">
         {activeTab === 'overview' && (
             <BusinessOverview 
                 business={business} 

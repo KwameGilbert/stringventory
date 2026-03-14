@@ -4,7 +4,6 @@ import {
   Edit, 
   Trash2, 
   Shield, 
-  ShieldCheck, 
   ShieldAlert, 
   User,
   Eye
@@ -15,21 +14,20 @@ export default function UserList({ users, onEdit, onDelete }) {
 
   const getRoleIcon = (roleName) => {
     switch (roleName?.toLowerCase()) {
-      case "super admin": return <ShieldAlert size={16} className="text-rose-600" />;
-      case "admin": return <ShieldCheck size={16} className="text-emerald-600" />;
+      case "ceo": return <ShieldAlert size={16} className="text-rose-600" />;
       case "manager": return <Shield size={16} className="text-blue-600" />;
+      case "sales": return <User size={16} className="text-amber-600" />;
       default: return <User size={16} className="text-gray-600" />;
     }
   };
 
   const getRoleBadge = (roleName) => {
     const styles = {
-      "super admin": "bg-rose-100 text-rose-700 border-rose-200",
-      "admin": "bg-emerald-100 text-emerald-700 border-emerald-200",
+      "ceo": "bg-rose-100 text-rose-700 border-rose-200",
       "manager": "bg-blue-100 text-blue-700 border-blue-200",
-      "staff": "bg-gray-100 text-gray-700 border-gray-200"
+      "sales": "bg-amber-100 text-amber-700 border-amber-200",
     };
-    return styles[roleName?.toLowerCase()] || styles["staff"];
+    return styles[roleName?.toLowerCase()] || "bg-gray-100 text-gray-700 border-gray-200";
   };
 
   return (
@@ -116,16 +114,6 @@ export default function UserList({ users, onEdit, onDelete }) {
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                       >
                         <Edit size={14} /> Edit
-                      </button>
-                      <button
-                        onClick={() => {
-                          // Allow parent to handle navigation or direct nav here
-                          // Since we don't have navigate prop here, window.location is a quick fix or we pass navigate
-                          window.location.href = `/dashboard/users/${user.id}/permissions`;
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-                      >
-                         <ShieldCheck size={14} /> Permissions
                       </button>
                       <button
                         onClick={() => {

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Package, TrendingDown, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
+import orderService from "../../../services/orderService";
+import { productService } from "../../../services/productService";
 
 const QuickLists = () => {
   const [recentOrders, setRecentOrders] = useState([]);
@@ -13,27 +14,68 @@ const QuickLists = () => {
     const fetchData = async () => {
       try {
         const [ordersRes, stockRes, expiringRes] = await Promise.all([
-          axios.get("/data/orders.json"),
-          axios.get("/data/low-stock.json"),
-          axios.get("/data/expiring-products.json"),
+          orderService.getOrders({ limit: 5, sortBy: "date", sortOrder: "desc" }),
+          productService.getLowStockProducts({ limit: 5 }),
+          productService.getExpiringProducts({ limit: 5 }),
         ]);
 
+        const extractList = (response, key) => {
+          const payload = response?.data || response || {};
+
+          if (Array.isArray(payload)) return payload;
+          if (Array.isArray(payload[key])) return payload[key];
+          if (Array.isArray(payload.items)) return payload.items;
+          if (Array.isArray(payload.results)) return payload.results;
+          if (Array.isArray(payload.data)) return payload.data;
+          if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+          return [];
+        };
+
+        const orders = extractList(ordersRes, "orders");
+        const lowStockItems = extractList(stockRes, "products");
+        const expiringItems = extractList(expiringRes, "products");
+
         // Map orders data to match expected format
-        const mappedOrders = (ordersRes.data || []).slice(0, 5).map(order => ({
+        const mappedOrders = orders.slice(0, 5).map(order => ({
           id: order.id,
-          orderNumber: order.id,
-          customerName: order.customer?.name || "Unknown Customer",
-          totalAmount: order.total || 0,
+          orderNumber: order.orderNumber || order.id,
+          customerName: order.customer?.name || order.customerName || "Unknown Customer",
+          totalAmount: Number(order.total || 0),
           status: order.status || "pending",
         }));
 
         setRecentOrders(mappedOrders);
-        setLowStock((stockRes.data || []).slice(0, 5));
-        
-        // Expiring products is now a direct array
-        setExpiring((expiringRes.data || []).slice(0, 5));
+        setLowStock(lowStockItems.slice(0, 5).map((item) => ({
+          ...item,
+          productName: item.productName || item.name || "Product",
+          sku: item.sku || item.code || "—",
+          currentStock: Number(item.currentStock ?? item.quantity ?? 0),
+          reorderLevel: Number(item.reorderLevel ?? item.reorderThreshold ?? 0),
+        })));
+
+        setExpiring(expiringItems.slice(0, 5).map((item) => {
+          const expiryDate = item.expiryDate || item.expirationDate;
+          let daysUntilExpiry = Number(item.daysUntilExpiry ?? 0);
+          if (!item.daysUntilExpiry && expiryDate) {
+            const now = new Date();
+            const target = new Date(expiryDate);
+            daysUntilExpiry = Math.max(0, Math.ceil((target - now) / (1000 * 60 * 60 * 24)));
+          }
+
+          return {
+            ...item,
+            productName: item.productName || item.name || "Product",
+            batchNumber: item.batchNumber || item.batch || "—",
+            daysUntilExpiry,
+            quantity: Number(item.quantity ?? item.currentStock ?? 0),
+          };
+        }));
       } catch (error) {
         console.error("Error fetching quick lists:", error);
+        setRecentOrders([]);
+        setLowStock([]);
+        setExpiring([]);
       } finally {
         setLoading(false);
       }

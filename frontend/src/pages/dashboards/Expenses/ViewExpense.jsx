@@ -4,7 +4,13 @@ import {
   ArrowLeft, Edit2, Trash2, DollarSign, Calendar, FileText, 
   Link as LinkIcon, Paperclip, Repeat, CheckCircle 
 } from "lucide-react";
-import axios from "axios";
+import expenseService from "../../../services/expenseService";
+import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+
+const extractExpense = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.expense || payload?.data?.expense || payload?.data || payload;
+};
 
 export default function ViewExpense() {
   const { id } = useParams();
@@ -15,17 +21,42 @@ export default function ViewExpense() {
   useEffect(() => {
     const fetchExpense = async () => {
       try {
-        const response = await axios.get("/data/expenses.json");
-        const found = response.data.find(e => e.id === parseInt(id));
-        if (found) setExpense(found);
+        const response = await expenseService.getExpenseById(id);
+        const found = extractExpense(response);
+        if (found) {
+          setExpense({
+            ...found,
+            category: found?.category || found?.categoryName || "Uncategorized",
+            amount: Number(found?.amount ?? 0),
+            supplier: found?.supplier || found?.vendor || "",
+            isRecurring: Boolean(found?.isRecurring),
+            hasAttachment: Boolean(found?.hasAttachment || found?.receipt),
+            notes: found?.notes || found?.description || "",
+          });
+        }
       } catch (error) {
         console.error("Error loading expense", error);
+        showError(error?.message || "Failed to load expense");
       } finally {
         setLoading(false);
       }
     };
     fetchExpense();
   }, [id]);
+
+  const handleDelete = async () => {
+    const result = await confirmDelete("this expense");
+    if (!result.isConfirmed) return;
+
+    try {
+      await expenseService.deleteExpense(id);
+      showSuccess("Expense deleted successfully");
+      navigate("/dashboard/expenses");
+    } catch (error) {
+      console.error("Failed to delete expense", error);
+      showError(error?.message || "Failed to delete expense");
+    }
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-GH", {
@@ -81,7 +112,7 @@ export default function ViewExpense() {
         <div className="px-6 py-5 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-rose-50 to-pink-100 border border-rose-100 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-xl bg-linear-to-br from-rose-50 to-pink-100 border border-rose-100 flex items-center justify-center">
                 <DollarSign className="w-8 h-8 text-rose-600" />
               </div>
               <div>
@@ -95,7 +126,7 @@ export default function ViewExpense() {
                 <Edit2 size={16} />
                 Edit
               </Link>
-              <button className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
+              <button onClick={handleDelete} className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm">
                 <Trash2 size={16} />
                 Delete
               </button>

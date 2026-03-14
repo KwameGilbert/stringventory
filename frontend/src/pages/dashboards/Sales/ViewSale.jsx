@@ -4,7 +4,8 @@ import {
   ArrowLeft, Printer, Mail, User, Phone, CheckCircle, 
   XCircle, RotateCcw, Package, DollarSign, Receipt, RefreshCw, Clock, CreditCard
 } from "lucide-react";
-import axios from "axios";
+import orderService from "../../../services/orderService";
+import { showError } from "../../../utils/alerts";
 
 const statusConfig = {
   Pending: {
@@ -42,19 +43,45 @@ export default function ViewSale() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [salesRes, itemsRes] = await Promise.all([
-          axios.get('/data/sales.json'),
-          axios.get('/data/sale-items.json')
-        ]);
-        
-        const found = salesRes.data.find(s => s.id === id);
-        if (found) {
-          setSale(found);
-          const saleItems = itemsRes.data.filter(item => item.saleId === id);
-          setItems(saleItems);
+        const response = await orderService.getOrderById(id);
+        const payload = response?.data || response || {};
+        const rawOrder = payload?.order || payload?.data?.order || payload?.data || payload;
+
+        if (rawOrder?.id) {
+          const mappedSale = {
+            id: rawOrder.id,
+            date: rawOrder.orderDate || rawOrder.date || rawOrder.createdAt || "—",
+            customer: rawOrder.customer?.name || rawOrder.customerName || "Walk-in Customer",
+            method: String(rawOrder.paymentMethod || "cash").replace(/_/g, " "),
+            status:
+              rawOrder.status === "fulfilled" || rawOrder.status === "completed"
+                ? "Completed"
+                : rawOrder.status === "cancelled"
+                  ? "Cancelled"
+                  : rawOrder.status === "refunded"
+                    ? "Refunded"
+                    : "Pending",
+            amount: Number(rawOrder.total || 0),
+          };
+
+          const mappedItems = Array.isArray(rawOrder.items)
+            ? rawOrder.items.map((item, index) => ({
+                id: item.id || item.orderItemId || `${rawOrder.id}-${index}`,
+                productName: item.productName || "Product",
+                quantity: Number(item.quantity || 0),
+                unitPrice: Number(item.unitPrice || 0),
+              }))
+            : [];
+
+          setSale(mappedSale);
+          setItems(mappedItems);
+        } else {
+          setSale(null);
+          setItems([]);
         }
       } catch (error) {
         console.error("Error fetching sale", error);
+        showError(error?.message || "Failed to fetch sale details");
       }
     };
     fetchData();

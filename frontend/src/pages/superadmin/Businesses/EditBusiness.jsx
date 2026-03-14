@@ -2,7 +2,30 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Loader } from 'lucide-react';
 import { PRICING_PLANS } from '../../../constants/plans';
-import axios from 'axios';
+import superadminService from '../../../services/superadminService';
+import { showError, showSuccess } from '../../../utils/alerts';
+
+const extractBusiness = (response) => {
+  const payload = response?.data || response || {};
+
+  if (payload?.business) return payload.business;
+  if (payload?.data?.business) return payload.data.business;
+  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
+
+  return payload;
+};
+
+const normalizeBusiness = (business) => ({
+  name: business?.name || business?.businessName || '',
+  email: business?.email || business?.ownerEmail || '',
+  owner_name: business?.owner_name || business?.ownerName || business?.owner?.name || '',
+  phone: business?.phone || business?.ownerPhone || '',
+  industry: business?.industry || '',
+  country: business?.country || '',
+  subscription_plan: business?.subscription_plan || business?.subscriptionPlan || business?.plan || 'starter',
+  status: String(business?.status || 'active').toLowerCase(),
+  notes: business?.notes || '',
+});
 
 export default function EditBusiness() {
   const { id } = useParams();
@@ -58,27 +81,18 @@ export default function EditBusiness() {
   const fetchBusinessData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/data/businesses.json');
-      const business = response.data.find(b => b.id === id);
+      const response = await superadminService.getBusinessById(id);
+      const business = extractBusiness(response);
       
       if (business) {
-        setFormData({
-          name: business.name || '',
-          email: business.email || '',
-          owner_name: business.owner_name || '',
-          phone: business.phone || '',
-          industry: business.industry || '',
-          country: business.country || '',
-          subscription_plan: business.subscription_plan || 'starter',
-          status: business.status || 'active',
-          notes: business.notes || ''
-        });
+        setFormData(normalizeBusiness(business));
       } else {
-        // Business not found
         navigate('/superadmin/businesses');
       }
     } catch (error) {
       console.error('Error fetching business:', error);
+      showError(error?.message || 'Failed to load business details');
+      navigate('/superadmin/businesses');
     } finally {
       setLoading(false);
     }
@@ -136,15 +150,24 @@ export default function EditBusiness() {
     setSaving(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      console.log('Updating business:', id, formData);
+      await superadminService.updateBusiness(id, {
+        name: formData.name,
+        email: formData.email,
+        ownerName: formData.owner_name,
+        phone: formData.phone,
+        industry: formData.industry,
+        country: formData.country,
+        subscriptionPlan: formData.subscription_plan,
+        status: formData.status,
+        notes: formData.notes || undefined,
+      });
+      showSuccess('Business updated successfully');
       
       // Navigate back to business details
       navigate(`/superadmin/businesses/${id}`);
     } catch (error) {
       console.error('Error updating business:', error);
+      showError(error?.message || 'Failed to update business');
     } finally {
       setSaving(false);
     }

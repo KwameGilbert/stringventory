@@ -2,7 +2,24 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import CategoryForm from "../../../components/admin/Categories/CategoryForm";
-import axios from "axios";
+import categoryService from "../../../services/categoryService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+const sanitizeImage = (image) => {
+  if (!image || typeof image !== "string") return undefined;
+  const trimmedImage = image.trim();
+
+  if (!trimmedImage) return undefined;
+  if (trimmedImage.startsWith("data:")) return undefined;
+  if (trimmedImage.length > 500) return undefined;
+
+  return trimmedImage;
+};
+
+const extractCategory = (response) => {
+  const payload = response?.data || response || {};
+  return payload?.category || payload?.data?.category || payload?.data || payload;
+};
 
 export default function EditCategory() {
   const navigate = useNavigate();
@@ -14,16 +31,20 @@ export default function EditCategory() {
   useEffect(() => {
      const fetchData = async () => {
          try {
-             const response = await axios.get('/data/categories.json');
-             const category = response.data.find(c => c.id === id);
-             if (category) {
-                 setData(category);
+             const response = await categoryService.getCategoryById(id);
+             const category = extractCategory(response);
+             if (category?.id) {
+                 setData({
+                   ...category,
+                   image: category.image || category.imageUrl || null,
+                   status: category.status || "active",
+                 });
              } else {
                  setError("Category not found");
              }
          } catch (error) {
              console.error("Error fetching category", error);
-             setError("Failed to load category");
+             setError(error?.message || "Failed to load category");
          } finally {
              setLoading(false);
          }
@@ -31,9 +52,20 @@ export default function EditCategory() {
      fetchData();
   }, [id]);
 
-  const handleUpdate = (formData) => {
-    console.log("Updating category:", formData);
-    navigate("/dashboard/categories");
+  const handleUpdate = async (formData) => {
+    try {
+      await categoryService.updateCategory(id, {
+        name: formData.name,
+        description: formData.description,
+        status: formData.status,
+        image: sanitizeImage(formData.image),
+      });
+      showSuccess("Category updated successfully");
+      navigate("/dashboard/categories");
+    } catch (error) {
+      console.error("Failed to update category", error);
+      showError(error?.message || "Failed to update category");
+    }
   };
 
   if (loading) {
