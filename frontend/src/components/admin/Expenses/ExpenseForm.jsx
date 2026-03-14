@@ -61,6 +61,7 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
     recurringFrequency: "monthly",
     recurringInterval: 1,
     recurringEndDate: "",
+    attachmentFile: null,
     hasAttachment: false,
     status: "pending",
     ...initialData,
@@ -68,17 +69,25 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [catRes, paymentSettingsRes] = await Promise.all([
-          expenseService.getExpenseCategories(),
-          expenseService.getPaymentSettings(),
-        ]);
+      const [catRes, paymentSettingsRes] = await Promise.allSettled([
+        expenseService.getExpenseCategories(),
+        expenseService.getPaymentSettings(),
+      ]);
 
-        setCategories(extractCategories(catRes));
-        setPaymentMethods(extractPaymentMethods(paymentSettingsRes));
-      } catch (error) {
-        console.error("Error loading data", error);
-        showError(error?.message || "Failed to load expense form data");
+      if (catRes.status === "fulfilled") {
+        setCategories(extractCategories(catRes.value));
+      } else {
+        console.error("Error loading categories", catRes.reason);
+        showError(catRes.reason?.message || "Failed to load expense categories");
+        setCategories([]);
+      }
+
+      if (paymentSettingsRes.status === "fulfilled") {
+        setPaymentMethods(extractPaymentMethods(paymentSettingsRes.value));
+      } else {
+        console.error("Error loading payment settings", paymentSettingsRes.reason);
+        // Fallback to default methods if settings endpoint fails.
+        setPaymentMethods(extractPaymentMethods({}));
       }
     };
     fetchData();
@@ -86,6 +95,17 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    if (type === "file") {
+      const file = e.target.files?.[0] || null;
+      setFormData((prev) => ({
+        ...prev,
+        attachmentFile: file,
+        hasAttachment: Boolean(file) || Boolean(prev.hasAttachment),
+      }));
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -297,13 +317,28 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
             </div>
 
             {/* Attachment Placeholder */}
-            <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group">
+            <label className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 transition-colors cursor-pointer group">
+              <input
+                type="file"
+                name="attachmentFile"
+                onChange={handleChange}
+                className="hidden"
+                accept=".pdf,.png,.jpg,.jpeg,.webp"
+              />
               <div className="p-3 rounded-full bg-gray-50 group-hover:bg-gray-100 mb-3 transition-colors">
                 <Paperclip className="w-6 h-6 text-gray-400 group-hover:text-gray-600" />
               </div>
               <p className="text-sm font-medium text-gray-700">Click to upload evidence</p>
               <p className="text-xs text-gray-500 mt-1">Receipts, invoices, or other documents</p>
-            </div>
+              {formData.attachmentFile && (
+                <p className="text-xs text-emerald-600 mt-2 truncate max-w-full">
+                  Selected: {formData.attachmentFile.name}
+                </p>
+              )}
+              {!formData.attachmentFile && formData.hasAttachment && (
+                <p className="text-xs text-blue-600 mt-2">Existing attachment detected</p>
+              )}
+            </label>
 
             {/* Recurring Toggle */}
             <div className="rounded-xl bg-blue-50 border border-blue-100 overflow-hidden">

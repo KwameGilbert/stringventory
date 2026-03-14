@@ -8,16 +8,37 @@ export default function AddExpense() {
 
   const handleCreate = async (formData) => {
     try {
-      await expenseService.createExpense({
+      const payload = {
         description: formData.name,
+        expenseCategoryId: formData.expenseCategoryId,
         categoryId: formData.expenseCategoryId,
         amount: Number(formData.amount),
+        transactionDate: formData.date,
         date: formData.date,
         vendor: formData.supplier || undefined,
         paymentMethod: formData.paymentMethod,
         reference: formData.reference || undefined,
         notes: formData.notes || undefined,
-      });
+        isRecurring: Boolean(formData.isRecurring),
+        recurringFrequency: formData.isRecurring ? formData.recurringFrequency : undefined,
+        recurringInterval: formData.isRecurring ? Number(formData.recurringInterval || 1) : undefined,
+        recurringEndDate: formData.isRecurring && formData.recurringEndDate ? formData.recurringEndDate : undefined,
+      };
+
+      if (formData.attachmentFile) {
+        const multipartPayload = new FormData();
+
+        Object.entries(payload).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            multipartPayload.append(key, String(value));
+          }
+        });
+
+        multipartPayload.append("receipt", formData.attachmentFile);
+        await expenseService.createExpense(multipartPayload);
+      } else {
+        await expenseService.createExpense(payload);
+      }
 
       showSuccess("Expense created successfully");
       navigate("/dashboard/expenses");

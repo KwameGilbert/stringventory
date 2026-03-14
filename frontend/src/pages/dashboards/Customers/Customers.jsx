@@ -94,7 +94,7 @@ export default function Customers() {
   }
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6">
+    <div className="pb-8 animate-fade-in space-y-6 mt-20">
       {/* Header */}
       <CustomersHeader
         searchQuery={searchQuery}

@@ -97,7 +97,7 @@ export default function Expenses() {
   }
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6">
+    <div className="pb-8 animate-fade-in space-y-6 mt-20">
       <ExpensesHeader
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}

@@ -3,6 +3,8 @@ import { Search, ShoppingCart, Plus, Minus, Trash2, CreditCard, DollarSign, Pack
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { productService } from "../../../services/productService";
+import { useNavigate } from "react-router-dom";
+import { productService } from "../../../services/productService";
 
 export default function POS() {
   const navigate = useNavigate();
@@ -19,23 +21,26 @@ export default function POS() {
     const fetchData = async () => {
       try {
         const response = await productService.getProducts();
-        const payload = response?.data || response || {};
-        const list = Array.isArray(payload)
-          ? payload
-          : Array.isArray(payload.products)
-            ? payload.products
-            : Array.isArray(payload.data)
-              ? payload.data
+        
+        // Handle Products
+        const prodPayload = response?.data || response || {};
+        const prodList = Array.isArray(prodPayload)
+          ? prodPayload
+          : Array.isArray(prodPayload.products)
+            ? prodPayload.products
+            : Array.isArray(prodPayload.data)
+              ? prodPayload.data
               : [];
 
         setProducts(
-          list.map((product) => ({
+          prodList.map((product) => ({
             ...product,
             price: Number(product?.price ?? product?.sellingPrice ?? 0),
           }))
         );
+
       } catch (error) {
-        console.error("Failed to load POS products", error);
+        console.error("Failed to load POS data", error);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -111,7 +116,7 @@ export default function POS() {
   };
 
   return (
-    <div className="h-[calc(100vh-6rem)] -m-6 flex flex-col lg:flex-row overflow-hidden animate-fade-in py-10">
+    <div className="h-[calc(100vh-6rem)] -m-6 flex flex-col lg:flex-row overflow-hidden animate-fade-in py-10 mt-20">
       {/* Left Column: Product Grid */}
       <div className="flex-1 flex flex-col border-r border-gray-200 bg-gray-50/50">
         {/* Search Header */}

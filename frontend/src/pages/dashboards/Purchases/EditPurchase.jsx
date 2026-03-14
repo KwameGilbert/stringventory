@@ -24,13 +24,15 @@ const extractPurchase = (response) => {
   return payload?.purchase || payload?.data?.purchase || payload?.data || payload;
 };
 
+const toDateValue = (val) => (val ? String(val).split('T')[0] : "");
+
 const normalizeEditItem = (item = {}) => ({
   ...item,
   productId: item.productId || item.product?.id || "",
   quantity: item.quantity ?? "",
   unitCost: item.unitCost ?? item.costPrice ?? "",
   sellingPrice: item.sellingPrice ?? "",
-  expiryDate: item.expiryDate || item.expiry || item.expirationDate || item.expiresAt || "",
+  expiryDate: toDateValue(item.expiryDate || item.expiry || item.expirationDate || item.expiresAt),
 });
 
 export default function EditPurchase() {
@@ -67,7 +69,7 @@ export default function EditPurchase() {
           setFormData({
             waybillNumber: purchase.waybillNumber || purchase.purchaseNumber || "",
             supplierId: purchase.supplierId,
-            purchaseDate: purchase.purchaseDate || purchase.date || (purchase.createdAt ? purchase.createdAt.split('T')[0] : ""),
+            purchaseDate: toDateValue(purchase.purchaseDate || purchase.date || purchase.createdAt),
             notes: purchase.notes || "",
             status: String(purchase.status || "pending").toLowerCase(),
           });

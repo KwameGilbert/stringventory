@@ -27,12 +27,12 @@ const normalizeOrder = (order) => {
 
   return {
     ...order,
-    orderNumber: order?.orderNumber || order?.id || "—",
+    orderNumber: order?.saleNumber || order?.orderNumber || order?.id || "—",
     orderDate,
     status: order?.status || "pending",
-    total: Number(order?.total ?? 0),
+    total: Number(order?.total ?? order?.totalAmount ?? 0),
     discountAmount: Number(order?.discountAmount ?? order?.discount ?? 0),
-    itemCount: Number(order?.itemCount ?? order?.items?.length ?? 0),
+    itemCount: typeof order?.items === 'number' ? order.items : Number(order?.itemCount ?? order?.items?.length ?? 0),
     customer: {
       name: customerName,
       email: customerEmail,

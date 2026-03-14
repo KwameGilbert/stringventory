@@ -62,16 +62,16 @@ export const API_ENDPOINTS = {
   // Inventory
   INVENTORY: {
     LIST: '/v1/inventory',
-    GET_BY_PRODUCT: (productId) => `/inventory/product/${productId}`,
+    GET_BY_PRODUCT: (productId) => `/v1/inventory/product/${productId}`,
     ADD: '/inventory/add',
-    ADJUST: '/inventory/adjust',
-    TRANSFER: '/inventory/transfer',
+    ADJUST: '/v1/inventory/adjust',
+    TRANSFER: '/v1/inventory/transfer',
   },
 
   // Customers
   CUSTOMERS: {
     LIST: '/v1/customers',
-    GET: (id) => `/v1/customers/${id}`,
+    GET: (id) => `/customers/${id}`,
     CREATE: '/v1/customers',
     UPDATE: (id) => `/v1/customers/${id}`,
     DELETE: (id) => `/v1/customers/${id}`,
@@ -80,8 +80,8 @@ export const API_ENDPOINTS = {
 
   // Orders
   ORDERS: {
-    LIST: '/v1/sales',
-    GET: (id) => `/v1/sales/${id}`,
+    LIST: '/v1/orders',
+    GET: (id) => `/v1/orders/${id}`,
     CREATE: '/v1/orders',
     UPDATE: (id) => `/v1/orders/${id}`,
     DELETE: (id) => `/v1/orders/${id}`,

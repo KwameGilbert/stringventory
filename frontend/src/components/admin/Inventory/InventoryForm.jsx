@@ -73,7 +73,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
         ...prev,
         productId: product.id,
         productName: product.name,
-        category: product.category || product.categoryName || "Uncategorized",
+        category: product.category?.name || (typeof product.category === 'string' ? product.category : null) || product.categoryName || "Uncategorized",
         supplier: product.supplier || product.supplierName || prev.supplier,
         unitCost: product.costPrice ?? product.cost ?? prev.unitCost,
       }));
@@ -174,7 +174,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                 <option value="">Select a product...</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.name} — {product.category || product.categoryName || "Uncategorized"}
+                    {product.name} — {product.category?.name || (typeof product.category === 'string' ? product.category : null) || product.categoryName || "Uncategorized"}
                   </option>
                 ))}
               </select>

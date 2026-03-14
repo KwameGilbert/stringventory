@@ -27,8 +27,13 @@ export default function EditExpense() {
             expenseCategoryId: found?.expenseCategoryId || found?.categoryId || "",
             paymentMethod: found?.paymentMethod || "",
             supplier: found?.supplier || found?.vendor || "",
-            date: found?.date ? String(found.date).split("T")[0] : "",
+            date: (found?.date || found?.transactionDate) ? String(found?.date || found?.transactionDate).split("T")[0] : "",
             notes: found?.notes || "",
+            isRecurring: Boolean(found?.isRecurring),
+            recurringFrequency: found?.recurringFrequency || "monthly",
+            recurringInterval: Number(found?.recurringInterval || 1),
+            recurringEndDate: found?.recurringEndDate ? String(found.recurringEndDate).split("T")[0] : "",
+            hasAttachment: Boolean(found?.hasAttachment || found?.receipt),
           });
         } else {
           console.error("Expense not found");
@@ -48,17 +53,38 @@ export default function EditExpense() {
 
   const handleUpdate = async (formData) => {
     try {
-      await expenseService.updateExpense(id, {
+      const payload = {
         description: formData.name,
+        expenseCategoryId: formData.expenseCategoryId,
         categoryId: formData.expenseCategoryId,
         amount: Number(formData.amount),
+        transactionDate: formData.date,
         date: formData.date,
         vendor: formData.supplier || undefined,
         paymentMethod: formData.paymentMethod,
         reference: formData.reference || undefined,
         notes: formData.notes || undefined,
         status: formData.status || undefined,
-      });
+        isRecurring: Boolean(formData.isRecurring),
+        recurringFrequency: formData.isRecurring ? formData.recurringFrequency : undefined,
+        recurringInterval: formData.isRecurring ? Number(formData.recurringInterval || 1) : undefined,
+        recurringEndDate: formData.isRecurring && formData.recurringEndDate ? formData.recurringEndDate : undefined,
+      };
+
+      if (formData.attachmentFile) {
+        const multipartPayload = new FormData();
+
+        Object.entries(payload).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            multipartPayload.append(key, String(value));
+          }
+        });
+
+        multipartPayload.append("receipt", formData.attachmentFile);
+        await expenseService.updateExpense(id, multipartPayload);
+      } else {
+        await expenseService.updateExpense(id, payload);
+      }
 
       showSuccess("Expense updated successfully");
       navigate("/dashboard/expenses");

@@ -147,9 +147,9 @@ export default function App() {
                           <Route path="/orders/new" element={withRoles(allRoles, <CreateOrder />)} />
                           <Route path="/orders/:id/refund" element={withRoles(managementRoles, <CreateRefund />)} />
                           <Route path="/orders/:id" element={withRoles(allRoles, <ViewOrder />)} />
-                         
+
                           {/* <Route path="/sales" element={<SalesMain />} /> */}
-                          
+
                           <Route path="/suppliers" element={withRoles(managementRoles, <Suppliers />)} />
                           <Route path="/suppliers/new" element={withRoles(managementRoles, <CreateSupplier />)} />
                           <Route path="/suppliers/:id" element={withRoles(managementRoles, <ViewSupplier />)} />
