@@ -300,7 +300,7 @@ export default function CreateOrder() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Customer Info Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 relative z-20">
           <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-blue-50 to-cyan-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-blue-100">
@@ -312,8 +312,8 @@ export default function CreateOrder() {
               </div>
             </div>
           </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 relative z-20">
+            <div className="space-y-4 relative z-50">
                <CustomerSelect 
                   customers={customers}
                   selectedCustomer={selectedCustomer}

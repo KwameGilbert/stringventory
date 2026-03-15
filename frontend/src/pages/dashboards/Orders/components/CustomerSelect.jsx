@@ -85,7 +85,7 @@ export default function CustomerSelect({
 
         {/* Dropdown Menu */}
         {isOpen && (
-            <div className="absolute top-16 left-0 right-0 z-20 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-64 flex flex-col">
+            <div className="absolute top-16 left-0 right-0 z-50 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-64 flex flex-col">
                 <div className="p-2 border-b border-gray-100 bg-gray-50/50 sticky top-0">
                     <div className="relative">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />

@@ -70,7 +70,9 @@ const ExpensesTable = ({ expenses, onDelete }) => {
               <tr key={expense.id} className="hover:bg-gray-50/50 transition-colors group">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900">{expense.category}</span>
+                    <span className="font-medium text-gray-900">
+                      {typeof expense.category === 'object' ? expense.category?.name : expense.category}
+                    </span>
                     {expense.isRecurring && (
                       <Repeat size={14} className="text-blue-500" />
                     )}
@@ -86,7 +88,9 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                   <span className="text-gray-900 text-sm">{expense.reference}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="text-gray-500 text-sm">{expense.supplier || "-"}</span>
+                  <span className="text-gray-500 text-sm">
+                    {typeof expense.supplier === 'object' ? expense.supplier?.name : expense.supplier || "-"}
+                  </span>
                 </td>
                 <td className="px-6 py-4 text-center">
                   <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold ${
