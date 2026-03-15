@@ -124,7 +124,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto mt-20 pb-8 animate-fade-in">
+    <div className="max-w-3xl mx-auto  pb-8 animate-fade-in">
       {/* Back Button */}
       <button
         type="button"

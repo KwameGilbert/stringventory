@@ -111,7 +111,7 @@ export default function ViewUser() {
 
   return (
     <div className="space-y-6 animate-fade-in pb-8">
-      <div className="flex items-center gap-4 mt-20">
+      <div className="flex items-center gap-4 ">
         <button
           onClick={() => navigate("/dashboard/users")}
           className="p-2 hover:bg-white rounded-lg transition-colors"

@@ -129,7 +129,7 @@ export default function ViewInventory() {
   const expiryStatus = getExpiryStatus(item.expiryDate);
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 animate-fade-in mt-20">
+    <div className="max-w-4xl mx-auto pb-8 animate-fade-in ">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/inventory")}

@@ -10,7 +10,7 @@ const InventoryHeader = ({
   totalItems 
 }) => {
   return (
-    <div className="space-y-4 mt-20">
+    <div className="space-y-4 ">
       {/* Title Row */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
