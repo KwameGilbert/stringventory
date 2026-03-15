@@ -4,6 +4,8 @@ import PurchasesHeader from "../../../components/admin/Purchases/PurchasesHeader
 import PurchasesTable from "../../../components/admin/Purchases/PurchasesTable";
 import purchaseService from "../../../services/purchaseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { useAuth } from "../../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 const extractPurchases = (response) => {
   const payload = response?.data || response || {};
@@ -41,6 +43,9 @@ const normalizePurchase = (purchase) => ({
 });
 
 export default function Purchases() {
+  const { user } = useAuth();
+  const currentUserRole = user?.role || user?.normalizedRole;
+
   const [purchases, setPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -102,6 +107,33 @@ export default function Purchases() {
       } catch (error) {
         console.error("Failed to delete purchase", error);
         showError(error?.message || "Failed to delete purchase");
+      }
+    }
+  };
+
+  const handleApprove = async (id) => {
+    const result = await Swal.fire({
+      title: "Approve Purchase?",
+      text: "Are you sure you want to approve this purchase?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#059669",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, approve it",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await purchaseService.updatePurchase(id, { status: "approved" });
+        setPurchases((prev) =>
+          prev.map((p) =>
+            String(p.id) === String(id) ? { ...p, status: "approved" } : p
+          )
+        );
+        showSuccess("Purchase approved successfully");
+      } catch (error) {
+        console.error("Failed to approve purchase", error);
+        showError(error?.message || "Failed to approve purchase");
       }
     }
   };
@@ -189,6 +221,8 @@ export default function Purchases() {
       <PurchasesTable
         purchases={purchases}
         onDelete={handleDelete}
+        onApprove={handleApprove}
+        currentUserRole={currentUserRole}
         currentPage={pagination.page || currentPage}
         totalPages={pagination.totalPages || 1}
         totalItems={pagination.total || purchases.length}

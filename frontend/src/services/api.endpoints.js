@@ -64,6 +64,7 @@ export const API_ENDPOINTS = {
     LIST: '/v1/inventory',
     GET_BY_PRODUCT: (productId) => `/v1/inventory/product/${productId}`,
     ADD: '/inventory/add',
+    UPDATE: (id) => `/v1/inventory/${id}`,
     ADJUST: '/v1/inventory/adjust',
     TRANSFER: '/v1/inventory/transfer',
   },

@@ -164,7 +164,10 @@ export default function ViewInventory() {
             </div>
             
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-medium text-sm">
+              <button
+                onClick={() => navigate(`/dashboard/inventory/${id}/edit`)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-medium text-sm"
+              >
                 <Edit2 size={16} />
                 Edit
               </button>

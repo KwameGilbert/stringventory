@@ -1,9 +1,11 @@
-import { Eye, Edit2, Trash2, Package, ChevronLeft, ChevronRight } from "lucide-react";
+import { Eye, Edit2, Trash2, Package, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const PurchasesTable = ({
   purchases,
   onDelete,
+  onApprove,
+  currentUserRole,
   currentPage = 1,
   totalPages = 1,
   totalItems = 0,
@@ -21,6 +23,7 @@ const PurchasesTable = ({
   const getStatusBadge = (status) => {
     const badges = {
       pending: "bg-gray-100 text-gray-700",
+      approved: "bg-blue-100 text-blue-700",
       partial: "bg-amber-100 text-amber-700",
       received: "bg-emerald-100 text-emerald-700",
     };
@@ -121,6 +124,16 @@ const PurchasesTable = ({
                 {/* Actions */}
                 <td className="px-6 py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
+                    {/* Approve Toggle */}
+                    {currentUserRole === 'ceo' && purchase.status === 'pending' && onApprove && (
+                      <button
+                        onClick={() => onApprove(purchase.id)}
+                        className="p-1.5 rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
+                        title="Approve"
+                      >
+                        <CheckCircle size={16} />
+                      </button>
+                    )}
                     <Link
                       to={`/dashboard/purchases/${purchase.id}`}
                       className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"

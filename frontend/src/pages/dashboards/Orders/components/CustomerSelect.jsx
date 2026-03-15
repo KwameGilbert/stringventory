@@ -25,7 +25,12 @@ export default function CustomerSelect({
 
   const filteredCustomers = customers.filter(customer => {
       const searchStr = searchQuery.toLowerCase();
-      const name = (customer?.user?.firstName + " " + customer?.user?.lastName).toLowerCase() || "";
+      const name = String(
+          customer.displayName || 
+          (customer.user?.firstName ? `${customer.user.firstName} ${customer.user.lastName || ""}` : "") || 
+          (customer.firstName ? `${customer.firstName} ${customer.lastName || ""}` : "") || 
+          customer.name || ""
+      ).toLowerCase();
       const business = (customer.businessName || "").toLowerCase();
       const phone = (customer.phone || "").toLowerCase();
       
@@ -34,8 +39,11 @@ export default function CustomerSelect({
 
   const getCustomerName = (c) => {
       if (!c) return "Select Customer";
-      const name = c.user?.firstName ? `${c.user.firstName} ${c.user.lastName || ""}` : c.name || "Unknown";
-      return name;
+      return c.displayName || 
+             (c.user?.firstName ? `${c.user.firstName} ${c.user.lastName || ""}`.trim() : null) || 
+             (c.firstName ? `${c.firstName} ${c.lastName || ""}`.trim() : null) || 
+             c.name || 
+             "Unknown";
   };
 
   return (
