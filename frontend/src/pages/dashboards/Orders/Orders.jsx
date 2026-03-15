@@ -20,17 +20,33 @@ const extractOrders = (response) => {
 };
 
 const normalizeOrder = (order) => {
-  const customerName = order?.customer?.name || order?.customerName || "Unknown Customer";
-  const customerEmail = order?.customer?.email || order?.customerEmail || "";
-  const customerPhone = order?.customer?.phone || order?.customerPhone || "";
+  const customer = order?.customer || {};
+  const customerUser = customer?.user || {};
+  
+  const customerName = 
+    customer?.displayName ||
+    (customerUser?.firstName ? `${customerUser.firstName} ${customerUser.lastName || ""}`.trim() : null) ||
+    (customer?.firstName ? `${customer.firstName} ${customer.lastName || ""}`.trim() : null) ||
+    customer?.name || 
+    order?.customerName || 
+    "Unknown Customer";
+
+  const customerEmail = customerUser?.email || customer?.email || order?.customerEmail || "";
+  const customerPhone = customerUser?.phone || customer?.phone || order?.customerPhone || "";
   const orderDate = order?.orderDate || order?.date || order?.createdAt;
+
+  // Sometimes total is returned as string or under a different key
+  let computedTotal = Number(order?.total ?? order?.totalAmount ?? 0);
+  if (computedTotal === 0 && Array.isArray(order?.items)) {
+     computedTotal = order.items.reduce((sum, item) => sum + (Number(item.quantity || 0) * Number(item.unitPrice || item.price || 0)), 0);
+  }
 
   return {
     ...order,
     orderNumber: order?.saleNumber || order?.orderNumber || order?.id || "—",
     orderDate,
     status: order?.status || "pending",
-    total: Number(order?.total ?? order?.totalAmount ?? 0),
+    total: computedTotal,
     discountAmount: Number(order?.discountAmount ?? order?.discount ?? 0),
     itemCount: typeof order?.items === 'number' ? order.items : Number(order?.itemCount ?? order?.items?.length ?? 0),
     customer: {

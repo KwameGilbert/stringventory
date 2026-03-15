@@ -133,8 +133,8 @@ export default function CreateOrder() {
         customerId: String(selectedId),
         customer: {
           name: fetchedCustomer?.displayName || selectedCust?.displayName || "",
-          email: fetchedCustomer?.email || "",
-          phone: fetchedCustomer?.phone || "",
+          email: fetchedCustomer?.email || fetchedCustomer?.user?.email || selectedCust?.email || selectedCust?.user?.email || "",
+          phone: fetchedCustomer?.phone || fetchedCustomer?.user?.phone || selectedCust?.phone || selectedCust?.user?.phone || "",
         },
       }));
     } catch (error) {
@@ -143,8 +143,8 @@ export default function CreateOrder() {
         customerId: String(selectedId),
         customer: {
           name: selectedCust?.displayName || "",
-          email: selectedCust?.email || "",
-          phone: selectedCust?.phone || "",
+          email: selectedCust?.email || selectedCust?.user?.email || "",
+          phone: selectedCust?.phone || selectedCust?.user?.phone || "",
         },
       }));
     }
@@ -215,9 +215,9 @@ export default function CreateOrder() {
   }, [subtotal, formData.discount, tax]);
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 2,
     }).format(value);
   };
@@ -245,8 +245,12 @@ export default function CreateOrder() {
         })),
         subtotal: Number(subtotal.toFixed(2)),
         discountAmount: Number(formData.discount || 0),
+        discount: Number(formData.discount || 0),
         taxAmount: Number(tax.toFixed(2)),
+        tax: Number(tax.toFixed(2)),
         total: Number(total.toFixed(2)),
+        totalAmount: Number(total.toFixed(2)),
+        amount: Number(total.toFixed(2)),
         paymentMethod: formData.paymentMethod.toLowerCase().replace(' ', '_'),
         notes: `Payment method: ${formData.paymentMethod}`,
       });

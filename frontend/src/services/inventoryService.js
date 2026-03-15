@@ -17,6 +17,10 @@ export const inventoryService = {
     return await apiClient.post(API_ENDPOINTS.INVENTORY.ADD, inventoryData);
   },
 
+  updateInventory: async (id, inventoryData) => {
+    return await apiClient.put(API_ENDPOINTS.INVENTORY.UPDATE(id), inventoryData);
+  },
+
   adjustInventory: async (adjustmentData) => {
     return await apiClient.post(API_ENDPOINTS.INVENTORY.ADJUST, adjustmentData);
   },

@@ -18,6 +18,7 @@ import CreatePurchase from "./pages/dashboards/Purchases/CreatePurchase";
 import EditPurchase from "./pages/dashboards/Purchases/EditPurchase";
 import Inventory from "./pages/dashboards/Inventory/Inventory";
 import AddInventory from "./pages/dashboards/Inventory/AddInventory";
+import EditInventory from "./pages/dashboards/Inventory/EditInventory";
 import ViewInventory from "./pages/dashboards/Inventory/ViewInventory";
 import Orders from "./pages/dashboards/Orders/Orders";
 import ViewOrder from "./pages/dashboards/Orders/ViewOrder";
@@ -143,6 +144,7 @@ export default function App() {
                           <Route path="/inventory" element={withRoles(managementRoles, <Inventory />)} />
                           <Route path="/inventory/new" element={withRoles(managementRoles, <AddInventory />)} />
                           <Route path="/inventory/:id" element={withRoles(managementRoles, <ViewInventory />)} />
+                          <Route path="/inventory/:id/edit" element={withRoles(managementRoles, <EditInventory />)} />
                           <Route path="/orders" element={withRoles(allRoles, <Orders />)} />
                           <Route path="/orders/new" element={withRoles(allRoles, <CreateOrder />)} />
                           <Route path="/orders/:id/refund" element={withRoles(managementRoles, <CreateRefund />)} />

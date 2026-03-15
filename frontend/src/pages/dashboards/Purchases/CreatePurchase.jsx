@@ -5,6 +5,7 @@ import purchaseService from "../../../services/purchaseService";
 import supplierService from "../../../services/supplierService";
 import { productService } from "../../../services/productService";
 import { showError, showSuccess } from "../../../utils/alerts";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -21,6 +22,9 @@ const extractList = (response, key) => {
 
 export default function CreatePurchase() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isCeo = user?.role === 'ceo' || user?.normalizedRole === 'ceo';
+  
   const [loading, setLoading] = useState(false);
   const [suppliers, setSuppliers] = useState([]);
   const [products, setProducts] = useState([]);
@@ -29,7 +33,7 @@ export default function CreatePurchase() {
     supplierId: "",
     purchaseDate: new Date().toISOString().split('T')[0],
     notes: "",
-    status: "pending"
+    status: isCeo ? "approved" : "pending"
   });
 
   const [items, setItems] = useState([
