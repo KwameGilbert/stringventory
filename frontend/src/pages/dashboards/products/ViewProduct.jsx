@@ -110,7 +110,7 @@ export default function ViewProduct() {
 
   if (permissionDenied) {
     return (
-      <div className="py-16 animate-fade-in mt-20">
+      <div className="py-16 animate-fade-in ">
         <div className="max-w-xl mx-auto bg-white border border-gray-100 rounded-xl shadow-sm p-8 text-center space-y-3">
           <h2 className="text-xl font-semibold text-gray-900">Insufficient permissions</h2>
           <p className="text-sm text-gray-500">You do not have access to view this product. Contact your administrator for the required permissions.</p>

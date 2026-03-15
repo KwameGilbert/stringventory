@@ -116,7 +116,7 @@ export default function POS() {
   };
 
   return (
-    <div className="h-[calc(100vh-6rem)] -m-6 flex flex-col lg:flex-row overflow-hidden animate-fade-in py-10 mt-20">
+    <div className="h-[calc(100vh-6rem)] -m-6 flex flex-col lg:flex-row overflow-hidden animate-fade-in py-10 ">
       {/* Left Column: Product Grid */}
       <div className="flex-1 flex flex-col border-r border-gray-200 bg-gray-50/50">
         {/* Search Header */}

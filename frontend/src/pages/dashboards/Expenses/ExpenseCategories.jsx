@@ -161,7 +161,7 @@ export default function ExpenseCategories() {
   }
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6 mt-20">
+    <div className="pb-8 animate-fade-in space-y-6 ">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
