@@ -24,6 +24,7 @@ const ProductForm = ({
   title,
   subTitle,
   isEdit = false,
+  isSubmitting = false,
 }) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -407,10 +408,11 @@ const ProductForm = ({
           </Link>
           <button
             type="submit"
-            className="px-6 py-2.5 rounded-lg bg-gray-900 hover:bg-gray-800 text-white font-medium shadow-sm transition-all flex items-center gap-2"
+            disabled={isSubmitting}
+            className="px-6 py-2.5 rounded-lg bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium shadow-sm transition-all flex items-center gap-2"
           >
             <Save size={18} />
-            {isEdit ? "Update Product" : "Create Product"}
+            {isSubmitting ? "Saving..." : isEdit ? "Update Product" : "Create Product"}
           </button>
         </div>
       </form>

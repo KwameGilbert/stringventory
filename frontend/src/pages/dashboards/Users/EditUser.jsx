@@ -72,6 +72,7 @@ export default function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [roles, setRoles] = useState(BUSINESS_ROLES);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -154,6 +155,7 @@ export default function EditUser() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
     try {
       const payload = {
@@ -173,6 +175,8 @@ export default function EditUser() {
     } catch (error) {
       console.error("Failed to update user", error);
       showError(error?.message || "Failed to update user");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -333,10 +337,11 @@ export default function EditUser() {
                 </button>
                 <button
                     type="submit"
-                    className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium shadow-lg shadow-emerald-500/20 transition-all"
+                    disabled={submitting}
+                    className="flex items-center gap-2 px-6 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white rounded-lg font-medium shadow-lg shadow-emerald-500/20 transition-all"
                 >
                     <Save size={18} />
-                    Save Changes
+                    {submitting ? "Saving..." : "Save Changes"}
                 </button>
             </div>
         </form>

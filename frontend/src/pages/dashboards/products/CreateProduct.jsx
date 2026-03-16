@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductForm from "../../../components/admin/Products/ProductForm";
 import { productService } from "../../../services/productService";
@@ -5,8 +6,10 @@ import { showError, showSuccess } from "../../../utils/alerts";
 
 export default function CreateProduct() {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
   const handleCreate = async (data) => {
+    setSubmitting(true);
     try {
       await productService.createProduct({
         ...data,
@@ -21,6 +24,8 @@ export default function CreateProduct() {
     } catch (error) {
       console.error("Failed to create product", error);
       showError(error?.message || "Failed to create product");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -30,6 +35,7 @@ export default function CreateProduct() {
         title="Add New Product"
         subTitle="Create a new product in your inventory"
         onSubmit={handleCreate}
+        isSubmitting={submitting}
       />
     </div>
   );

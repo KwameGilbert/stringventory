@@ -13,6 +13,7 @@ const splitName = (fullName = "") => {
 
 export default function CreateCustomer() {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +30,7 @@ export default function CreateCustomer() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     const { firstName, lastName } = splitName(formData.name);
 
     try {
@@ -47,6 +49,8 @@ export default function CreateCustomer() {
     } catch (error) {
       console.error("Failed to create customer", error);
       showError(error?.message || "Failed to create customer");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -198,10 +202,11 @@ export default function CreateCustomer() {
           </Link>
           <button
             type="submit"
-            className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium transition-all flex items-center gap-2 text-sm shadow-lg shadow-gray-900/20"
+            disabled={submitting}
+            className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium transition-all flex items-center gap-2 text-sm shadow-lg shadow-gray-900/20"
           >
             <Save size={18} />
-            Save Customer
+            {submitting ? "Saving..." : "Save Customer"}
           </button>
         </div>
       </form>

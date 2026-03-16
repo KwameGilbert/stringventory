@@ -61,6 +61,7 @@ const normalizeRoleForApi = (roleValue) => {
 
 export default function AddUser() {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
   const [roles, setRoles] = useState(BUSINESS_ROLES);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -109,6 +110,7 @@ export default function AddUser() {
       return;
     }
 
+    setSubmitting(true);
     try {
       const payload = {
         firstName: formData.firstName,
@@ -128,6 +130,8 @@ export default function AddUser() {
     } catch (error) {
       console.error("Failed to create user", error);
       showError(error?.message || "Failed to create user");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -305,10 +309,11 @@ export default function AddUser() {
             </button>
             <button
               type="submit"
-              className="flex items-center gap-2 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium shadow-lg shadow-emerald-500/20 transition-all"
+              disabled={submitting}
+              className="flex items-center gap-2 px-6 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 text-white rounded-lg font-medium shadow-lg shadow-emerald-500/20 transition-all"
             >
               <Save size={18} />
-              Create User
+              {submitting ? "Creating..." : "Create User"}
             </button>
           </div>
         </form>

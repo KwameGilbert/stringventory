@@ -40,7 +40,7 @@ const extractPaymentMethods = (response) => {
   ];
 };
 
-const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
+const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting = false }) => {
   const navigate = useNavigate();
   
   const today = new Date().toISOString().split('T')[0];
@@ -419,10 +419,11 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
           </Link>
           <button
             type="submit"
-            className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium transition-all flex items-center gap-2 text-sm shadow-lg shadow-gray-900/20"
+            disabled={isSubmitting}
+            className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium transition-all flex items-center gap-2 text-sm shadow-lg shadow-gray-900/20"
           >
             <Save size={18} />
-            Save Expense
+            {isSubmitting ? "Saving..." : "Save Expense"}
           </button>
         </div>
       </form>

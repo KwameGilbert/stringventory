@@ -20,6 +20,7 @@ export default function EditCustomer() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -56,6 +57,7 @@ export default function EditCustomer() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     const { firstName, lastName } = splitName(formData.name);
 
     try {
@@ -73,6 +75,8 @@ export default function EditCustomer() {
     } catch (error) {
       console.error("Failed to update customer", error);
       showError(error?.message || "Failed to update customer");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -222,9 +226,10 @@ export default function EditCustomer() {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+            disabled={submitting}
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:bg-gray-400 transition-colors"
           >
-            Update Customer
+            {submitting ? "Updating..." : "Update Customer"}
           </button>
         </div>
       </form>
