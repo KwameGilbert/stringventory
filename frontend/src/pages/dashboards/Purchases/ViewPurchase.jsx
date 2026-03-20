@@ -30,6 +30,16 @@ const normalizePurchaseItem = (item) => {
   };
 };
 
+const resolveCreatedBy = (purchase) => {
+  if (purchase?.createdBy) return purchase.createdBy;
+
+  const createdByName = purchase?.createdByName || purchase?.creator?.name || purchase?.createdByUser?.name || "";
+  const createdByRole = purchase?.createdByRole || purchase?.creator?.role || purchase?.createdByUser?.role || "";
+
+  if (createdByRole && createdByName) return `${createdByRole} - ${createdByName}`;
+  return createdByName || "System";
+};
+
 export default function ViewPurchase() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -48,7 +58,7 @@ export default function ViewPurchase() {
             supplierName: found.supplierName || found.supplier?.name || "Unknown Supplier",
             purchaseDate: found.purchaseDate || found.date || found.createdAt,
             totalAmount: toNumber(found.totalAmount ?? found.total ?? found.amount),
-            createdBy: found.createdBy || found.createdByName || "System",
+            createdBy: resolveCreatedBy(found),
           });
           const purchaseItems = found.purchaseItems || found.items || [];
           setItems(purchaseItems.map(normalizePurchaseItem));

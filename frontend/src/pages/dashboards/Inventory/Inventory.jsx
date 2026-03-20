@@ -7,6 +7,7 @@ import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
 import { confirmDelete, showError, showSuccess, showInfo } from "../../../utils/alerts";
+import { isProductApproved } from "../../../utils/productApproval";
 
 import StockAdjustmentModal from "../../../components/admin/Inventory/StockAdjustmentModal";
 
@@ -49,8 +50,12 @@ export default function Inventory() {
         const fetchedProducts = extractList(productsRes, "products");
         const fetchedSuppliers = extractList(suppliersRes, "suppliers");
 
+        const productById = new Map(
+          fetchedProducts.map((product) => [String(product.id), product])
+        );
+
         const normalizedInventory = fetchedInventory.map((item) => {
-          const product = fetchedProducts.find((p) => String(p.id) === String(item.productId));
+          const product = productById.get(String(item.productId));
           const category = fetchedCategories.find((c) => String(c.id) === String(product?.categoryId));
           const supplier = fetchedSuppliers.find((s) => String(s.id) === String(product?.supplierId));
 
@@ -70,6 +75,9 @@ export default function Inventory() {
             expiryDate: item.expiryDate || null,
             productId: item.productId || product?.id,
           };
+        }).filter((item) => {
+          const product = productById.get(String(item.productId));
+          return isProductApproved(product);
         });
 
         setInventory(normalizedInventory);

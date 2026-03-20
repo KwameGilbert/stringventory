@@ -6,6 +6,7 @@ import supplierService from "../../../services/supplierService";
 import { productService } from "../../../services/productService";
 import { showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
+import { isProductApproved } from "../../../utils/productApproval";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -20,10 +21,22 @@ const extractList = (response, key) => {
   return [];
 };
 
+const toTitleCase = (value = "") => {
+  return String(value)
+    .replace(/[_-]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+};
+
 export default function CreatePurchase() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isCeo = user?.role === 'ceo' || user?.normalizedRole === 'ceo';
+  const creatorRole = toTitleCase(user?.rawRole || user?.role || user?.normalizedRole || "");
+  const creatorName = (user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "System").trim();
   
   const [loading, setLoading] = useState(false);
   const [suppliers, setSuppliers] = useState([]);
@@ -49,7 +62,8 @@ export default function CreatePurchase() {
         ]);
 
         setSuppliers(extractList(suppliersRes, "suppliers"));
-        setProducts(extractList(productsRes, "products"));
+        const fetchedProducts = extractList(productsRes, "products");
+        setProducts(fetchedProducts.filter((product) => isProductApproved(product)));
       } catch (error) {
         console.error("Failed to load purchase options", error);
         showError(error?.message || "Failed to load suppliers/products");
@@ -78,6 +92,9 @@ export default function CreatePurchase() {
         ...formData,
         supplierId: Number(formData.supplierId),
         status: String(formData.status || "pending").toLowerCase(),
+        createdByName: creatorName,
+        createdByRole: creatorRole,
+        createdBy: creatorRole ? `${creatorRole} - ${creatorName}` : creatorName,
         items: cleanedItems,
       });
 

@@ -1,4 +1,4 @@
-/**
+  /**
  * Authentication API Service
  * Handles all authentication-related API calls
  */

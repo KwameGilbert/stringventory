@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AlertTriangle, ArrowRight } from "lucide-react";
 import { productService } from "../../../services/productService";
+import { isProductApproved } from "../../../utils/productApproval";
 
 const LowStockList = () => {
   const [items, setItems] = useState([]);
@@ -20,12 +21,14 @@ const LowStockList = () => {
               : [];
 
         setItems(
-          products.map((product) => ({
+          products
+            .filter((product) => isProductApproved(product))
+            .map((product) => ({
             name: product?.productName || product?.name || "Product",
             threshold: Number(product?.reorderLevel ?? product?.reorderThreshold ?? 1),
             current: Number(product?.currentStock ?? product?.quantity ?? 0),
             unit: product?.unitOfMeasure || "units",
-          }))
+            }))
         );
       } catch (err) {
         console.error(err);

@@ -32,13 +32,23 @@ const extractPagination = (response) => {
   };
 };
 
+const resolveCreatedBy = (purchase) => {
+  if (purchase?.createdBy) return purchase.createdBy;
+
+  const createdByName = purchase?.createdByName || purchase?.creator?.name || purchase?.createdByUser?.name || "";
+  const createdByRole = purchase?.createdByRole || purchase?.creator?.role || purchase?.createdByUser?.role || "";
+
+  if (createdByRole && createdByName) return `${createdByRole} - ${createdByName}`;
+  return createdByName || "System";
+};
+
 const normalizePurchase = (purchase) => ({
   ...purchase,
   waybillNumber: purchase?.waybillNumber || "",
   supplierName: purchase?.supplierName || purchase?.supplier?.name || "Unknown Supplier",
   purchaseDate: purchase?.purchaseDate || purchase?.date || purchase?.createdAt,
   totalAmount: Number(purchase?.totalAmount ?? purchase?.total ?? purchase?.amount ?? 0),
-  createdBy: purchase?.createdBy || purchase?.createdByName || "System",
+  createdBy: resolveCreatedBy(purchase),
   status: String(purchase?.status || "pending").toLowerCase(),
 });
 

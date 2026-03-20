@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Save, ArrowLeft, DollarSign, Calendar, FileText, Link as LinkIcon, Paperclip, RefreshCcw, Settings } from "lucide-react";
+import { Save, ArrowLeft, DollarSign, Calendar, FileText, Link as LinkIcon, Paperclip, RefreshCcw, Settings, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import expenseService from "../../../services/expenseService";
 import { showError } from "../../../utils/alerts";
@@ -114,6 +114,7 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     onSubmit(formData);
   };
 
@@ -422,8 +423,8 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting
             disabled={isSubmitting}
             className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium transition-all flex items-center gap-2 text-sm shadow-lg shadow-gray-900/20"
           >
-            <Save size={18} />
-            {isSubmitting ? "Saving..." : "Save Expense"}
+            {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+            {isSubmitting ? "Saving Expense..." : "Save Expense"}
           </button>
         </div>
       </form>

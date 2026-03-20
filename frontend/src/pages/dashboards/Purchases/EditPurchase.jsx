@@ -5,6 +5,7 @@ import purchaseService from "../../../services/purchaseService";
 import supplierService from "../../../services/supplierService";
 import { productService } from "../../../services/productService";
 import { showError, showSuccess } from "../../../utils/alerts";
+import { isProductApproved } from "../../../utils/productApproval";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -62,7 +63,8 @@ export default function EditPurchase() {
         ]);
 
         setSuppliers(extractList(suppliersRes, "suppliers"));
-        setProducts(extractList(productsRes, "products"));
+        const fetchedProducts = extractList(productsRes, "products");
+        setProducts(fetchedProducts.filter((product) => isProductApproved(product)));
 
         const purchase = extractPurchase(purchaseRes);
         if (purchase?.id) {

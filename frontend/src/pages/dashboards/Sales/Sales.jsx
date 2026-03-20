@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Search, ShoppingCart, Plus, Minus, Trash2, CreditCard, DollarSign, Package, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import { productService } from "../../../services/productService";
+import { isProductApproved } from "../../../utils/productApproval";
 
 export default function Sales() {
   const [products, setProducts] = useState([]);
@@ -27,10 +28,12 @@ export default function Sales() {
               : [];
 
         setProducts(
-          list.map((product) => ({
-            ...product,
-            price: Number(product?.price ?? product?.sellingPrice ?? 0),
-          }))
+          list
+            .filter((product) => isProductApproved(product))
+            .map((product) => ({
+              ...product,
+              price: Number(product?.price ?? product?.sellingPrice ?? 0),
+            }))
         );
       } catch (error) {
         console.error("Error loading products", error);
