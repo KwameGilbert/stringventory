@@ -30,6 +30,7 @@ export default function ExpenseCategories() {
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [formData, setFormData] = useState({ name: "", description: "" });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,6 +93,7 @@ export default function ExpenseCategories() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
       if (editingCategory) {
         const response = await expenseService.updateExpenseCategory(editingCategory.id, {
@@ -126,6 +128,8 @@ export default function ExpenseCategories() {
       console.error("Failed to save category", error);
       showError(error?.message || "Failed to save category");
       return;
+    } finally {
+      setSubmitting(false);
     }
 
     handleCloseModal();
@@ -317,9 +321,10 @@ export default function ExpenseCategories() {
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-lg bg-gray-900 hover:bg-gray-800 text-white font-medium transition-colors text-sm"
+                  disabled={submitting}
+                  className="px-6 py-2 rounded-lg bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium transition-colors text-sm"
                 >
-                  {editingCategory ? "Update" : "Create"}
+                  {submitting ? "Saving..." : editingCategory ? "Update" : "Create"}
                 </button>
               </div>
             </form>

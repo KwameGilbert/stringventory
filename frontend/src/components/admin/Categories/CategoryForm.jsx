@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Save, Upload, ArrowLeft, Check, X, Image } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
+const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting = false }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -170,10 +170,11 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
           </Link>
           <button
             type="submit"
-            className="px-6 py-2.5 rounded-lg bg-gray-900 hover:bg-gray-800 text-white font-medium transition-all flex items-center gap-2 text-sm"
+            disabled={isSubmitting}
+            className="px-6 py-2.5 rounded-lg bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium transition-all flex items-center gap-2 text-sm"
           >
             <Save size={16} />
-            Save Category
+            {isSubmitting ? "Saving..." : "Save Category"}
           </button>
         </div>
       </form>

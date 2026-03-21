@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { productService } from "../../../services/productService";
 import { useNavigate } from "react-router-dom";
 import { productService } from "../../../services/productService";
+import { isProductApproved } from "../../../utils/productApproval";
 
 export default function POS() {
   const navigate = useNavigate();
@@ -33,10 +34,12 @@ export default function POS() {
               : [];
 
         setProducts(
-          prodList.map((product) => ({
-            ...product,
-            price: Number(product?.price ?? product?.sellingPrice ?? 0),
-          }))
+          prodList
+            .filter((product) => isProductApproved(product))
+            .map((product) => ({
+              ...product,
+              price: Number(product?.price ?? product?.sellingPrice ?? 0),
+            }))
         );
 
       } catch (error) {

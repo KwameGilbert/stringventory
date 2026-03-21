@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ExpenseForm from "../../../components/admin/Expenses/ExpenseForm";
 import expenseService from "../../../services/expenseService";
@@ -5,8 +6,10 @@ import { showError, showSuccess } from "../../../utils/alerts";
 
 export default function AddExpense() {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
   const handleCreate = async (formData) => {
+    setSubmitting(true);
     try {
       const payload = {
         description: formData.name,
@@ -45,6 +48,8 @@ export default function AddExpense() {
     } catch (error) {
       console.error("Failed to create expense", error);
       showError(error?.message || "Failed to create expense");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -54,6 +59,7 @@ export default function AddExpense() {
         onSubmit={handleCreate}
         title="Add Expense"
         subTitle="Record a new operational cost"
+        isSubmitting={submitting}
       />
     </div>
   );

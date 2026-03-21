@@ -17,8 +17,10 @@ const sanitizeImage = (image) => {
 
 export default function CreateCategory() {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
   const handleCreate = async (data) => {
+    setSubmitting(true);
     try {
       await categoryService.createCategory({
         name: data.name,
@@ -31,6 +33,8 @@ export default function CreateCategory() {
     } catch (error) {
       console.error("Failed to create category", error);
       showError(error?.message || "Failed to create category");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -52,6 +56,7 @@ export default function CreateCategory() {
           title="Create New Category"
           subTitle="Add a new category to your inventory"
           onSubmit={handleCreate}
+          isSubmitting={submitting}
       />
     </div>
   );

@@ -44,10 +44,10 @@ const Sidebar = ({ mobileOpen, onClose, isOpen, onToggle }) => {
   const menuItems = [
     { key: "dashboard", icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/" },
     { key: "categories", icon: FolderTree, label: "Categories", path: "/dashboard/categories" },
+     { key: "suppliers", icon: Truck, label: "Suppliers", path: "/dashboard/suppliers" },
     { key: "products", icon: Package, label: "Products", path: "/dashboard/products" },
     { key: "purchases", icon: FileText, label: "Purchases", path: "/dashboard/purchases" },
     { key: "inventory", icon: ClipboardList, label: "Stock Management", path: "/dashboard/inventory" },
-    { key: "suppliers", icon: Truck, label: "Suppliers", path: "/dashboard/suppliers" },
     { key: "sales", icon: ShoppingCart, label: "Sales", path: "/dashboard/orders" },
     { key: "customers", icon: Users, label: "Customers", path: "/dashboard/customers" },
     { key: "expense-categories", icon: Tag, label: "Expense Categories", path: "/dashboard/expenses/categories" },

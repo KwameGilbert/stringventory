@@ -6,6 +6,7 @@ import { productService } from "../../../services/productService";
 import customerService from "../../../services/customerService";
 import orderService from "../../../services/orderService";
 import { showError, showSuccess } from "../../../utils/alerts";
+import { isProductApproved } from "../../../utils/productApproval";
 import CustomerSelect from "./components/CustomerSelect";
 import AddCustomerModal from "./components/AddCustomerModal";
 
@@ -76,11 +77,13 @@ export default function CreateOrder() {
           customerService.getCustomers(),
         ]);
 
-        const mappedProducts = extractList(productsRes, "products").map((product) => ({
-          ...product,
-          name: product?.name || "Unnamed Product",
-          unitPrice: Number(product?.sellingPrice ?? product?.price ?? 0),
-        }));
+        const mappedProducts = extractList(productsRes, "products")
+          .filter((product) => isProductApproved(product))
+          .map((product) => ({
+            ...product,
+            name: product?.name || "Unnamed Product",
+            unitPrice: Number(product?.sellingPrice ?? product?.price ?? 0),
+          }));
 
         const mappedCustomers = extractList(customersRes, "customers").map((customer) => {
           return mapCustomer(customer);

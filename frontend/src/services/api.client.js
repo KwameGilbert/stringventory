@@ -3,10 +3,11 @@
  * Handles base configuration, interceptors, and HTTP requests
  */
 
-import axios from 'axios';
-import { API_ENDPOINTS, BASE_URL } from './api.endpoints';
+import axios from "axios";
+import { API_ENDPOINTS, BASE_URL } from "./api.endpoints";
 
-const getFirstString = (...values) => values.find((value) => typeof value === 'string' && value.trim());
+const getFirstString = (...values) =>
+  values.find((value) => typeof value === "string" && value.trim());
 
 const extractAuthTokens = (source = {}) => {
   const payload = source?.data || source || {};
@@ -37,30 +38,51 @@ const extractAuthTokens = (source = {}) => {
 };
 
 // Get tokens from localStorage
-const getAccessToken = () => localStorage.getItem(import.meta.env.VITE_AUTH_TOKEN_KEY || 'stringventory_access_token');
-const getRefreshToken = () => localStorage.getItem(import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || 'stringventory_refresh_token');
+const getAccessToken = () =>
+  localStorage.getItem(
+    import.meta.env.VITE_AUTH_TOKEN_KEY || "stringventory_access_token",
+  );
+const getRefreshToken = () =>
+  localStorage.getItem(
+    import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY ||
+      "stringventory_refresh_token",
+  );
 
 // Set tokens in localStorage
 const setTokens = (accessToken, refreshToken) => {
-  localStorage.setItem(import.meta.env.VITE_AUTH_TOKEN_KEY || 'stringventory_access_token', accessToken);
+  localStorage.setItem(
+    import.meta.env.VITE_AUTH_TOKEN_KEY || "stringventory_access_token",
+    accessToken,
+  );
   if (refreshToken) {
-    localStorage.setItem(import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || 'stringventory_refresh_token', refreshToken);
+    localStorage.setItem(
+      import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY ||
+        "stringventory_refresh_token",
+      refreshToken,
+    );
   }
 };
 
 // Clear tokens from localStorage
 const clearTokens = () => {
-  localStorage.removeItem(import.meta.env.VITE_AUTH_TOKEN_KEY || 'stringventory_access_token');
-  localStorage.removeItem(import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || 'stringventory_refresh_token');
-  localStorage.removeItem(import.meta.env.VITE_AUTH_USER_KEY || 'stringventory_user');
+  localStorage.removeItem(
+    import.meta.env.VITE_AUTH_TOKEN_KEY || "stringventory_access_token",
+  );
+  localStorage.removeItem(
+    import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY ||
+      "stringventory_refresh_token",
+  );
+  localStorage.removeItem(
+    import.meta.env.VITE_AUTH_USER_KEY || "stringventory_user",
+  );
 };
 
 // Create axios instance
 const apiClient = axios.create({
   baseURL: BASE_URL,
-  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000'),
+  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || "30000"),
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -70,7 +92,7 @@ let failedQueue = [];
 
 // Process queued requests after token refresh
 const processQueue = (error, token = null) => {
-  failedQueue.forEach(prom => {
+  failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
@@ -92,7 +114,7 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 /**
@@ -125,19 +147,23 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshToken = getRefreshToken();
-          if (!refreshToken) {
-            throw new Error('No refresh token available');
-          }
+        if (!refreshToken) {
+          throw new Error("No refresh token available");
+        }
 
-        const response = await axios.post(`${BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
-          refreshToken,
+        const response = await axios.post(
+          `${BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`,
+          {
+            refreshToken,
             refresh_token: refreshToken,
-        });
+          },
+        );
 
-          const { accessToken, refreshToken: nextRefreshToken } = extractAuthTokens(response);
+        const { accessToken, refreshToken: nextRefreshToken } =
+          extractAuthTokens(response);
 
         if (!accessToken) {
-          throw new Error('No access token returned from refresh endpoint');
+          throw new Error("No access token returned from refresh endpoint");
         }
 
         setTokens(accessToken, nextRefreshToken);
@@ -151,7 +177,7 @@ apiClient.interceptors.response.use(
         processQueue(err, null);
         clearTokens();
         // Trigger logout event
-        window.dispatchEvent(new Event('logout'));
+        window.dispatchEvent(new Event("logout"));
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
@@ -160,12 +186,12 @@ apiClient.interceptors.response.use(
 
     // Handle other errors
     const errorData = error.response?.data || {
-      status: 'error',
-      message: error.message || 'An error occurred',
+      status: "error",
+      message: error.message || "An error occurred",
     };
 
     return Promise.reject(errorData);
-  }
+  },
 );
 
 export {

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { productService } from "../../../services/productService";
 import supplierService from "../../../services/supplierService";
 import { showError } from "../../../utils/alerts";
+import { isProductApproved } from "../../../utils/productApproval";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -48,7 +49,8 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
           supplierService.getSuppliers(),
         ]);
 
-        setProducts(extractList(productsRes, "products"));
+        const fetchedProducts = extractList(productsRes, "products");
+        setProducts(fetchedProducts.filter((product) => isProductApproved(product)));
         setSuppliers(extractList(suppliersRes, "suppliers"));
       } catch (error) {
         console.error("Error loading data", error);

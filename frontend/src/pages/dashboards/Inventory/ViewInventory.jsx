@@ -6,6 +6,7 @@ import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
 import { confirmDelete, showError, showInfo, showSuccess } from "../../../utils/alerts";
+import { isProductApproved } from "../../../utils/productApproval";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -43,6 +44,12 @@ export default function ViewInventory() {
         const found = inventoryEntries.find((entry) => String(entry.id) === String(id));
         if (found) {
           const product = products.find((p) => String(p.id) === String(found.productId));
+          if (product && !isProductApproved(product)) {
+            showError("This product is not approved and cannot be viewed in Stock Management");
+            navigate("/dashboard/inventory");
+            return;
+          }
+
           const category = categories.find((c) => String(c.id) === String(product?.categoryId));
           const supplier = suppliers.find((s) => String(s.id) === String(product?.supplierId));
           const unitCost = Number(found.unitCost ?? product?.costPrice ?? product?.cost ?? 0);
