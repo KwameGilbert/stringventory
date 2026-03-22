@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   CreditCard, 
   Check, 
@@ -13,116 +13,31 @@ import {
   Download,
   Eye,
   Trash2,
-  CheckCircle
+  CheckCircle,
+  Loader
 } from "lucide-react";
-
-const plans = [
-  {
-    id: "starter",
-    name: "Starter",
-    price: 29,
-    period: "month",
-    description: "Perfect for small businesses",
-    icon: Zap,
-    color: "emerald",
-    features: [
-      { name: "Up to 500 products", included: true },
-      { name: "2 user accounts", included: true },
-      { name: "Basic reports", included: true },
-      { name: "Email support (48hr response)", included: true },
-      { name: "1 location", included: true },
-      { name: "Advanced analytics", included: false },
-      { name: "API access", included: false },
-      { name: "Custom integrations", included: false },
-      { name: "Priority support", included: false },
-      { name: "Dedicated account manager", included: false }
-    ],
-    limits: {
-      products: 500,
-      users: 2,
-      locations: 1,
-      storage: "5 GB",
-      apiCalls: "N/A"
-    }
-  },
-  {
-    id: "professional",
-    name: "Professional",
-    price: 79,
-    period: "month",
-    description: "Best for growing businesses",
-    icon: Crown,
-    color: "emerald ",
-    popular: true,
-    features: [
-      { name: "Up to 5,000 products", included: true },
-      { name: "10 user accounts", included: true },
-      { name: "Advanced reports & analytics", included: true },
-      { name: "Priority support (24hr response)", included: true },
-      { name: "5 locations", included: true },
-      { name: "Advanced analytics", included: true },
-      { name: "API access (10k calls/month)", included: true },
-      { name: "Custom integrations", included: false },
-      { name: "White-label options", included: false },
-      { name: "Dedicated account manager", included: false }
-    ],
-    limits: {
-      products: 5000,
-      users: 10,
-      locations: 5,
-      storage: "50 GB",
-      apiCalls: "10,000/month"
-    }
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    price: 199,
-    period: "month",
-    description: "For large scale operations",
-    icon: Rocket,
-    color: "amber",
-    features: [
-      { name: "Unlimited products", included: true },
-      { name: "Unlimited user accounts", included: true },
-      { name: "Custom reports & dashboards", included: true },
-      { name: "24/7 dedicated support", included: true },
-      { name: "Unlimited locations", included: true },
-      { name: "Advanced analytics + AI insights", included: true },
-      { name: "Unlimited API access", included: true },
-      { name: "Custom integrations", included: true },
-      { name: "White-label options", included: true },
-      { name: "Dedicated account manager", included: true }
-    ],
-    limits: {
-      products: "Unlimited",
-      users: "Unlimited",
-      locations: "Unlimited",
-      storage: "500 GB",
-      apiCalls: "Unlimited"
-    }
-  }
-];
-
-const mockBillingHistory = [
-  { id: 1, date: "Jan 15, 2026", description: "Starter Plan - Monthly", amount: 29.00, status: "paid", invoice: "INV-2026-001" },
-  { id: 2, date: "Dec 15, 2025", description: "Starter Plan - Monthly", amount: 29.00, status: "paid", invoice: "INV-2025-012" },
-  { id: 3, date: "Nov 15, 2025", description: "Starter Plan - Monthly", amount: 29.00, status: "paid", invoice: "INV-2025-011" },
-  { id: 4, date: "Oct 15, 2025", description: "Starter Plan - Monthly", amount: 29.00, status: "paid", invoice: "INV-2025-010" },
-  { id: 5, date: "Sep 15, 2025", description: "Starter Plan - Monthly", amount: 29.00, status: "paid", invoice: "INV-2025-009" },
-];
+import settingsService from "../../../services/settingsService";
+import { showSuccess, showError } from "../../../utils/alerts";
 
 export default function SubscriptionSettings() {
-  const [currentPlan] = useState("starter");
-  const [billingCycle, setBillingCycle] = useState("monthly");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPlan, setCurrentPlan] = useState("starter");
+  const [plans, setPlans] = useState([]);
+  const [currentSubscription, setCurrentSubscription] = useState(null);
+  const [nextBillingDate, setNextBillingDate] = useState(null);
+  const [billingHistory, setBillingHistory] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [upgrading, setUpgrading] = useState(false);
+  const [deletingPayment, setDeletingPayment] = useState(null);
+  const [addingPayment, setAddingPayment] = useState(false);
+
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showAddPaymentModal, setShowAddPaymentModal] = useState(false);
   const [showBillingHistoryModal, setShowBillingHistoryModal] = useState(false);
   const [showPlanDetailsModal, setShowPlanDetailsModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
-  const [paymentMethods, setPaymentMethods] = useState([
-    { id: 1, type: "visa", last4: "4242", expiry: "12/2027", isDefault: true }
-  ]);
+  
   const [newCard, setNewCard] = useState({
     number: "",
     expiry: "",
@@ -130,12 +45,76 @@ export default function SubscriptionSettings() {
     name: ""
   });
 
-  const currentPlanData = plans.find(p => p.id === currentPlan);
-  const nextBillingDate = "February 15, 2026";
-  
-  const handleUpgrade = (plan) => {
-    setSelectedPlan(plan);
-    setShowPaymentModal(true);
+  // Load subscription data on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Load pricing plans
+        const plansResponse = await settingsService.getPricingPlans?.();
+        if (plansResponse) {
+          setPlans(Array.isArray(plansResponse) ? plansResponse : plansResponse.data || []);
+        }
+
+        // Load subscription info
+        const subResponse = await settingsService.getSubscriptionInfo?.();
+        if (subResponse) {
+          const subData = subResponse.data || subResponse;
+          setCurrentPlan(subData.currentPlan || "starter");
+          setCurrentSubscription(subData);
+          setNextBillingDate(subData.nextBillingDate);
+        }
+
+        // Load payment methods
+        const pmResponse = await settingsService.getPaymentMethods?.();
+        if (pmResponse) {
+          setPaymentMethods(Array.isArray(pmResponse) ? pmResponse : pmResponse.data || []);
+        }
+
+        // Load billing history
+        const historyResponse = await settingsService.getBillingHistory?.();
+        if (historyResponse) {
+          setBillingHistory(Array.isArray(historyResponse) ? historyResponse : historyResponse.data || []);
+        }
+      } catch (err) {
+        console.error("Failed to load subscription data", err);
+        setError(err?.message || "Failed to load subscription data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const handleUpgrade = async (plan) => {
+    try {
+      setUpgrading(true);
+      setError(null);
+      
+      await settingsService.upgradePlan?.(plan.id);
+      
+      setCurrentPlan(plan.id);
+      setSelectedPlan(plan);
+      setShowPaymentModal(false);
+      showSuccess(`Successfully upgraded to ${plan.name} plan`);
+      
+      // Reload subscription data
+      const subResponse = await settingsService.getSubscriptionInfo?.();
+      if (subResponse) {
+        const subData = subResponse.data || subResponse;
+        setCurrentSubscription(subData);
+        setNextBillingDate(subData.nextBillingDate);
+      }
+    } catch (err) {
+      console.error("Failed to upgrade plan", err);
+      setError(err?.message || "Failed to upgrade plan");
+      showError(err?.message || "Failed to upgrade plan");
+    } finally {
+      setUpgrading(false);
+    }
   };
 
   const handleViewPlanDetails = (plan) => {
@@ -143,39 +122,82 @@ export default function SubscriptionSettings() {
     setShowPlanDetailsModal(true);
   };
 
-  const handleAddPaymentMethod = () => {
+  const handleAddPaymentMethod = async () => {
     if (!newCard.number || !newCard.expiry || !newCard.cvc || !newCard.name) {
-      alert("Please fill in all card details");
+      setError("Please fill in all card details");
       return;
     }
     
-    const newMethod = {
-      id: Date.now(),
-      type: newCard.number.startsWith("4") ? "visa" : "mastercard",
-      last4: newCard.number.slice(-4),
-      expiry: newCard.expiry,
-      isDefault: paymentMethods.length === 0
-    };
-    
-    setPaymentMethods([...paymentMethods, newMethod]);
-    setNewCard({ number: "", expiry: "", cvc: "", name: "" });
-    setShowAddPaymentModal(false);
-  };
+    try {
+      setAddingPayment(true);
+      setError(null);
 
-  const handleSetDefaultCard = (id) => {
-    setPaymentMethods(paymentMethods.map(pm => ({
-      ...pm,
-      isDefault: pm.id === id
-    })));
-  };
+      await settingsService.addPaymentMethod?.({
+        cardNumber: newCard.number,
+        expiryDate: newCard.expiry,
+        cvc: newCard.cvc,
+        cardholderName: newCard.name
+      });
 
-  const handleDeleteCard = (id) => {
-    const card = paymentMethods.find(pm => pm.id === id);
-    if (card?.isDefault && paymentMethods.length > 1) {
-      alert("Please set another card as default before deleting this one");
-      return;
+      // Reload payment methods
+      const pmResponse = await settingsService.getPaymentMethods?.();
+      if (pmResponse) {
+        setPaymentMethods(Array.isArray(pmResponse) ? pmResponse : pmResponse.data || []);
+      }
+
+      setNewCard({ number: "", expiry: "", cvc: "", name: "" });
+      setShowAddPaymentModal(false);
+      showSuccess("Payment method added successfully");
+    } catch (err) {
+      console.error("Failed to add payment method", err);
+      setError(err?.message || "Failed to add payment method");
+      showError(err?.message || "Failed to add payment method");
+    } finally {
+      setAddingPayment(false);
     }
-    setPaymentMethods(paymentMethods.filter(pm => pm.id !== id));
+  };
+
+  const handleSetDefaultCard = async (id) => {
+    try {
+      setError(null);
+
+      await settingsService.setDefaultPaymentMethod?.(id);
+
+      // Reload payment methods
+      const pmResponse = await settingsService.getPaymentMethods?.();
+      if (pmResponse) {
+        setPaymentMethods(Array.isArray(pmResponse) ? pmResponse : pmResponse.data || []);
+      }
+
+      showSuccess("Default payment method updated");
+    } catch (err) {
+      console.error("Failed to set default payment method", err);
+      setError(err?.message || "Failed to set default payment method");
+      showError(err?.message || "Failed to set default payment method");
+    }
+  };
+
+  const handleDeleteCard = async (id) => {
+    try {
+      setDeletingPayment(id);
+      setError(null);
+
+      await settingsService.deletePaymentMethod?.(id);
+
+      // Reload payment methods
+      const pmResponse = await settingsService.getPaymentMethods?.();
+      if (pmResponse) {
+        setPaymentMethods(Array.isArray(pmResponse) ? pmResponse : pmResponse.data || []);
+      }
+
+      showSuccess("Payment method deleted");
+    } catch (err) {
+      console.error("Failed to delete payment method", err);
+      setError(err?.message || "Failed to delete payment method");
+      showError(err?.message || "Failed to delete payment method");
+    } finally {
+      setDeletingPayment(null);
+    }
   };
 
   const getColorClasses = (color, isActive) => {
@@ -191,31 +213,52 @@ export default function SubscriptionSettings() {
         button: "bg-amber-600 hover:bg-amber-700",
         badge: "bg-amber-100 text-amber-700",
         icon: "text-amber-600"
+      },
+      default: {
+        bg: isActive ? "bg-blue-50 border-blue-500" : "bg-white border-gray-200",
+        button: "bg-blue-600 hover:bg-blue-700",
+        badge: "bg-blue-100 text-blue-700",
+        icon: "text-blue-600"
       }
     };
-    return colors[color];
+    return colors[color] || colors.default;
   };
 
   return (
-    <div className="space-y-6">
+    <>
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+          <AlertCircle className="text-red-600 shrink-0 mt-0.5" size={20} />
+          <div className="text-red-700 text-sm">{error}</div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="space-y-6">
+          <div className="h-32 bg-gray-200 rounded-lg animate-pulse"></div>
+          <div className="h-64 bg-gray-200 rounded-lg animate-pulse"></div>
+          <div className="h-40 bg-gray-200 rounded-lg animate-pulse"></div>
+        </div>
+      ) : (
+      <div className="space-y-6">
       {/* Current Plan Card */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Current Subscription</h2>
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg">
           <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${getColorClasses(currentPlanData?.color, true).badge}`}>
-              {currentPlanData && <currentPlanData.icon className="w-6 h-6" />}
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${ getColorClasses("emerald", true).badge}`}>
+              <Zap className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900">{currentPlanData?.name} Plan</h3>
-              <p className="text-sm text-gray-500">${currentPlanData?.price}/month</p>
+              <h3 className="font-semibold text-gray-900">{currentSubscription?.planName || currentPlan} Plan</h3>
+              <p className="text-sm text-gray-500">${currentSubscription?.price || "0"}/month</p>
             </div>
           </div>
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2 text-gray-600">
               <Calendar className="w-4 h-4" />
-              <span>Next billing: {nextBillingDate}</span>
+              <span>Next billing: {nextBillingDate || "—"}</span>
             </div>
             <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
               Active
@@ -713,6 +756,8 @@ export default function SubscriptionSettings() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+      )}
+    </>
   );
 }

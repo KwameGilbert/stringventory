@@ -150,6 +150,14 @@ export const API_ENDPOINTS = {
     CREATE_TEMPLATE: '/v1/messaging/templates',
   },
 
+  // Notifications
+  NOTIFICATIONS: {
+    LIST: '/v1/notifications',
+    MARK_AS_READ: (id) => `/v1/notifications/${id}/read`,
+    MARK_ALL_AS_READ: '/v1/notifications/read-all',
+    DELETE: (id) => `/v1/notifications/${id}`,
+  },
+
   // Settings
   SETTINGS: {
     BUSINESS: '/v1/settings/business',

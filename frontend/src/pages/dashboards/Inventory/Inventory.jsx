@@ -8,6 +8,7 @@ import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
 import { confirmDelete, showError, showSuccess, showInfo } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
+import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
 
 import StockAdjustmentModal from "../../../components/admin/Inventory/StockAdjustmentModal";
 
@@ -65,6 +66,15 @@ export default function Inventory() {
           return {
             ...item,
             productName: item.productName || product?.name || "Unknown Product",
+            image: resolveApiMediaUrl(
+              item.image ||
+              item.imageUrl ||
+              item.image_url ||
+              product?.image ||
+              product?.imageUrl ||
+              product?.image_url ||
+              null
+            ),
             category: item.category || item.categoryName || product?.categoryName || category?.name || "Uncategorized",
             batchNumber: item.batchNumber || item.reference || `BATCH-${item.id}`,
             supplier: item.supplier || item.supplierName || product?.supplierName || supplier?.name || "Unknown Supplier",
@@ -73,7 +83,7 @@ export default function Inventory() {
             totalValue: Number(item.totalValue ?? quantity * unitCost),
             entryDate: item.entryDate || item.lastStockCheck || item.createdAt || new Date().toISOString(),
             expiryDate: item.expiryDate || null,
-            productId: item.productId || product?.id,
+            productId: item.productId || item.product_id || item.product?.id || product?.id,
           };
         }).filter((item) => {
           const product = productById.get(String(item.productId));
@@ -131,13 +141,37 @@ export default function Inventory() {
 
   const handleConfirmAdjustment = async ({ itemId, type, reason, quantity, notes }) => {
     const currentItem = inventory.find((item) => String(item.id) === String(itemId));
-    if (!currentItem) return;
+    if (!currentItem) {
+      throw new Error("Inventory item not found");
+    }
+
+    const resolvedProductId =
+      currentItem.productId || currentItem.product_id || currentItem.product?.id;
+    if (!resolvedProductId) {
+      throw new Error("Product ID is missing for this inventory item");
+    }
+
+    const absoluteQuantity = Number(quantity);
+    const adjustmentValue = type === "decrease" ? -absoluteQuantity : absoluteQuantity;
+    const operation = type === "increase" ? "add" : "subtract";
 
     try {
       await inventoryService.adjustInventory({
-        productId: currentItem.productId,
+        productId: resolvedProductId,
+        product_id: resolvedProductId,
+        product: resolvedProductId,
+        productID: resolvedProductId,
+        adjustmentValue,
+        adjustment_value: adjustmentValue,
+        adjustment: absoluteQuantity,
+        value: absoluteQuantity,
+        quantity: absoluteQuantity,
+        delta: adjustmentValue,
         adjustmentType: type,
-        quantity,
+        operation,
+        action: operation,
+        direction: type,
+        type,
         reason,
         notes,
       });
@@ -146,8 +180,8 @@ export default function Inventory() {
         prev.map((item) => {
           if (String(item.id) !== String(itemId)) return item;
           const newQuantity = type === 'increase'
-            ? item.quantity + quantity
-            : Math.max(0, item.quantity - quantity);
+            ? item.quantity + absoluteQuantity
+            : Math.max(0, item.quantity - absoluteQuantity);
           return {
             ...item,
             quantity: newQuantity,
@@ -157,10 +191,10 @@ export default function Inventory() {
       );
 
       showSuccess(`Stock ${type}d successfully`);
-      setAdjustModalOpen(false);
     } catch (error) {
       console.error("Failed to adjust stock", error);
       showError(error?.message || "Failed to adjust stock");
+      throw error;
     }
   };
 

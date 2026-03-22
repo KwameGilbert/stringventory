@@ -6,6 +6,7 @@ const dateOptions = [
   { label: "Last 30 Days", value: "30days" },
   { label: "Last 90 Days", value: "90days" },
   { label: "This Year", value: "year" },
+  { label: "Custom Range", value: "custom" },
 ];
 
 const DashboardHeader = ({ dateRange, setDateRange }) => {
@@ -22,7 +23,11 @@ const DashboardHeader = ({ dateRange, setDateRange }) => {
           <Calendar size={16} className="text-gray-500" />
           <select
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+            onChange={(e) => {
+              if (e.target.value !== "custom") {
+                setDateRange(e.target.value);
+              }
+            }}
             className="bg-transparent border-none focus:outline-none text-sm font-medium text-gray-700 cursor-pointer pr-6 appearance-none"
           >
             {dateOptions.map((option) => (

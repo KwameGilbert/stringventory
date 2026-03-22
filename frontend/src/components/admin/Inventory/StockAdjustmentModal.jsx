@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, AlertCircle, TrendingUp, TrendingDown } from "lucide-react";
 
 export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm }) {
@@ -7,6 +7,17 @@ export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm 
   const [quantity, setQuantity] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setType("increase");
+    setReason("");
+    setQuantity("");
+    setNotes("");
+    setError("");
+    setIsSubmitting(false);
+  }, [isOpen, item?.id]);
 
 
 
@@ -27,12 +38,20 @@ export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm 
     ]
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setError("");
 
-    if (!quantity || quantity <= 0) {
-      setError("Please enter a valid positive quantity");
+    const parsedQuantity = Number(quantity);
+
+    if (!Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
+      setError("Please enter a valid whole number greater than 0");
+      return;
+    }
+
+    if (type === "decrease" && parsedQuantity > Number(item.quantity || 0)) {
+      setError("Cannot decrease more than current stock");
       return;
     }
 
@@ -41,14 +60,21 @@ export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm 
       return;
     }
 
-    onConfirm({
-      itemId: item.id,
-      type,
-      reason,
-      quantity: parseInt(quantity),
-      notes
-    });
-    onClose();
+    setIsSubmitting(true);
+    try {
+      await onConfirm({
+        itemId: item.id,
+        type,
+        reason,
+        quantity: parsedQuantity,
+        notes,
+      });
+      onClose();
+    } catch (submitError) {
+      setError(submitError?.message || "Failed to adjust stock. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -110,6 +136,7 @@ export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm 
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
+              disabled={isSubmitting}
               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-gray-900/10 focus:border-gray-900 outline-none transition-all text-sm"
             >
               <option value="">Select reason...</option>
@@ -126,9 +153,11 @@ export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm 
               <input
                 type="number"
                 min="1"
+                step="1"
                 placeholder="0"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
+                disabled={isSubmitting}
                 className="w-full pl-4 pr-12 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-gray-900/10 focus:border-gray-900 outline-none transition-all text-sm"
               />
               <div className="absolute right-4 top-2.5 text-sm text-gray-500 pointer-events-none">
@@ -144,6 +173,7 @@ export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm 
               rows="3"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
+              disabled={isSubmitting}
               placeholder="Add any additional details..."
               className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-gray-900/10 focus:border-gray-900 outline-none transition-all text-sm resize-none"
             />
@@ -154,19 +184,21 @@ export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm 
             <button
               type="button"
               onClick={onClose}
+              disabled={isSubmitting}
               className="flex-1 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
+              disabled={isSubmitting}
               className={`flex-1 px-4 py-2.5 text-white rounded-xl font-medium transition-colors shadow-sm ${
                 type === "increase"
                   ? "bg-emerald-600 hover:bg-emerald-700"
                   : "bg-rose-600 hover:bg-rose-700"
               }`}
             >
-              Confirm Adjustment
+              {isSubmitting ? "Adjusting..." : "Confirm Adjustment"}
             </button>
           </div>
         </form>

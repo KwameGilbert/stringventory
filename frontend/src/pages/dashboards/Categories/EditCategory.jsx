@@ -21,6 +21,7 @@ export default function EditCategory() {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export default function EditCategory() {
   }, [id]);
 
   const handleUpdate = async (formData) => {
+    setSubmitting(true);
     try {
       await categoryService.updateCategory(id, {
         name: formData.name,
@@ -60,6 +62,8 @@ export default function EditCategory() {
     } catch (error) {
       console.error("Failed to update category", error);
       showError(error?.message || "Failed to update category");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -118,6 +122,7 @@ export default function EditCategory() {
           subTitle={`Edit details for ${data.name}`}
           initialData={data}
           onSubmit={handleUpdate}
+          isSubmitting={submitting}
       />
     </div>
   );
