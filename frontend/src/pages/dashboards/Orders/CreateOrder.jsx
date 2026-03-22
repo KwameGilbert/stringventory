@@ -416,7 +416,7 @@ export default function CreateOrder() {
         </div>
 
         {/* Order Items Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-visible">
           <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-emerald-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-100">
@@ -430,7 +430,7 @@ export default function CreateOrder() {
           </div>
           <div className="p-6 space-y-4">
             {/* Add Item Row */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 relative z-40">
               <div className="flex-1 relative" ref={productDropdownRef}>
                 <button
                   type="button"
