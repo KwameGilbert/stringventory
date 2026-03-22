@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import CategoryForm from "../../../components/admin/Categories/CategoryForm";
@@ -7,12 +8,7 @@ import { showError, showSuccess } from "../../../utils/alerts";
 const sanitizeImage = (image) => {
   if (!image || typeof image !== "string") return undefined;
   const trimmedImage = image.trim();
-
-  if (!trimmedImage) return undefined;
-  if (trimmedImage.startsWith("data:")) return undefined;
-  if (trimmedImage.length > 500) return undefined;
-
-  return trimmedImage;
+  return trimmedImage || undefined;
 };
 
 export default function CreateCategory() {

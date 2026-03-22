@@ -30,13 +30,13 @@ const InventoryHeader = ({
           </button>
 
           {/* Add Inventory Button */}
-          <Link
+          {/* <Link
             to="/dashboard/inventory/new"
             className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
           >
             <Plus size={16} />
             Add Inventory
-          </Link>
+          </Link> */}
         </div>
       </div>
 
