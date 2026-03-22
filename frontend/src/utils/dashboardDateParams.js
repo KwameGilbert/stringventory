@@ -1,4 +1,11 @@
 export const getDashboardDateParams = (dateRange) => {
+  if (typeof dateRange === 'object' && dateRange?.startDate && dateRange?.endDate) {
+    return {
+      dateFrom: dateRange.startDate,
+      dateTo: dateRange.endDate,
+    };
+  }
+
   const now = new Date();
   const endDate = new Date(now);
   const startDate = new Date(now);

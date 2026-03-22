@@ -1,4 +1,3 @@
-import { useState } from "react";
 import DashboardHeader from "../../../components/admin/Dashboard/DashboardHeader";
 import KPICards from "../../../components/admin/Dashboard/KPICards";
 import SalesExpensesChart from "../../../components/admin/Dashboard/SalesExpensesChart";
@@ -6,17 +5,25 @@ import TopProductsChart from "../../../components/admin/Dashboard/TopProductsCha
 import TopCustomers from "../../../components/admin/Dashboard/TopCustomers";
 import PaymentDistribution from "../../../components/admin/Dashboard/PaymentDistribution";
 import QuickLists from "../../../components/admin/Dashboard/QuickLists";
+import { useDashboardDateFilter } from "../../../contexts/DashboardDateFilterContext";
 
 export default function Dashboard() {
-  const [dateRange, setDateRange] = useState("30days");
+  const { filter, setPreset } = useDashboardDateFilter();
+  const effectiveDateRange =
+    filter.type === "custom"
+      ? { startDate: filter.startDate, endDate: filter.endDate }
+      : filter.preset;
 
   return (
     <div className="space-y-6 pb-8 animate-fade-in">
       {/* Header with Date Filter */}
-      <DashboardHeader dateRange={dateRange} setDateRange={setDateRange} />
+      <DashboardHeader
+        dateRange={filter.type === "preset" ? filter.preset : "custom"}
+        setDateRange={setPreset}
+      />
 
       {/* KPI Cards Section */}
-      <KPICards dateRange={dateRange} />
+      <KPICards dateRange={effectiveDateRange} />
 
       {/* Charts Section */}
       <div className="space-y-3">
@@ -27,19 +34,19 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Sales & Expenses Trend - 2 columns */}
           <div className="xl:col-span-2">
-            <SalesExpensesChart dateRange={dateRange} />
+            <SalesExpensesChart dateRange={effectiveDateRange} />
           </div>
           
           {/* Payment Distribution - 1 column */}
           <div>
-            <PaymentDistribution dateRange={dateRange} />
+            <PaymentDistribution dateRange={effectiveDateRange} />
           </div>
         </div>
 
         {/* Top Products & Top Customers - 2 columns */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <TopProductsChart dateRange={dateRange} />
-          <TopCustomers dateRange={dateRange} />
+          <TopProductsChart dateRange={effectiveDateRange} />
+          <TopCustomers dateRange={effectiveDateRange} />
         </div>
       </div>
 

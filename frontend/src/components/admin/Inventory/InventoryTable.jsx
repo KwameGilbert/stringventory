@@ -86,8 +86,24 @@ const InventoryTable = ({ inventory, onDelete, onAdjust }) => {
                 {/* Product */}
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0">
-                      <Image className="w-4 h-4 text-gray-400" />
+                    <div className="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.productName || "Product image"}
+                          className="w-full h-full object-cover rounded-lg"
+                          loading="lazy"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                            const fallbackIcon = e.currentTarget.nextElementSibling;
+                            if (fallbackIcon) fallbackIcon.style.display = "block";
+                          }}
+                        />
+                      ) : null}
+                      <Image
+                        className="w-4 h-4 text-gray-400"
+                        style={{ display: item.image ? "none" : "block" }}
+                      />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 text-sm">{item.productName}</p>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Siderbar";
 import Footer from "./Footer";
+import { DashboardDateFilterProvider } from "../../../contexts/DashboardDateFilterContext";
 
 const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,21 +31,23 @@ const DashboardLayout = ({ children }) => {
       />
 
       {/* Main Content Area - responsive margin */}
-      <div className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
-        {/* Header with mobile menu toggle */}
-        <Header 
-          onMenuToggle={toggleMobileSidebar} 
-          isSidebarExpanded={isSidebarExpanded}
-        />
+      <DashboardDateFilterProvider>
+        <div className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
+          {/* Header with mobile menu toggle */}
+          <Header 
+            onMenuToggle={toggleMobileSidebar} 
+            isSidebarExpanded={isSidebarExpanded}
+          />
 
-        {/* Page Content */}
-        <main className="pt-24 px-4 sm:px-6 pb-12 min-h-screen">
-          {children}
-        </main>
+          {/* Page Content */}
+          <main className="pt-24 px-4 sm:px-6 pb-12 min-h-screen">
+            {children}
+          </main>
 
-        {/* Footer */}
-        <Footer />
-      </div>
+          {/* Footer */}
+          <Footer />
+        </div>
+      </DashboardDateFilterProvider>
     </div>
   );
 };

@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { Search, ChevronDown, Calendar, Bell, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useDashboardDateFilter } from "../../../contexts/DashboardDateFilterContext";
 
 const Header = ({ onMenuToggle, isSidebarExpanded }) => {
   const { themeColors } = useTheme();
   const [currency, setCurrency] = useState("GHS");
-  const [startDate, setStartDate] = useState("2025-07-12");
-  const [endDate, setEndDate] = useState("2026-01-06");
   const [notificationCount, _setNotificationCount] = useState(3);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+  const { filter, setCustomRange } = useDashboardDateFilter();
 
   const currencies = ["GHS", "GBP", "USD", "EUR"];
 
@@ -19,7 +19,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
         {/* Mobile menu button */}
         <button
           onClick={onMenuToggle}
-          className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+          className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -91,8 +91,8 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
               <input
                 type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                value={filter.startDate}
+                onChange={(e) => setCustomRange(e.target.value, filter.endDate)}
                 className={`pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
                          text-gray-700 focus:outline-none ${themeColors.focusRing} 
                          focus:border-transparent transition-all w-40 text-sm`}
@@ -107,8 +107,9 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
               <input
                 type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                value={filter.endDate}
+                min={filter.startDate}
+                onChange={(e) => setCustomRange(filter.startDate, e.target.value)}
                 className={`pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
                          text-gray-700 focus:outline-none ${themeColors.focusRing} 
                          focus:border-transparent transition-all w-40 text-sm`}

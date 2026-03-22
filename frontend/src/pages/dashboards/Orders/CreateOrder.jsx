@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { Save, ArrowLeft, Plus, Trash2, Package, User, DollarSign, ShoppingCart } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { Save, ArrowLeft, Plus, Trash2, Package, User, DollarSign, ShoppingCart, Search, ChevronDown, Check } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { productService } from "../../../services/productService";
@@ -65,9 +65,12 @@ export default function CreateOrder() {
   });
 
   const [selectedProduct, setSelectedProduct] = useState("");
-  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [selectedQuantity, setSelectedQuantity] = useState("1");
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
+  const [isProductDropdownOpen, setIsProductDropdownOpen] = useState(false);
+  const [productSearchQuery, setProductSearchQuery] = useState("");
+  const productDropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -101,6 +104,17 @@ export default function CreateOrder() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (productDropdownRef.current && !productDropdownRef.current.contains(event.target)) {
+        setIsProductDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const filteredCustomers = useMemo(() => {
     const query = customerQuery.trim().toLowerCase();
     if (!query) return customers;
@@ -112,6 +126,22 @@ export default function CreateOrder() {
       return name.includes(query) || phone.includes(query) || email.includes(query);
     });
   }, [customers, customerQuery]);
+
+  const selectedProductData = useMemo(() => {
+    return products.find((product) => String(product.id) === String(selectedProduct)) || null;
+  }, [products, selectedProduct]);
+
+  const filteredProducts = useMemo(() => {
+    const query = productSearchQuery.trim().toLowerCase();
+    if (!query) return products;
+
+    return products.filter((product) => {
+      const name = String(product?.name || "").toLowerCase();
+      const sku = String(product?.sku || product?.productCode || "").toLowerCase();
+      const barcode = String(product?.barcode || "").toLowerCase();
+      return name.includes(query) || sku.includes(query) || barcode.includes(query);
+    });
+  }, [products, productSearchQuery]);
 
   const selectCustomer = async (selectedId) => {
     if (!selectedId) {
@@ -165,13 +195,14 @@ export default function CreateOrder() {
     if (!selectedProduct) return;
     const product = products.find((p) => String(p.id) === String(selectedProduct));
     if (!product) return;
+    const quantityToAdd = Math.max(1, Number(selectedQuantity) || 1);
 
     // Check if product already in items
     const existingIndex = formData.items.findIndex((item) => item.productId === product.id);
     if (existingIndex >= 0) {
       // Update quantity
       const newItems = [...formData.items];
-      newItems[existingIndex].quantity += selectedQuantity;
+      newItems[existingIndex].quantity += quantityToAdd;
       setFormData((prev) => ({ ...prev, items: newItems }));
     } else {
       // Add new item
@@ -182,14 +213,22 @@ export default function CreateOrder() {
           {
             productId: product.id,
             productName: product.name,
-            quantity: selectedQuantity,
+            quantity: quantityToAdd,
             unitPrice: Number(product.unitPrice ?? 0),
           },
         ],
       }));
     }
     setSelectedProduct("");
-    setSelectedQuantity(1);
+    setProductSearchQuery("");
+    setIsProductDropdownOpen(false);
+    setSelectedQuantity("1");
+  };
+
+  const handleProductSelect = (productId) => {
+    setSelectedProduct(String(productId));
+    setProductSearchQuery("");
+    setIsProductDropdownOpen(false);
   };
 
   const removeItem = (index) => {
@@ -203,6 +242,25 @@ export default function CreateOrder() {
     const newItems = [...formData.items];
     newItems[index].quantity = Math.max(1, quantity);
     setFormData((prev) => ({ ...prev, items: newItems }));
+  };
+
+  const handleSelectedQuantityChange = (e) => {
+    const { value } = e.target;
+    if (value === "") {
+      setSelectedQuantity("");
+      return;
+    }
+
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isNaN(parsed)) return;
+    setSelectedQuantity(String(Math.max(1, parsed)));
+  };
+
+  const normalizeSelectedQuantity = () => {
+    setSelectedQuantity((prev) => {
+      const normalized = Math.max(1, Number(prev) || 1);
+      return String(normalized);
+    });
   };
 
   const subtotal = useMemo(() => {
@@ -373,22 +431,71 @@ export default function CreateOrder() {
           <div className="p-6 space-y-4">
             {/* Add Item Row */}
             <div className="flex gap-3">
-              <select
-                value={selectedProduct}
-                onChange={(e) => setSelectedProduct(e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm bg-white"
-              >
-                <option value="">Select a product...</option>
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name} - {formatCurrency(product.unitPrice || 0)}
-                  </option>
-                ))}
-              </select>
+              <div className="flex-1 relative" ref={productDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsProductDropdownOpen((prev) => !prev)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm bg-white flex items-center justify-between text-left"
+                >
+                  <span className={`${selectedProductData ? "text-gray-900" : "text-gray-500"} truncate pr-3`}>
+                    {selectedProductData
+                      ? `${selectedProductData.name} - ${formatCurrency(selectedProductData.unitPrice || 0)}`
+                      : "Select a product..."}
+                  </span>
+                  <ChevronDown size={16} className={`text-gray-400 transition-transform ${isProductDropdownOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {isProductDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-30 overflow-hidden">
+                    <div className="p-2 border-b border-gray-100 bg-gray-50/60">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                        <input
+                          type="text"
+                          value={productSearchQuery}
+                          onChange={(e) => setProductSearchQuery(e.target.value)}
+                          placeholder="Search product name, SKU, or barcode"
+                          className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="max-h-64 overflow-y-auto p-1">
+                      {filteredProducts.length === 0 ? (
+                        <div className="px-3 py-4 text-sm text-gray-500 text-center">No matching products found</div>
+                      ) : (
+                        filteredProducts.map((product) => {
+                          const isSelected = String(product.id) === String(selectedProduct);
+                          return (
+                            <button
+                              type="button"
+                              key={product.id}
+                              onClick={() => handleProductSelect(product.id)}
+                              className={`w-full px-3 py-2 rounded-lg text-left transition-colors flex items-center justify-between ${
+                                isSelected ? "bg-emerald-50 text-emerald-900" : "hover:bg-gray-50 text-gray-900"
+                              }`}
+                            >
+                              <div className="min-w-0 pr-3">
+                                <div className="text-sm font-medium truncate">{product.name}</div>
+                                <div className="text-xs text-gray-500 truncate">
+                                  {formatCurrency(product.unitPrice || 0)}
+                                  {product.sku ? ` • SKU: ${product.sku}` : ""}
+                                </div>
+                              </div>
+                              {isSelected && <Check size={14} className="text-emerald-600 shrink-0" />}
+                            </button>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
               <input
                 type="number"
                 value={selectedQuantity}
-                onChange={(e) => setSelectedQuantity(parseInt(e.target.value) || 1)}
+                onChange={handleSelectedQuantityChange}
+                onBlur={normalizeSelectedQuantity}
                 min="1"
                 className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm text-center"
                 placeholder="Qty"

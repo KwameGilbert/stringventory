@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Edit2, Trash2, Eye, Image, ChevronLeft, ChevronRight, FolderOpen, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
