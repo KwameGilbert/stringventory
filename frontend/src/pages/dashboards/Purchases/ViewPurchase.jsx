@@ -102,7 +102,7 @@ export default function ViewPurchase() {
 
     if (result.isConfirmed) {
       try {
-        await purchaseService.updatePurchase(id, { status: "approved" });
+        await purchaseService.approvePurchase(id);
         setPurchase((prev) => ({ ...prev, status: "approved" }));
         showSuccess("Purchase approved successfully");
       } catch (error) {

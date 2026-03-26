@@ -134,7 +134,7 @@ export default function Purchases() {
 
     if (result.isConfirmed) {
       try {
-        await purchaseService.updatePurchase(id, { status: "approved" });
+        await purchaseService.approvePurchase(id);
         setPurchases((prev) =>
           prev.map((p) =>
             String(p.id) === String(id) ? { ...p, status: "approved" } : p

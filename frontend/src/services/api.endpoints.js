@@ -87,6 +87,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id) => `/v1/orders/${id}`,
     DELETE: (id) => `/v1/orders/${id}`,
     CREATE_REFUND: (id) => `/v1/orders/${id}/refund`,
+    FULFILL: (id) => `/v1/orders/${id}/fulfill`,
   },
 
   // Suppliers
@@ -105,6 +106,7 @@ export const API_ENDPOINTS = {
     CREATE: '/v1/purchases',
     UPDATE: (id) => `/v1/purchases/${id}`,
     DELETE: (id) => `/v1/purchases/${id}`,
+    APPROVE: (id) => `/v1/purchases/${id}/approve`,
   },
 
   // Expenses

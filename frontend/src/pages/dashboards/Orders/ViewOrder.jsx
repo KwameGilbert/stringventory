@@ -56,28 +56,48 @@ export default function ViewOrder() {
   const normalizeOrder = (rawOrder) => {
     if (!rawOrder) return null;
 
+    // Customer — API uses firstName/lastName, no combined name field
+    const customerObj = rawOrder?.customer || {};
+    const firstName = customerObj?.firstName || "";
+    const lastName = customerObj?.lastName || "";
+    const customerName = `${firstName} ${lastName}`.trim() || customerObj?.name || rawOrder?.customerName || "Unknown Customer";
+
     const customer = {
-      name: rawOrder?.customer?.name || rawOrder?.customerName || "Unknown Customer",
-      email: rawOrder?.customer?.email || rawOrder?.customerEmail || "",
-      phone: rawOrder?.customer?.phone || rawOrder?.customerPhone || "",
+      name: customerName,
+      email: customerObj?.email || rawOrder?.customerEmail || "",
+      phone: customerObj?.phone || rawOrder?.customerPhone || "",
+      businessName: customerObj?.businessName || "",
     };
+
+    // Payment method comes from transactions array
+    const firstTransaction = Array.isArray(rawOrder?.transactions) ? rawOrder.transactions[0] : null;
+    const paymentMethod = firstTransaction?.paymentMethod || rawOrder?.paymentMethod || "cash";
+    const amountPaid = Number(firstTransaction?.amount ?? rawOrder?.discountedTotalPrice ?? rawOrder?.total ?? 0);
 
     return {
       ...rawOrder,
-      orderDate: rawOrder?.orderDate || rawOrder?.date || rawOrder?.createdAt,
-      subtotal: Number(rawOrder?.subtotal ?? 0),
+      // Use orderNumber as the display reference
+      displayRef: rawOrder?.orderNumber || rawOrder?.id,
+      orderDate: rawOrder?.orderDate || rawOrder?.createdAt || rawOrder?.date,
+      // No explicit subtotal/tax fields — use discountedTotalPrice as total
+      subtotal: Number(rawOrder?.discountedPrice ?? rawOrder?.subtotal ?? rawOrder?.discountedTotalPrice ?? 0),
       discountAmount: Number(rawOrder?.discountAmount ?? rawOrder?.discount ?? 0),
       taxAmount: Number(rawOrder?.taxAmount ?? rawOrder?.tax ?? 0),
-      total: Number(rawOrder?.total ?? 0),
-      paymentMethod: rawOrder?.paymentMethod || "cash",
+      total: Number(rawOrder?.discountedTotalPrice ?? rawOrder?.total ?? rawOrder?.totalAmount ?? amountPaid),
+      amountPaid,
+      paymentMethod,
       customer,
       items: Array.isArray(rawOrder?.items)
         ? rawOrder.items.map((item) => ({
             ...item,
+            // Product name is nested under item.product.name
+            productName: item?.product?.name || item?.productName || item?.name || "Unknown Product",
             quantity: Number(item?.quantity ?? 0),
-            unitPrice: Number(item?.unitPrice ?? 0),
-            subtotal: Number(item?.subtotal ?? item?.total ?? (Number(item?.quantity ?? 0) * Number(item?.unitPrice ?? 0))),
-            pickedQuantity: Number(item?.pickedQuantity ?? 0),
+            // API returns sellingPrice as the unit price
+            unitPrice: Number(item?.sellingPrice ?? item?.unitPrice ?? item?.price ?? 0),
+            // API returns totalPrice as the line total
+            subtotal: Number(item?.totalPrice ?? item?.subtotal ?? item?.total ?? 0),
+            pickedQuantity: Number(item?.fulfilledQuantity ?? item?.pickedQuantity ?? 0),
           }))
         : [],
     };
@@ -125,15 +145,26 @@ export default function ViewOrder() {
     })));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const pickedItems = items.filter(item => (item.pickedQuantity || 0) > 0);
-    
+
     if (pickedItems.length === 0) {
       showInfo("Please pick at least one item before saving.", "Nothing to save");
       return;
     }
 
-    showSuccess(`Successfully saved pickup for ${pickedItems.length} items.`, "Pickup Saved");
+    try {
+      await orderService.fulfillOrder(id, {
+        items: pickedItems.map(item => ({
+          orderItemId: item.id,
+          fulfilledQuantity: Number(item.pickedQuantity),
+        })),
+      });
+      showSuccess(`Pickup saved for ${pickedItems.length} item(s).`, "Pickup Saved");
+    } catch (error) {
+      console.error("Failed to save pickup", error);
+      showError(error?.message || "Failed to save pickup");
+    }
   };
 
   const allItemsPicked = items.length > 0 && items.every(item => item.pickedQuantity === item.quantity);
@@ -245,7 +276,7 @@ export default function ViewOrder() {
               </div>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-xl font-bold text-gray-900 font-mono">{order.id}</h1>
+                  <h1 className="text-xl font-bold text-gray-900 font-mono">{order.displayRef || order.id}</h1>
                   <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${status.bg} ${status.text}`}>
                     <StatusIcon size={14} />
                     {status.label}
@@ -445,7 +476,7 @@ export default function ViewOrder() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Amount Paid</p>
-                  <p className="font-bold text-gray-900 text-lg">{formatCurrency(order.total)}</p>
+                  <p className="font-bold text-gray-900 text-lg">{formatCurrency(order.amountPaid || order.total)}</p>
                 </div>
               </div>
             </div>
