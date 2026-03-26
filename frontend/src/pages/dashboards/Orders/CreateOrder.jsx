@@ -36,11 +36,28 @@ const extractCustomer = (response) => {
   return payload?.customer || payload?.data?.customer || payload?.data || payload;
 };
 
+const extractCreatedOrderId = (response) => {
+  const payload = response?.data || response || {};
+  return (
+    payload?.order?.id ||
+    payload?.data?.order?.id ||
+    payload?.id ||
+    payload?.orderId ||
+    payload?.data?.id ||
+    payload?.data?.orderId ||
+    null
+  );
+};
+
 const splitName = (fullName = "") => {
   const parts = String(fullName).trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return { firstName: "", lastName: "" };
   if (parts.length === 1) return { firstName: parts[0], lastName: "" };
   return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
+};
+
+const getProductStock = (product = {}) => {
+  return Number(product?.currentStock ?? product?.quantity ?? product?.stock ?? 0);
 };
 
 export default function CreateOrder() {
@@ -86,6 +103,7 @@ export default function CreateOrder() {
             ...product,
             name: product?.name || "Unnamed Product",
             unitPrice: Number(product?.sellingPrice ?? product?.price ?? 0),
+            currentStock: getProductStock(product),
           }));
 
         const mappedCustomers = extractList(customersRes, "customers").map((customer) => {
@@ -195,6 +213,10 @@ export default function CreateOrder() {
     if (!selectedProduct) return;
     const product = products.find((p) => String(p.id) === String(selectedProduct));
     if (!product) return;
+    if (getProductStock(product) <= 0) {
+      showError("This product is out of stock");
+      return;
+    }
     const quantityToAdd = Math.max(1, Number(selectedQuantity) || 1);
 
     // Check if product already in items
@@ -226,6 +248,8 @@ export default function CreateOrder() {
   };
 
   const handleProductSelect = (productId) => {
+    const product = products.find((p) => String(p.id) === String(productId));
+    if (!product || getProductStock(product) <= 0) return;
     setSelectedProduct(String(productId));
     setProductSearchQuery("");
     setIsProductDropdownOpen(false);
@@ -293,7 +317,7 @@ export default function CreateOrder() {
 
     try {
       setSubmitting(true);
-      await orderService.createOrder({
+      const response = await orderService.createOrder({
         customerId: formData.customerId,
         customerName: formData.customer.name || undefined,
         customerEmail: formData.customer.email || undefined,
@@ -317,7 +341,12 @@ export default function CreateOrder() {
       });
 
       showSuccess("Sale created successfully");
-      navigate("/dashboard/orders");
+      const createdOrderId = extractCreatedOrderId(response);
+      if (createdOrderId) {
+        navigate(`/dashboard/orders/${createdOrderId}`, { state: { autoPrint: true } });
+      } else {
+        navigate("/dashboard/orders");
+      }
     } catch (error) {
       console.error("Error creating order", error);
       showError(error?.message || "Failed to create sale");
@@ -340,7 +369,7 @@ export default function CreateOrder() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 ">
+    <div className="max-w-7xl mx-auto pb-8 ">
       {/* Back Button */}
       <button
         type="button"
@@ -359,319 +388,337 @@ export default function CreateOrder() {
         <p className="text-gray-500 text-sm">Fill in the details to create a new sale</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Customer Info Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 relative z-20">
-          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-blue-50 to-cyan-50">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-100">
-                <User className="w-5 h-5 text-blue-600" />
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+        <div className="xl:col-span-2 space-y-6">
+          {/* Customer Info Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 relative z-20">
+            <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-blue-50 to-cyan-50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-blue-100">
+                  <User className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Customer Information</h3>
+                  <p className="text-xs text-gray-500">Enter customer details</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Customer Information</h3>
-                <p className="text-xs text-gray-500">Enter customer details</p>
+            </div>
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 relative z-20">
+              <div className="space-y-4 relative z-50">
+                 <CustomerSelect 
+                    customers={customers}
+                    selectedCustomer={selectedCustomer}
+                    onSelect={(c) => selectCustomer(c.id)}
+                    onOpenAddModal={() => setIsAddCustomerModalOpen(true)}
+                    loading={loading}
+                 />
+              </div>
+
+              <div className="space-y-4 border-t md:border-t-0 md:border-l border-gray-100 md:pl-6 pt-4 md:pt-0">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Edit Details for this Sale</p>
+                  <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">Email</label>
+                  <input
+                      type="email"
+                      name="email"
+                      value={formData.customer.email}
+                      onChange={handleCustomerChange}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-gray-50 hover:bg-white"
+                      placeholder="john@email.com"
+                  />
+                  </div>
+                  <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      Phone <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                      type="tel"
+                      name="phone"
+                      value={formData.customer.phone}
+                      onChange={handleCustomerChange}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-gray-50 hover:bg-white"
+                      placeholder="+233 24 123 4567"
+                      required
+                  />
+                  </div>
               </div>
             </div>
           </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 relative z-20">
-            <div className="space-y-4 relative z-50">
-               <CustomerSelect 
-                  customers={customers}
-                  selectedCustomer={selectedCustomer}
-                  onSelect={(c) => selectCustomer(c.id)}
-                  onOpenAddModal={() => setIsAddCustomerModalOpen(true)}
-                  loading={loading}
-               />
-            </div>
 
-            <div className="space-y-4 border-t md:border-t-0 md:border-l border-gray-100 md:pl-6 pt-4 md:pt-0">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Edit Details for this Sale</p>
-                <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">Email</label>
-                <input
-                    type="email"
-                    name="email"
-                    value={formData.customer.email}
-                    onChange={handleCustomerChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-gray-50 hover:bg-white"
-                    placeholder="john@email.com"
-                />
+          {/* Order Items Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-visible">
+            <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-emerald-50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-emerald-100">
+                  <ShoppingCart className="w-5 h-5 text-emerald-600" />
                 </div>
-                <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                    Phone <span className="text-rose-500">*</span>
-                </label>
-                <input
-                    type="tel"
-                    name="phone"
-                    value={formData.customer.phone}
-                    onChange={handleCustomerChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-gray-50 hover:bg-white"
-                    placeholder="+233 24 123 4567"
-                    required
-                />
+                <div>
+                  <h3 className="font-semibold text-gray-900">Sale Items</h3>
+                  <p className="text-xs text-gray-500">Add products to the sale</p>
                 </div>
+              </div>
+            </div>
+            <div className="p-6 space-y-4">
+              {/* Add Item Row */}
+              <div className="flex gap-3 relative z-40">
+                <div className="flex-1 relative" ref={productDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsProductDropdownOpen((prev) => !prev)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm bg-white flex items-center justify-between text-left"
+                  >
+                    <span className={`${selectedProductData ? "text-gray-900" : "text-gray-500"} truncate pr-3`}>
+                      {selectedProductData
+                        ? `${selectedProductData.name} - ${formatCurrency(selectedProductData.unitPrice || 0)}`
+                        : "Select a product..."}
+                    </span>
+                    <ChevronDown size={16} className={`text-gray-400 transition-transform ${isProductDropdownOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {isProductDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-30 overflow-hidden">
+                      <div className="p-2 border-b border-gray-100 bg-gray-50/60">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                          <input
+                            type="text"
+                            value={productSearchQuery}
+                            onChange={(e) => setProductSearchQuery(e.target.value)}
+                            placeholder="Search product name, SKU, or barcode"
+                            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="max-h-64 overflow-y-auto p-1">
+                        {filteredProducts.length === 0 ? (
+                          <div className="px-3 py-4 text-sm text-gray-500 text-center">No matching products found</div>
+                        ) : (
+                          filteredProducts.map((product) => {
+                            const isSelected = String(product.id) === String(selectedProduct);
+                            const isOutOfStock = getProductStock(product) <= 0;
+                            return (
+                              <button
+                                type="button"
+                                key={product.id}
+                                onClick={() => handleProductSelect(product.id)}
+                                disabled={isOutOfStock}
+                                className={`w-full px-3 py-2 rounded-lg text-left transition-colors flex items-center justify-between ${
+                                  isOutOfStock
+                                    ? "bg-gray-50 text-gray-400 cursor-not-allowed"
+                                    : isSelected
+                                      ? "bg-emerald-50 text-emerald-900"
+                                      : "hover:bg-gray-50 text-gray-900"
+                                }`}
+                              >
+                                <div className="min-w-0 pr-3">
+                                  <div className="text-sm font-medium truncate">{product.name}</div>
+                                  <div className="text-xs text-gray-500 truncate">
+                                    {formatCurrency(product.unitPrice || 0)}
+                                    {product.sku ? ` • SKU: ${product.sku}` : ""}
+                                    {` • Stock: ${getProductStock(product)}`}
+                                  </div>
+                                </div>
+                                <div className="shrink-0 flex items-center gap-2">
+                                  {isOutOfStock && (
+                                    <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
+                                      Out of stock
+                                    </span>
+                                  )}
+                                  {isSelected && !isOutOfStock && <Check size={14} className="text-emerald-600" />}
+                                </div>
+                              </button>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="number"
+                  value={selectedQuantity}
+                  onChange={handleSelectedQuantityChange}
+                  onBlur={normalizeSelectedQuantity}
+                  min="1"
+                  className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm text-center"
+                  placeholder="Qty"
+                />
+                <button
+                  type="button"
+                  onClick={addItem}
+                  disabled={!selectedProduct}
+                  className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white rounded-xl transition-colors flex items-center gap-2 text-sm font-medium"
+                >
+                  <Plus size={16} />
+                  Add
+                </button>
+              </div>
+
+              {/* Items List */}
+              {formData.items.length > 0 ? (
+                <div className="border border-gray-200 rounded-xl overflow-hidden">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="bg-gray-50 text-xs font-semibold text-gray-500 uppercase">
+                        <th className="px-4 py-3 text-left">Product</th>
+                        <th className="px-4 py-3 text-center w-32">Quantity</th>
+                        <th className="px-4 py-3 text-right">Unit Price</th>
+                        <th className="px-4 py-3 text-right">Total</th>
+                        <th className="px-4 py-3 w-12"></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {formData.items.map((item, index) => (
+                        <tr key={index} className="hover:bg-gray-50/50">
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                                <Package size={14} className="text-gray-400" />
+                              </div>
+                              <span className="text-sm font-medium text-gray-900">{item.productName}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <input
+                              type="number"
+                              value={item.quantity}
+                              onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
+                              min="1"
+                              className="w-20 px-2 py-1 rounded-lg border border-gray-200 text-center text-sm mx-auto block"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm text-gray-600">
+                            {formatCurrency(item.unitPrice)}
+                          </td>
+                          <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">
+                            {formatCurrency(item.quantity * item.unitPrice)}
+                          </td>
+                          <td className="px-4 py-3">
+                            <button
+                              type="button"
+                              onClick={() => removeItem(index)}
+                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-400">
+                  <ShoppingCart className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No items added yet</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Order Items Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-visible">
-          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-emerald-50">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-100">
-                <ShoppingCart className="w-5 h-5 text-emerald-600" />
+        <div className="xl:col-span-1">
+          <div className="space-y-6 xl:sticky xl:top-6">
+            {/* Payment & Summary Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-teal-50">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-emerald-100">
+                    <DollarSign className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Payment & Summary</h3>
+                    <p className="text-xs text-gray-500">Payment details and order totals</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Sale Items</h3>
-                <p className="text-xs text-gray-500">Add products to the sale</p>
-              </div>
-            </div>
-          </div>
-          <div className="p-6 space-y-4">
-            {/* Add Item Row */}
-            <div className="flex gap-3 relative z-40">
-              <div className="flex-1 relative" ref={productDropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsProductDropdownOpen((prev) => !prev)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm bg-white flex items-center justify-between text-left"
-                >
-                  <span className={`${selectedProductData ? "text-gray-900" : "text-gray-500"} truncate pr-3`}>
-                    {selectedProductData
-                      ? `${selectedProductData.name} - ${formatCurrency(selectedProductData.unitPrice || 0)}`
-                      : "Select a product..."}
-                  </span>
-                  <ChevronDown size={16} className={`text-gray-400 transition-transform ${isProductDropdownOpen ? "rotate-180" : ""}`} />
-                </button>
+              <div className="p-6 space-y-6">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Payment Method</label>
+                    <select
+                      value={formData.paymentMethod}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, paymentMethod: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm bg-white"
+                    >
+                      <option value="Cash">Cash</option>
+                      <option value="Card">Card</option>
+                      <option value="Mobile Money">Mobile Money</option>
+                      <option value="Bank Transfer">Bank Transfer</option>
+                    </select>
+                  </div>
 
-                {isProductDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-30 overflow-hidden">
-                    <div className="p-2 border-b border-gray-100 bg-gray-50/60">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Discount</label>
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                         <input
-                          type="text"
-                          value={productSearchQuery}
-                          onChange={(e) => setProductSearchQuery(e.target.value)}
-                          placeholder="Search product name, SKU, or barcode"
-                          className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-white"
+                          type="number"
+                          value={formData.discount}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, discount: parseFloat(e.target.value) || 0 }))}
+                          min="0"
+                          step="0.01"
+                          className="w-full pl-7 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm"
                         />
                       </div>
                     </div>
-
-                    <div className="max-h-64 overflow-y-auto p-1">
-                      {filteredProducts.length === 0 ? (
-                        <div className="px-3 py-4 text-sm text-gray-500 text-center">No matching products found</div>
-                      ) : (
-                        filteredProducts.map((product) => {
-                          const isSelected = String(product.id) === String(selectedProduct);
-                          return (
-                            <button
-                              type="button"
-                              key={product.id}
-                              onClick={() => handleProductSelect(product.id)}
-                              className={`w-full px-3 py-2 rounded-lg text-left transition-colors flex items-center justify-between ${
-                                isSelected ? "bg-emerald-50 text-emerald-900" : "hover:bg-gray-50 text-gray-900"
-                              }`}
-                            >
-                              <div className="min-w-0 pr-3">
-                                <div className="text-sm font-medium truncate">{product.name}</div>
-                                <div className="text-xs text-gray-500 truncate">
-                                  {formatCurrency(product.unitPrice || 0)}
-                                  {product.sku ? ` • SKU: ${product.sku}` : ""}
-                                </div>
-                              </div>
-                              {isSelected && <Check size={14} className="text-emerald-600 shrink-0" />}
-                            </button>
-                          );
-                        })
-                      )}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Tax Rate (%)</label>
+                      <input
+                        type="number"
+                        value={formData.taxRate}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, taxRate: parseFloat(e.target.value) || 0 }))}
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm"
+                      />
                     </div>
                   </div>
-                )}
-              </div>
-              <input
-                type="number"
-                value={selectedQuantity}
-                onChange={handleSelectedQuantityChange}
-                onBlur={normalizeSelectedQuantity}
-                min="1"
-                className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm text-center"
-                placeholder="Qty"
-              />
-              <button
-                type="button"
-                onClick={addItem}
-                disabled={!selectedProduct}
-                className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 text-white rounded-xl transition-colors flex items-center gap-2 text-sm font-medium"
-              >
-                <Plus size={16} />
-                Add
-              </button>
-            </div>
+                </div>
 
-            {/* Items List */}
-            {formData.items.length > 0 ? (
-              <div className="border border-gray-200 rounded-xl overflow-hidden">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gray-50 text-xs font-semibold text-gray-500 uppercase">
-                      <th className="px-4 py-3 text-left">Product</th>
-                      <th className="px-4 py-3 text-center w-32">Quantity</th>
-                      <th className="px-4 py-3 text-right">Unit Price</th>
-                      <th className="px-4 py-3 text-right">Total</th>
-                      <th className="px-4 py-3 w-12"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {formData.items.map((item, index) => (
-                      <tr key={index} className="hover:bg-gray-50/50">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                              <Package size={14} className="text-gray-400" />
-                            </div>
-                            <span className="text-sm font-medium text-gray-900">{item.productName}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <input
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
-                            min="1"
-                            className="w-20 px-2 py-1 rounded-lg border border-gray-200 text-center text-sm mx-auto block"
-                          />
-                        </td>
-                        <td className="px-4 py-3 text-right text-sm text-gray-600">
-                          {formatCurrency(item.unitPrice)}
-                        </td>
-                        <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">
-                          {formatCurrency(item.quantity * item.unitPrice)}
-                        </td>
-                        <td className="px-4 py-3">
-                          <button
-                            type="button"
-                            onClick={() => removeItem(index)}
-                            className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-400">
-                <ShoppingCart className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No items added yet</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Payment & Summary Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-teal-50">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-100">
-                <DollarSign className="w-5 h-5 text-emerald-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Payment & Summary</h3>
-                <p className="text-xs text-gray-500">Payment details and order totals</p>
-              </div>
-            </div>
-          </div>
-          <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left - Payment Options */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Payment Method</label>
-                <select
-                  value={formData.paymentMethod}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, paymentMethod: e.target.value }))}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm bg-white"
-                >
-                  <option value="Cash">Cash</option>
-                  <option value="Card">Card</option>
-                  <option value="Mobile Money">Mobile Money</option>
-                  <option value="Bank Transfer">Bank Transfer</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Discount</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                    <input
-                      type="number"
-                      value={formData.discount}
-                      onChange={(e) => setFormData((prev) => ({ ...prev, discount: parseFloat(e.target.value) || 0 }))}
-                      min="0"
-                      step="0.01"
-                      className="w-full pl-7 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm"
-                    />
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3 self-start">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Subtotal</span>
+                    <span className="font-medium">{formatCurrency(subtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Discount</span>
+                    <span className="font-medium">-{formatCurrency(formData.discount)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Tax ({formData.taxRate}%)</span>
+                    <span className="font-medium">{formatCurrency(tax)}</span>
+                  </div>
+                  <div className="h-px bg-gray-200" />
+                  <div className="flex justify-between text-base font-semibold text-gray-900">
+                    <span>Total</span>
+                    <span>{formatCurrency(total)}</span>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Tax Rate (%)</label>
-                  <input
-                    type="number"
-                    value={formData.taxRate}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, taxRate: parseFloat(e.target.value) || 0 }))}
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm"
-                  />
-                </div>
               </div>
             </div>
 
-            {/* Right - Order Summary */}
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3 self-start">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Subtotal</span>
-                <span className="font-medium">{formatCurrency(subtotal)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Discount</span>
-                <span className="font-medium">-{formatCurrency(formData.discount)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Tax ({formData.taxRate}%)</span>
-                <span className="font-medium">{formatCurrency(tax)}</span>
-              </div>
-              <div className="h-px bg-gray-200" />
-              <div className="flex justify-between text-base font-semibold text-gray-900">
-                <span>Total</span>
-                <span>{formatCurrency(total)}</span>
-              </div>
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row xl:flex-col gap-3">
+              <Link
+                to="/dashboard/orders"
+                className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors text-sm text-center"
+              >
+                Cancel
+              </Link>
+              <button
+                type="submit"
+                disabled={submitting || formData.items.length === 0 || !formData.customerId}
+                className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium transition-all flex items-center justify-center gap-2 text-sm shadow-lg shadow-gray-900/20"
+              >
+                <Save size={18} />
+                {submitting ? "Saving..." : "Complete Sale"}
+              </button>
             </div>
           </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center justify-between pt-2">
-          <Link
-            to="/dashboard/orders"
-            className="px-6 py-3 rounded-xl border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors text-sm"
-          >
-            Cancel
-          </Link>
-          <button
-            type="submit"
-            disabled={submitting || formData.items.length === 0 || !formData.customerId}
-            className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium transition-all flex items-center gap-2 text-sm shadow-lg shadow-gray-900/20"
-          >
-            <Save size={18} />
-            {submitting ? "Saving..." : "Complete Sale"}
-          </button>
         </div>
       </form>
 

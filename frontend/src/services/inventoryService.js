@@ -14,7 +14,14 @@ export const inventoryService = {
   },
 
   addInventory: async (inventoryData) => {
-    return await apiClient.post(API_ENDPOINTS.INVENTORY.ADD, inventoryData);
+    try {
+      return await apiClient.post(API_ENDPOINTS.INVENTORY.CREATE, inventoryData);
+    } catch (error) {
+      if (API_ENDPOINTS.INVENTORY.ADD !== API_ENDPOINTS.INVENTORY.CREATE) {
+        return await apiClient.post(API_ENDPOINTS.INVENTORY.ADD, inventoryData);
+      }
+      throw error;
+    }
   },
 
   updateInventory: async (id, inventoryData) => {

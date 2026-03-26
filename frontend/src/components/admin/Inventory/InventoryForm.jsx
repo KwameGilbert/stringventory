@@ -89,9 +89,9 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
   }, [formData.unitCost, formData.quantity]);
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 2,
     }).format(value);
   };
@@ -148,7 +148,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Product Selection Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-cyan-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-blue-50 to-cyan-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-blue-100">
                 <Package className="w-5 h-5 text-blue-600" />
@@ -194,7 +194,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
         {/* Supplier & Batch Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-emerald-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-emerald-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-100">
                 <Truck className="w-5 h-5 text-emerald-600" />
@@ -247,7 +247,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
         {/* Pricing & Quantity Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-teal-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-emerald-50 to-teal-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-100">
                 <DollarSign className="w-5 h-5 text-emerald-600" />
@@ -267,7 +267,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                   Unit Cost Price <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">GH₵</span>
                   <input
                     type="number"
                     name="unitCost"
@@ -301,7 +301,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
             </div>
 
             {/* Total Value Display */}
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl p-5 text-white">
+            <div className="bg-linear-to-r from-emerald-500 to-teal-500 rounded-xl p-5 text-white">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-emerald-100 text-sm font-medium">Total Stock Value</p>
@@ -320,7 +320,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
 
         {/* Dates Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-amber-50 to-orange-50">
+          <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-amber-50 to-orange-50">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-amber-100">
                 <Calendar className="w-5 h-5 text-amber-600" />
