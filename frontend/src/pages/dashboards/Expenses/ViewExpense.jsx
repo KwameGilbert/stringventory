@@ -26,7 +26,7 @@ export default function ViewExpense() {
         if (found) {
           setExpense({
             ...found,
-            category: found?.category || found?.categoryName || "Uncategorized",
+            category: found?.category?.name || found?.category || found?.categoryName || "Uncategorized",
             amount: Number(found?.amount ?? 0),
             supplier: found?.supplier || found?.vendor || "",
             isRecurring: Boolean(found?.isRecurring),

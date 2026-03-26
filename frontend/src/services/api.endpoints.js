@@ -77,7 +77,6 @@ export const API_ENDPOINTS = {
     CREATE: '/v1/customers',
     UPDATE: (id) => `/v1/customers/${id}`,
     DELETE: (id) => `/v1/customers/${id}`,
-    ORDERS: (id) => `/v1/customers/${id}/orders`,
   },
 
   // Orders
