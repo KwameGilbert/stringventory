@@ -125,7 +125,7 @@ const PurchasesTable = ({
                 <td className="px-6 py-3 text-right">
                   <div className="flex items-center justify-end gap-1">
                     {/* Approve Toggle */}
-                    {currentUserRole === 'ceo' && purchase.status === 'pending' && onApprove && (
+                    {currentUserRole === 'CEO' && purchase.status === 'pending' && onApprove && (
                       <button
                         onClick={() => onApprove(purchase.id)}
                         className="p-1.5 rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"

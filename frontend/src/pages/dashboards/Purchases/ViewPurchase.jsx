@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2, Trash2, Calendar, User, FileText, Package } from "lucide-react";
+import { ArrowLeft, Edit2, Trash2, Calendar, User, FileText, Package, CheckCircle } from "lucide-react";
 import purchaseService from "../../../services/purchaseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { useAuth } from "../../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 const extractPurchase = (response) => {
   const payload = response?.data || response || {};
@@ -43,6 +45,8 @@ const resolveCreatedBy = (purchase) => {
 export default function ViewPurchase() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isCEO = user?.role === 'CEO' || user?.normalizedRole === 'CEO';
   const [purchase, setPurchase] = useState(null);
   const [items, setItems] = useState([]);
 
@@ -82,6 +86,29 @@ export default function ViewPurchase() {
     } catch (error) {
       console.error("Failed to delete purchase", error);
       showError(error?.message || "Failed to delete purchase");
+    }
+  };
+
+  const handleApprove = async () => {
+    const result = await Swal.fire({
+      title: "Approve Purchase?",
+      text: "Are you sure you want to approve this purchase?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#059669",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, approve it",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await purchaseService.updatePurchase(id, { status: "approved" });
+        setPurchase((prev) => ({ ...prev, status: "approved" }));
+        showSuccess("Purchase approved successfully");
+      } catch (error) {
+        console.error("Failed to approve purchase", error);
+        showError(error?.message || "Failed to approve purchase");
+      }
     }
   };
 
@@ -151,6 +178,15 @@ export default function ViewPurchase() {
             </div>
 
             <div className="flex items-center gap-2">
+              {isCEO && purchase.status === "pending" && (
+                <button
+                  onClick={handleApprove}
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-medium text-sm"
+                >
+                  <CheckCircle size={16} />
+                  Approve
+                </button>
+              )}
               {purchase.status === "pending" && (
                 <Link
                   to={`/dashboard/purchases/${id}/edit`}
