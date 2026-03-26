@@ -59,6 +59,8 @@ export default function EditInventory() {
       await inventoryService.updateInventory(id, {
         productId: formData.productId,
         quantity: Number(formData.quantity),
+        unitCost: Number(formData.unitCost),
+        costPrice: Number(formData.unitCost),
         batchNumber: formData.batchNumber,
         expiryDate: formData.expiryDate || null,
         notes: formData.notes || `Supplier: ${formData.supplier || "N/A"}; UnitCost: ${formData.unitCost || 0}`,

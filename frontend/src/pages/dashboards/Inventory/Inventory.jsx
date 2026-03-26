@@ -199,10 +199,10 @@ export default function Inventory() {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
+      currency: "GHS",
+      minimumFractionDigits: 2,
     }).format(value);
   };
 

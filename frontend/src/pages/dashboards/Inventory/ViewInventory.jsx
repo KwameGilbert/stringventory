@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Edit2, Trash2, Package, Calendar, DollarSign, Hash, Truck, Clock, AlertTriangle } from "lucide-react";
 import inventoryService from "../../../services/inventoryService";
 import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
-import { confirmDelete, showError, showInfo, showSuccess } from "../../../utils/alerts";
+import { confirmDelete, showError, showInfo } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
 
 const extractList = (response, key) => {
@@ -85,15 +85,15 @@ export default function ViewInventory() {
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 2,
     }).format(value);
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("en-GB", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -154,7 +154,7 @@ export default function ViewInventory() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* Product Image/Icon */}
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-xl bg-linear-to-br from-blue-50 to-cyan-50 border border-blue-100 flex items-center justify-center">
                 <Package className="w-8 h-8 text-blue-500" />
               </div>
               <div>
@@ -226,7 +226,7 @@ export default function ViewInventory() {
                 </div>
 
                 {/* Total Value */}
-                <div className="col-span-2 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+                <div className="col-span-2 bg-linear-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-emerald-600 font-medium">Total Stock Value</p>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, Trash2, Image, ChevronLeft, ChevronRight, Package, Sliders } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -12,14 +12,19 @@ const InventoryTable = ({ inventory, onDelete, onAdjust }) => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedInventory = inventory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
+  useEffect(() => {
+    const maxPage = Math.max(1, Math.ceil(inventory.length / ITEMS_PER_PAGE));
+    setCurrentPage((prev) => Math.min(prev, maxPage));
+  }, [inventory.length]);
+
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 2,
     }).format(value);
   };

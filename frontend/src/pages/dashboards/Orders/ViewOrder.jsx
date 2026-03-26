@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { 
   ArrowLeft, Printer, Mail, User, Phone, AtSign, Calendar, Hash, 
   CreditCard, Clock, CheckCircle, XCircle, RotateCcw, Package, 
@@ -42,6 +42,8 @@ const statusConfig = {
 export default function ViewOrder() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const hasAutoPrintedRef = useRef(false);
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -136,6 +138,24 @@ export default function ViewOrder() {
 
   const allItemsPicked = items.length > 0 && items.every(item => item.pickedQuantity === item.quantity);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  useEffect(() => {
+    if (loading || !order) return;
+    if (!location.state?.autoPrint) return;
+    if (hasAutoPrintedRef.current) return;
+
+    hasAutoPrintedRef.current = true;
+    const timer = window.setTimeout(() => {
+      window.print();
+      navigate(location.pathname, { replace: true, state: null });
+    }, 150);
+
+    return () => window.clearTimeout(timer);
+  }, [loading, order, location.pathname, location.state, navigate]);
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-GH", {
       style: "currency",
@@ -181,6 +201,29 @@ export default function ViewOrder() {
 
   return (
     <div className="max-w-5xl mx-auto pb-8 animate-fade-in">
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden !important;
+          }
+
+          .print-payment-summary,
+          .print-payment-summary * {
+            visibility: visible !important;
+          }
+
+          .print-payment-summary {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            padding: 24px;
+            background: #fff;
+            color: #111827;
+          }
+        }
+      `}</style>
+
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/orders")}
@@ -234,7 +277,10 @@ export default function ViewOrder() {
                 <CheckCircle size={16} />
                 {allItemsPicked ? 'All Picked' : 'Pick All'}
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors font-medium text-sm">
+              <button
+                onClick={handlePrint}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors font-medium text-sm"
+              >
                 <Printer size={16} />
                 Print
               </button>
@@ -441,6 +487,48 @@ export default function ViewOrder() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="hidden print:block print-payment-summary">
+        <div className="border border-gray-200 rounded-lg p-5">
+          <h2 className="text-xl font-bold mb-1">Payment Summary</h2>
+          <p className="text-sm text-gray-600 mb-5">Receipt for sale {order.id}</p>
+
+          <div className="space-y-2 text-sm mb-4">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Date</span>
+              <span className="font-medium text-gray-900">{formatDate(order.orderDate)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Payment Method</span>
+              <span className="font-medium text-gray-900 capitalize">{order.paymentMethod.replace('_', ' ')}</span>
+            </div>
+          </div>
+
+          <div className="h-px bg-gray-200 mb-4" />
+
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Subtotal</span>
+              <span className="font-medium text-gray-900">{formatCurrency(order.subtotal)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Discount</span>
+              <span className="font-medium text-gray-900">-{formatCurrency(order.discountAmount)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Tax</span>
+              <span className="font-medium text-gray-900">{formatCurrency(order.taxAmount || 0)}</span>
+            </div>
+          </div>
+
+          <div className="h-px bg-gray-200 my-4" />
+
+          <div className="flex justify-between text-base font-bold">
+            <span>Total Paid</span>
+            <span>{formatCurrency(order.total)}</span>
           </div>
         </div>
       </div>
