@@ -18,7 +18,14 @@ const statusConfig = {
   },
   fulfilled: {
     label: "Fulfilled",
-    bg: "bg-emerald-100",
+    bg: "bg-emerald-50",
+    text: "text-emerald-700",
+    border: "border-emerald-200",
+    icon: CheckCircle,
+  },
+  completed: {
+    label: "Completed",
+    bg: "bg-emerald-50",
     text: "text-emerald-700",
     border: "border-emerald-200",
     icon: CheckCircle,
@@ -47,6 +54,7 @@ export default function ViewOrder() {
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   const extractOrder = (response) => {
     const payload = response?.data || response || {};
@@ -88,61 +96,98 @@ export default function ViewOrder() {
       paymentMethod,
       customer,
       items: Array.isArray(rawOrder?.items)
-        ? rawOrder.items.map((item) => ({
-            ...item,
-            // Product name is nested under item.product.name
-            productName: item?.product?.name || item?.productName || item?.name || "Unknown Product",
-            quantity: Number(item?.quantity ?? 0),
-            // API returns sellingPrice as the unit price
-            unitPrice: Number(item?.sellingPrice ?? item?.unitPrice ?? item?.price ?? 0),
-            // API returns totalPrice as the line total
-            subtotal: Number(item?.totalPrice ?? item?.subtotal ?? item?.total ?? 0),
-            pickedQuantity: Number(item?.fulfilledQuantity ?? item?.pickedQuantity ?? 0),
-          }))
+        ? rawOrder.items.map((item) => {
+            const quantity = Number(item?.quantity ?? 0);
+            const fulfilledQuantity = Number(item?.fulfilledQuantity ?? 0);
+            return {
+              ...item,
+              // Product name is nested under item.product.name
+              productName: item?.product?.name || item?.productName || item?.name || "Unknown Product",
+              quantity,
+              fulfilledQuantity,
+              remainingQuantity: Math.max(0, quantity - fulfilledQuantity),
+              // API returns sellingPrice as the unit price
+              unitPrice: Number(item?.sellingPrice ?? item?.unitPrice ?? item?.price ?? 0),
+              // API returns totalPrice as the line total
+              subtotal: Number(item?.totalPrice ?? item?.subtotal ?? item?.total ?? 0),
+              // pickedQuantity is for the CURRENT pickup session
+              pickedQuantity: 0,
+            };
+          })
         : [],
     };
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await orderService.getOrderById(id);
-        const found = normalizeOrder(extractOrder(response));
-        if (!found) {
-          showError("Order not found");
-          navigate("/dashboard/orders");
-          return;
-        }
-
-        setOrder(found);
-        setItems(found.items || []);
-      } catch (error) {
-        console.error("Error fetching order", error);
-        showError(error?.message || "Failed to fetch sale details");
+  const loadData = async (showPulse = true) => {
+    if (showPulse) setLoading(true);
+    try {
+      const response = await orderService.getOrderById(id);
+      const found = normalizeOrder(extractOrder(response));
+      if (!found) {
+        showError("Order not found");
         navigate("/dashboard/orders");
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
-    fetchData();
+
+      setOrder(found);
+      setItems(found.items || []);
+    } catch (error) {
+      console.error("Error fetching order", error);
+      showError(error?.message || "Failed to fetch sale details");
+      navigate("/dashboard/orders");
+    } finally {
+      if (showPulse) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
   }, [id, navigate]);
 
   const handleUpdatePicked = (index, change) => {
     setItems(prevItems => {
       const newItems = [...prevItems];
       const item = newItems[index];
-      const newPicked = Math.max(0, Math.min(item.quantity, (item.pickedQuantity || 0) + change));
+      // Only allow picking up to the remaining quantity
+      const newPicked = Math.max(0, Math.min(item.remainingQuantity, (item.pickedQuantity || 0) + change));
       
       newItems[index] = { ...item, pickedQuantity: newPicked };
       return newItems;
     });
   };
 
-  const handlePickAll = () => {
-    setItems(prevItems => prevItems.map(item => ({
-      ...item,
-      pickedQuantity: item.quantity
-    })));
+  const handlePickAll = async () => {
+    const unfulfilledItems = items.filter(item => item.remainingQuantity > 0);
+    if (unfulfilledItems.length === 0) return;
+    
+    setIsSaving(true);
+    try {
+      // 1. Prepare fulfillment payload for remaining quantities
+      const fulfillmentPayload = unfulfilledItems.map(item => ({
+        orderItemId: item.id,
+        fulfilledQuantity: Number(item.remainingQuantity),
+      }));
+
+      // 2. Persist to API
+      await orderService.fulfillOrder(id, { items: fulfillmentPayload });
+      
+      // 3. Update local state for snappy UI
+      setItems(prevItems => prevItems.map(item => ({
+        ...item,
+        // Since we fulfilled everything remaining, pickedQuantity resets to 0 after refresh
+        // but for now we can set it to remainingQuantity
+        pickedQuantity: item.remainingQuantity
+      })));
+
+      showSuccess("All remaining items fulfilled successfully", "Full Pickup Saved");
+      // Refresh order to update status and quantities
+      loadData(false);
+    } catch (error) {
+      console.error("Failed full fulfillment", error);
+      showError(error?.message || "Failed to fulfill items");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSave = async () => {
@@ -153,6 +198,7 @@ export default function ViewOrder() {
       return;
     }
 
+    setIsSaving(true);
     try {
       await orderService.fulfillOrder(id, {
         items: pickedItems.map(item => ({
@@ -161,13 +207,17 @@ export default function ViewOrder() {
         })),
       });
       showSuccess(`Pickup saved for ${pickedItems.length} item(s).`, "Pickup Saved");
+      // Refresh order to update status
+      loadData(false);
     } catch (error) {
       console.error("Failed to save pickup", error);
       showError(error?.message || "Failed to save pickup");
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const allItemsPicked = items.length > 0 && items.every(item => item.pickedQuantity === item.quantity);
+  const allItemsPicked = items.length > 0 && items.every(item => (item.fulfilledQuantity + (item.pickedQuantity || 0)) >= item.quantity);
 
   const handlePrint = () => {
     window.print();
@@ -291,22 +341,23 @@ export default function ViewOrder() {
             <div className="flex items-center gap-2">
               <button 
                 onClick={handleSave}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors font-medium text-sm shadow-sm"
+                disabled={isSaving}
+                className={`flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors font-medium text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                <Save size={16} />
-                Save Pickup
+                {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
+                {isSaving ? "Saving..." : "Save Pickup"}
               </button>
               <button 
                 onClick={handlePickAll}
-                disabled={allItemsPicked}
+                disabled={isSaving || allItemsPicked}
                 className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors font-medium text-sm ${
                   allItemsPicked 
                     ? 'bg-emerald-50 border-emerald-200 text-emerald-600' 
                     : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                }`}
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
-                <CheckCircle size={16} />
-                {allItemsPicked ? 'All Picked' : 'Pick All'}
+                {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <CheckCircle size={16} />}
+                {isSaving ? "Processing..." : (allItemsPicked ? 'All Picked' : 'Pick All')}
               </button>
               <button
                 onClick={handlePrint}
@@ -347,7 +398,8 @@ export default function ViewOrder() {
             <div className="divide-y divide-gray-50">
               {items.map((item, index) => {
                 const picked = item.pickedQuantity || 0;
-                const isFullyPicked = picked === item.quantity;
+                const totalFulfilled = item.fulfilledQuantity + picked;
+                const isFullyPicked = totalFulfilled >= item.quantity;
                 
                 return (
                   <div key={index} className={`px-6 py-4 flex items-center gap-4 transition-colors ${isFullyPicked ? 'bg-emerald-50/50' : ''}`}>
@@ -362,31 +414,41 @@ export default function ViewOrder() {
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{item.productName || "Product"}</p>
                       <div className="flex flex-col gap-1 mt-1">
-                        <div className="flex items-center gap-3">
-                            <p className="text-sm text-gray-400">Ordered: <span className="font-medium text-gray-700">{item.quantity}</span></p>
+                        <div className="flex items-center gap-4">
+                            <p className="text-xs text-gray-400">Ordered: <span className="font-medium text-gray-600">{item.quantity}</span></p>
+                            {item.fulfilledQuantity > 0 && (
+                              <p className="text-xs text-emerald-600 font-medium">Fulfilled: {item.fulfilledQuantity}</p>
+                            )}
                             <div className="flex items-center gap-1">
                                 <button 
                                 onClick={() => handleUpdatePicked(index, -1)}
-                                disabled={picked <= 0}
-                                className="w-5 h-5 flex items-center justify-center rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-500 bg-white"
+                                disabled={isSaving || picked <= 0}
+                                className="w-5 h-5 flex items-center justify-center rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-500 bg-white shadow-xs"
                                 >
                                 -
                                 </button>
                                 <button 
                                 onClick={() => handleUpdatePicked(index, 1)}
-                                disabled={picked >= item.quantity}
-                                className="w-5 h-5 flex items-center justify-center rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-500 bg-white"
+                                disabled={isSaving || picked >= item.remainingQuantity}
+                                className="w-5 h-5 flex items-center justify-center rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-500 bg-white shadow-xs"
                                 >
                                 +
                                 </button>
                             </div>
                         </div>
-                        <p className="text-sm text-gray-500">Picked: <span className={`font-semibold ${isFullyPicked ? 'text-emerald-600' : 'text-gray-900'}`}>{picked}</span></p>
+                        <div className="flex items-center gap-3">
+                          <p className="text-sm font-medium text-gray-500">
+                            Pick Now: <span className={`font-bold ${picked > 0 ? 'text-blue-600' : 'text-gray-400'}`}>{picked}</span>
+                          </p>
+                          {item.remainingQuantity > 0 && picked === 0 && (
+                            <span className="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 font-bold uppercase">Pending {item.remainingQuantity}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-gray-900">{formatCurrency(item.subtotal)}</p>
-                      {isFullyPicked && <span className="text-xs text-emerald-600 font-medium">Ready</span>}
+                      {isFullyPicked && <span className="text-xs text-emerald-600 font-bold uppercase tracking-tight">Fully Fulfilled</span>}
                     </div>
                   </div>
                 );
@@ -429,7 +491,7 @@ export default function ViewOrder() {
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold">
+                <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
                   {order.customer.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>

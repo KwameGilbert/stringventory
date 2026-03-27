@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }) => {
       const authUser = payload?.user || payload || {};
       const role = authUser?.role || "";
       const normalizedRole = normalizeRole(role);
-      const firstName = authUser?.firstName || "";
-      const lastName = authUser?.lastName || "";
+      const firstName = authUser?.firstName || authUser?.first_name || "";
+      const lastName = authUser?.lastName || authUser?.last_name || "";
 
       const userData = {
         id: authUser?.id,

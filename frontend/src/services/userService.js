@@ -46,6 +46,10 @@ export const userService = {
   resendVerificationEmail: async (userId) => {
     return await apiClient.post(API_ENDPOINTS.USERS.RESEND_VERIFICATION(userId));
   },
+
+  resetPassword: async (userId, passwordData) => {
+    return await apiClient.post(API_ENDPOINTS.USERS.RESET_PASSWORD(userId), passwordData);
+  },
 };
 
 export default userService;
