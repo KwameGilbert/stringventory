@@ -50,6 +50,7 @@ export const getRoleMenuItems = (roleValue) => {
     'expense-categories',
     'expenses',
     'refunds',
+    'transactions',
     'reports',
     'users',
     'messaging',

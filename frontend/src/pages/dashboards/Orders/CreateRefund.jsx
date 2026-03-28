@@ -13,6 +13,7 @@ export default function CreateRefund() {
   const [loading, setLoading] = useState(true);
   const [refundReason, setRefundReason] = useState("");
   const [refundItems, setRefundItems] = useState({}); // { itemId: quantity }
+  const [restockItems, setRestockItems] = useState({}); // { itemId: boolean }
   const [submitting, setSubmitting] = useState(false);
 
   const extractOrder = (response) => {
@@ -59,12 +60,15 @@ export default function CreateRefund() {
           const orderItems = found.items || [];
           setItems(orderItems);
           
-          // Initialize refund items with 0
+          // Initialize refund items with 0 and restock with true
           const initialRefund = {};
+          const initialRestock = {};
           orderItems.forEach((item) => {
              initialRefund[item.id] = 0;
+             initialRestock[item.id] = true;
           });
           setRefundItems(initialRefund);
+          setRestockItems(initialRestock);
         }
       } catch (error) {
         console.error("Error fetching order details", error);
@@ -81,6 +85,13 @@ export default function CreateRefund() {
     setRefundItems(prev => ({
       ...prev,
       [itemId]: qty
+    }));
+  };
+  
+  const handleRestockToggle = (itemId) => {
+    setRestockItems(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
     }));
   };
 
@@ -115,7 +126,7 @@ export default function CreateRefund() {
         .map((item) => ({
           orderItemId: item.id,
           quantity: Number(refundItems[item.id]),
-          restock: true, // Default to true as per new requirements
+          restock: !!restockItems[item.id],
         }));
 
       await refundService.createRefund({
@@ -221,6 +232,22 @@ export default function CreateRefund() {
                                         onChange={(e) => handleQuantityChange(item.id, e.target.value, item.quantity)}
                                         className="w-20 px-2 py-1 text-center border-gray-300 rounded-md focus:ring-rose-500 focus:border-rose-500 sm:text-sm"
                                     />
+                                </div>
+                                <div className="text-right flex flex-col items-center">
+                                    <label className="block text-xs text-gray-500 mb-1">Restock</label>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRestockToggle(item.id)}
+                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 ${
+                                            restockItems[item.id] ? 'bg-emerald-500' : 'bg-gray-200'
+                                        }`}
+                                    >
+                                        <span
+                                            className={`${
+                                                restockItems[item.id] ? 'translate-x-6' : 'translate-x-1'
+                                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                                        />
+                                    </button>
                                 </div>
                                 <div className="text-right min-w-20">
                                     <p className="text-xs text-gray-500 mb-1">Refund</p>

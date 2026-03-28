@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, RefreshCw, CheckCircle, XCircle, AlertCircle, Package, DollarSign, Calendar, Hash, User } from "lucide-react";
 import refundService from "../../../services/refundService";
+import orderService from "../../../services/orderService";
 import { confirmAction, showError, showSuccess } from "../../../utils/alerts";
 
 const statusConfig = {
@@ -29,6 +30,7 @@ export default function ViewRefund() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [refund, setRefund] = useState(null);
+  const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -36,7 +38,18 @@ export default function ViewRefund() {
     setLoading(true);
     try {
       const response = await refundService.getRefundById(id);
-      setRefund(response?.data || response);
+      const refundData = response?.data || response;
+      setRefund(refundData);
+
+      // Fetch the order to get item names
+      if (refundData?.orderId) {
+        try {
+          const orderRes = await orderService.getOrderById(refundData.orderId);
+          setOrder(orderRes?.data || orderRes);
+        } catch (err) {
+          console.error("Error fetching order for refund coverage", err);
+        }
+      }
     } catch (error) {
       console.error("Error fetching refund", error);
       showError(error?.message || "Failed to load refund details");
@@ -127,7 +140,10 @@ export default function ViewRefund() {
                 {status.label}
              </span>
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Submitted on {formatDate(refund.createdAt)}</p>
+          <p className="text-gray-500 text-sm mt-1">
+            Submitted on {formatDate(refund.createdAt)} for Order{" "}
+            <span className="font-semibold text-gray-900">{refund.order?.orderNumber || `#${refund.orderId}`}</span>
+          </p>
         </div>
         
         {refund.refundStatus === 'pending' && (
@@ -167,7 +183,13 @@ export default function ViewRefund() {
                     {refund.items && refund.items.map((item, idx) => (
                       <div key={idx} className="p-4 flex items-center justify-between">
                             <div>
-                                <p className="font-medium text-gray-900">{item.productName || `Item #${item.orderItemId}`}</p>
+                                <p className="font-medium text-gray-900">
+                                    {(() => {
+                                        const orderItem = order?.items?.find(oi => String(oi.id) === String(item.orderItemId));
+                                        const productName = item.productName || orderItem?.product?.name || orderItem?.name;
+                                        return productName ? `${productName} (Item #${item.orderItemId})` : `Item #${item.orderItemId}`;
+                                    })()}
+                                </p>
                                 <p className="text-sm text-gray-500">
                                     Quantity: <span className="font-medium text-gray-900">{item.quantity}</span>
                                 </p>
@@ -219,13 +241,41 @@ export default function ViewRefund() {
                             <Hash className="w-4 h-4 text-gray-500" />
                         </div>
                         <div>
-                            <p className="text-xs text-gray-400">Order ID</p>
+                            <p className="text-xs text-gray-400">Order Number</p>
                             <Link to={`/dashboard/orders/${refund.orderId}`} className="font-medium text-blue-600 hover:underline">
-                                #{refund.orderId}
+                                {refund.order?.orderNumber || `#${refund.orderId}`}
                             </Link>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    {/* Customer Info Card */}
+                    <div className="pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="p-2 rounded-lg bg-blue-50">
+                                <User className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-gray-900">Customer Details</p>
+                            </div>
+                        </div>
+                        <div className="space-y-3">
+                            <div>
+                                <p className="text-xs text-gray-400">Name</p>
+                                <p className="text-sm font-medium text-gray-900">
+                                    {refund.customer?.firstName} {refund.customer?.lastName}
+                                    {refund.customer?.businessName && ` (${refund.businessName || refund.customer?.businessName})`}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-400">Email</p>
+                                <p className="text-sm text-gray-600">{refund.customer?.email || "N/A"}</p>
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-400">Phone</p>
+                                <p className="text-sm text-gray-600">{refund.customer?.phone || "N/A"}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
                         <div className="p-2 rounded-lg bg-gray-100">
                             <Calendar className="w-4 h-4 text-gray-500" />
                         </div>
