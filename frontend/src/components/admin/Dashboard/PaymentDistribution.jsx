@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CreditCard } from "lucide-react";
+import { CreditCard, RefreshCw } from "lucide-react";
 import {
   PieChart,
   Pie,
@@ -7,7 +7,8 @@ import {
   ResponsiveContainer,
   Tooltip
 } from "recharts";
-import orderService from "../../../services/orderService";
+import analyticsService from "../../../services/analyticsService";
+import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
 const PaymentDistribution = ({ dateRange }) => {
   const [data, setData] = useState([]);
@@ -15,37 +16,33 @@ const PaymentDistribution = ({ dateRange }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await orderService.getOrders({ limit: 200 });
+        const params = getDashboardDateParams(dateRange);
+        const response = await analyticsService.getDashboardOverview(params);
         const payload = response?.data || response || {};
-        const orders = Array.isArray(payload)
-          ? payload
-          : Array.isArray(payload.orders)
-            ? payload.orders
-            : Array.isArray(payload.data)
-              ? payload.data
-              : [];
+        const dashboardData = payload?.data || payload;
+        
+        // Match the official response structure: data.charts.revenueByPaymentMethod
+        const distribution = dashboardData?.charts?.revenueByPaymentMethod || [];
 
-        const paymentTotals = orders.reduce((accumulator, order) => {
-          const method = String(order?.paymentMethod || "other").replace(/_/g, " ").trim();
-          const key = method || "other";
-          accumulator[key] = (accumulator[key] || 0) + Number(order?.total || 0);
-          return accumulator;
-        }, {});
+        const normalizedData = distribution.map(item => {
+          const rawMethod = item.paymentMethod || "Unknown";
+          const name = String(rawMethod).replace(/_/g, " ").trim();
+          return {
+            name: name.charAt(0).toUpperCase() + name.slice(1),
+            value: Math.abs(Number(item.revenue || 0)), // Ensure absolute value for PieChart
+          };
+        });
 
-        const normalizedData = Object.entries(paymentTotals).map(([name, value]) => ({
-          name: name.charAt(0).toUpperCase() + name.slice(1),
-          value,
-        }));
-
-        const colors = ["#10b981", "#6366f1", "#f59e0b", "#ec4899"];
+        const colors = ["#10b981", "#6366f1", "#f59e0b", "#ec4899", "#8b5cf6", "#3b82f6"];
         const enhancedData = normalizedData.map((item, index) => ({
           ...item,
           color: colors[index % colors.length]
         }));
         setData(enhancedData);
       } catch (err) {
-        console.error("Error fetching data", err);
+        console.error("Error fetching payment distribution analytics", err);
         setData([]);
       } finally {
         setLoading(false);
@@ -57,18 +54,29 @@ const PaymentDistribution = ({ dateRange }) => {
   const totalValue = data.reduce((acc, item) => acc + item.value, 0);
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 0,
     }).format(value);
   };
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 h-full">
-        <div className="h-6 bg-gray-200 rounded w-48 mb-4 animate-pulse"></div>
-        <div className="h-48 bg-gray-100 rounded-full mx-auto w-48 animate-pulse"></div>
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 h-full flex items-center justify-center">
+        <RefreshCw className="w-8 h-8 text-gray-200 animate-spin" />
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 h-full flex flex-col items-center justify-center text-center">
+         <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+            <CreditCard className="w-6 h-6 text-gray-300" />
+         </div>
+         <p className="text-sm font-medium text-gray-900 mb-1">No transaction data</p>
+         <p className="text-xs text-gray-400">Payment distribution will appear as sales are recorded.</p>
       </div>
     );
   }
@@ -77,7 +85,7 @@ const PaymentDistribution = ({ dateRange }) => {
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 h-full flex flex-col">
       <div className="flex items-center gap-2 mb-4">
         <CreditCard className="w-5 h-5 text-gray-500" />
-        <h3 className="font-semibold text-gray-900">Revenue by Payment</h3>
+        <h3 className="font-semibold text-gray-900">Revenue by Payment Method</h3>
       </div>
 
       <div className="flex-1 relative w-full" style={{ minHeight: '240px' }}>
@@ -111,7 +119,7 @@ const PaymentDistribution = ({ dateRange }) => {
 
         {/* Center Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-gray-400 text-xs">Total</span>
+          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total</span>
           <span className="text-xl font-bold text-gray-900">{formatCurrency(totalValue)}</span>
         </div>
       </div>
@@ -121,13 +129,13 @@ const PaymentDistribution = ({ dateRange }) => {
         {data.map((entry, index) => (
           <div 
             key={index} 
-            className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50"
+            className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-gray-50/50 hover:bg-gray-100 transition-colors group"
           >
             <span 
-              className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
+              className="w-2.5 h-2.5 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform" 
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-xs font-medium text-gray-600 truncate">
+            <span className="text-xs font-semibold text-gray-600 truncate">
               {entry.name}
             </span>
           </div>
