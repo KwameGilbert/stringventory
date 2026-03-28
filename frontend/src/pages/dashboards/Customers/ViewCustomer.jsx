@@ -12,16 +12,9 @@ const extractCustomer = (response) => {
   return payload?.customer || payload?.data?.customer || payload?.data || payload;
 };
 
-const extractOrders = (response) => {
-  const payload = response?.data || response || {};
-
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload.orders)) return payload.orders;
-  if (Array.isArray(payload.items)) return payload.items;
-  if (Array.isArray(payload.results)) return payload.results;
-  if (Array.isArray(payload.data)) return payload.data;
-  if (Array.isArray(payload.data?.orders)) return payload.data.orders;
-
+const extractOrders = (customerData) => {
+  if (Array.isArray(customerData?.orders)) return customerData.orders;
+  if (Array.isArray(customerData?.data?.orders)) return customerData.data.orders;
   return [];
 };
 
@@ -34,11 +27,7 @@ export default function ViewCustomer() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [customerRes, ordersRes] = await Promise.all([
-          customerService.getCustomerById(id),
-          customerService.getCustomerOrders(id),
-        ]);
-
+        const customerRes = await customerService.getCustomerById(id);
         const found = extractCustomer(customerRes);
         if (found) {
           setCustomer({
@@ -48,7 +37,7 @@ export default function ViewCustomer() {
             totalOrders: Number(found.totalOrders ?? 0),
             totalSpent: Number(found.totalSpent ?? 0),
           });
-          setOrders(extractOrders(ordersRes));
+          setOrders(extractOrders(found));
         }
       } catch (error) {
         console.error("Error fetching customer", error);

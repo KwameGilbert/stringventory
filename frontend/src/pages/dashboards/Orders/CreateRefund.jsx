@@ -22,17 +22,28 @@ export default function CreateRefund() {
   const normalizeOrder = (rawOrder) => {
     if (!rawOrder) return null;
 
+    // Price and Total fields can vary depending on the API's return structure
+    // We prioritize 'discountedTotalPrice' for the overall order total
+    const totalAmount = Number(rawOrder?.discountedTotalPrice ?? rawOrder?.total ?? rawOrder?.totalAmount ?? 0);
+
     return {
       ...rawOrder,
-      total: Number(rawOrder?.total ?? 0),
+      total: totalAmount,
       items: Array.isArray(rawOrder?.items)
-        ? rawOrder.items.map((item) => ({
-            ...item,
-            id: item?.id || item?.orderItemId || item?.productId,
-            productName: item?.productName || "Product",
-            quantity: Number(item?.quantity ?? 0),
-            unitPrice: Number(item?.unitPrice ?? 0),
-          }))
+        ? rawOrder.items.map((item) => {
+            const quantity = Number(item?.quantity ?? 0);
+            // API returns 'sellingPrice' for the price of the item at the time of sale
+            const unitPrice = Number(item?.sellingPrice ?? item?.unitPrice ?? item?.price ?? 0);
+            
+            return {
+              ...item,
+              // API uses nested 'product.name' or 'productName'
+              id: item?.id || item?.orderItemId || item?.productId,
+              productName: item?.product?.name || item?.productName || item?.name || "Product",
+              quantity,
+              unitPrice,
+            };
+          })
         : [],
     };
   };

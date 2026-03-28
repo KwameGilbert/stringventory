@@ -26,12 +26,13 @@ export const API_ENDPOINTS = {
     UPDATE: (id) => `/v1/users/${id}`,
     DELETE: (id) => `/v1/users/${id}`,
     RESEND_VERIFICATION: (id) => `/v1/users/${id}/resend-verification`,
+    RESET_PASSWORD: (id) => `/v1/users/${id}/reset-password`,
   },
 
   // Roles
   ROLES: {
-    LIST: '/roles',
-    GET: (id) => `/roles/${id}`,
+    LIST: '/v1/roles',
+    GET: (id) => `/v1/roles/${id}`,
   },
 
   // Products
@@ -77,7 +78,6 @@ export const API_ENDPOINTS = {
     CREATE: '/v1/customers',
     UPDATE: (id) => `/v1/customers/${id}`,
     DELETE: (id) => `/v1/customers/${id}`,
-    ORDERS: (id) => `/v1/customers/${id}/orders`,
   },
 
   // Orders
@@ -87,7 +87,8 @@ export const API_ENDPOINTS = {
     CREATE: '/v1/orders',
     UPDATE: (id) => `/v1/orders/${id}`,
     DELETE: (id) => `/v1/orders/${id}`,
-    CREATE_REFUND: (id) => `/v1/orders/${id}/refund`,
+    CREATE_REFUND: (id) => `/v1/orders/${id}/refunds`,
+    FULFILL: (id) => `/v1/orders/${id}/fulfill`,
   },
 
   // Suppliers
@@ -106,6 +107,7 @@ export const API_ENDPOINTS = {
     CREATE: '/v1/purchases',
     UPDATE: (id) => `/v1/purchases/${id}`,
     DELETE: (id) => `/v1/purchases/${id}`,
+    APPROVE: (id) => `/v1/purchases/${id}/approve`,
   },
 
   // Expenses

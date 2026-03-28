@@ -46,6 +46,10 @@ export const orderService = {
   createRefund: async (orderId, refundData) => {
     return await apiClient.post(API_ENDPOINTS.ORDERS.CREATE_REFUND(orderId), refundData);
   },
+
+  fulfillOrder: async (orderId, fulfillmentData) => {
+    return await apiClient.post(API_ENDPOINTS.ORDERS.FULFILL(orderId), fulfillmentData);
+  },
 };
 
 export default orderService;

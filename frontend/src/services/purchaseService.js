@@ -24,6 +24,10 @@ export const purchaseService = {
   deletePurchase: async (purchaseId) => {
     return await apiClient.delete(API_ENDPOINTS.PURCHASES.DELETE(purchaseId));
   },
+
+  approvePurchase: async (purchaseId) => {
+    return await apiClient.post(API_ENDPOINTS.PURCHASES.APPROVE(purchaseId));
+  },
 };
 
 export default purchaseService;

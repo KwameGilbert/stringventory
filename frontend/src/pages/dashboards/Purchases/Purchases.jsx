@@ -33,13 +33,30 @@ const extractPagination = (response) => {
 };
 
 const resolveCreatedBy = (purchase) => {
-  if (purchase?.createdBy) return purchase.createdBy;
+  // 1. Try custom attributes (camelCase or snake_case)
+  const createdBy = purchase?.createdBy || purchase?.created_by || "";
+  if (createdBy && String(createdBy).toLowerCase() !== "system") return createdBy;
 
-  const createdByName = purchase?.createdByName || purchase?.creator?.name || purchase?.createdByUser?.name || "";
-  const createdByRole = purchase?.createdByRole || purchase?.creator?.role || purchase?.createdByUser?.role || "";
+  const createdByName = purchase?.createdByName || purchase?.created_by_name || purchase?.user_name || "";
+  const createdByRole = purchase?.createdByRole || purchase?.created_by_role || purchase?.user_role || "";
 
-  if (createdByRole && createdByName) return `${createdByRole} - ${createdByName}`;
-  return createdByName || "System";
+  // 2. Try nested relation objects
+  const creatorObj = purchase?.user || purchase?.creator || purchase?.createdByUser || purchase?.created_by_user || (typeof purchase?.created_by === 'object' ? purchase?.created_by : {});
+  const firstName = creatorObj?.firstName || creatorObj?.first_name || "";
+  const lastName = creatorObj?.lastName || creatorObj?.last_name || "";
+  const name = creatorObj?.name || (firstName ? `${firstName} ${lastName}`.trim() : "");
+  const role = creatorObj?.role || "";
+
+  // 3. Final merge
+  const finalName = createdByName || name || "";
+  const finalRole = createdByRole || role || "";
+
+  if (finalRole && finalName) {
+    const roleLabel = String(finalRole).charAt(0).toUpperCase() + String(finalRole).slice(1).toLowerCase();
+    return `${roleLabel} - ${finalName}`;
+  }
+
+  return finalName || "System";
 };
 
 const normalizePurchase = (purchase) => ({
@@ -134,7 +151,7 @@ export default function Purchases() {
 
     if (result.isConfirmed) {
       try {
-        await purchaseService.updatePurchase(id, { status: "approved" });
+        await purchaseService.approvePurchase(id);
         setPurchases((prev) =>
           prev.map((p) =>
             String(p.id) === String(id) ? { ...p, status: "approved" } : p

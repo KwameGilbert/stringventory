@@ -71,7 +71,8 @@ export default function Products() {
           sku: product.sku || product.code || "",
           costPrice: Number(product.costPrice ?? product.cost ?? 0),
           sellingPrice: Number(product.sellingPrice ?? product.price ?? 0),
-          currentStock: Number(product.currentStock ?? product.quantity ?? 0),
+          currentStock: Number(product.inventory?.quantity ?? product.currentStock ?? product.quantity ?? 0),
+          inventoryStatus: product.inventory?.status || null,
           reorderThreshold: Number(product.reorderThreshold ?? product.reorderLevel ?? 0),
           category:
             toDisplayText(product.category, "") ||

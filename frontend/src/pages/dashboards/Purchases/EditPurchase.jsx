@@ -48,6 +48,7 @@ export default function EditPurchase() {
     supplierId: "",
     purchaseDate: "",
     notes: "",
+    batchNumber: "",
     status: "pending"
   });
 
@@ -73,6 +74,7 @@ export default function EditPurchase() {
             supplierId: purchase.supplierId,
             purchaseDate: toDateValue(purchase.purchaseDate || purchase.date || purchase.createdAt),
             notes: purchase.notes || "",
+            batchNumber: purchase.batchNumber || "",
             status: String(purchase.status || "pending").toLowerCase(),
           });
 
@@ -213,6 +215,19 @@ export default function EditPurchase() {
                 onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Batch Number
+              </label>
+              <input
+                type="text"
+                value={formData.batchNumber}
+                onChange={(e) => setFormData({ ...formData, batchNumber: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                placeholder="e.g. BATCH-001"
               />
             </div>
 

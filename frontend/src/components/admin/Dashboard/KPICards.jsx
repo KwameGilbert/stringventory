@@ -6,12 +6,17 @@ import {
   ShoppingCart,
   Package,
   AlertTriangle,
+  Clock,
 } from "lucide-react";
 
 import analyticsService from "../../../services/analyticsService";
+import { productService } from "../../../services/productService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
+import { useAuth } from "../../../contexts/AuthContext";
+import { normalizeRole, ROLES } from "../../../utils/accessControl";
 
 const KPICards = ({ dateRange }) => {
+  const { user } = useAuth();
   const [kpis, setKpis] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,10 +24,45 @@ const KPICards = ({ dateRange }) => {
     const fetchKPIs = async () => {
       try {
         const params = getDashboardDateParams(dateRange);
-        const response = await analyticsService.getDashboardOverview(params);
-        const payload = response?.data || response || {};
-        const dashboardData = payload?.data || payload;
-        const metrics = dashboardData?.metrics || {};
+        
+        // Fetch dashboard metrics and expiring products count independently
+        // mapping both to null or empty objects on failure to allow the rest to work
+        let metrics = {};
+        let expiringCount = 0;
+
+        try {
+          const dashboardRes = await analyticsService.getDashboardOverview(params);
+          const dashboardPayload = dashboardRes?.data || dashboardRes || {};
+          const dashboardData = dashboardPayload?.data || dashboardPayload;
+          metrics = dashboardData?.metrics || {};
+        } catch (err) {
+          console.error("Dashboard metrics fetch failed:", err);
+        }
+
+        try {
+          const expiringRes = await productService.getExpiringProducts({ limit: 500 });
+          const expiringPayload = expiringRes?.data || expiringRes || {};
+          const products = Array.isArray(expiringPayload)
+            ? expiringPayload
+            : Array.isArray(expiringPayload.products)
+              ? expiringPayload.products
+              : Array.isArray(expiringPayload.data)
+                ? expiringPayload.data
+                : [];
+                
+          expiringCount = products.filter(p => {
+            const days = Number(p?.daysUntilExpiry ?? NaN);
+            if (Number.isFinite(days)) return days <= 30;
+            
+            const expiryDate = p?.expiryDate || p?.expirationDate;
+            if (!expiryDate) return false;
+            
+            const diffDays = Math.max(0, Math.ceil((new Date(expiryDate) - new Date()) / (1000 * 60 * 60 * 24)));
+            return diffDays <= 30;
+          }).length;
+        } catch (err) {
+          console.error("Expiring products fetch failed:", err);
+        }
 
         const toTrend = (change) => {
           if (change > 0) return "up";
@@ -47,7 +87,11 @@ const KPICards = ({ dateRange }) => {
 
         const formatNumber = (value) => new Intl.NumberFormat("en-US").format(Number(value || 0));
 
-        const mappedKpis = [
+        // Detect if the filter is for "Today"
+        const today = new Date().toISOString().split("T")[0];
+        const isToday = params?.startDate === today && params?.endDate === today;
+
+        const allMappedKpis = [
           {
             id: "grossRevenue",
             title: "Gross Revenue",
@@ -59,7 +103,7 @@ const KPICards = ({ dateRange }) => {
           },
           {
             id: "totalSales",
-            title: "Total Sales",
+            title: isToday ? "Today's Sales" : "Total Sales",
             value: formatNumber(metrics?.totalOrders?.value),
             change: formatChange(metrics?.totalOrders?.change),
             trend: metrics?.totalOrders?.trend || toTrend(metrics?.totalOrders?.change),
@@ -102,9 +146,29 @@ const KPICards = ({ dateRange }) => {
             icon: "AlertTriangle",
             color: "red",
           },
+          {
+            id: "expiringSoon",
+            title: "Expiring Soon",
+            value: formatNumber(expiringCount),
+            change: "Next 30 days",
+            trend: "alert",
+            icon: "Clock",
+            color: "rose",
+          },
         ];
 
-        setKpis(mappedKpis);
+        // Filter based on role
+        const roleName = user?.role?.name || user?.role || user?.roleName;
+        const role = normalizeRole(roleName);
+        let finalKpis = allMappedKpis;
+        
+        if (role === ROLES.SALES) {
+          finalKpis = allMappedKpis.filter(kpi => 
+            ["totalSales", "expiringSoon", "lowStockItems"].includes(kpi.id)
+          );
+        }
+
+        setKpis(finalKpis);
       } catch (error) {
         console.error("Error fetching KPIs:", error);
         setKpis([]);
@@ -113,7 +177,7 @@ const KPICards = ({ dateRange }) => {
       }
     };
     fetchKPIs();
-  }, [dateRange]);
+  }, [dateRange, user]);
 
   const getIcon = (iconName) => {
     const icons = {
@@ -121,6 +185,8 @@ const KPICards = ({ dateRange }) => {
       ShoppingCart,
       TrendingUp,
       AlertTriangle,
+      Package,
+      Clock,
       Activity: DollarSign,
     };
     return icons[iconName] || DollarSign;
@@ -131,6 +197,7 @@ const KPICards = ({ dateRange }) => {
       emerald: "from-emerald-500 to-teal-600",
       orange: "from-orange-500 to-red-600",
       red: "from-red-500 to-rose-600",
+      rose: "from-rose-500 to-pink-600",
       blue: "from-blue-500 to-indigo-600",
       slate: "from-slate-500 to-gray-600",
     };

@@ -40,14 +40,6 @@ export const customerService = {
     return await apiClient.delete(API_ENDPOINTS.CUSTOMERS.DELETE(customerId));
   },
 
-  /**
-   * Get customer orders
-   */
-  getCustomerOrders: async (customerId, params = {}) => {
-    return await apiClient.get(API_ENDPOINTS.CUSTOMERS.ORDERS(customerId), {
-      params,
-    });
-  },
 };
 
 export default customerService;

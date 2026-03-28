@@ -35,6 +35,12 @@ const statusConfig = {
     text: "text-emerald-700",
     icon: CheckCircle,
   },
+  completed: {
+    label: "Completed",
+    bg: "bg-emerald-100",
+    text: "text-emerald-700",
+    icon: CheckCircle,
+  },
   cancelled: {
     label: "Cancelled",
     bg: "bg-rose-100",
@@ -138,7 +144,7 @@ const OrdersTable = ({ orders }) => {
                   {/* Customer */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
+                      <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
                         {customerInitials}
                       </div>
                       <div>

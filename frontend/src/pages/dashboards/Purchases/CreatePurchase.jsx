@@ -34,7 +34,7 @@ const toTitleCase = (value = "") => {
 export default function CreatePurchase() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isCeo = user?.role === 'ceo' || user?.normalizedRole === 'ceo';
+  const isCeo = user?.role === 'CEO' || user?.normalizedRole === 'CEO';
   const creatorRole = toTitleCase(user?.rawRole || user?.role || user?.normalizedRole || "");
   const creatorName = (user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "System").trim();
   
@@ -46,6 +46,7 @@ export default function CreatePurchase() {
     supplierId: "",
     purchaseDate: new Date().toISOString().split('T')[0],
     notes: "",
+    batchNumber: "",
     status: isCeo ? "approved" : "pending"
   });
 
@@ -188,6 +189,19 @@ export default function CreatePurchase() {
                 onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Batch Number
+              </label>
+              <input
+                type="text"
+                value={formData.batchNumber}
+                onChange={(e) => setFormData({ ...formData, batchNumber: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                placeholder="e.g. BATCH-001"
               />
             </div>
 

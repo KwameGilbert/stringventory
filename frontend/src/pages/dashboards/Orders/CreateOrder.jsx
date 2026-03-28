@@ -57,7 +57,7 @@ const splitName = (fullName = "") => {
 };
 
 const getProductStock = (product = {}) => {
-  return Number(product?.currentStock ?? product?.quantity ?? product?.stock ?? 0);
+  return Number(product?.inventory?.quantity ?? product?.currentStock ?? product?.quantity ?? product?.stock ?? 0);
 };
 
 export default function CreateOrder() {

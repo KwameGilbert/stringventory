@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, Mail, Shield, CheckCircle, Phone, Save, ArrowLeft, ShieldCheck } from "lucide-react";
+import { User, Mail, Shield, CheckCircle, Phone, Save, ArrowLeft, ShieldCheck, KeyRound, Eye, EyeOff } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { showError, showSuccess } from "../../../utils/alerts";
 import userService from "../../../services/userService";
@@ -73,6 +73,8 @@ export default function EditUser() {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [roles, setRoles] = useState(BUSINESS_ROLES);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -83,7 +85,9 @@ export default function EditUser() {
     role: "",
     roleId: "",
     isActive: true,
-    mfaEnabled: false
+    mfaEnabled: false,
+    newPassword: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -122,8 +126,8 @@ export default function EditUser() {
         }
 
         setFormData({
-          firstName: user.firstName || "",
-          lastName: user.lastName || "",
+          firstName: user.firstName || user.first_name || "",
+          lastName: user.lastName || user.last_name || "",
           email: user.email || "",
           countryCode: parsedCode,
           phone: parsedNumber,
@@ -168,8 +172,22 @@ export default function EditUser() {
         twoFactorEnabled: formData.mfaEnabled,
       };
       if (formData.roleId) payload.roleId = formData.roleId;
-      await userService.updateUser(id, payload);
 
+      // Only include password if the user filled it in
+      if (formData.newPassword) {
+        if (formData.newPassword.length < 8) {
+          showError("Password must be at least 8 characters.");
+          return;
+        }
+        if (formData.newPassword !== formData.confirmPassword) {
+          showError("Passwords do not match.");
+          return;
+        }
+        payload.password = formData.newPassword;
+        payload.password_confirmation = formData.confirmPassword;
+      }
+
+      await userService.updateUser(id, payload);
       showSuccess("User updated successfully");
       navigate("/dashboard/users");
     } catch (error) {
@@ -179,6 +197,7 @@ export default function EditUser() {
       setSubmitting(false);
     }
   };
+
 
   if (loading) return <div className="p-8 text-center text-gray-500">Loading user data...</div>;
 
@@ -305,6 +324,44 @@ export default function EditUser() {
                 </div>
               </div>
 
+              <div className="col-span-1 md:col-span-2 border-t border-gray-100 pt-4">
+                <p className="text-sm font-medium text-gray-700 mb-3">Reset Password <span className="text-gray-400 font-normal">(optional — leave blank to keep current)</span></p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">New Password</label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        value={formData.newPassword}
+                        onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                        className="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        placeholder="Min. 8 characters"
+                      />
+                      <button type="button" onClick={() => setShowNewPassword(p => !p)} className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                        {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                        className="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                        placeholder="Repeat new password"
+                      />
+                      <button type="button" onClick={() => setShowConfirmPassword(p => !p)} className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-100">
                   <div className="flex items-center gap-3">
@@ -349,3 +406,4 @@ export default function EditUser() {
     </div>
   );
 }
+
