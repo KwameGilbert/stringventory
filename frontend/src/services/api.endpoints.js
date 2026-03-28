@@ -48,7 +48,7 @@ export const API_ENDPOINTS = {
 
   // Unit of Measurements
   UNIT_OF_MEASUREMENTS: {
-    LIST: '/unit-of-measurements',
+    LIST: '/v1/units-of-measure',
   },
 
   // Categories
@@ -89,6 +89,14 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `/v1/orders/${id}`,
     CREATE_REFUND: (id) => `/v1/orders/${id}/refunds`,
     FULFILL: (id) => `/v1/orders/${id}/fulfill`,
+  },
+
+  // Refunds
+  REFUNDS: {
+    LIST: '/v1/refunds',
+    GET: (id) => `/v1/refunds/${id}`,
+    CREATE: '/v1/refunds',
+    UPDATE_STATUS: (id) => `/v1/refunds/${id}/status`,
   },
 
   // Suppliers

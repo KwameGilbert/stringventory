@@ -56,6 +56,8 @@ export default function EditProduct() {
       await productService.updateProduct(id, {
         ...formData,
         unit: formData.unit || formData.unitOfMeasure || formData.unitOfMeasurementId || "piece",
+        costPrice: Number(formData.costPrice ?? formData.cost ?? 0),
+        sellingPrice: Number(formData.sellingPrice ?? formData.price ?? 0),
         cost: Number(formData.costPrice ?? formData.cost ?? 0),
         price: Number(formData.sellingPrice ?? formData.price ?? 0),
         quantity: Number(formData.currentStock ?? formData.quantity ?? 0),

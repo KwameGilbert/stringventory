@@ -66,8 +66,6 @@ export default function CreatePurchase() {
         const fetchedProducts = extractList(productsRes, "products");
         setProducts(fetchedProducts.filter((product) => isProductApproved(product)));
       } catch (error) {
-        console.error("Failed to load purchase options", error);
-        showError(error?.message || "Failed to load suppliers/products");
       }
     };
 

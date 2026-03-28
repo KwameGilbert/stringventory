@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, AlertCircle, CheckCircle, Package, DollarSign } from "lucide-react";
 import orderService from "../../../services/orderService";
+import refundService from "../../../services/refundService";
 import { confirmAction, showError, showSuccess } from "../../../utils/alerts";
 
 export default function CreateRefund() {
@@ -114,17 +115,19 @@ export default function CreateRefund() {
         .map((item) => ({
           orderItemId: item.id,
           quantity: Number(refundItems[item.id]),
+          restock: true, // Default to true as per new requirements
         }));
 
-      await orderService.createRefund(id, {
+      await refundService.createRefund({
+        orderId: Number(id),
+        refundAmount: Number(totalRefundAmount.toFixed(2)),
         refundType: totalRefundAmount >= Number(order?.total || 0) ? "full" : "partial",
-        amount: Number(totalRefundAmount.toFixed(2)),
         reason: refundReason || "customer_request",
         items: selectedItems,
         notes: refundReason || undefined,
       });
 
-      showSuccess("The refund has been processed successfully.", "Refunded!");
+      showSuccess("The refund request has been submitted successfully.", "Refund Requested!");
       navigate(`/dashboard/orders/${id}`);
     } catch (error) {
       console.error("Failed to process refund", error);
