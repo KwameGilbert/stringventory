@@ -72,7 +72,8 @@ const RefundsTable = ({ refunds }) => {
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Refund ID</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Order #</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
               <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
               <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
@@ -92,11 +93,19 @@ const RefundsTable = ({ refunds }) => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-900">
+                        {refund.customer?.businessName || refund.customer?.firstName || "Unknown"}
+                      </span>
+                      <span className="text-xs text-gray-500">{refund.customer?.email}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <Link 
                         to={`/dashboard/orders/${refund.orderId}`}
                         className="text-sm font-medium text-blue-600 hover:underline"
                     >
-                        #{refund.orderId}
+                        {refund.order?.orderNumber || `#${refund.orderId}`}
                     </Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

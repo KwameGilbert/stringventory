@@ -99,6 +99,12 @@ export const API_ENDPOINTS = {
     UPDATE_STATUS: (id) => `/v1/refunds/${id}/status`,
   },
 
+  // Transactions
+  TRANSACTIONS: {
+    LIST: '/v1/transactions',
+    GET: (id) => `/v1/transactions/${id}`,
+  },
+
   // Suppliers
   SUPPLIERS: {
     LIST: '/v1/suppliers',

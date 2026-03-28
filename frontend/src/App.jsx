@@ -26,6 +26,8 @@ import CreateOrder from "./pages/dashboards/Orders/CreateOrder";
 import CreateRefund from "./pages/dashboards/Orders/CreateRefund";
 import Refunds from "./pages/dashboards/Refunds/Refunds";
 import ViewRefund from "./pages/dashboards/Refunds/ViewRefund";
+import Transactions from "./pages/dashboards/Transactions/Transactions";
+import ViewTransaction from "./pages/dashboards/Transactions/ViewTransaction";
 import SalesMain from "./pages/dashboards/Sales/SalesMain";
 // POS, ViewSales, ViewSale, SalesRefund, PaymentPage imports removed
 import Customers from "./pages/dashboards/Customers/Customers";
@@ -160,6 +162,8 @@ export default function App() {
                           <Route path="/suppliers/:id/edit" element={withRoles(managementRoles, <EditSupplier />)} />
                           <Route path="/refunds" element={withRoles(managementRoles, <Refunds />)} />
                           <Route path="/refunds/:id" element={withRoles(managementRoles, <ViewRefund />)} />
+                          <Route path="/transactions" element={withRoles(managementRoles, <Transactions />)} />
+                          <Route path="/transactions/:id" element={withRoles(managementRoles, <ViewTransaction />)} />
                           <Route path="/customers" element={withRoles(allRoles, <Customers />)} />
                           <Route path="/customers/new" element={withRoles(managementRoles, <CreateCustomer />)} />
                           <Route path="/customers/:id" element={withRoles(allRoles, <ViewCustomer />)} />
