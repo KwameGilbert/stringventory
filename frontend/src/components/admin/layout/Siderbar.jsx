@@ -22,6 +22,7 @@ import {
   Tag,
   FileText,
   Truck,
+  RotateCcw,
   X,
 } from "lucide-react";
 
@@ -49,6 +50,7 @@ const Sidebar = ({ mobileOpen, onClose, isOpen, onToggle }) => {
     { key: "purchases", icon: FileText, label: "Purchases", path: "/dashboard/purchases" },
     { key: "inventory", icon: ClipboardList, label: "Inventory", path: "/dashboard/inventory" },
     { key: "sales", icon: ShoppingCart, label: "Sales", path: "/dashboard/orders" },
+    { key: "refunds", icon: RotateCcw, label: "Refunds", path: "/dashboard/refunds" },
     { key: "customers", icon: Users, label: "Customers", path: "/dashboard/customers" },
     { key: "expense-categories", icon: Tag, label: "Expense Categories", path: "/dashboard/expenses/categories" },
     { key: "expenses", icon: DollarSign, label: "Expenses", path: "/dashboard/expenses" },

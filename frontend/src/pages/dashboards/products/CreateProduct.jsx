@@ -14,6 +14,8 @@ export default function CreateProduct() {
       await productService.createProduct({
         ...data,
         unit: data.unit || data.unitOfMeasure || data.unitOfMeasurementId || "piece",
+        costPrice: Number(data.costPrice ?? data.cost ?? 0),
+        sellingPrice: Number(data.sellingPrice ?? data.price ?? 0),
         cost: Number(data.costPrice ?? data.cost ?? 0),
         price: Number(data.sellingPrice ?? data.price ?? 0),
         quantity: Number(data.currentStock ?? data.quantity ?? 0),

@@ -41,6 +41,8 @@ const ProductForm = ({
     unitOfMeasurementId: "",
     status: "active",
     reorderLevel: 10,
+    costPrice: 0,
+    sellingPrice: 0,
     image: "",
     ...initialData,
   });
@@ -85,23 +87,14 @@ const ProductForm = ({
         console.error("Error loading suppliers", supRes.reason);
       }
 
-      // Fetch unit of measurements from API, fallback to local JSON
+      // Fetch unit of measurements from API
       try {
         const uomRes = await apiClient.get(API_ENDPOINTS.UNIT_OF_MEASUREMENTS.LIST);
         const fetchedUoms = extractList(uomRes, "unitOfMeasurements");
-        if (fetchedUoms.length > 0) {
-          setUomList(fetchedUoms);
-        } else {
-          throw new Error("Empty UOM response");
-        }
-      } catch {
-        try {
-          const localRes = await fetch("/data/unit-of-measurements.json");
-          const localData = await localRes.json();
-          setUomList(localData);
-        } catch (err) {
-          console.error("Error loading unit of measurements", err);
-        }
+        setUomList(fetchedUoms);
+      } catch (err) {
+        console.error("Error loading unit of measurements", err);
+        setUomList([]);
       }
     };
     fetchData();
@@ -134,6 +127,8 @@ const ProductForm = ({
       unitOfMeasurementId: formData.unitOfMeasurementId,
       status: formData.status,
       reorderLevel: parseInt(formData.reorderLevel) || 10,
+      costPrice: parseFloat(formData.costPrice) || 0,
+      sellingPrice: parseFloat(formData.sellingPrice) || 0,
       image: formData.image || undefined,
     };
     onSubmit(productData);
@@ -280,6 +275,54 @@ const ProductForm = ({
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Pricing Information Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+            <h3 className="font-semibold text-gray-900">Pricing Information</h3>
+            <p className="text-sm text-gray-500">Configure cost and selling prices</p>
+          </div>
+
+          <div className="p-6 space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Cost Price */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Cost Price <span className="text-gray-400 mt-1">(GHS)</span>
+                </label>
+                <input
+                  type="number"
+                  name="costPrice"
+                  value={formData.costPrice}
+                  onChange={handleChange}
+                  step="0.01"
+                  min="0"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              {/* Selling Price */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Selling Price <span className="text-gray-400 mt-1">(GHS)</span>
+                </label>
+                <input
+                  type="number"
+                  name="sellingPrice"
+                  value={formData.sellingPrice}
+                  onChange={handleChange}
+                  step="0.01"
+                  min="0"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
             </div>
           </div>
         </div>
