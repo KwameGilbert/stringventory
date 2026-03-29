@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2, Trash2, Calendar, Hash, Tag, Layers, AlertTriangle, Image } from "lucide-react";
+import { ArrowLeft, Edit2, Trash2, Calendar, Hash, Tag, Layers, AlertTriangle, Image, Banknote, Truck, Info, MapPin, Mail, Phone, User, ShoppingBag, Clock } from "lucide-react";
 import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -41,6 +42,7 @@ const toDisplayText = (value, fallback = "Unknown") => {
 export default function ViewProduct() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [product, setProduct] = useState(null);
   const [permissionDenied, setPermissionDenied] = useState(false);
 
@@ -66,20 +68,25 @@ export default function ViewProduct() {
             name: toDisplayText(found.name, "Unnamed Product"),
             description: toDisplayText(found.description, "No description provided for this product."),
             code: toDisplayText(found.code || found.sku, "—"),
-            currentStock: Number(found.currentStock ?? found.quantity ?? 0),
-            reorderThreshold: Number(found.reorderThreshold ?? found.reorderLevel ?? 0),
-            category:
-              toDisplayText(found.category, "") ||
-              toDisplayText(found.categoryName, "") ||
-              category?.name ||
-              "Unknown",
-            supplier:
-              toDisplayText(found.supplier, "") ||
-              toDisplayText(found.supplierName, "") ||
-              supplier?.name ||
-              "Unknown",
-            unitOfMeasure: toDisplayText(found.unitOfMeasure || found.unit, "N/A"),
+            barcode: toDisplayText(found.barcode, "—"),
+            currentStock: Number(found.inventory?.quantity ?? found.currentStock ?? found.quantity ?? 0),
+            reorderLevel: Number(found.reorderLevel ?? found.reorderThreshold ?? 0),
+            warehouseLocation: toDisplayText(found.inventory?.warehouseLocation, "Not assigned"),
+            inventoryStatus: found.inventory?.status || "unknown",
+            soonestExpiryDate: found.soonestExpiryDate || found.inventory?.soonestExpiryDate || null,
+            category: toDisplayText(found.category?.name || found.category, "Unknown"),
+            categoryDescription: found.category?.description || null,
+            categoryImage: found.category?.image || null,
+            supplier: toDisplayText(found.supplier?.name || found.supplier, "Unknown"),
+            supplierDetails: found.supplier || null,
+            unitOfMeasure: toDisplayText(found.unit_of_measure?.name || found.unitOfMeasure || found.unit, "N/A"),
+            unitAbbreviation: found.unit_of_measure?.abbreviation || null,
             createdAt: found.createdAt || null,
+            updatedAt: found.updatedAt || null,
+            batches: Array.isArray(found.batches) ? found.batches : [],
+            orderItems: Array.isArray(found.order_items) ? found.order_items : [],
+            costPrice: Number(found.costPrice || found.cost || 0),
+            sellingPrice: Number(found.sellingPrice || found.price || 0),
           });
         }
       } catch (error) {
@@ -143,13 +150,13 @@ export default function ViewProduct() {
   }
 
   const getStockStatus = () => {
-    if (product.currentStock === 0) return { label: "Out of Stock", color: "bg-rose-100 text-rose-700" };
-    if (product.currentStock <= product.reorderThreshold) return { label: "Low Stock", color: "bg-amber-100 text-amber-700" };
+    if (product.currentStock === 0 || product.inventoryStatus === "out_of_stock") return { label: "Out of Stock", color: "bg-rose-100 text-rose-700" };
+    if (product.currentStock <= product.reorderLevel) return { label: "Low Stock", color: "bg-amber-100 text-amber-700" };
     return { label: "In Stock", color: "bg-emerald-100 text-emerald-700" };
   };
 
   const stockStatus = getStockStatus();
-  const isLowStock = product.currentStock <= product.reorderThreshold;
+  const isLowStock = product.currentStock <= product.reorderLevel;
 
   return (
     <div className="max-w-4xl mx-auto pb-8 animate-fade-in">
@@ -235,21 +242,30 @@ export default function ViewProduct() {
               <h3 className="font-semibold text-gray-900">Pricing Information</h3>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-2 gap-8">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium mb-1 tracking-wider">Unit Cost Price</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {formatPrice(product.costPrice || product.cost)}
+                    {formatPrice(product.costPrice)}
                   </p>
                   <p className="text-[10px] text-gray-400 mt-1 italic">Average purchase cost per unit</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium mb-1 tracking-wider">Unit Selling Price</p>
                   <p className="text-2xl font-extrabold text-emerald-600">
-                    {formatPrice(product.sellingPrice || product.price)}
+                    {formatPrice(product.sellingPrice)}
                   </p>
                   <p className="text-[10px] text-gray-400 mt-1 italic">Base price before discounts/tax</p>
                 </div>
+                {product.sellingPrice > 0 && product.costPrice > 0 && (
+                  <div>
+                    <p className="text-xs text-gray-400 uppercase font-medium mb-1 tracking-wider">Est. Margin (%)</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {(((product.sellingPrice - product.costPrice) / product.sellingPrice) * 100).toFixed(1)}%
+                    </p>
+                    <p className="text-[10px] text-gray-400 mt-1 italic">Estimated gross profit margin</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -267,13 +283,32 @@ export default function ViewProduct() {
                 <div className="text-center p-4 bg-gray-50 rounded-xl">
                   <p className="text-xs text-gray-400 uppercase font-medium mb-1">Current Stock</p>
                   <p className={`text-3xl font-bold ${isLowStock ? "text-amber-600" : "text-gray-900"}`}>
-                    {product.currentStock}
+                    {product.currentStock} <span className="text-sm font-medium text-gray-400 ml-1">{product.unitAbbreviation || product.unitOfMeasure}</span>
                   </p>
                 </div>
                 <div className="text-center p-4 bg-gray-50 rounded-xl">
                   <p className="text-xs text-gray-400 uppercase font-medium mb-1">Reorder Level</p>
-                  <p className="text-3xl font-bold text-gray-900">{product.reorderThreshold}</p>
+                  <p className="text-3xl font-bold text-gray-900">{product.reorderLevel}</p>
                 </div>
+              </div>
+              
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2 p-3 bg-blue-50/50 border border-blue-100 rounded-lg">
+                      <MapPin className="w-4 h-4 text-blue-500" />
+                      <div>
+                          <p className="text-[10px] text-blue-400 uppercase font-bold leading-none mb-1">Warehouse Location</p>
+                          <p className="text-sm font-semibold text-blue-700">{product.warehouseLocation}</p>
+                      </div>
+                  </div>
+                  {product.soonestExpiryDate && (
+                      <div className="flex items-center gap-2 p-3 bg-rose-50/50 border border-rose-100 rounded-lg">
+                          <Clock className="w-4 h-4 text-rose-500" />
+                          <div>
+                              <p className="text-[10px] text-rose-400 uppercase font-bold leading-none mb-1">Soonest Expiry</p>
+                              <p className="text-sm font-semibold text-rose-700">{new Date(product.soonestExpiryDate).toLocaleDateString()}</p>
+                          </div>
+                      </div>
+                  )}
               </div>
               
               {isLowStock && (
@@ -282,6 +317,146 @@ export default function ViewProduct() {
                   <p className="text-sm text-amber-700">Stock is below reorder threshold. Consider restocking soon.</p>
                 </div>
               )}
+
+              {product.inventory?.lastUpdated && (
+                <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between text-[10px] text-gray-400">
+                    <span>Inventory last synced</span>
+                    <span className="font-medium font-mono">{new Date(product.inventory.lastUpdated).toLocaleString()}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Batch History Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Truck className="w-4 h-4 text-blue-600" />
+                Inventory Batches
+              </h3>
+              <span className="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full uppercase">
+                {product.batches.length} active
+              </span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 border-b border-gray-100">
+                  <tr>
+                    <th className="px-6 py-3 font-semibold text-gray-600 uppercase tracking-wider text-[10px]">Batch / PO</th>
+                    <th className="px-6 py-3 font-semibold text-gray-600 uppercase tracking-wider text-[10px]">Waybill / Date</th>
+                    <th className="px-6 py-3 font-semibold text-gray-600 uppercase tracking-wider text-[10px] text-right">Remaining</th>
+                    <th className="px-6 py-3 font-semibold text-gray-600 uppercase tracking-wider text-[10px] text-right">Expiry</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {product.batches.length > 0 ? (
+                    product.batches.map((batch) => (
+                      <tr key={batch.id} className="hover:bg-gray-50/50 transition-colors cursor-default">
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-gray-900">{batch.batchNumber}</p>
+                          <p className="text-[10px] text-gray-400 font-mono mt-0.5">{batch.purchase?.purchaseNumber || "Manual entry"}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <p className="text-xs text-gray-600 font-medium">{batch.purchase?.waybillNumber || "No waybill"}</p>
+                          <p className="text-[10px] text-gray-400 mt-0.5">{batch.purchase?.purchaseDate ? new Date(batch.purchase.purchaseDate).toLocaleDateString() : '—'}</p>
+                          <div className="flex items-center gap-1 mt-1">
+                              {batch.purchase?.status && (
+                                <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${
+                                    batch.purchase.status === 'received' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                                }`}>
+                                    {batch.purchase.status}
+                                </span>
+                              )}
+                              {batch.purchase?.paymentStatus && (
+                                <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${
+                                    batch.purchase.paymentStatus === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+                                }`}>
+                                    {batch.purchase.paymentStatus}
+                                </span>
+                              )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <p className="font-semibold text-gray-900">{batch.remainingQuantity}</p>
+                          <p className="text-[10px] text-gray-400 italic">of {batch.quantity}</p>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <p className={`text-xs font-medium ${
+                            new Date(batch.expiryDate) <= new Date() ? 'text-rose-600' : 'text-gray-600'
+                          }`}>
+                            {batch.expiryDate ? new Date(batch.expiryDate).toLocaleDateString() : 'N/A'}
+                          </p>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-8 text-center text-gray-400 italic">No batches found for this product</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Recent Sales History */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <ShoppingBag className="w-4 h-4 text-emerald-600" />
+                Recent Orders
+              </h3>
+              <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full uppercase">
+                {product.orderItems.length} total
+              </span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-gray-50 border-b border-gray-100">
+                  <tr>
+                    <th className="px-6 py-3 font-semibold text-gray-600 uppercase tracking-wider text-[10px]">Order #</th>
+                    <th className="px-6 py-3 font-semibold text-gray-600 uppercase tracking-wider text-[10px]">Fulfillment</th>
+                    <th className="px-6 py-3 font-semibold text-gray-600 uppercase tracking-wider text-[10px]">Summary</th>
+                    <th className="px-6 py-3 font-semibold text-gray-600 uppercase tracking-wider text-[10px] text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {product.orderItems.length > 0 ? (
+                    product.orderItems.slice(0, 10).map((item) => (
+                      <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <p className="font-bold text-gray-900 font-mono tracking-tight">{item.orderId ? `ORD-${item.orderId}` : "—"}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-0.5">
+                              <p className="text-gray-600 font-medium text-xs">{item.fulfilledQuantity} / {item.quantity} units</p>
+                              {item.refundedQuantity > 0 && (
+                                <p className="text-[10px] text-rose-500 font-semibold italic">-{item.refundedQuantity} refunded</p>
+                              )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="space-y-0.5">
+                              <p className="text-gray-900 font-bold text-xs">{formatPrice(item.totalPrice)}</p>
+                              <p className="text-[10px] text-gray-400 font-medium">@ {formatPrice(item.sellingPrice)} ea</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                            item.fulfillmentStatus === 'fulfilled' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                          }`}>
+                            {item.fulfillmentStatus}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-10 text-center text-gray-400 italic">This product hasn't been sold yet</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -299,18 +474,22 @@ export default function ViewProduct() {
                   <Hash size={16} className="text-gray-500" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase font-medium">Product Code</p>
-                  <p className="text-sm font-semibold text-gray-900 font-mono">{product.code}</p>
+                  <p className="text-xs text-gray-400 uppercase font-medium">Barcode / UPC</p>
+                  <p className="text-sm font-semibold text-gray-900 font-mono text-[10px]">{product.barcode}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gray-100">
-                  <Tag size={16} className="text-gray-500" />
+                <div className="p-2 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+                  {product.categoryImage ? (
+                    <img src={product.categoryImage} alt={product.category} className="w-5 h-5 object-cover" />
+                  ) : (
+                    <Tag size={16} className="text-gray-500" />
+                  )}
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium">Category</p>
-                  <p className="text-sm font-semibold text-gray-900">{product.category}</p>
+                  <p className="text-sm font-semibold text-gray-900" title={product.categoryDescription}>{product.category}</p>
                 </div>
               </div>
 
@@ -320,17 +499,79 @@ export default function ViewProduct() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase font-medium">Unit of Measure</p>
-                  <p className="text-sm font-semibold text-gray-900 capitalize">{product.unitOfMeasure}</p>
+                  <p className="text-sm font-semibold text-gray-900 capitalize">
+                    {product.unitOfMeasure} {product.unitAbbreviation && <span className="text-gray-400 font-normal">({product.unitAbbreviation})</span>}
+                  </p>
                 </div>
               </div>
+
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gray-100">
+                  <User size={16} className="text-gray-500" />
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 uppercase font-medium">Supplier Contact</p>
+                  <p className="text-sm font-semibold text-gray-900">{product.supplierDetails?.contactPerson || product.supplier}</p>
+                  {product.supplierDetails?.rating && (
+                    <div className="flex items-center gap-0.5 mt-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <div key={i} className={`w-2.5 h-2.5 rounded-full ${i < product.supplierDetails.rating ? 'bg-amber-400' : 'bg-gray-200'}`} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {product.supplierDetails?.email && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-emerald-50">
+                    <Mail size={16} className="text-emerald-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 uppercase font-medium">Email</p>
+                    <p className="text-sm font-semibold text-gray-900">{product.supplierDetails.email}</p>
+                  </div>
+                </div>
+              )}
+
+              {product.supplierDetails?.phone && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-blue-50">
+                    <Phone size={16} className="text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 uppercase font-medium">Phone</p>
+                    <p className="text-sm font-semibold text-gray-900">{product.supplierDetails.phone}</p>
+                  </div>
+                </div>
+              )}
+
+              {product.supplierDetails?.address && (
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gray-50">
+                    <MapPin size={16} className="text-gray-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 uppercase font-medium">Address</p>
+                    <p className="text-[10px] font-medium text-gray-600 leading-tight">{product.supplierDetails.address}</p>
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-gray-100">
                   <Calendar size={16} className="text-gray-500" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 uppercase font-medium">Created</p>
-                  <p className="text-sm font-semibold text-gray-900">{product.createdAt ? new Date(product.createdAt).toLocaleDateString() : "—"}</p>
+                  <p className="text-xs text-gray-400 uppercase font-medium">Product Lifecycle</p>
+                  <div className="space-y-1">
+                      <p className="text-[10px] text-gray-500">
+                        <span className="font-bold">Created:</span> {product.createdAt ? new Date(product.createdAt).toLocaleDateString() : "—"}
+                      </p>
+                      <p className="text-[10px] text-gray-500">
+                        <span className="font-bold">Last Update:</span> {product.updatedAt ? new Date(product.updatedAt).toLocaleString() : "—"}
+                      </p>
+                  </div>
                 </div>
               </div>
             </div>
