@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Eye, Trash2, Image, ChevronLeft, ChevronRight, Package } from "lucide-react";
+import { Eye, Image, ChevronLeft, ChevronRight, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 8;
 
-const InventoryTable = ({ inventory, onDelete, onAdjust }) => {
+const InventoryTable = ({ inventory, onAdjust }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Pagination logic
@@ -176,14 +176,6 @@ const InventoryTable = ({ inventory, onDelete, onAdjust }) => {
                     >
                       <Eye size={16} />
                     </Link>
-
-                    <button 
-                      onClick={() => onDelete && onDelete(item.id)}
-                      className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
-                      title="Delete"
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
                 </td>
               </tr>
