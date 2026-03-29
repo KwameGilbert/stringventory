@@ -34,7 +34,8 @@ export default function Notifications() {
     markAsRead, 
     markAllAsRead, 
     deleteNotification,
-    loadNotifications 
+    loadNotifications,
+    subscribeToPush
   } = useNotifications();
   const [filter, setFilter] = useState("all");
   const [actionLoading, setActionLoading] = useState(false);
@@ -127,6 +128,15 @@ export default function Notifications() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={subscribeToPush}
+            disabled={actionLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 border border-emerald-600 rounded-lg text-sm font-medium text-white hover:bg-emerald-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Bell className="w-4 h-4" />
+            Enable Desktop Alerts
+          </button>
+          
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllAsRead}

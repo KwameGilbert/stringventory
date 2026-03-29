@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import notificationService from '../services/notificationService';
-import { useAuth } from './AuthProvider';
+import { useAuth } from './AuthContext';
 
 const NotificationContext = createContext();
 
@@ -96,6 +96,33 @@ export const NotificationProvider = ({ children }) => {
         }
     };
 
+    const subscribeToPush = async () => {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            console.warn('Push messaging is not supported');
+            return;
+        }
+
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            
+            // NOTE: You need a real VAPID public key from your backend here
+            const publicVapidKey = 'BGR-Y1pXfBf_9wG-N6-u-wK7U8BvD3r-3L8oS4u0S_g'; 
+            
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: publicVapidKey
+            });
+
+            // Send subscription to backend
+            // await apiClient.post('/v1/notifications/subscribe', subscription);
+            console.log('User is subscribed:', subscription);
+            
+            return subscription;
+        } catch (err) {
+            console.error('Failed to subscribe the user: ', err);
+        }
+    };
+
     return (
         <NotificationContext.Provider value={{
             notifications,
@@ -104,7 +131,8 @@ export const NotificationProvider = ({ children }) => {
             loadNotifications,
             markAsRead,
             markAllAsRead,
-            deleteNotification
+            deleteNotification,
+            subscribeToPush
         }}>
             {children}
         </NotificationContext.Provider>
