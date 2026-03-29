@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2, Trash2, Package, Calendar, DollarSign, Hash, Truck, Clock, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Trash2, Package, Calendar, DollarSign, Hash, Truck, Clock, AlertTriangle } from "lucide-react";
 import inventoryService from "../../../services/inventoryService";
 import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
@@ -171,13 +171,7 @@ export default function ViewInventory() {
             </div>
             
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => navigate(`/dashboard/inventory/${id}/edit`)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-medium text-sm"
-              >
-                <Edit2 size={16} />
-                Edit
-              </button>
+
               <button
                 onClick={handleDelete}
                 className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"

@@ -88,19 +88,19 @@ const PaymentDistribution = ({ dateRange }) => {
         <h3 className="font-semibold text-gray-900">Revenue by Payment Method</h3>
       </div>
 
-      <div className="flex-1 relative w-full" style={{ minHeight: '240px' }}>
-        <ResponsiveContainer width="100%" height={240}>
+      <div className="flex-1 relative w-full" style={{ minHeight: '350px' }}>
+        <ResponsiveContainer width="100%" height={350}>
           <PieChart>
             <Pie
               data={data}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={80}
+              innerRadius={90}
+              outerRadius={120}
               paddingAngle={3}
               dataKey="value"
               stroke="none"
-              cornerRadius={6}
+              cornerRadius={8}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
@@ -119,8 +119,8 @@ const PaymentDistribution = ({ dateRange }) => {
 
         {/* Center Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Total</span>
-          <span className="text-xl font-bold text-gray-900">{formatCurrency(totalValue)}</span>
+          <span className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Total</span>
+          <span className="text-2xl font-bold text-gray-900 tracking-tight">{formatCurrency(totalValue)}</span>
         </div>
       </div>
 
