@@ -76,8 +76,8 @@ import SuperadminNotifications from "./pages/superadmin/Notifications/Notificati
 import SuperadminProfile from "./pages/superadmin/Profile/Profile";
 import { TenantProvider } from "./contexts/TenantProvider";
 import { SubscriptionProvider } from "./contexts/SubscriptionProvider";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import { ROLES } from "./utils/accessControl";
-
 
 export default function App() {
   const allRoles = [ROLES.CEO, ROLES.MANAGER, ROLES.SALES];
@@ -93,10 +93,11 @@ export default function App() {
       <AuthProvider>
         <TenantProvider>
           <SubscriptionProvider>
-            <Router>
-              <Routes>
-                {/* Login Route - No Layout */}
-                <Route path="/" element={<Login />} />
+            <NotificationProvider>
+              <Router>
+                <Routes>
+                  {/* Login Route - No Layout */}
+                  <Route path="/" element={<Login />} />
 
                 {/* Superadmin Routes */}
                 <Route
@@ -189,11 +190,12 @@ export default function App() {
                 />
               </Routes>
             </Router>
-          </SubscriptionProvider>
-        </TenantProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  );
+          </NotificationProvider>
+        </SubscriptionProvider>
+      </TenantProvider>
+    </AuthProvider>
+  </ThemeProvider>
+);
 }
 
 

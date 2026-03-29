@@ -24,34 +24,25 @@ const normalizeNotification = (item) => ({
   raw: item,
 });
 
+import { useNotifications } from "../../../contexts/NotificationContext";
+
 export default function Notifications() {
-  const [notifications, setNotifications] = useState([]);
+  const { 
+    notifications, 
+    unreadCount, 
+    loading, 
+    markAsRead, 
+    markAllAsRead, 
+    deleteNotification,
+    loadNotifications 
+  } = useNotifications();
   const [filter, setFilter] = useState("all");
-  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const loadNotifications = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const summary = await notificationService.getNotificationSummary();
-      const nextNotifications = Array.isArray(summary?.notifications)
-        ? summary.notifications.map(normalizeNotification)
-        : [];
-      setNotifications(nextNotifications);
-    } catch (err) {
-      const message = err?.message || "Failed to load notifications";
-      setError(message);
-      showError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     loadNotifications();
-  }, []);
+  }, [loadNotifications]);
 
   const filteredNotifications = useMemo(
     () =>
@@ -62,62 +53,32 @@ export default function Notifications() {
     [notifications, filter]
   );
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
-
-  const markAsRead = async (id) => {
-    try {
-      setActionLoading(true);
-      await notificationService.markAsRead(id);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-      );
-    } catch (err) {
-      showError(err?.message || "Failed to mark notification as read");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleMarkAsRead = async (id) => {
+    setActionLoading(true);
+    await markAsRead(id);
+    setActionLoading(false);
   };
 
-  const markAllAsRead = async () => {
-    try {
-      setActionLoading(true);
-      await notificationService.markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-      showSuccess("All notifications marked as read");
-    } catch (err) {
-      showError(err?.message || "Failed to mark all notifications as read");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleMarkAllAsRead = async () => {
+    setActionLoading(true);
+    await markAllAsRead();
+    setActionLoading(false);
   };
 
-  const deleteNotification = async (id) => {
-    try {
-      setActionLoading(true);
-      await notificationService.deleteNotification(id);
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    } catch (err) {
-      showError(err?.message || "Failed to delete notification");
-    } finally {
-      setActionLoading(false);
-    }
+  const handleDelete = async (id) => {
+    setActionLoading(true);
+    await deleteNotification(id);
+    setActionLoading(false);
   };
 
   const clearAll = async () => {
     try {
       setActionLoading(true);
-      const deletions = await Promise.allSettled(
-        notifications.map((n) => notificationService.deleteNotification(n.id))
-      );
-      const hasFailure = deletions.some((result) => result.status === "rejected");
-      if (hasFailure) {
-        showError("Some notifications could not be deleted");
-      } else {
-        showSuccess("All notifications cleared");
-      }
-      await loadNotifications();
+      // Logic for mass deletion if service supports it, or sequential
+      await Promise.all(notifications.map(n => deleteNotification(n.id)));
+      showSuccess("All notifications cleared");
     } catch (err) {
-      showError(err?.message || "Failed to clear notifications");
+      showError("Failed to clear some notifications");
     } finally {
       setActionLoading(false);
     }
@@ -168,7 +129,7 @@ export default function Notifications() {
         <div className="flex items-center gap-3">
           {unreadCount > 0 && (
             <button
-              onClick={markAllAsRead}
+              onClick={handleMarkAllAsRead}
               disabled={actionLoading}
               className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -288,7 +249,7 @@ export default function Notifications() {
               <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 {!notification.read && (
                   <button
-                    onClick={() => markAsRead(notification.id)}
+                    onClick={() => handleMarkAsRead(notification.id)}
                     disabled={actionLoading}
                     className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Mark as read"
@@ -297,7 +258,7 @@ export default function Notifications() {
                   </button>
                 )}
                 <button
-                  onClick={() => deleteNotification(notification.id)}
+                  onClick={() => handleDelete(notification.id)}
                   disabled={actionLoading}
                   className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Delete"
