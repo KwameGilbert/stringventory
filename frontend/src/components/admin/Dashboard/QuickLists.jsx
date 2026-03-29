@@ -3,12 +3,14 @@ import { Package, TrendingDown, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import orderService from "../../../services/orderService";
 import { productService } from "../../../services/productService";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const QuickLists = () => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [lowStock, setLowStock] = useState([]);
   const [expiring, setExpiring] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,13 +102,7 @@ const QuickLists = () => {
     );
   }
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   const getStatusColor = (status) => {
     const colors = {
@@ -156,7 +152,7 @@ const QuickLists = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-gray-900">
-                    {formatCurrency(order.totalAmount)}
+                    {formatPrice(order.totalAmount)}
                   </p>
                   <span
                     className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(

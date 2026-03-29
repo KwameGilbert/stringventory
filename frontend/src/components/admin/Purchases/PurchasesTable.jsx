@@ -1,5 +1,6 @@
 import { Eye, Edit2, Trash2, Package, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const PurchasesTable = ({
   purchases,
@@ -12,6 +13,7 @@ const PurchasesTable = ({
   pageSize = 20,
   onPageChange,
 }) => {
+  const { formatPrice } = useCurrency();
   const startIndex = totalItems > 0 ? (currentPage - 1) * pageSize + 1 : 0;
   const endIndex = totalItems > 0 ? Math.min(currentPage * pageSize, totalItems) : 0;
 
@@ -28,14 +30,6 @@ const PurchasesTable = ({
       received: "bg-emerald-100 text-emerald-700",
     };
     return badges[status] || "bg-gray-100 text-gray-600";
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(amount);
   };
 
   const formatDate = (dateString) => {
@@ -105,7 +99,7 @@ const PurchasesTable = ({
                 {/* Total Amount */}
                 <td className="px-4 py-3 text-right">
                   <span className="text-sm font-semibold text-gray-900">
-                    {formatCurrency(purchase.totalAmount)}
+                    {formatPrice(purchase.totalAmount)}
                   </span>
                 </td>
 

@@ -1,11 +1,23 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Trash2, Package, Calendar, DollarSign, Hash, Truck, Clock, AlertTriangle } from "lucide-react";
+import { 
+  ArrowLeft, 
+  Package, 
+  Calendar, 
+  DollarSign, 
+  Hash, 
+  Truck, 
+  Clock, 
+  AlertTriangle,
+  History,
+  ShoppingCart,
+  CheckCircle2,
+  XCircle
+} from "lucide-react";
 import inventoryService from "../../../services/inventoryService";
-import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
-import { confirmDelete, showError, showInfo } from "../../../utils/alerts";
+import { showError } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
 
 const extractList = (response, key) => {
@@ -25,26 +37,28 @@ export default function ViewInventory() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventoryRes, productsRes, categoriesRes, suppliersRes] = await Promise.all([
+        setLoading(true);
+        const [inventoryRes, categoriesRes, suppliersRes] = await Promise.all([
           inventoryService.getInventory(),
-          productService.getProducts(),
           categoryService.getCategories(),
           supplierService.getSuppliers(),
         ]);
 
         const inventoryEntries = extractList(inventoryRes, "inventory");
-        const products = extractList(productsRes, "products");
         const categories = extractList(categoriesRes, "categories");
         const suppliers = extractList(suppliersRes, "suppliers");
 
         const found = inventoryEntries.find((entry) => String(entry.id) === String(id));
+        
         if (found) {
-          const product = products.find((p) => String(p.id) === String(found.productId));
-          if (product && !isProductApproved(product)) {
+          const product = found.product || {};
+          
+          if (product.id && !isProductApproved(product)) {
             showError("This product is not approved and cannot be viewed in Stock Management");
             navigate("/dashboard/inventory");
             return;
@@ -52,37 +66,37 @@ export default function ViewInventory() {
 
           const category = categories.find((c) => String(c.id) === String(product?.categoryId));
           const supplier = suppliers.find((s) => String(s.id) === String(product?.supplierId));
+          
           const unitCost = Number(found.unitCost ?? product?.costPrice ?? product?.cost ?? 0);
           const quantity = Number(found.quantity ?? found.currentStock ?? 0);
 
           setItem({
             ...found,
-            productName: found.productName || product?.name || "Unknown Product",
-            category: found.category || found.categoryName || product?.categoryName || category?.name || "Uncategorized",
-            batchNumber: found.batchNumber || found.reference || `BATCH-${found.id}`,
-            supplier: found.supplier || found.supplierName || product?.supplierName || supplier?.name || "Unknown Supplier",
+            productName: product?.name || found.productName || "Unknown Product",
+            sku: product?.sku || "N/A",
+            description: product?.description || "",
+            category: category?.name || product?.categoryName || found.category || found.categoryName || "Uncategorized",
+            supplier: supplier?.name || product?.supplierName || found.supplier || found.supplierName || "Unknown Supplier",
             unitCost,
             quantity,
             totalValue: Number(found.totalValue ?? quantity * unitCost),
-            entryDate: found.entryDate || found.lastStockCheck || found.createdAt || new Date().toISOString(),
-            expiryDate: found.expiryDate || null,
+            entryDate: found.createdAt || found.lastUpdated || found.lastStockCheck || new Date().toISOString(),
+            expiryDate: found.soonestExpiryDate || found.expiryDate || null,
+            batches: product?.batches || []
           });
+        } else {
+           showError("Inventory entry not found");
+           navigate("/dashboard/inventory");
         }
       } catch (error) {
         console.error("Error fetching inventory", error);
         showError(error?.message || "Failed to fetch inventory details");
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
-  }, [id]);
-
-  const handleDelete = async () => {
-    const result = await confirmDelete("this inventory entry");
-    if (!result.isConfirmed) return;
-
-    showInfo("Inventory delete endpoint is not available yet; this action cannot be persisted from detail view.");
-    navigate("/dashboard/inventory");
-  };
+  }, [id, navigate]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-GH", {
@@ -93,6 +107,7 @@ export default function ViewInventory() {
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("en-GB", {
       year: "numeric",
       month: "long",
@@ -116,9 +131,9 @@ export default function ViewInventory() {
     return { label: `${days} days left`, color: "bg-emerald-100 text-emerald-700" };
   };
 
-  if (!item) {
+  if (loading || !item) {
     return (
-      <div className="max-w-4xl mx-auto py-8">
+      <div className="max-w-6xl mx-auto py-8 px-4">
         <div className="bg-white rounded-xl p-8 border border-gray-100 animate-pulse">
           <div className="flex gap-4 mb-6">
             <div className="w-20 h-20 bg-gray-200 rounded-xl"></div>
@@ -136,7 +151,7 @@ export default function ViewInventory() {
   const expiryStatus = getExpiryStatus(item.expiryDate);
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 animate-fade-in ">
+    <div className="max-w-6xl mx-auto pb-8 px-4 animate-fade-in ">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/inventory")}
@@ -149,85 +164,98 @@ export default function ViewInventory() {
       </button>
 
       {/* Header Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-        <div className="px-6 py-5 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {/* Product Image/Icon */}
-              <div className="w-16 h-16 rounded-xl bg-linear-to-br from-blue-50 to-cyan-50 border border-blue-100 flex items-center justify-center">
-                <Package className="w-8 h-8 text-blue-500" />
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+        <div className="px-6 py-6 border-b border-gray-100">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-5">
+              <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-blue-50 to-cyan-50 border border-blue-100 flex items-center justify-center shadow-inner">
+                <Package className="w-10 h-10 text-blue-500" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{item.productName}</h1>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{item.productName}</h1>
+                  {item.status === 'in_stock' ? (
+                     <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">In Stock</span>
+                  ) : (
+                     <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold bg-rose-100 text-rose-700 border border-rose-200">{item.status?.replace('_', ' ')}</span>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <span className="px-3 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
                     {item.category}
                   </span>
-                  <span className="font-mono text-sm text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
-                    {item.batchNumber}
+                  <span className="font-mono text-xs text-gray-500 bg-gray-50 px-2.5 py-1 rounded-lg border border-gray-100">
+                    SKU: {item.sku}
                   </span>
+                  {item.batchNumber && (
+                    <span className="font-mono text-xs text-gray-500 bg-blue-50/50 px-2.5 py-1 rounded-lg border border-blue-100/50">
+                      Batch: {item.batchNumber}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
-
-              <button
-                onClick={handleDelete}
-                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
-              >
-                <Trash2 size={16} />
-                Delete
-              </button>
+            <div className="flex items-center gap-3">
+              {/* Actions removed */}
             </div>
           </div>
         </div>
+        
+        {item.description && (
+          <div className="px-6 py-4 bg-gray-50/30 border-t border-gray-50">
+            <p className="text-sm text-gray-600 leading-relaxed italic">"{item.description}"</p>
+          </div>
+        )}
       </div>
 
       {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Stock Details Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Stock Details</h3>
+          {/* Stock Metrics Card */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-gray-50/50 to-white">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <History className="w-4 h-4 text-blue-500" />
+                Current Stock Profile
+              </h3>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Quantity */}
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-emerald-50">
-                    <Package className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Quantity Received</p>
-                    <p className="text-xl font-bold text-gray-900">{item.quantity.toLocaleString()}</p>
-                    <p className="text-xs text-gray-400">units</p>
-                  </div>
+                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                   <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Total Quantity</p>
+                      <div className="p-2 rounded-xl bg-blue-50">
+                        <Package className="w-5 h-5 text-blue-600" />
+                      </div>
+                   </div>
+                   <p className="text-3xl font-black text-gray-900">{item.quantity.toLocaleString()}</p>
+                   <p className="text-xs text-gray-400 mt-1 uppercase font-bold">Units Available</p>
                 </div>
 
                 {/* Unit Cost */}
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-emerald-50">
-                    <DollarSign className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Unit Cost</p>
-                    <p className="text-xl font-bold text-gray-900">{formatCurrency(item.unitCost)}</p>
-                    <p className="text-xs text-gray-400">per unit</p>
-                  </div>
+                <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                   <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Average Unit Cost</p>
+                      <div className="p-2 rounded-xl bg-emerald-50">
+                        <DollarSign className="w-5 h-5 text-emerald-600" />
+                      </div>
+                   </div>
+                   <p className="text-3xl font-black text-gray-900">{formatCurrency(item.unitCost)}</p>
+                   <p className="text-xs text-gray-400 mt-1 uppercase font-bold">Per Base Unit</p>
                 </div>
 
                 {/* Total Value */}
-                <div className="col-span-2 bg-linear-to-r from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-100">
+                <div className="md:col-span-2 bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg shadow-blue-100">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-emerald-600 font-medium">Total Stock Value</p>
-                      <p className="text-3xl font-bold text-emerald-700">{formatCurrency(item.totalValue)}</p>
+                      <p className="text-sm text-blue-100 font-bold uppercase tracking-widest mb-1 opacity-80">Estimated Stock Value</p>
+                      <p className="text-4xl font-black">{formatCurrency(item.totalValue)}</p>
                     </div>
-                    <div className="p-3 rounded-full bg-emerald-100">
-                      <DollarSign className="w-6 h-6 text-emerald-600" />
+                    <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20">
+                      <DollarSign className="w-8 h-8 text-white" />
                     </div>
                   </div>
                 </div>
@@ -235,86 +263,172 @@ export default function ViewInventory() {
             </div>
           </div>
 
-          {/* Supplier Info Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Supplier Information</h3>
+          {/* Batches Table Section */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-gray-50/50 to-white flex items-center justify-between">
+              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <ShoppingCart className="w-4 h-4 text-orange-500" />
+                Inventory Batches
+              </h3>
+              <span className="px-2.5 py-1 rounded-lg bg-orange-50 text-orange-600 text-[10px] font-black uppercase">
+                {item.batches?.length || 0} Batches Tracked
+              </span>
             </div>
-            <div className="p-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-blue-50">
-                  <Truck className="w-6 h-6 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Supplier / Manufacturer</p>
-                  <p className="text-lg font-semibold text-gray-900">{item.supplier}</p>
-                </div>
-              </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                 <thead>
+                    <tr className="bg-gray-50/50 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                       <th className="px-6 py-3">Batch ID / PO</th>
+                       <th className="px-6 py-3">Quantity</th>
+                       <th className="px-6 py-3">Cost/Selling</th>
+                       <th className="px-6 py-3">Dates</th>
+                       <th className="px-6 py-3">Status</th>
+                    </tr>
+                 </thead>
+                 <tbody className="divide-y divide-gray-50">
+                    {item.batches?.length > 0 ? item.batches.map((batch) => (
+                       <tr key={batch.id} className="hover:bg-gray-50/30 transition-colors">
+                          <td className="px-6 py-4">
+                             <div className="flex flex-col">
+                                <span className="font-bold text-gray-900 text-sm">{batch.batchNumber}</span>
+                                <span className="text-[10px] text-gray-400 font-mono">{batch.purchase?.purchaseNumber || 'No PO'}</span>
+                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                             <div className="flex flex-col">
+                                <span className="font-bold text-gray-900 text-sm">{batch.remainingQuantity} / {batch.quantity}</span>
+                                <div className="w-24 h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                                   <div 
+                                      className={`h-full rounded-full ${batch.remainingQuantity === 0 ? 'bg-gray-300' : 'bg-blue-500'}`}
+                                      style={{ width: `${(batch.remainingQuantity / batch.quantity) * 100}%` }}
+                                   />
+                                </div>
+                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                             <div className="flex flex-col">
+                                <span className="text-xs text-gray-600"><span className="text-gray-400 font-medium">Cost:</span> {formatCurrency(batch.costPrice)}</span>
+                                <span className="text-xs text-emerald-600 font-bold"><span className="text-gray-400 font-medium">Sell:</span> {formatCurrency(batch.sellingPrice)}</span>
+                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                             <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                                   <Calendar className="w-3 h-3" />
+                                   Received: {formatDate(batch.purchase?.purchaseDate)}
+                                </div>
+                                <div className={`flex items-center gap-1.5 text-[10px] font-bold ${getDaysUntilExpiry(batch.expiryDate) < 30 ? 'text-amber-600' : 'text-gray-500'}`}>
+                                   <Clock className="w-3 h-3" />
+                                   Expiry: {formatDate(batch.expiryDate)}
+                                </div>
+                             </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {batch.remainingQuantity > 0 ? (
+                               <div className="flex items-center gap-1.5 text-emerald-600">
+                                  <CheckCircle2 size={14} />
+                                  <span className="text-[10px] font-bold uppercase">Active</span>
+                               </div>
+                            ) : (
+                               <div className="flex items-center gap-1.5 text-gray-400">
+                                  <XCircle size={14} />
+                                  <span className="text-[10px] font-bold uppercase">Depleted</span>
+                               </div>
+                            )}
+                          </td>
+                       </tr>
+                    )) : (
+                       <tr>
+                          <td colSpan="5" className="px-6 py-12 text-center text-gray-400 text-sm italic">
+                             No detailed batch information available for this product.
+                          </td>
+                       </tr>
+                    )}
+                 </tbody>
+              </table>
             </div>
           </div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Entry Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Supplier Info Card */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Entry Information</h3>
+              <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wider">Manufacturer/Supplier</h3>
             </div>
-            <div className="p-5 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gray-100">
-                  <Hash className="w-4 h-4 text-gray-500" />
+            <div className="p-5">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-blue-50 border border-blue-100">
+                  <Truck className="w-6 h-6 text-blue-500" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Entry ID</p>
-                  <p className="text-sm font-medium text-gray-900">#{item.id}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gray-100">
-                  <Calendar className="w-4 h-4 text-gray-500" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Entry Date</p>
-                  <p className="text-sm font-medium text-gray-900">{formatDate(item.entryDate)}</p>
+                  <p className="text-xs text-gray-400 font-bold uppercase">Source Carrier</p>
+                  <p className="text-lg font-black text-gray-900 leading-tight">{item.supplier}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Expiry Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Entry Info */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Expiry Status</h3>
+              <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wider">Audit Information</h3>
+            </div>
+            <div className="p-5 space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gray-100 border border-gray-200">
+                  <Hash className="w-4 h-4 text-gray-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase italic">System Trace ID</p>
+                  <p className="text-sm font-black text-gray-900">#INV-{String(item.id).padStart(5, '0')}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-gray-100 border border-gray-200">
+                  <Calendar className="w-4 h-4 text-gray-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase italic">Last Activity Log</p>
+                  <p className="text-sm font-black text-gray-900">{formatDate(item.entryDate)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Expiry Tracking */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wider">Expiry Management</h3>
             </div>
             <div className="p-5">
               {item.expiryDate ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${getDaysUntilExpiry(item.expiryDate) <= 30 ? 'bg-amber-100' : 'bg-gray-100'}`}>
+                    <div className={`p-2 rounded-xl ${getDaysUntilExpiry(item.expiryDate) <= 30 ? 'bg-amber-100 border-amber-200' : 'bg-gray-100 border-gray-200'} border`}>
                       <Clock className={`w-4 h-4 ${getDaysUntilExpiry(item.expiryDate) <= 30 ? 'text-amber-600' : 'text-gray-500'}`} />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400">Expiry Date</p>
-                      <p className="text-sm font-medium text-gray-900">{formatDate(item.expiryDate)}</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase italic">Soonest Batch Expiry</p>
+                      <p className="text-sm font-black text-gray-900">{formatDate(item.expiryDate)}</p>
                     </div>
                   </div>
 
-                  <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${expiryStatus.color}`}>
+                  <div className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl ${expiryStatus.color} shadow-sm border border-current transition-all duration-300`}>
                     {getDaysUntilExpiry(item.expiryDate) <= 30 && (
-                      <AlertTriangle className="w-4 h-4" />
+                      <AlertTriangle className="w-5 h-5 animate-pulse" />
                     )}
-                    <span className="text-sm font-medium">{expiryStatus.label}</span>
+                    <span className="text-sm font-black uppercase tracking-widest">{expiryStatus.label}</span>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-4">
-                  <div className="p-3 rounded-full bg-gray-100 inline-block mb-2">
-                    <Clock className="w-5 h-5 text-gray-400" />
+                <div className="text-center py-6 border-2 border-dashed border-gray-100 rounded-2xl">
+                  <div className="p-3 rounded-full bg-gray-50 inline-block mb-3 border border-gray-100">
+                    <Clock className="w-6 h-6 text-gray-300" />
                   </div>
-                  <p className="text-gray-500 text-sm">No expiry date set</p>
+                  <p className="text-gray-400 text-xs font-bold uppercase">No Perishable Risk Detected</p>
                 </div>
               )}
             </div>

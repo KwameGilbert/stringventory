@@ -3,6 +3,7 @@ import { Save, ArrowLeft, DollarSign, Calendar, FileText, Link as LinkIcon, Pape
 import { Link, useNavigate } from "react-router-dom";
 import expenseService from "../../../services/expenseService";
 import { showError } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractCategories = (response) => {
   const payload = response?.data || response || {};
@@ -42,6 +43,7 @@ const extractPaymentMethods = (response) => {
 
 const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting = false }) => {
   const navigate = useNavigate();
+  const { symbol } = useCurrency();
   
   const today = new Date().toISOString().split('T')[0];
   
@@ -200,10 +202,10 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting
               {/* Amount */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
-                  Amount (GH₵) <span className="text-rose-500">*</span>
+                  Amount ({symbol}) <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">₵</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">{symbol}</span>
                   <input
                     type="number"
                     name="amount"

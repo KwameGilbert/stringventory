@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Banknote, ChevronDown, Bell, AlertTriangle, Clock, AlertCircle } from "lucide-react";
-import settingsService from "../../../services/settingsService";
+import { Banknote, ChevronDown, Bell, AlertTriangle, Clock, AlertCircle, Loader2 } from "lucide-react";
+import { useSettings } from "../../../contexts/SettingsContext";
 import { showSuccess, showError } from "../../../utils/alerts";
 
 export default function PreferenceSettings() {
+  const { settings, updateSettings, loading: contextLoading } = useSettings();
   const [preferences, setPreferences] = useState({
     currency: "GHS",
     lowStockThreshold: 10,
@@ -11,36 +12,21 @@ export default function PreferenceSettings() {
     emailNotifications: true,
     dashboardRefresh: 5
   });
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load preferences on mount
+  // Sync local form state with context settings when they load
   useEffect(() => {
-    const loadPreferences = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await settingsService.getNotificationSettings();
-        const data = response?.data || response || {};
-        
-        setPreferences({
-          currency: data.currency || "GHS",
-          lowStockThreshold: data.lowStockThreshold || 10,
-          expiryAlertDays: data.expiryAlertDays || 30,
-          emailNotifications: data.emailNotifications !== false,
-          dashboardRefresh: data.dashboardRefresh || 5
-        });
-      } catch (err) {
-        console.error("Failed to load preferences", err);
-        setError(err?.message || "Failed to load preferences");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPreferences();
-  }, []);
+    if (settings) {
+      setPreferences({
+        currency: settings.currency || "GHS",
+        lowStockThreshold: settings.lowStockThreshold || 10,
+        expiryAlertDays: settings.expiryAlertDays || 30,
+        emailNotifications: settings.emailNotifications !== false,
+        dashboardRefresh: settings.dashboardRefresh || 5
+      });
+    }
+  }, [settings]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,7 +35,7 @@ export default function PreferenceSettings() {
       setSaving(true);
       setError(null);
       
-      await settingsService.updateNotificationSettings({
+      await updateSettings({
         currency: preferences.currency,
         lowStockThreshold: parseInt(preferences.lowStockThreshold),
         expiryAlertDays: parseInt(preferences.expiryAlertDays),
@@ -78,11 +64,10 @@ export default function PreferenceSettings() {
         </div>
       )}
 
-      {loading ? (
-        <div className="space-y-6">
-          <div className="h-24 bg-gray-200 rounded animate-pulse"></div>
-          <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
-          <div className="h-16 bg-gray-200 rounded animate-pulse"></div>
+      {contextLoading ? (
+        <div className="flex flex-col items-center justify-center py-12 space-y-4">
+          <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+          <p className="text-gray-500 text-sm animate-pulse">Loading system preferences...</p>
         </div>
       ) : (
       <form onSubmit={handleSubmit} className="space-y-8">

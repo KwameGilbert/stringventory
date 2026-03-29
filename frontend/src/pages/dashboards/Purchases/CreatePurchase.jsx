@@ -7,6 +7,7 @@ import { productService } from "../../../services/productService";
 import { showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
 import { isProductApproved } from "../../../utils/productApproval";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -34,6 +35,7 @@ const toTitleCase = (value = "") => {
 export default function CreatePurchase() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { symbol } = useCurrency();
   const isCeo = user?.role === 'CEO' || user?.normalizedRole === 'CEO';
   const creatorRole = toTitleCase(user?.rawRole || user?.role || user?.normalizedRole || "");
   const creatorName = (user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "System").trim();
@@ -275,7 +277,7 @@ export default function CreatePurchase() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cost Price (GH₵)
+                      Cost Price ({symbol})
                     </label>
                     <input
                       type="number"
@@ -289,7 +291,7 @@ export default function CreatePurchase() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Selling Price (GH₵)
+                      Selling Price ({symbol})
                     </label>
                     <input
                       type="number"

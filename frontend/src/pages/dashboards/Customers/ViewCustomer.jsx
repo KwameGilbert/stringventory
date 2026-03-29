@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import customerService from "../../../services/customerService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractCustomer = (response) => {
   const payload = response?.data || response || {};
@@ -21,6 +22,7 @@ const extractOrders = (customerData) => {
 export default function ViewCustomer() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [customer, setCustomer] = useState(null);
   const [orders, setOrders] = useState([]);
 
@@ -61,13 +63,7 @@ export default function ViewCustomer() {
     }
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -178,7 +174,7 @@ export default function ViewCustomer() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Total Spent</p>
-                  <p className="text-2xl font-bold text-emerald-600">{formatCurrency(customer.totalSpent)}</p>
+                  <p className="text-2xl font-bold text-emerald-600">{formatPrice(customer.totalSpent)}</p>
                 </div>
               </div>
             </div>
@@ -204,7 +200,7 @@ export default function ViewCustomer() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">{formatCurrency(order.total ?? 0)}</p>
+                      <p className="font-semibold text-gray-900">{formatPrice(order.total ?? 0)}</p>
                       <span className={`text-xs font-medium ${
                         order.status === 'fulfilled' ? 'text-emerald-600' :
                         order.status === 'pending' ? 'text-amber-600' :

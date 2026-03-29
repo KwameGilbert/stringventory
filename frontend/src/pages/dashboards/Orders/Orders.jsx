@@ -5,6 +5,7 @@ import OrdersHeader from "../../../components/admin/Orders/OrdersHeader";
 import OrdersTable from "../../../components/admin/Orders/OrdersTable";
 import orderService from "../../../services/orderService";
 import { showError } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractOrders = (response) => {
   const payload = response?.data || response || {};
@@ -79,6 +80,7 @@ const isForbiddenError = (error) => {
 
 export default function Orders() {
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [orders, setOrders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -122,13 +124,7 @@ export default function Orders() {
     return matchesSearch && matchesStatus;
   });
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   if (loading) {
     return (
@@ -195,7 +191,7 @@ export default function Orders() {
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalRevenue)}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(totalRevenue)}</p>
             </div>
           </div>
         </div>

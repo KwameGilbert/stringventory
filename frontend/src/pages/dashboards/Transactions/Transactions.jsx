@@ -3,8 +3,10 @@ import { RefreshCw, Download, Filter, Search, TrendingUp, TrendingDown, Landmark
 import transactionService from "../../../services/transactionService";
 import TransactionsTable from "../../../components/admin/Transactions/TransactionsTable";
 import { showError } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 export default function Transactions() {
+  const { formatPrice } = useCurrency();
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState({ totalInflow: 0, totalOutflow: 0, netProfitLoss: 0 });
   const [loading, setLoading] = useState(true);
@@ -55,14 +57,6 @@ export default function Transactions() {
 
   // Remove local calculation as we use summary from API
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
-
   if (loading) {
     return (
       <div className="space-y-6 animate-fade-in">
@@ -108,7 +102,7 @@ export default function Transactions() {
             </div>
             <div>
                 <p className="text-sm font-medium text-gray-500 mb-1">Total Inflow</p>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(summary.totalInflow)}</p>
+                <p className="text-2xl font-bold text-gray-900">{formatPrice(summary.totalInflow)}</p>
             </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -117,7 +111,7 @@ export default function Transactions() {
             </div>
             <div>
                 <p className="text-sm font-medium text-gray-500 mb-1">Total Outflow</p>
-                <p className="text-2xl font-bold text-gray-900">{formatCurrency(summary.totalOutflow)}</p>
+                <p className="text-2xl font-bold text-gray-900">{formatPrice(summary.totalOutflow)}</p>
             </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -127,7 +121,7 @@ export default function Transactions() {
             <div>
                 <p className="text-sm font-medium text-gray-500 mb-1">Net Profit/Loss</p>
                 <p className={`text-2xl font-bold ${summary.netProfitLoss >= 0 ? 'text-gray-900' : 'text-rose-600'}`}>
-                  {formatCurrency(summary.netProfitLoss)}
+                  {formatPrice(summary.netProfitLoss)}
                 </p>
             </div>
         </div>

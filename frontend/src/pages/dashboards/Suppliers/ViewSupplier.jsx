@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Edit, Building2, User, Mail, Phone, MapPin, Truck, ShoppingBag, Star } from "lucide-react";
 import supplierService from "../../../services/supplierService";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractSupplier = (response) => {
   const payload = response?.data || response || {};
@@ -11,6 +12,7 @@ const extractSupplier = (response) => {
 export default function ViewSupplier() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [supplier, setSupplier] = useState(null);
 
@@ -192,13 +194,13 @@ export default function ViewSupplier() {
                       <div className="p-4 bg-gray-50 rounded-xl">
                          <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Lifetime Spend</p>
                          <p className="text-lg font-bold text-gray-900 leading-tight">
-                           {new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS", maximumFractionDigits: 0 }).format(supplier.lifetimeSpend)}
+                           {formatPrice(supplier.lifetimeSpend)}
                          </p>
                       </div>
                       <div className="p-4 bg-amber-50 rounded-xl">
                          <p className="text-xs text-amber-700 uppercase font-bold tracking-wider mb-1 text-[10px]">Pending Balance</p>
                          <p className="text-lg font-bold text-amber-700 leading-tight">
-                           {new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS", maximumFractionDigits: 0 }).format(supplier.pendingBalance)}
+                           {formatPrice(supplier.pendingBalance)}
                          </p>
                       </div>
                   </div>

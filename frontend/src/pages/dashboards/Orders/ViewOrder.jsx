@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import orderService from "../../../services/orderService";
 import { showError, showInfo, showSuccess } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const statusConfig = {
   pending: {
@@ -50,6 +51,7 @@ export default function ViewOrder() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { formatPrice } = useCurrency();
   const hasAutoPrintedRef = useRef(false);
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
@@ -236,14 +238,6 @@ export default function ViewOrder() {
 
     return () => window.clearTimeout(timer);
   }, [loading, order, location.pathname, location.state, navigate]);
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -447,7 +441,7 @@ export default function ViewOrder() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">{formatCurrency(item.subtotal)}</p>
+                      <p className="font-semibold text-gray-900">{formatPrice(item.subtotal)}</p>
                       {isFullyPicked && <span className="text-xs text-emerald-600 font-bold uppercase tracking-tight">Fully Fulfilled</span>}
                     </div>
                   </div>
@@ -459,7 +453,7 @@ export default function ViewOrder() {
             <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span className="text-gray-900">{formatCurrency(order.subtotal)}</span>
+                <span className="text-gray-900">{formatPrice(order.subtotal)}</span>
               </div>
                   {order.discountAmount > 0 && (
                 <div className="flex justify-between text-sm">
@@ -467,16 +461,16 @@ export default function ViewOrder() {
                     <Percent size={12} />
                     Discount
                   </span>
-                  <span className="text-emerald-600">-{formatCurrency(order.discountAmount)}</span>
+                  <span className="text-emerald-600">-{formatPrice(order.discountAmount)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Tax</span>
-                <span className="text-gray-900">{formatCurrency(order.taxAmount || 0)}</span>
+                <span className="text-gray-900">{formatPrice(order.taxAmount || 0)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
                 <span className="text-gray-900">Total</span>
-                <span className="text-gray-900">{formatCurrency(order.total)}</span>
+                <span className="text-gray-900">{formatPrice(order.total)}</span>
               </div>
             </div>
           </div>
@@ -538,7 +532,7 @@ export default function ViewOrder() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Amount Paid</p>
-                  <p className="font-bold text-gray-900 text-lg">{formatCurrency(order.amountPaid || order.total)}</p>
+                  <p className="font-bold text-gray-900 text-lg">{formatPrice(order.amountPaid || order.total)}</p>
                 </div>
               </div>
             </div>
@@ -605,15 +599,15 @@ export default function ViewOrder() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium text-gray-900">{formatCurrency(order.subtotal)}</span>
+              <span className="font-medium text-gray-900">{formatPrice(order.subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Discount</span>
-              <span className="font-medium text-gray-900">-{formatCurrency(order.discountAmount)}</span>
+              <span className="font-medium text-gray-900">-{formatPrice(order.discountAmount)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Tax</span>
-              <span className="font-medium text-gray-900">{formatCurrency(order.taxAmount || 0)}</span>
+              <span className="font-medium text-gray-900">{formatPrice(order.taxAmount || 0)}</span>
             </div>
           </div>
 
@@ -621,7 +615,7 @@ export default function ViewOrder() {
 
           <div className="flex justify-between text-base font-bold">
             <span>Total Paid</span>
-            <span>{formatCurrency(order.total)}</span>
+            <span>{formatPrice(order.total)}</span>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import supplierService from "../../../services/supplierService";
 import { productService } from "../../../services/productService";
 import { showError, showSuccess } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -39,6 +40,7 @@ const normalizeEditItem = (item = {}) => ({
 export default function EditPurchase() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { symbol } = useCurrency();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [suppliers, setSuppliers] = useState([]);
@@ -303,7 +305,7 @@ export default function EditPurchase() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Unit Cost (GH₵)
+                      Unit Cost ({symbol})
                     </label>
                     <input
                       type="number"
@@ -317,7 +319,7 @@ export default function EditPurchase() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Selling Price (GH₵)
+                      Selling Price ({symbol})
                     </label>
                     <input
                       type="number"

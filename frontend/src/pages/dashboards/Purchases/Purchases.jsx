@@ -33,9 +33,8 @@ const extractPagination = (response) => {
 };
 
 const resolveCreatedBy = (purchase) => {
-  // 1. Try custom attributes (camelCase or snake_case)
   const createdBy = purchase?.createdBy || purchase?.created_by || "";
-  if (createdBy && String(createdBy).toLowerCase() !== "system") return createdBy;
+  if (createdBy && typeof createdBy === 'string' && isNaN(Number(createdBy)) && createdBy.toLowerCase() !== "system") return createdBy;
 
   const createdByName = purchase?.createdByName || purchase?.created_by_name || purchase?.user_name || "";
   const createdByRole = purchase?.createdByRole || purchase?.created_by_role || purchase?.user_role || "";

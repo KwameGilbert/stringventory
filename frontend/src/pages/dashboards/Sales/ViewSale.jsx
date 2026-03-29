@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import orderService from "../../../services/orderService";
 import { showError } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const statusConfig = {
   Pending: {
@@ -37,6 +38,7 @@ const statusConfig = {
 export default function ViewSale() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [sale, setSale] = useState(null);
   const [items, setItems] = useState([]);
 
@@ -87,13 +89,7 @@ export default function ViewSale() {
     fetchData();
   }, [id]);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   if (!sale) {
     return (
@@ -133,7 +129,7 @@ export default function ViewSale() {
         <div className="px-6 py-5 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 <Receipt className="w-7 h-7 text-white" />
               </div>
               <div>
@@ -183,17 +179,17 @@ export default function ViewSale() {
             <div className="divide-y divide-gray-50">
               {items.map((item, index) => (
                 <div key={index} className="px-6 py-4 flex items-center gap-4 transition-colors">
-                <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 relative">
+                <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 relative">
                     <Package className="w-5 h-5 text-gray-400" />
                 </div>
                 <div className="flex-1">
                     <p className="font-medium text-gray-900">{item.productName}</p>
                     <p className="text-sm text-gray-500 mt-1">
-                        {item.quantity} × {formatCurrency(item.unitPrice)}
+                        {item.quantity} × {formatPrice(item.unitPrice)}
                     </p>
                 </div>
                 <div className="text-right">
-                    <p className="font-semibold text-gray-900">{formatCurrency(item.quantity * item.unitPrice)}</p>
+                    <p className="font-semibold text-gray-900">{formatPrice(item.quantity * item.unitPrice)}</p>
                 </div>
                 </div>
               ))}
@@ -203,7 +199,7 @@ export default function ViewSale() {
             <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 space-y-2">
               <div className="flex justify-between text-lg font-bold pt-2">
                 <span className="text-gray-900">Total</span>
-                <span className="text-gray-900">{formatCurrency(sale.amount)}</span>
+                <span className="text-gray-900">{formatPrice(sale.amount)}</span>
               </div>
             </div>
           </div>
@@ -218,7 +214,7 @@ export default function ViewSale() {
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold">
                   {sale.customer === "Walk-in Customer" ? "W" : sale.customer.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
@@ -251,7 +247,7 @@ export default function ViewSale() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Amount Paid</p>
-                  <p className="font-bold text-gray-900 text-lg">{formatCurrency(sale.amount)}</p>
+                  <p className="font-bold text-gray-900 text-lg">{formatPrice(sale.amount)}</p>
                 </div>
               </div>
             </div>

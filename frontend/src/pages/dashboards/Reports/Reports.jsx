@@ -34,6 +34,7 @@ import analyticsService from "../../../services/analyticsService";
 import orderService from "../../../services/orderService";
 import userService from "../../../services/userService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const TABS = [
   { id: "sales", label: "Sales Report", icon: TrendingUp },
@@ -51,6 +52,7 @@ export default function Reports() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState("all");
+  const { formatPrice, symbol } = useCurrency();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -232,13 +234,7 @@ export default function Reports() {
     fetchData();
   }, [dateRange]);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-GB", {
@@ -358,8 +354,8 @@ export default function Reports() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₵${(v/1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ borderRadius: "8px" }} />
+                  <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
                   <Area type="monotone" dataKey="revenue" stroke="#10B981" fillOpacity={1} fill="url(#colorSalesRevenue)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -385,7 +381,7 @@ export default function Reports() {
                     <tr key={idx} className="hover:bg-gray-50/50">
                       <td className="px-6 py-3 font-medium text-gray-900">{product.name}</td>
                       <td className="px-6 py-3 text-right text-gray-600">{product.units}</td>
-                       <td className="px-6 py-3 text-right font-bold text-emerald-600">{formatCurrency(product.revenue)}</td>
+                       <td className="px-6 py-3 text-right font-bold text-emerald-600">{formatPrice(product.revenue)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -399,7 +395,7 @@ export default function Reports() {
       {activeTab === "inventory" && (
         <div className="space-y-6 animate-fade-in">
            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-             <SummaryCard title="Total Value" value={formatCurrency(data?.inventoryReport?.summary?.totalValue || 0)} icon={DollarSign} color="emerald" />
+             <SummaryCard title="Total Value" value={formatPrice(data?.inventoryReport?.summary?.totalValue || 0)} icon={DollarSign} color="emerald" />
              <SummaryCard title="Total Items" value={data?.inventoryReport?.summary?.totalItems || 0} icon={Package} color="blue" />
              <SummaryCard title="Low Stock" value={data?.inventoryReport?.summary?.lowStockItems || 0} icon={AlertTriangle} color="amber" />
              <SummaryCard title="Out of Stock" value={data?.inventoryReport?.summary?.outOfStockItems || 0} icon={AlertTriangle} color="red" />
@@ -413,8 +409,8 @@ export default function Reports() {
                 <BarChart data={data?.inventoryReport?.categoryValuation}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                   <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₵${(v/1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ borderRadius: "8px" }} />
+                   <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
                   <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -427,7 +423,7 @@ export default function Reports() {
       {activeTab === "expenses" && (
          <div className="space-y-6 animate-fade-in">
            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-             <SummaryCard title="Total Expenses" value={formatCurrency(data?.expenseReport?.summary?.totalExpenses || 0)} icon={DollarSign} color="rose" />
+             <SummaryCard title="Total Expenses" value={formatPrice(data?.expenseReport?.summary?.totalExpenses || 0)} icon={DollarSign} color="rose" />
              <SummaryCard title="Largest Category" value={data?.expenseReport?.summary?.largestCategory || "N/A"} icon={BarChart3} color="emerald " />
              <SummaryCard title="Trend" value={`${data?.expenseReport?.summary?.trend || 0}%`} icon={TrendingUp} color={data?.expenseReport?.summary?.trend > 0 ? "rose" : "emerald"} />
           </div>
@@ -447,8 +443,8 @@ export default function Reports() {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₵${(v/1000).toFixed(0)}k`} />
-                    <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ borderRadius: "8px" }} />
+                    <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
+                    <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
                     <Area type="monotone" dataKey="amount" stroke="#EF4444" fillOpacity={1} fill="url(#colorMonthlyExpenses)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -474,7 +470,7 @@ export default function Reports() {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ borderRadius: "8px" }} />
+                    <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -488,8 +484,8 @@ export default function Reports() {
       {activeTab === "pnl" && (
          <div className="space-y-6 animate-fade-in">
            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-             <SummaryCard title="Total Revenue" value={formatCurrency(data?.profitAndLoss?.summary?.totalRevenue || 0)} icon={DollarSign} color="blue" />
-             <SummaryCard title="Net Profit" value={formatCurrency(data?.profitAndLoss?.summary?.netProfit || 0)} icon={TrendingUp} color="emerald" />
+             <SummaryCard title="Total Revenue" value={formatPrice(data?.profitAndLoss?.summary?.totalRevenue || 0)} icon={DollarSign} color="blue" />
+             <SummaryCard title="Net Profit" value={formatPrice(data?.profitAndLoss?.summary?.netProfit || 0)} icon={TrendingUp} color="emerald" />
               <SummaryCard title="Profit Margin" value={`${data?.profitAndLoss?.summary?.margin || 0}%`} icon={BarChart} color="emerald " />
           </div>
 
@@ -501,8 +497,8 @@ export default function Reports() {
                  <AreaChart data={data?.profitAndLoss?.monthlyPnL}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₵${(v/1000).toFixed(0)}k`} />
-                    <Tooltip formatter={(value) => formatCurrency(value)} contentStyle={{ borderRadius: "8px" }} />
+                    <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
+                    <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
                     <Legend />
                     <Area type="monotone" dataKey="revenue" stackId="1" stroke="#3B82F6" fill="#3B82F6" />
                     <Area type="monotone" dataKey="expenses" stackId="2" stroke="#EF4444" fill="#EF4444" />

@@ -6,7 +6,7 @@ import inventoryService from "../../../services/inventoryService";
 import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
-import { confirmDelete, showError, showSuccess, showInfo } from "../../../utils/alerts";
+import { showError, showSuccess, showInfo } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
 import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
 
@@ -39,24 +39,18 @@ export default function Inventory() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [inventoryRes, categoriesRes, productsRes, suppliersRes] = await Promise.all([
+        const [inventoryRes, categoriesRes, suppliersRes] = await Promise.all([
           inventoryService.getInventory(),
           categoryService.getCategories(),
-          productService.getProducts(),
           supplierService.getSuppliers(),
         ]);
 
         const fetchedInventory = extractList(inventoryRes, "inventory");
         const fetchedCategories = extractList(categoriesRes, "categories");
-        const fetchedProducts = extractList(productsRes, "products");
         const fetchedSuppliers = extractList(suppliersRes, "suppliers");
 
-        const productById = new Map(
-          fetchedProducts.map((product) => [String(product.id), product])
-        );
-
         const normalizedInventory = fetchedInventory.map((item) => {
-          const product = productById.get(String(item.productId));
+          const product = item.product || {};
           const category = fetchedCategories.find((c) => String(c.id) === String(product?.categoryId));
           const supplier = fetchedSuppliers.find((s) => String(s.id) === String(product?.supplierId));
 
@@ -81,13 +75,12 @@ export default function Inventory() {
             unitCost,
             quantity,
             totalValue: Number(item.totalValue ?? quantity * unitCost),
-            entryDate: item.entryDate || item.lastStockCheck || item.createdAt || new Date().toISOString(),
-            expiryDate: item.expiryDate || null,
+            entryDate: item.createdAt || item.lastUpdated || item.lastStockCheck || new Date().toISOString(),
+            expiryDate: item.soonestExpiryDate || item.expiryDate || null,
             productId: item.productId || item.product_id || item.product?.id || product?.id,
           };
         }).filter((item) => {
-          const product = productById.get(String(item.productId));
-          return isProductApproved(product);
+          return isProductApproved(item.product || { id: item.productId });
         });
 
         setInventory(normalizedInventory);
@@ -125,14 +118,6 @@ export default function Inventory() {
       !categoryFilter || item.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
-
-  const handleDelete = async (id) => {
-    const result = await confirmDelete("this inventory entry");
-    if (result.isConfirmed) {
-      setInventory((prev) => prev.filter((item) => String(item.id) !== String(id)));
-      showInfo("Inventory delete endpoint is not available yet; removed from current view only.");
-    }
-  };
 
   const handleOpenAdjustment = (item) => {
     setSelectedItem(item);
@@ -290,7 +275,6 @@ export default function Inventory() {
       {/* Inventory Table */}
       <InventoryTable 
         inventory={filteredInventory} 
-        onDelete={handleDelete} 
         onAdjust={handleOpenAdjustment}
       />
 

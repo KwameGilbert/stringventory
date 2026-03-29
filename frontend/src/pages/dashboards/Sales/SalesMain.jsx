@@ -4,12 +4,14 @@ import { DollarSign, ShoppingBag, TrendingUp, Plus, Search, Filter, ArrowRight }
 // import SalesTable from "../../../components/admin/Sales/SalesTable"; // REMOVED
 import OrdersTable from "../../../components/admin/Orders/OrdersTable"; // ADDED
 import orderService from "../../../services/orderService";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 export default function SalesMain() {
+  const { formatPrice } = useCurrency();
   const [stats, setStats] = useState([
-    { title: "Total Revenue", value: "GHS 0.00", icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { title: "Total Revenue", value: formatPrice(0), icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
     { title: "Total Orders", value: "0", icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
-    { title: "Avg. Ticket Size", value: "GHS 0.00", icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { title: "Avg. Ticket Size", value: formatPrice(0), icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
   ]);
 
   const [transactions, setTransactions] = useState([]);
@@ -33,12 +35,12 @@ export default function SalesMain() {
         const totalOrders = orders.length;
         const avgTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-        const formatCurrency = (val) => new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS" }).format(val);
+        const currency = (val) => formatPrice(val);
 
         setStats([
-            { title: "Total Revenue", value: formatCurrency(totalRevenue), icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
+            { title: "Total Revenue", value: currency(totalRevenue), icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
             { title: "Total Sales", value: totalOrders.toString(), icon: ShoppingBag, color: "text-blue-600", bg: "bg-blue-50" },
-            { title: "Avg. Ticket Size", value: formatCurrency(avgTicket), icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
+            { title: "Avg. Ticket Size", value: currency(avgTicket), icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
         ]);
 
         setTransactions(

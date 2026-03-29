@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import expenseService from "../../../services/expenseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractExpense = (response) => {
   const payload = response?.data || response || {};
@@ -15,6 +16,7 @@ const extractExpense = (response) => {
 export default function ViewExpense() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [expense, setExpense] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -56,14 +58,6 @@ export default function ViewExpense() {
       console.error("Failed to delete expense", error);
       showError(error?.message || "Failed to delete expense");
     }
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
   };
 
   const formatDate = (dateString) => {
@@ -144,7 +138,7 @@ export default function ViewExpense() {
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-sm text-gray-500 mb-1">Amount</p>
-              <p className="text-3xl font-bold text-rose-600">{formatCurrency(expense.amount)}</p>
+              <p className="text-3xl font-bold text-rose-600">{formatPrice(expense.amount)}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500 mb-1">Date</p>

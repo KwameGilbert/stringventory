@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, ChevronLeft, ChevronRight, RefreshCw, Clock, CheckCircle, XCircle, RotateCcw } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -26,6 +27,7 @@ const statusConfig = {
 };
 
 const RefundsTable = ({ refunds }) => {
+  const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(refunds.length / ITEMS_PER_PAGE);
@@ -34,14 +36,6 @@ const RefundsTable = ({ refunds }) => {
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
   };
 
   const formatDate = (dateString) => {
@@ -112,7 +106,7 @@ const RefundsTable = ({ refunds }) => {
                     <span className="text-sm text-gray-600">{formatDate(refund.createdAt)}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <span className="text-sm font-bold text-gray-900">{formatCurrency(refund.refundAmount)}</span>
+                    <span className="text-sm font-bold text-gray-900">{formatPrice(refund.refundAmount)}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${status.bg} ${status.text}`}>
