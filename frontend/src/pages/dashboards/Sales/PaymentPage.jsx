@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, DollarSign, CreditCard, Smartphone, CheckCircle, Wallet } from "lucide-react";
 import Swal from "sweetalert2";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 export default function PaymentPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { total } = location.state || { total: 0 };
+  const { formatPrice } = useCurrency();
   
   const [selectedMethod, setSelectedMethod] = useState("Cash");
   const [processing, setProcessing] = useState(false);
@@ -34,7 +36,7 @@ export default function PaymentPage() {
         Swal.fire({
             icon: 'success',
             title: 'Payment Successful',
-            text: `Received ${formatCurrency(total)} via ${selectedMethod}`,
+            text: `Received ${formatPrice(total)} via ${selectedMethod}`,
             confirmButtonColor: '#10b981',
             timer: 2000,
             showConfirmButton: false
@@ -44,13 +46,7 @@ export default function PaymentPage() {
     }, 1500);
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   return (
     <div className="max-w-3xl mx-auto pb-8 animate-fade-in relative">
@@ -67,7 +63,7 @@ export default function PaymentPage() {
 
       <div className="text-center mb-10">
         <p className="text-gray-500 font-medium uppercase tracking-wide text-sm mb-2">Total Amount Payable</p>
-        <h1 className="text-5xl font-bold text-gray-900">{formatCurrency(total)}</h1>
+        <h1 className="text-5xl font-bold text-gray-900">{formatPrice(total)}</h1>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -119,7 +115,7 @@ export default function PaymentPage() {
                 disabled={processing}
                 className="w-full mt-6 py-4 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white rounded-xl font-bold text-lg shadow-xl shadow-gray-900/20 transition-all transform active:scale-95"
             >
-                {processing ? "Processing..." : `Confirm Payment • ${formatCurrency(total)}`}
+                {processing ? "Processing..." : `Confirm Payment • ${formatPrice(total)}`}
             </button>
         </div>
       </div>

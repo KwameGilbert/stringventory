@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Eye, Edit2, Trash2, Repeat, Paperclip, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const ITEMS_PER_PAGE = 8;
 
 const ExpensesTable = ({ expenses, onDelete }) => {
+  const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(expenses.length / ITEMS_PER_PAGE);
@@ -13,14 +15,6 @@ const ExpensesTable = ({ expenses, onDelete }) => {
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
   };
 
   const formatDate = (dateString) => {
@@ -79,7 +73,7 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="font-bold text-rose-600">{formatCurrency(expense.amount)}</span>
+                  <span className="font-bold text-rose-600">{formatPrice(expense.amount)}</span>
                 </td>
                 <td className="px-6 py-4">
                   <span className="text-gray-600 text-sm">{formatDate(expense.date)}</span>
@@ -105,7 +99,7 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                   <div className="flex items-center gap-2 max-w-[200px]">
                     <span className="truncate text-gray-500 text-sm">{expense.notes}</span>
                     {expense.hasAttachment && (
-                      <Paperclip size={14} className="text-gray-400 flex-shrink-0" />
+                      <Paperclip size={14} className="text-gray-400 shrink-0" />
                     )}
                   </div>
                 </td>

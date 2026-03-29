@@ -12,10 +12,12 @@ import {
 import { Package, BarChart2, Table as TableIcon } from "lucide-react";
 import analyticsService from "../../../services/analyticsService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const TopProductsChart = ({ dateRange }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { formatPrice, symbol } = useCurrency();
   const [viewMode, setViewMode] = useState("chart"); // 'chart' or 'table'
 
   useEffect(() => {
@@ -63,14 +65,7 @@ const TopProductsChart = ({ dateRange }) => {
     "#06b6d4",
   ];
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -82,7 +77,7 @@ const TopProductsChart = ({ dateRange }) => {
           </p>
           <p className="text-sm text-emerald-600">
             <span className="font-medium">Revenue:</span>{" "}
-            {formatCurrency(data.sales)}
+            {formatPrice(data.sales)}
           </p>
           <p className="text-sm text-gray-600">
             <span className="font-medium">Units Sold:</span> {data.units}
@@ -157,7 +152,7 @@ const TopProductsChart = ({ dateRange }) => {
                 <tr key={index} className="hover:bg-gray-50/80 transition-colors">
                     <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 font-medium text-xs">
+                        <div className="shrink-0 w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 font-medium text-xs">
                         #{index + 1}
                         </div>
                         <span className="text-sm font-medium text-gray-900 truncate max-w-[150px] sm:max-w-none" title={item.fullName}>
@@ -171,7 +166,7 @@ const TopProductsChart = ({ dateRange }) => {
                     </span>
                     </td>
                     <td className="py-3 px-4 text-right text-sm font-semibold text-gray-900">
-                    {formatCurrency(item.sales)}
+                    {formatPrice(item.sales)}
                     </td>
                 </tr>
                 ))}
@@ -194,7 +189,7 @@ const TopProductsChart = ({ dateRange }) => {
                 <YAxis
                     stroke="#6b7280"
                     style={{ fontSize: "12px" }}
-                    tickFormatter={(value) => `₵${(value / 1000).toFixed(0)}k`}
+                    tickFormatter={(value) => `${symbol}${(value / 1000).toFixed(0)}k`}
                 />
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: "#f3f4f6" }} />
                 <Bar dataKey="sales" radius={[8, 8, 0, 0]}>

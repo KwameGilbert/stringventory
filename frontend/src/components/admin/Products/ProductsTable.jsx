@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, Edit2, Trash2, Package, AlertTriangle, Image, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -13,6 +14,7 @@ const renderText = (value, fallback = "—") => {
 };
 
 const ProductsTable = ({ products, onDelete, canManage = true }) => {
+  const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
 
   // Pagination logic
@@ -107,14 +109,14 @@ const ProductsTable = ({ products, onDelete, canManage = true }) => {
                   {/* Cost Price */}
                   <td className="px-4 py-3 text-right">
                     <span className="text-sm text-gray-900 font-medium">
-                      GH₵{product.costPrice ? product.costPrice.toFixed(2) : "0.00"}
+                      {formatPrice(product.costPrice)}
                     </span>
                   </td>
                   
                   {/* Selling Price */}
                   <td className="px-4 py-3 text-right">
                     <span className="text-sm text-gray-900 font-semibold">
-                      GH₵{product.sellingPrice ? product.sellingPrice.toFixed(2) : "0.00"}
+                      {formatPrice(product.sellingPrice)}
                     </span>
                   </td>
                   

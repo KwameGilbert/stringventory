@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, RefreshCw, CheckCircle, Clock, RotateCcw, XCircle, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -32,6 +33,7 @@ const statusConfig = {
 };
 
 const SalesTable = ({ sales, showPagination = true }) => {
+  const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(sales.length / ITEMS_PER_PAGE);
@@ -41,14 +43,6 @@ const SalesTable = ({ sales, showPagination = true }) => {
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
   };
 
   if (sales.length === 0) {
@@ -101,7 +95,7 @@ const SalesTable = ({ sales, showPagination = true }) => {
                     </span>
                     </td>
                     <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
-                    {formatCurrency(sale.amount)}
+                    {formatPrice(sale.amount)}
                     </td>
                     <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">

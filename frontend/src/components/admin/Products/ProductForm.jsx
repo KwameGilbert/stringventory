@@ -6,6 +6,7 @@ import supplierService from "../../../services/supplierService";
 import { productService } from "../../../services/productService";
 import { apiClient, API_ENDPOINTS } from "../../../services/api.client";
 import { showError } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -27,6 +28,7 @@ const ProductForm = ({
   isSubmitting = false,
 }) => {
   const navigate = useNavigate();
+  const { symbol } = useCurrency();
   const [categories, setCategories] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesError, setCategoriesError] = useState("");
@@ -291,7 +293,7 @@ const ProductForm = ({
               {/* Cost Price */}
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-700">
-                  Cost Price <span className="text-gray-400 mt-1">(GHS)</span>
+                  Cost Price <span className="text-gray-400 mt-1">({symbol})</span>
                 </label>
                 <input
                   type="number"
@@ -309,7 +311,7 @@ const ProductForm = ({
               {/* Selling Price */}
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-700">
-                  Selling Price <span className="text-gray-400 mt-1">(GHS)</span>
+                  Selling Price <span className="text-gray-400 mt-1">({symbol})</span>
                 </label>
                 <input
                   type="number"

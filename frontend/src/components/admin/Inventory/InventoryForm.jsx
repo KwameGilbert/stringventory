@@ -5,6 +5,7 @@ import { productService } from "../../../services/productService";
 import supplierService from "../../../services/supplierService";
 import { showError } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -21,6 +22,7 @@ const extractList = (response, key) => {
 
 const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
   const navigate = useNavigate();
+  const { formatPrice, symbol } = useCurrency();
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,13 +90,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
     return cost * qty;
   }, [formData.unitCost, formData.quantity]);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   const generateBatchNumber = () => {
     const year = new Date().getFullYear();
@@ -267,7 +263,7 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
                   Unit Cost Price <span className="text-rose-500">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">GH₵</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">{symbol}</span>
                   <input
                     type="number"
                     name="unitCost"
@@ -305,14 +301,14 @@ const InventoryForm = ({ initialData = {}, onSubmit, title, subTitle }) => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-emerald-100 text-sm font-medium">Total Stock Value</p>
-                  <p className="text-3xl font-bold mt-1">{formatCurrency(totalValue)}</p>
+                  <p className="text-3xl font-bold mt-1">{formatPrice(totalValue)}</p>
                 </div>
                 <div className="p-3 rounded-full bg-white/20">
                   <DollarSign className="w-8 h-8" />
                 </div>
               </div>
               <p className="text-emerald-100 text-xs mt-2">
-                {formData.quantity || 0} units × {formatCurrency(parseFloat(formData.unitCost) || 0)}
+                {formData.quantity || 0} units × {formatPrice(parseFloat(formData.unitCost) || 0)}
               </p>
             </div>
           </div>

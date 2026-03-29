@@ -1,5 +1,6 @@
 import { Plus, Download, FileText, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const ExpensesHeader = ({ 
   searchQuery, 
@@ -8,13 +9,7 @@ const ExpensesHeader = ({
   recurringExpenses,
   oneTimeExpenses
 }) => {
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  const { formatPrice } = useCurrency();
 
   return (
     <div className="space-y-6">
@@ -52,19 +47,19 @@ const ExpensesHeader = ({
         <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500"></div>
           <p className="text-gray-500 text-sm mb-1">Total Expenses</p>
-          <p className="text-2xl font-bold text-rose-600">{formatCurrency(totalExpenses)}</p>
+          <p className="text-2xl font-bold text-rose-600">{formatPrice(totalExpenses)}</p>
         </div>
         
         <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
           <p className="text-gray-500 text-sm mb-1">Recurring</p>
-          <p className="text-2xl font-bold text-gray-900">{formatCurrency(recurringExpenses)}</p>
+          <p className="text-2xl font-bold text-gray-900">{formatPrice(recurringExpenses)}</p>
         </div>
 
         <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-500"></div>
           <p className="text-gray-500 text-sm mb-1">One-time</p>
-          <p className="text-2xl font-bold text-gray-900">{formatCurrency(oneTimeExpenses)}</p>
+          <p className="text-2xl font-bold text-gray-900">{formatPrice(oneTimeExpenses)}</p>
         </div>
       </div>
 

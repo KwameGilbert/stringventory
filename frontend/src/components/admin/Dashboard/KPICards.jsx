@@ -14,9 +14,11 @@ import { productService } from "../../../services/productService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 import { useAuth } from "../../../contexts/AuthContext";
 import { normalizeRole, ROLES } from "../../../utils/accessControl";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const KPICards = ({ dateRange }) => {
   const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const [kpis, setKpis] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -77,14 +79,6 @@ const KPICards = ({ dateRange }) => {
           return `${value > 0 ? "+" : ""}${value.toFixed(1)}%`;
         };
 
-        const formatCurrency = (value) =>
-          new Intl.NumberFormat("en-GH", {
-            style: "currency",
-            currency: "GHS",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          }).format(Number(value || 0));
-
         const formatNumber = (value) => new Intl.NumberFormat("en-US").format(Number(value || 0));
 
         // Detect if the filter is for "Today"
@@ -95,7 +89,7 @@ const KPICards = ({ dateRange }) => {
           {
             id: "grossRevenue",
             title: "Gross Revenue",
-            value: formatCurrency(metrics?.grossRevenue?.value),
+            value: formatPrice(metrics?.grossRevenue?.value),
             change: formatChange(metrics?.grossRevenue?.change),
             trend: metrics?.grossRevenue?.trend || toTrend(metrics?.grossRevenue?.change),
             icon: "DollarSign",
@@ -113,7 +107,7 @@ const KPICards = ({ dateRange }) => {
           {
             id: "totalExpenses",
             title: "Total Expenses",
-            value: formatCurrency(metrics?.totalExpenses?.value),
+            value: formatPrice(metrics?.totalExpenses?.value),
             change: formatChange(metrics?.totalExpenses?.change),
             trend: metrics?.totalExpenses?.trend || toTrend(metrics?.totalExpenses?.change),
             icon: "AlertTriangle",
@@ -122,7 +116,7 @@ const KPICards = ({ dateRange }) => {
           {
             id: "netProfit",
             title: "Net Revenue",
-            value: formatCurrency(metrics?.netProfit?.value),
+            value: formatPrice(metrics?.netProfit?.value),
             change: formatChange(metrics?.netProfit?.change),
             trend: metrics?.netProfit?.trend || toTrend(metrics?.netProfit?.change),
             icon: "TrendingUp",
@@ -131,7 +125,7 @@ const KPICards = ({ dateRange }) => {
           {
             id: "inventoryValue",
             title: "Inventory Value",
-            value: formatCurrency(metrics?.inventoryValue?.value),
+            value: formatPrice(metrics?.inventoryValue?.value),
             change: formatChange(metrics?.inventoryValue?.change),
             trend: metrics?.inventoryValue?.trend || toTrend(metrics?.inventoryValue?.change),
             icon: "Package",

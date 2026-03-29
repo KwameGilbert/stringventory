@@ -228,6 +228,32 @@ export default function ViewProduct() {
             </div>
           </div>
 
+          {/* Pricing Card */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+              <Banknote className="w-5 h-5 text-emerald-600" />
+              <h3 className="font-semibold text-gray-900">Pricing Information</h3>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <p className="text-xs text-gray-400 uppercase font-medium mb-1 tracking-wider">Unit Cost Price</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {formatPrice(product.costPrice || product.cost)}
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-1 italic">Average purchase cost per unit</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-400 uppercase font-medium mb-1 tracking-wider">Unit Selling Price</p>
+                  <p className="text-2xl font-extrabold text-emerald-600">
+                    {formatPrice(product.sellingPrice || product.price)}
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-1 italic">Base price before discounts/tax</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Stock Card */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">

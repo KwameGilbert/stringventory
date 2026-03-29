@@ -12,8 +12,10 @@ import {
 import { TrendingUp } from "lucide-react";
 import analyticsService from "../../../services/analyticsService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const SalesExpensesChart = ({ dateRange }) => {
+  const { formatPrice, symbol, convert } = useCurrency();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,15 +47,6 @@ const SalesExpensesChart = ({ dateRange }) => {
     fetchData();
   }, [dateRange]);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -62,7 +55,7 @@ const SalesExpensesChart = ({ dateRange }) => {
           {payload.map((entry, index) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               <span className="font-medium">{entry.name}:</span>{" "}
-              {formatCurrency(entry.value)}
+              {formatPrice(entry.value)}
             </p>
           ))}
         </div>
@@ -115,7 +108,7 @@ const SalesExpensesChart = ({ dateRange }) => {
           <YAxis
             stroke="#6b7280"
             style={{ fontSize: "12px" }}
-            tickFormatter={(value) => `₵${(value / 1000).toFixed(0)}k`}
+            tickFormatter={(value) => `${symbol}${Number(convert(value) / 1000).toFixed(0)}k`}
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend

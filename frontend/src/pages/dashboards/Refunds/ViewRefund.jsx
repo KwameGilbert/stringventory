@@ -4,6 +4,7 @@ import { ArrowLeft, RefreshCw, CheckCircle, XCircle, AlertCircle, Package, Dolla
 import refundService from "../../../services/refundService";
 import orderService from "../../../services/orderService";
 import { confirmAction, showError, showSuccess } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const statusConfig = {
   pending: {
@@ -29,6 +30,7 @@ const statusConfig = {
 export default function ViewRefund() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [refund, setRefund] = useState(null);
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -84,14 +86,6 @@ export default function ViewRefund() {
     } finally {
       setIsUpdating(false);
     }
-  };
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
   };
 
   const formatDate = (dateString) => {
@@ -204,7 +198,7 @@ export default function ViewRefund() {
                 </div>
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
                     <span className="font-semibold text-gray-900">Total Refund Amount</span>
-                    <span className="text-xl font-bold text-rose-600">{formatCurrency(refund.refundAmount)}</span>
+                    <span className="text-xl font-bold text-rose-600">{formatPrice(refund.refundAmount)}</span>
                 </div>
            </div>
 

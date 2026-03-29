@@ -9,10 +9,12 @@ import {
 } from "recharts";
 import analyticsService from "../../../services/analyticsService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const PaymentDistribution = ({ dateRange }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,13 +55,7 @@ const PaymentDistribution = ({ dateRange }) => {
 
   const totalValue = data.reduce((acc, item) => acc + item.value, 0);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   if (loading) {
     return (
@@ -107,7 +103,7 @@ const PaymentDistribution = ({ dateRange }) => {
               ))}
             </Pie>
             <Tooltip 
-              formatter={(value) => formatCurrency(value)}
+              formatter={(value) => formatPrice(value)}
               contentStyle={{ 
                 borderRadius: '8px', 
                 border: 'none', 
@@ -120,7 +116,7 @@ const PaymentDistribution = ({ dateRange }) => {
         {/* Center Text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Total</span>
-          <span className="text-2xl font-bold text-gray-900 tracking-tight">{formatCurrency(totalValue)}</span>
+          <span className="text-2xl font-bold text-gray-900 tracking-tight">{formatPrice(totalValue)}</span>
         </div>
       </div>
 

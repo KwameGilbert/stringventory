@@ -4,11 +4,12 @@ import { Search, ChevronDown, Calendar, Bell, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDashboardDateFilter } from "../../../contexts/DashboardDateFilterContext";
 import { useNotifications } from "../../../contexts/NotificationContext";
+import { useSettings } from "../../../contexts/SettingsContext";
 import NotificationDropdown from "./NotificationDropdown";
 
 const Header = ({ onMenuToggle, isSidebarExpanded }) => {
   const { themeColors } = useTheme();
-  const [currency, setCurrency] = useState("GHS");
+  const { settings, updateSettings } = useSettings();
   const { unreadCount, notifications, markAsRead } = useNotifications();
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
@@ -79,7 +80,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
                        rounded-lg hover:bg-gray-50 transition-all focus:outline-none 
                        ${themeColors.focusRing}`}
             >
-              <span className="font-medium text-gray-700 text-sm">₵ {currency}</span>
+              <span className="font-medium text-gray-700 text-sm">{settings.currency}</span>
               <ChevronDown className="w-4 h-4 text-gray-500" />
             </button>
 
@@ -93,12 +94,12 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
                   <button
                     key={curr}
                     onClick={() => {
-                      setCurrency(curr);
+                      updateSettings({ currency: curr });
                       setShowCurrencyDropdown(false);
                     }}
                     className={`w-full px-4 py-2 text-left hover:bg-emerald-50 transition-colors
                               ${
-                                curr === currency
+                                curr === settings.currency
                                   ? `${themeColors.selectionBg} ${themeColors.selectionText} font-medium`
                                   : "text-gray-700 font-medium"
                               }`}

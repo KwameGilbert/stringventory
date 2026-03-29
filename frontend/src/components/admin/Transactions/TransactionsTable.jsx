@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, ArrowUpDown, ArrowUpCircle, ArrowDownCircle, Info, Landmark, CreditCard, ShoppingBag, RotateCcw, AlertTriangle, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -50,22 +51,12 @@ const transactionTypeConfig = {
 };
 
 const TransactionsTable = ({ transactions = [] }) => {
+  const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = transactions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  const formatCurrency = (value) => {
-    const isNegative = value < 0;
-    const absValue = Math.abs(value);
-    
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(absValue);
-  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "—";

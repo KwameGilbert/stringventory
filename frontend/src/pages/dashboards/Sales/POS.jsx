@@ -3,12 +3,12 @@ import { Search, ShoppingCart, Plus, Minus, Trash2, CreditCard, DollarSign, Pack
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { productService } from "../../../services/productService";
-import { useNavigate } from "react-router-dom";
-import { productService } from "../../../services/productService";
 import { isProductApproved } from "../../../utils/productApproval";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 export default function POS() {
   const navigate = useNavigate();
+  const { formatPrice, symbol } = useCurrency();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -110,13 +110,7 @@ export default function POS() {
     });
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   return (
     <div className="h-[calc(100vh-6rem)] -m-6 flex flex-col lg:flex-row overflow-hidden animate-fade-in py-10 ">
@@ -156,7 +150,7 @@ export default function POS() {
                   <h3 className="font-medium text-gray-900 line-clamp-2 mb-1">{product.name}</h3>
                   <p className="text-sm text-gray-500 mb-2">{product.sku || "SKU-???"}</p>
                   <div className="mt-auto flex items-center justify-between">
-                    <span className="font-bold text-gray-900">{formatCurrency(product.price || 0)}</span>
+                    <span className="font-bold text-gray-900">{formatPrice(product.price || 0)}</span>
                     <div className="w-6 h-6 rounded-full bg-gray-50 text-gray-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
                       <Plus size={14} />
                     </div>
@@ -192,7 +186,7 @@ export default function POS() {
               <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50/30">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-gray-900 truncate">{item.name}</h4>
-                  <p className="text-xs text-gray-500">{formatCurrency(item.price || 0)} per unit</p>
+                  <p className="text-xs text-gray-500">{formatPrice(item.price || 0)} per unit</p>
                 </div>
                 <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-1">
                   <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:bg-gray-100 rounded text-gray-600">
@@ -204,7 +198,7 @@ export default function POS() {
                   </button>
                 </div>
                 <div className="text-right min-w-[60px]">
-                  <p className="font-semibold text-gray-900">{formatCurrency((item.price || 0) * item.quantity)}</p>
+                  <p className="font-semibold text-gray-900">{formatPrice((item.price || 0) * item.quantity)}</p>
                   <button onClick={() => removeFromCart(item.id)} className="text-rose-500 text-xs hover:underline mt-1">Remove</button>
                 </div>
               </div>
@@ -219,7 +213,7 @@ export default function POS() {
              <div>
                 <label className="text-xs text-gray-500 block mb-1">Discount</label>
                 <div className="relative">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs text-center w-4">{/* Symbol via CSS or just logic */}GHS</span>
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] text-center w-6">{symbol}</span>
                   <input 
                     type="number" 
                     value={discount} 
@@ -244,15 +238,15 @@ export default function POS() {
            <div className="space-y-1 pt-2 border-t border-gray-200">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span className="text-gray-900 font-medium">{formatCurrency(subtotal)}</span>
+                <span className="text-gray-900 font-medium">{formatPrice(subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Tax</span>
-                <span className="text-gray-900 font-medium">{formatCurrency(taxAmount)}</span>
+                <span className="text-gray-900 font-medium">{formatPrice(taxAmount)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold pt-2">
                 <span className="text-gray-900">Total</span>
-                <span className="text-emerald-600">{formatCurrency(total)}</span>
+                <span className="text-emerald-600">{formatPrice(total)}</span>
               </div>
            </div>
 
@@ -262,7 +256,7 @@ export default function POS() {
              className="w-full py-3 bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-gray-900/10"
            >
              <CreditCard size={18} />
-             Pay {formatCurrency(total)}
+             Pay {formatPrice(total)}
            </button>
         </div>
       </div>

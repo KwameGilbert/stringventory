@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Landmark, Calendar, DollarSign, Hash, CreditCard, ShoppingBag, RotateCcw, FileText, AlertTriangle, ExternalLink, User, Info, CheckCircle, RefreshCw } from "lucide-react";
 import transactionService from "../../../services/transactionService";
 import { showError } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const transactionTypeConfig = {
   order: {
@@ -52,6 +53,7 @@ const transactionTypeConfig = {
 export default function ViewTransaction() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [transaction, setTransaction] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -72,16 +74,6 @@ export default function ViewTransaction() {
   useEffect(() => {
     fetchTransaction();
   }, [id]);
-
-  const formatCurrency = (value) => {
-    const isNegative = value < 0;
-    const absValue = Math.abs(value);
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(absValue);
-  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "—";
@@ -140,14 +132,13 @@ export default function ViewTransaction() {
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-500 font-medium">
                         <span className="flex items-center gap-1.5"><Calendar size={14} /> {formatDate(transaction.createdAt)}</span>
-                        <span className="flex items-center gap-1.5 capitalize"><DollarSign size={14} /> {transaction.paymentMethod?.replace(/_/g, ' ') || 'N/A'}</span>
                     </div>
                 </div>
             </div>
             <div className="text-left md:text-right">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Transaction Total</p>
                 <p className={`text-4xl font-extrabold tracking-tight ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
-                    {isOutflow ? '− ' : '+ '}{formatCurrency(transaction.amount)}
+                    {isOutflow ? '− ' : '+ '}{formatPrice(transaction.amount)}
                 </p>
             </div>
         </div>
@@ -188,11 +179,11 @@ export default function ViewTransaction() {
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Subtotal</p>
-                                    <p className="text-sm font-semibold text-gray-900">{formatCurrency(transaction.order.discountedPrice || transaction.order.amount)}</p>
+                                    <p className="text-sm font-semibold text-gray-900">{formatPrice(transaction.order.discountedPrice || transaction.order.amount)}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total</p>
-                                    <p className="text-sm font-bold text-gray-900">{formatCurrency(transaction.order.discountedTotalPrice || transaction.order.amount)}</p>
+                                    <p className="text-sm font-bold text-gray-900">{formatPrice(transaction.order.discountedTotalPrice || transaction.order.amount)}</p>
                                 </div>
                             </div>
                             {transaction.order.notes && (
@@ -225,7 +216,7 @@ export default function ViewTransaction() {
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Amount</p>
-                                    <p className="text-sm font-bold text-gray-900">{formatCurrency(transaction.purchase.totalAmount)}</p>
+                                    <p className="text-sm font-bold text-gray-900">{formatPrice(transaction.purchase.totalAmount)}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">PO Status</p>
@@ -268,7 +259,7 @@ export default function ViewTransaction() {
                             <div className="grid grid-cols-2 gap-6 pt-6 border-t border-gray-50">
                                 <div>
                                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Amount</p>
-                                    <p className="text-lg font-bold text-gray-900">{formatCurrency(transaction.expense.amount)}</p>
+                                    <p className="text-lg font-bold text-gray-900">{formatPrice(transaction.expense.amount)}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Category ID</p>

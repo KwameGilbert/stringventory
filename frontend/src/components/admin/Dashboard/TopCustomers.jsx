@@ -3,10 +3,12 @@ import { Users, User, TrendingUp, ShoppingBag, ChevronRight } from "lucide-react
 import { Link } from "react-router-dom";
 import analyticsService from "../../../services/analyticsService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const TopCustomers = ({ dateRange }) => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { formatPrice } = useCurrency();
   const [activeTab, setActiveTab] = useState("spent");
 
   useEffect(() => {
@@ -38,13 +40,7 @@ const TopCustomers = ({ dateRange }) => {
     fetchData();
   }, [dateRange]);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   const getInitials = (name) => {
     return name
@@ -183,7 +179,7 @@ const TopCustomers = ({ dateRange }) => {
               <div className="text-right">
                 <p className="text-sm font-semibold text-gray-900">
                   {activeTab === "spent"
-                    ? formatCurrency(customer.totalSpent)
+                    ? formatPrice(customer.totalSpent)
                     : customer.totalOrders}
                 </p>
                 <p className="text-xs text-gray-400">

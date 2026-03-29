@@ -4,6 +4,7 @@ import { ArrowLeft, Edit2, Trash2, Calendar, User, FileText, Package, CheckCircl
 import purchaseService from "../../../services/purchaseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useCurrency } from "../../../utils/currencyUtils";
 import Swal from "sweetalert2";
 
 const extractPurchase = (response) => {
@@ -62,6 +63,7 @@ const resolveCreatedBy = (purchase) => {
 export default function ViewPurchase() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const { user } = useAuth();
   const isCEO = user?.role === 'CEO' || user?.normalizedRole === 'CEO';
   const [purchase, setPurchase] = useState(null);
@@ -136,14 +138,6 @@ export default function ViewPurchase() {
       received: "bg-emerald-100 text-emerald-700",
     };
     return badges[status] || "bg-gray-100 text-gray-600";
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(toNumber(amount));
   };
 
   const formatDate = (dateString) => {
@@ -256,13 +250,13 @@ export default function ViewPurchase() {
                         <span className="text-sm text-gray-600">{item.quantity}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className="text-sm text-gray-900">{formatCurrency(item.unitCost)}</span>
+                        <span className="text-sm text-gray-900">{formatPrice(item.unitCost)}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className="text-sm text-gray-900">{formatCurrency(item.sellingPrice)}</span>
+                        <span className="text-sm text-gray-900">{formatPrice(item.sellingPrice)}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.subtotal)}</span>
+                        <span className="text-sm font-semibold text-gray-900">{formatPrice(item.subtotal)}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm text-gray-600">{item.expiryDate ? formatDate(item.expiryDate) : "—"}</span>
@@ -277,7 +271,7 @@ export default function ViewPurchase() {
             <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-500">Total Amount</span>
-                <span className="text-xl font-bold text-gray-900">{formatCurrency(purchase.totalAmount)}</span>
+                <span className="text-xl font-bold text-gray-900">{formatPrice(purchase.totalAmount)}</span>
               </div>
             </div>
           </div>

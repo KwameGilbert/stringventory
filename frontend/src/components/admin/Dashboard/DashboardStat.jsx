@@ -9,6 +9,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import analyticsService from "../../../services/analyticsService";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const iconMap = {
   DollarSign,
@@ -63,6 +64,7 @@ const DashboardStat = () => {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -72,13 +74,7 @@ const DashboardStat = () => {
         const dashboardData = payload?.data || payload;
         const metrics = dashboardData?.metrics || {};
 
-        const currency = (value) =>
-          new Intl.NumberFormat("en-GH", {
-            style: "currency",
-            currency: "GHS",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          }).format(Number(value || 0));
+        const currency = (value) => formatPrice(Number(value || 0));
 
         const number = (value) => new Intl.NumberFormat("en-US").format(Number(value || 0));
         const toChange = (value) => (value === undefined || value === null ? "" : `${Number(value) > 0 ? "+" : ""}${Number(value).toFixed(1)}%`);
