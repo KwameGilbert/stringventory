@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 const CustomersHeader = ({ 
   searchQuery, 
   setSearchQuery,
+  sortBy,
+  setSortBy,
   totalCustomers,
   canManage = true,
 }) => {
@@ -39,7 +41,7 @@ const CustomersHeader = ({
         </div>
       </div>
 
-      {/* Search Row */}
+      {/* Search & Sort Row */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-md">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -50,6 +52,20 @@ const CustomersHeader = ({
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400"
           />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">Sort By:</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 min-w-[140px] appearance-none cursor-pointer hover:bg-gray-50 transition-colors"
+          >
+            <option value="newest">Newest First</option>
+            <option value="name_asc">Name (A-Z)</option>
+            <option value="spend_desc">Highest Spend</option>
+            <option value="orders_desc">Most Orders</option>
+          </select>
         </div>
       </div>
     </div>

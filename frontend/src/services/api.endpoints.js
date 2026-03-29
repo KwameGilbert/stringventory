@@ -26,7 +26,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id) => `/v1/users/${id}`,
     DELETE: (id) => `/v1/users/${id}`,
     RESEND_VERIFICATION: (id) => `/v1/users/${id}/resend-verification`,
-    RESET_PASSWORD: (id) => `/v1/users/${id}/reset-password`,
+    RESET_PASSWORD: (id) => `/v1/auth/password/change`,
   },
 
   // Roles

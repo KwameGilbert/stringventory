@@ -1,17 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
 import { Search, ChevronDown, Calendar, Bell, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDashboardDateFilter } from "../../../contexts/DashboardDateFilterContext";
+import { useNotifications } from "../../../contexts/NotificationContext";
+import NotificationDropdown from "./NotificationDropdown";
 
 const Header = ({ onMenuToggle, isSidebarExpanded }) => {
   const { themeColors } = useTheme();
   const [currency, setCurrency] = useState("GHS");
-  const [notificationCount, _setNotificationCount] = useState(3);
+  const { unreadCount, notifications, markAsRead } = useNotifications();
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const { filter, setCustomRange } = useDashboardDateFilter();
+  
+  const notificationRef = useRef(null);
+  const currencyRef = useRef(null);
 
   const currencies = ["GHS", "GBP", "USD", "EUR"];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotificationDropdown(false);
+      }
+      if (currencyRef.current && !currencyRef.current.contains(event.target)) {
+        setShowCurrencyDropdown(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleMarkAsRead = (id) => {
+    markAsRead(id);
+  };
 
   return (
     <header className={`fixed top-0 right-0 left-0 bg-white border-b border-gray-200 z-40 transition-all duration-300 ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
@@ -46,7 +72,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
         {/* Right Section */}
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Currency Selector - hidden on small screens */}
-          <div className="relative hidden md:block">
+          <div className="relative hidden md:block" ref={currencyRef}>
             <button
               onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
               className={`flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-200 
@@ -61,7 +87,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
             {showCurrencyDropdown && (
               <div
                 className="absolute top-full mt-2 right-0 w-32 bg-white border border-gray-200 
-                            rounded-lg shadow-lg overflow-hidden z-50"
+                            rounded-lg shadow-lg overflow-hidden z-50 transform origin-top animate-in fade-in slide-in-from-top-1 duration-150"
               >
                 {currencies.map((curr) => (
                   <button
@@ -74,7 +100,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
                               ${
                                 curr === currency
                                   ? `${themeColors.selectionBg} ${themeColors.selectionText} font-medium`
-                                  : "text-gray-700"
+                                  : "text-gray-700 font-medium"
                               }`}
                   >
                     {curr}
@@ -95,7 +121,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
                 onChange={(e) => setCustomRange(e.target.value, filter.endDate)}
                 className={`pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
                          text-gray-700 focus:outline-none ${themeColors.focusRing} 
-                         focus:border-transparent transition-all w-40 text-sm`}
+                         focus:border-transparent transition-all w-40 text-sm font-medium`}
               />
             </div>
 
@@ -112,7 +138,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
                 onChange={(e) => setCustomRange(filter.startDate, e.target.value)}
                 className={`pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
                          text-gray-700 focus:outline-none ${themeColors.focusRing} 
-                         focus:border-transparent transition-all w-40 text-sm`}
+                         focus:border-transparent transition-all w-40 text-sm font-medium`}
               />
             </div>
           </div>
@@ -123,18 +149,32 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
           </button>
 
           {/* Notifications */}
-          <Link to="/dashboard/notifications" className="relative p-2 hover:bg-gray-100 rounded-lg transition-all">
-            <Bell className="w-5 h-5 text-gray-600" />
-            {notificationCount > 0 && (
-              <span
-                className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white 
-                             text-xs font-bold rounded-full flex items-center justify-center 
-                             shadow-lg"
-              >
-                {notificationCount}
-              </span>
+          <div className="relative" ref={notificationRef}>
+            <button
+              onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+              className="relative p-2 hover:bg-gray-100 rounded-lg transition-all group focus:outline-none"
+            >
+              <Bell className={`w-5 h-5 transition-colors ${showNotificationDropdown ? 'text-emerald-600' : 'text-gray-600 group-hover:text-gray-900'}`} />
+              {unreadCount > 0 && (
+                <span
+                  className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white 
+                               text-[10px] font-bold rounded-full flex items-center justify-center 
+                               shadow-lg border-2 border-white"
+                >
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {showNotificationDropdown && (
+              <NotificationDropdown 
+                notifications={notifications}
+                unreadCount={unreadCount}
+                onMarkAsRead={handleMarkAsRead}
+                onClose={() => setShowNotificationDropdown(false)}
+              />
             )}
-          </Link>
+          </div>
         </div>
       </div>
     </header>

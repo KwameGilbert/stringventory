@@ -44,6 +44,7 @@ export default function SubscriptionSettings() {
     cvc: "",
     name: ""
   });
+  const [billingCycle, setBillingCycle] = useState("monthly");
 
   // Load subscription data on mount
   useEffect(() => {
@@ -298,7 +299,16 @@ export default function SubscriptionSettings() {
         {plans.map((plan) => {
           const isCurrentPlan = plan.id === currentPlan;
           const colorClasses = getColorClasses(plan.color, isCurrentPlan);
-          const Icon = plan.icon;
+          
+          // Map icon string to component if needed
+          const iconMap = {
+            Zap,
+            Crown,
+            Rocket,
+            CreditCard,
+            CheckCircle
+          };
+          const IconComponent = typeof plan.icon === 'string' ? iconMap[plan.icon] || Zap : plan.icon || Zap;
           const price = billingCycle === "yearly" ? Math.round(plan.price * 0.8) : plan.price;
 
           return (
@@ -316,7 +326,7 @@ export default function SubscriptionSettings() {
 
               <div className="text-center mb-6">
                 <div className={`w-14 h-14 mx-auto rounded-xl flex items-center justify-center mb-4 ${colorClasses.badge}`}>
-                  <Icon className={`w-7 h-7 ${colorClasses.icon}`} />
+                  <IconComponent className={`w-7 h-7 ${colorClasses.icon}`} />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
                 <p className="text-sm text-gray-500 mt-1">{plan.description}</p>
@@ -332,7 +342,7 @@ export default function SubscriptionSettings() {
               <ul className="space-y-3 mb-6">
                 {plan.features.slice(0, 5).map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-3 text-sm text-gray-700">
-                    <Check className={`w-4 h-4 flex-shrink-0 ${colorClasses.icon}`} />
+                    <Check className={`w-4 h-4 shrink-0 ${colorClasses.icon}`} />
                     {feature.name}
                   </li>
                 ))}
@@ -387,8 +397,8 @@ export default function SubscriptionSettings() {
             <div key={method.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
               <div className={`w-12 h-8 rounded flex items-center justify-center text-white text-xs font-bold ${
                 method.type === "visa" 
-                  ? "bg-gradient-to-r from-blue-600 to-blue-400" 
-                  : "bg-gradient-to-r from-red-600 to-orange-400"
+                  ? "bg-linear-to-r from-blue-600 to-blue-400" 
+                  : "bg-linear-to-r from-red-600 to-orange-400"
               }`}>
                 {method.type.toUpperCase()}
               </div>
@@ -452,7 +462,7 @@ export default function SubscriptionSettings() {
         
         {/* Recent invoices preview */}
         <div className="mt-4 space-y-2">
-          {mockBillingHistory.slice(0, 3).map((invoice) => (
+          {billingHistory.slice(0, 3).map((invoice) => (
             <div key={invoice.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
               <div>
                 <p className="text-sm font-medium text-gray-900">{invoice.description}</p>
@@ -568,7 +578,7 @@ export default function SubscriptionSettings() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {mockBillingHistory.map((invoice) => (
+                  {billingHistory.map((invoice) => (
                     <tr key={invoice.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm text-gray-900">{invoice.date}</td>
                       <td className="px-6 py-4 text-sm text-gray-900">{invoice.description}</td>
@@ -610,7 +620,11 @@ export default function SubscriptionSettings() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow">
-                    <selectedPlan.icon className={`w-7 h-7 ${getColorClasses(selectedPlan.color, true).icon}`} />
+                    {(() => {
+                      const iconMap = { Zap, Crown, Rocket, CreditCard, CheckCircle };
+                      const IconComp = typeof selectedPlan.icon === 'string' ? iconMap[selectedPlan.icon] || Zap : selectedPlan.icon || Zap;
+                      return <IconComp className={`w-7 h-7 ${getColorClasses(selectedPlan.color, true).icon}`} />;
+                    })()}
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900">{selectedPlan.name} Plan</h2>
@@ -666,9 +680,9 @@ export default function SubscriptionSettings() {
                 {selectedPlan.features.map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-3 text-sm">
                     {feature.included ? (
-                      <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
                     ) : (
-                      <X className="w-5 h-5 text-gray-300 flex-shrink-0" />
+                      <X className="w-5 h-5 text-gray-300 shrink-0" />
                     )}
                     <span className={feature.included ? "text-gray-900" : "text-gray-400"}>
                       {feature.name}
@@ -732,7 +746,7 @@ export default function SubscriptionSettings() {
             </div>
 
             <div className="flex items-start gap-2 text-sm text-amber-700 bg-amber-50 p-3 rounded-lg mb-6">
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
               <p>Your subscription will be upgraded immediately and prorated for the remaining billing period.</p>
             </div>
 

@@ -77,7 +77,7 @@ export default function CreateOrder() {
     },
     items: [],
     discount: 0,
-    taxRate: 10,
+    taxRate: 0,
     paymentMethod: "Cash",
   });
 
@@ -103,7 +103,8 @@ export default function CreateOrder() {
             ...product,
             name: product?.name || "Unnamed Product",
             unitPrice: Number(product?.sellingPrice ?? product?.price ?? 0),
-            currentStock: getProductStock(product),
+            currentStock: Number(product?.currentStock ?? product?.inventory?.quantity ?? product?.quantity ?? product?.stock ?? 0),
+            reorderThreshold: Number(product?.reorderThreshold ?? product?.reorderLevel ?? product?.minStock ?? 0),
           }));
 
         const mappedCustomers = extractList(customersRes, "customers").map((customer) => {
@@ -213,7 +214,7 @@ export default function CreateOrder() {
     if (!selectedProduct) return;
     const product = products.find((p) => String(p.id) === String(selectedProduct));
     if (!product) return;
-    if (getProductStock(product) <= 0) {
+    if (product.currentStock <= 0) {
       showError("This product is out of stock");
       return;
     }
@@ -249,7 +250,7 @@ export default function CreateOrder() {
 
   const handleProductSelect = (productId) => {
     const product = products.find((p) => String(p.id) === String(productId));
-    if (!product || getProductStock(product) <= 0) return;
+    if (!product || product.currentStock <= 0) return;
     setSelectedProduct(String(productId));
     setProductSearchQuery("");
     setIsProductDropdownOpen(false);
@@ -496,33 +497,53 @@ export default function CreateOrder() {
                         ) : (
                           filteredProducts.map((product) => {
                             const isSelected = String(product.id) === String(selectedProduct);
-                            const isOutOfStock = getProductStock(product) <= 0;
+                            const isOutOfStock = product.currentStock <= 0;
+                            const isLowStock = !isOutOfStock && product.currentStock <= product.reorderThreshold;
+                            
                             return (
                               <button
                                 type="button"
                                 key={product.id}
                                 onClick={() => handleProductSelect(product.id)}
                                 disabled={isOutOfStock}
-                                className={`w-full px-3 py-2 rounded-lg text-left transition-colors flex items-center justify-between ${
+                                className={`w-full px-3 py-2.5 rounded-lg text-left transition-all border mb-1 flex items-center justify-between ${
                                   isOutOfStock
-                                    ? "bg-gray-50 text-gray-400 cursor-not-allowed"
+                                    ? "bg-gray-50 text-gray-400 cursor-not-allowed border-transparent"
                                     : isSelected
-                                      ? "bg-emerald-50 text-emerald-900"
-                                      : "hover:bg-gray-50 text-gray-900"
+                                      ? "bg-emerald-50 text-emerald-900 border-emerald-200 shadow-sm"
+                                      : "hover:bg-gray-50 text-gray-900 border-transparent hover:border-gray-100"
                                 }`}
                               >
                                 <div className="min-w-0 pr-3">
-                                  <div className="text-sm font-medium truncate">{product.name}</div>
-                                  <div className="text-xs text-gray-500 truncate">
-                                    {formatCurrency(product.unitPrice || 0)}
+                                  <div className="text-sm font-semibold truncate flex items-center gap-2">
+                                    {product.name}
+                                    {isLowStock && (
+                                      <span className="shrink-0 w-2 h-2 rounded-full bg-amber-500 animate-pulse" title="Low Stock"></span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-gray-500 truncate mt-0.5">
+                                    <span className="font-medium text-gray-700">{formatCurrency(product.unitPrice || 0)}</span>
                                     {product.sku ? ` • SKU: ${product.sku}` : ""}
-                                    {` • Stock: ${getProductStock(product)}`}
+                                    <span className={`ml-2 px-1.5 py-0.5 rounded-md ${
+                                      isOutOfStock 
+                                        ? "bg-rose-50 text-rose-600" 
+                                        : isLowStock 
+                                          ? "bg-amber-50 text-amber-700" 
+                                          : "bg-emerald-50 text-emerald-700"
+                                    }`}>
+                                      {isOutOfStock ? "Out of stock" : `${product.currentStock} left`}
+                                    </span>
                                   </div>
                                 </div>
                                 <div className="shrink-0 flex items-center gap-2">
+                                  {isLowStock && (
+                                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                                      Low Stock
+                                    </span>
+                                  )}
                                   {isOutOfStock && (
-                                    <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
-                                      Out of stock
+                                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
+                                      Unavailable
                                     </span>
                                   )}
                                   {isSelected && !isOutOfStock && <Check size={14} className="text-emerald-600" />}
@@ -539,6 +560,7 @@ export default function CreateOrder() {
                   type="number"
                   value={selectedQuantity}
                   onChange={handleSelectedQuantityChange}
+                  onFocus={(e) => e.target.select()}
                   onBlur={normalizeSelectedQuantity}
                   min="1"
                   className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm text-center"
@@ -584,6 +606,7 @@ export default function CreateOrder() {
                               type="number"
                               value={item.quantity}
                               onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
+                              onFocus={(e) => e.target.select()}
                               min="1"
                               className="w-20 px-2 py-1 rounded-lg border border-gray-200 text-center text-sm mx-auto block"
                             />
@@ -660,6 +683,7 @@ export default function CreateOrder() {
                           onChange={(e) => setFormData((prev) => ({ ...prev, discount: parseFloat(e.target.value) || 0 }))}
                           min="0"
                           step="0.01"
+                          onFocus={(e) => e.target.select()}
                           className="w-full pl-7 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm"
                         />
                       </div>
@@ -670,6 +694,7 @@ export default function CreateOrder() {
                         type="number"
                         value={formData.taxRate}
                         onChange={(e) => setFormData((prev) => ({ ...prev, taxRate: parseFloat(e.target.value) || 0 }))}
+                        onFocus={(e) => e.target.select()}
                         min="0"
                         max="100"
                         step="0.1"

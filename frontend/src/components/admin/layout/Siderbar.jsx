@@ -59,6 +59,7 @@ const Sidebar = ({ mobileOpen, onClose, isOpen, onToggle }) => {
     { key: "reports", icon: BarChart3, label: "Reports", path: "/dashboard/reports" },
     { key: "users", icon: UserCog, label: "Users", path: "/dashboard/users" },
     { key: "messaging", icon: MessageSquare, label: "Messaging", path: "/dashboard/messaging" },
+    { key: "notifications", icon: Bell, label: "Notifications", path: "/dashboard/notifications" },
     { key: "settings", icon: Settings, label: "Settings", path: "/dashboard/settings" },
   ];
 

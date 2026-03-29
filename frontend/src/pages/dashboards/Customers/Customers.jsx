@@ -37,6 +37,7 @@ export default function Customers() {
   const { user } = useAuth();
   const [customers, setCustomers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
   const canManage = canManageCatalog(user?.role || user?.normalizedRole);
 
@@ -69,6 +70,12 @@ export default function Customers() {
       String(customer.email || "").toLowerCase().includes(searchLower) ||
       String(customer.phone || "").includes(searchQuery)
     );
+  }).sort((a, b) => {
+    if (sortBy === "name_asc") return a.name.localeCompare(b.name);
+    if (sortBy === "spend_desc") return b.totalSpent - a.totalSpent;
+    if (sortBy === "orders_desc") return b.totalOrders - a.totalOrders;
+    if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+    return 0;
   });
 
   const formatCurrency = (value) => {
@@ -99,6 +106,8 @@ export default function Customers() {
       <CustomersHeader
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
         totalCustomers={customers.length}
         canManage={canManage}
       />

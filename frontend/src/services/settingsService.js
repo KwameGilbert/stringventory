@@ -44,8 +44,12 @@ export const settingsService = {
   // Security/Password
   changePassword: async (currentPassword, newPassword) => {
     return await apiClient.post('/v1/auth/password/change', {
-      current_password: currentPassword,
+      currentPassword,
+      newPassword,
+      current_password: currentPassword, 
       new_password: newPassword,
+      password: newPassword,
+      password_confirmation: newPassword
     });
   },
 

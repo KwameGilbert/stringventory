@@ -22,10 +22,20 @@ export const notificationService = {
     const response = await apiClient.get(API_ENDPOINTS.NOTIFICATIONS.LIST, { params });
     const data = getPayloadData(response);
 
+    // Handle both { notifications: [], ... } and flat array []
+    const notifications = Array.isArray(data.notifications) 
+      ? data.notifications 
+      : (Array.isArray(data) ? data : []);
+      
+    // If backend doesn't provide unreadCount, calculate it from the array
+    const unreadCount = data.unreadCount !== undefined 
+      ? Number(data.unreadCount) 
+      : notifications.filter(n => !n.isRead && !n.read).length;
+
     return {
-      notifications: Array.isArray(data.notifications) ? data.notifications : [],
-      unreadCount: Number(data.unreadCount || 0),
-      totalCount: Number(data.totalCount || 0),
+      notifications,
+      unreadCount,
+      totalCount: Number(data.totalCount || notifications.length),
       raw: response,
     };
   },

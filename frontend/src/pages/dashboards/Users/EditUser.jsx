@@ -173,21 +173,30 @@ export default function EditUser() {
       };
       if (formData.roleId) payload.roleId = formData.roleId;
 
-      // Only include password if the user filled it in
+      // Validate password if provided
       if (formData.newPassword) {
         if (formData.newPassword.length < 8) {
           showError("Password must be at least 8 characters.");
+          setSubmitting(false);
           return;
         }
         if (formData.newPassword !== formData.confirmPassword) {
           showError("Passwords do not match.");
+          setSubmitting(false);
           return;
         }
-        payload.password = formData.newPassword;
-        payload.password_confirmation = formData.confirmPassword;
       }
 
       await userService.updateUser(id, payload);
+      
+      // If password was provided, call the dedicated reset endpoint separately
+      if (formData.newPassword) {
+        await userService.resetPassword(id, {
+          newPassword: formData.newPassword,
+          confirmPassword: formData.confirmPassword
+        });
+      }
+
       showSuccess("User updated successfully");
       navigate("/dashboard/users");
     } catch (error) {
