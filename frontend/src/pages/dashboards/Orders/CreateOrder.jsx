@@ -77,7 +77,7 @@ export default function CreateOrder() {
     },
     items: [],
     discount: 0,
-    taxRate: 10,
+    taxRate:  na0,
     paymentMethod: "Cash",
   });
 
