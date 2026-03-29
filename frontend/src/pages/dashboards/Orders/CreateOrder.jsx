@@ -77,7 +77,7 @@ export default function CreateOrder() {
     },
     items: [],
     discount: 0,
-    taxRate:  na0,
+    taxRate: 0,
     paymentMethod: "Cash",
   });
 
@@ -560,6 +560,7 @@ export default function CreateOrder() {
                   type="number"
                   value={selectedQuantity}
                   onChange={handleSelectedQuantityChange}
+                  onFocus={(e) => e.target.select()}
                   onBlur={normalizeSelectedQuantity}
                   min="1"
                   className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm text-center"
@@ -605,6 +606,7 @@ export default function CreateOrder() {
                               type="number"
                               value={item.quantity}
                               onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
+                              onFocus={(e) => e.target.select()}
                               min="1"
                               className="w-20 px-2 py-1 rounded-lg border border-gray-200 text-center text-sm mx-auto block"
                             />
@@ -681,6 +683,7 @@ export default function CreateOrder() {
                           onChange={(e) => setFormData((prev) => ({ ...prev, discount: parseFloat(e.target.value) || 0 }))}
                           min="0"
                           step="0.01"
+                          onFocus={(e) => e.target.select()}
                           className="w-full pl-7 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm"
                         />
                       </div>
@@ -691,6 +694,7 @@ export default function CreateOrder() {
                         type="number"
                         value={formData.taxRate}
                         onChange={(e) => setFormData((prev) => ({ ...prev, taxRate: parseFloat(e.target.value) || 0 }))}
+                        onFocus={(e) => e.target.select()}
                         min="0"
                         max="100"
                         step="0.1"

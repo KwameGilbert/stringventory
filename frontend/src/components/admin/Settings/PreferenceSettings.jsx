@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { DollarSign, Bell, AlertTriangle, Clock, AlertCircle } from "lucide-react";
+import { Banknote, ChevronDown, Bell, AlertTriangle, Clock, AlertCircle } from "lucide-react";
 import settingsService from "../../../services/settingsService";
 import { showSuccess, showError } from "../../../utils/alerts";
 
@@ -95,18 +95,19 @@ export default function PreferenceSettings() {
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Default Currency</label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <Banknote className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <select
                   value={preferences.currency}
                   onChange={(e) => setPreferences({...preferences, currency: e.target.value})}
                   disabled={saving}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full pl-10 pr-10 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 appearance-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
                 >
                   <option value="GHS">Ghanaian Cedi (GHS)</option>
                   <option value="USD">US Dollar (USD)</option>
                   <option value="EUR">Euro (EUR)</option>
                   <option value="GBP">British Pound (GBP)</option>
                 </select>
+                <ChevronDown className="absolute right-3 top-2.5 text-gray-400 pointer-events-none" size={18} />
               </div>
             </div>
             

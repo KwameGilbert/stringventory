@@ -106,14 +106,14 @@ const SalesTable = ({ sales, showPagination = true }) => {
                     <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">
                         <Link 
-                            to={`/dashboard/sales/${sale.id}`}
+                            to={`/dashboard/orders/${sale.id}`}
                             className="text-gray-400 hover:text-blue-600 transition-colors" 
                             title="View Details"
                         >
                             <Eye size={18} />
                         </Link>
                         <Link 
-                            to={`/dashboard/sales/${sale.id}/refund`}
+                            to={`/dashboard/orders/${sale.id}/refund`}
                             className="text-gray-400 hover:text-rose-600 transition-colors"
                             title="Process Refund"
                         >

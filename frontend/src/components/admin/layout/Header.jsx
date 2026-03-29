@@ -4,6 +4,7 @@ import { Search, ChevronDown, Calendar, Bell, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDashboardDateFilter } from "../../../contexts/DashboardDateFilterContext";
 import { useNotifications } from "../../../contexts/NotificationContext";
+import NotificationDropdown from "./NotificationDropdown";
 
 const Header = ({ onMenuToggle, isSidebarExpanded }) => {
   const { themeColors } = useTheme();

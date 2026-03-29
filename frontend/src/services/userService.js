@@ -48,7 +48,16 @@ export const userService = {
   },
 
   resetPassword: async (userId, passwordData) => {
-    return await apiClient.post(API_ENDPOINTS.USERS.RESET_PASSWORD(userId), passwordData);
+    return await apiClient.post(API_ENDPOINTS.USERS.RESET_PASSWORD(userId), {
+      userId,
+      user_id: userId,
+      ...passwordData,
+      // Ensure all common naming conventions are covered
+      current_password: passwordData.currentPassword || passwordData.current_password,
+      new_password: passwordData.newPassword || passwordData.new_password || passwordData.password,
+      password: passwordData.newPassword || passwordData.password,
+      password_confirmation: passwordData.confirmPassword || passwordData.newPassword || passwordData.password_confirmation
+    });
   },
 };
 

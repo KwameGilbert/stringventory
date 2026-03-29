@@ -152,7 +152,7 @@ export default function App() {
                           <Route path="/inventory/:id/edit" element={withRoles(managementRoles, <EditInventory />)} />
                           <Route path="/orders" element={withRoles(allRoles, <Orders />)} />
                           <Route path="/orders/new" element={withRoles(allRoles, <CreateOrder />)} />
-                          <Route path="/orders/:id/refund" element={withRoles(managementRoles, <CreateRefund />)} />
+                          <Route path="/orders/:id/refund" element={withRoles(allRoles, <CreateRefund />)} />
                           <Route path="/orders/:id" element={withRoles(allRoles, <ViewOrder />)} />
 
                           {/* <Route path="/sales" element={<SalesMain />} /> */}

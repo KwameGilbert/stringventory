@@ -74,7 +74,7 @@ export default function NotificationDropdown({
   };
 
   return (
-    <div className="absolute top-full mt-2 right-0 w-80 sm:w-96 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+    <div className="absolute top-full mt-2 right-0 w-80 sm:w-96 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-fade-in duration-200">
       <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
         <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">
           <Bell className="w-4 h-4 text-emerald-600" />

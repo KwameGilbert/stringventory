@@ -15,38 +15,42 @@ export const NotificationProvider = ({ children }) => {
         if (!quiet) setLoading(true);
         try {
             const summary = await notificationService.getNotificationSummary({ limit: 10 });
+            const newFetchedItems = summary.notifications || [];
             
-            // Check for new notifications to trigger browser push
-            if (notifications.length > 0) {
-                const latestOldId = notifications[0].id;
-                const newItems = summary.notifications.filter(n => !n.isRead && n.id > latestOldId);
-                
-                if (newItems.length > 0 && Notification.permission === 'granted') {
-                    newItems.forEach(item => {
-                        new Notification(item.title || 'New Notification', {
-                            body: item.message,
-                            icon: '/favicon.ico' // Ensure this exists or use a generic icon
+            setNotifications(prev => {
+                // Check for new notifications to trigger browser push
+                if (prev.length > 0) {
+                    const latestOldId = prev[0]?.id || 0;
+                    const newItems = newFetchedItems.filter(n => !n.isRead && n.id > latestOldId);
+                    
+                    if (newItems.length > 0 && Notification.permission === 'granted') {
+                        newItems.forEach(item => {
+                            new Notification(item.title || 'New Notification', {
+                                body: item.message,
+                                icon: '/favicon.ico'
+                            });
                         });
-                    });
+                    }
                 }
-            }
 
-            setNotifications(summary.notifications.map(item => ({
-                id: item?.id,
-                title: item?.title || "Notification",
-                message: item?.message || "",
-                type: (item?.type || "info").toLowerCase(),
-                timestamp: item?.createdAt || item?.timestamp || new Date().toISOString(),
-                read: Boolean(item?.isRead ?? item?.read),
-                raw: item
-            })));
-            setUnreadCount(summary.unreadCount);
+                return newFetchedItems.map(item => ({
+                    id: item?.id,
+                    title: item?.title || "Notification",
+                    message: item?.message || "",
+                    type: (item?.type || "info").toLowerCase(),
+                    timestamp: item?.createdAt || item?.timestamp || new Date().toISOString(),
+                    read: Boolean(item?.isRead ?? item?.read),
+                    raw: item
+                }));
+            });
+            
+            setUnreadCount(summary.unreadCount || 0);
         } catch (err) {
             console.error("Failed to fetch notifications:", err);
         } finally {
             if (!quiet) setLoading(false);
         }
-    }, [user, notifications]);
+    }, [user]);
 
     useEffect(() => {
         if (user) {
@@ -104,9 +108,7 @@ export const NotificationProvider = ({ children }) => {
 
         try {
             const registration = await navigator.serviceWorker.ready;
-            
-            // NOTE: You need a real VAPID public key from your backend here
-            const publicVapidKey = 'BGR-Y1pXfBf_9wG-N6-u-wK7U8BvD3r-3L8oS4u0S_g'; 
+            const publicVapidKey = 'BL3JrSg6sjq0qLorIElteJUHrhM5DqO_rico2_s0tHvIj20YS48G_G9XsPAARCTVn3wRRlsSa3cH6p85Dc2wB0E'; 
             
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
