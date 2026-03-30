@@ -9,6 +9,7 @@ import supplierService from "../../../services/supplierService";
 import { showError, showSuccess, showInfo } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
 import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 import StockAdjustmentModal from "../../../components/admin/Inventory/StockAdjustmentModal";
 
@@ -32,9 +33,11 @@ export default function Inventory() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [loading, setLoading] = useState(true);
   
-  // Stock Adjustment State
   const [adjustModalOpen, setAdjustModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
+
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,6 +51,9 @@ export default function Inventory() {
         const fetchedInventory = extractList(inventoryRes, "inventory");
         const fetchedCategories = extractList(categoriesRes, "categories");
         const fetchedSuppliers = extractList(suppliersRes, "suppliers");
+        
+        const currency = inventoryRes?.currency || inventoryRes?.data?.currency || "GHS";
+        setResponseCurrency(currency);
 
         const normalizedInventory = fetchedInventory.map((item) => {
           const product = item.product || {};
@@ -78,6 +84,7 @@ export default function Inventory() {
             entryDate: item.createdAt || item.lastUpdated || item.lastStockCheck || new Date().toISOString(),
             expiryDate: item.soonestExpiryDate || item.expiryDate || null,
             productId: item.productId || item.product_id || item.product?.id || product?.id,
+            currency: currency
           };
         }).filter((item) => {
           return isProductApproved(item.product || { id: item.productId });
@@ -183,13 +190,7 @@ export default function Inventory() {
     }
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  const formatCurrency = (val) => formatPrice(val, responseCurrency);
 
   if (loading) {
     return (

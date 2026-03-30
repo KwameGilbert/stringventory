@@ -86,13 +86,16 @@ export default function Orders() {
   const [statusFilter, setStatusFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [permissionDenied, setPermissionDenied] = useState(false);
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setPermissionDenied(false);
         const response = await orderService.getOrders();
-        setOrders(extractOrders(response).map(normalizeOrder));
+        const currency = response?.currency || response?.data?.currency || "GHS";
+        setResponseCurrency(currency);
+        setOrders(extractOrders(response).map(o => ({ ...normalizeOrder(o), currency })));
       } catch (error) {
         console.error("Error loading orders", error);
         if (isForbiddenError(error)) {
@@ -109,9 +112,11 @@ export default function Orders() {
 
   // Calculate stats
   const totalOrders = orders.length;
-  const totalRevenue = orders.filter(o => o.status === 'fulfilled').reduce((sum, o) => sum + o.total, 0);
+  const totalRevenue = orders
+    .filter(o => !['cancelled', 'refunded', 'pending'].includes(o.status))
+    .reduce((sum, o) => sum + o.total, 0);
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
-  const fulfilledOrders = orders.filter(o => o.status === 'fulfilled').length;
+  const completedOrders = orders.filter(o => ['fulfilled', 'completed', 'delivered', 'shipped'].includes(o.status)).length;
 
   // Filter orders
   const filteredOrders = orders.filter((order) => {
@@ -191,7 +196,7 @@ export default function Orders() {
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{formatPrice(totalRevenue)}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(totalRevenue, responseCurrency)}</p>
             </div>
           </div>
         </div>
@@ -209,15 +214,15 @@ export default function Orders() {
           </div>
         </div>
 
-        {/* Fulfilled */}
+        {/* Completed */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-lg bg-green-50">
               <CheckCircle className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Fulfilled</p>
-              <p className="text-2xl font-bold text-gray-900">{fulfilledOrders}</p>
+              <p className="text-sm text-gray-500">Completed</p>
+              <p className="text-2xl font-bold text-gray-900">{completedOrders}</p>
             </div>
           </div>
         </div>

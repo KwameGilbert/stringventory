@@ -38,13 +38,14 @@ const QuickLists = () => {
         const lowStockItems = extractList(stockRes, "products");
         const expiringItems = extractList(expiringRes, "products");
 
-        // Map orders data to match expected format
+        const ordersCurrency = ordersRes?.currency || ordersRes?.data?.currency || "GHS";
         const mappedOrders = orders.slice(0, 5).map(order => ({
           id: order.id,
           orderNumber: order.orderNumber || order.id,
           customerName: order.customer?.name || order.customerName || "Unknown Customer",
           totalAmount: Number(order.total || 0),
           status: order.status || "pending",
+          currency: order.currency || ordersCurrency,
         }));
 
         setRecentOrders(mappedOrders);
@@ -141,7 +142,7 @@ const QuickLists = () => {
           <div className="space-y-3">
             {recentOrders.map((order, index) => (
               <div
-                key={order.id || `order-${index}`}
+                key={`order-${order.id}-${index}`}
                 className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
               >
                 <div className="flex-1">
@@ -152,7 +153,7 @@ const QuickLists = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-gray-900">
-                    {formatPrice(order.totalAmount)}
+                    {formatPrice(order.totalAmount, order.currency)}
                   </p>
                   <span
                     className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
@@ -187,7 +188,7 @@ const QuickLists = () => {
           <div className="space-y-3">
             {lowStock.map((item, index) => (
               <div
-                key={item.id || `stock-${index}`}
+                key={`stock-${item.id}-${index}`}
                 className="flex items-center justify-between p-3 rounded-xl bg-red-50 hover:bg-red-100 transition-colors"
               >
                 <div className="flex-1">
@@ -229,7 +230,7 @@ const QuickLists = () => {
           <div className="space-y-3">
             {expiring.map((item, index) => (
               <div
-                key={item.id || `expiring-${index}`}
+                key={`expiring-${item.id}-${index}`}
                 className="flex items-center justify-between p-3 rounded-xl bg-amber-50 hover:bg-amber-100 transition-colors"
               >
                 <div className="flex-1">

@@ -31,12 +31,14 @@ const KPICards = ({ dateRange }) => {
         // mapping both to null or empty objects on failure to allow the rest to work
         let metrics = {};
         let expiringCount = 0;
+        let responseCurrency = "GHS";
 
         try {
           const dashboardRes = await analyticsService.getDashboardOverview(params);
           const dashboardPayload = dashboardRes?.data || dashboardRes || {};
           const dashboardData = dashboardPayload?.data || dashboardPayload;
           metrics = dashboardData?.metrics || {};
+          responseCurrency = dashboardPayload?.currency || dashboardData?.currency || "GHS";
         } catch (err) {
           console.error("Dashboard metrics fetch failed:", err);
         }
@@ -66,6 +68,8 @@ const KPICards = ({ dateRange }) => {
           console.error("Expiring products fetch failed:", err);
         }
 
+        // responseCurrency is now set inside the dashboard try-catch block
+
         const toTrend = (change) => {
           if (change > 0) return "up";
           if (change < 0) return "down";
@@ -89,7 +93,7 @@ const KPICards = ({ dateRange }) => {
           {
             id: "grossRevenue",
             title: "Gross Revenue",
-            value: formatPrice(metrics?.grossRevenue?.value),
+            value: formatPrice(metrics?.grossRevenue?.value, responseCurrency),
             change: formatChange(metrics?.grossRevenue?.change),
             trend: metrics?.grossRevenue?.trend || toTrend(metrics?.grossRevenue?.change),
             icon: "DollarSign",
@@ -107,7 +111,7 @@ const KPICards = ({ dateRange }) => {
           {
             id: "totalExpenses",
             title: "Total Expenses",
-            value: formatPrice(metrics?.totalExpenses?.value),
+            value: formatPrice(metrics?.totalExpenses?.value, responseCurrency),
             change: formatChange(metrics?.totalExpenses?.change),
             trend: metrics?.totalExpenses?.trend || toTrend(metrics?.totalExpenses?.change),
             icon: "AlertTriangle",
@@ -116,7 +120,7 @@ const KPICards = ({ dateRange }) => {
           {
             id: "netProfit",
             title: "Net Revenue",
-            value: formatPrice(metrics?.netProfit?.value),
+            value: formatPrice(metrics?.netProfit?.value, responseCurrency),
             change: formatChange(metrics?.netProfit?.change),
             trend: metrics?.netProfit?.trend || toTrend(metrics?.netProfit?.change),
             icon: "TrendingUp",
@@ -125,7 +129,7 @@ const KPICards = ({ dateRange }) => {
           {
             id: "inventoryValue",
             title: "Inventory Value",
-            value: formatPrice(metrics?.inventoryValue?.value),
+            value: formatPrice(metrics?.inventoryValue?.value, responseCurrency),
             change: formatChange(metrics?.inventoryValue?.change),
             trend: metrics?.inventoryValue?.trend || toTrend(metrics?.inventoryValue?.change),
             icon: "Package",

@@ -3,10 +3,12 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, AlertCircle, Package, DollarSign } from "lucide-react";
 import orderService from "../../../services/orderService";
 import { confirmAction, showError, showSuccess } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 export default function SalesRefund() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [sale, setSale] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,7 @@ export default function SalesRefund() {
           ? {
               id: rawOrder.id,
               amount: Number(rawOrder.total || 0),
+              currency: rawOrder.currency || "GHS",
             }
           : null;
 
@@ -72,13 +75,7 @@ export default function SalesRefund() {
     }, 0);
   }, [items, refundItems]);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-        style: "currency",
-        currency: "GHS",
-        minimumFractionDigits: 2,
-    }).format(value);
-  };
+  const formatCurrency = (value) => formatPrice(value, sale?.currency || "GHS");
 
   const handleProcessRefund = async (e) => {
     e.preventDefault();

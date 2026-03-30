@@ -3,6 +3,7 @@ import { Search, ShoppingCart, Plus, Minus, Trash2, CreditCard, DollarSign, Pack
 import Swal from "sweetalert2";
 import { productService } from "../../../services/productService";
 import { isProductApproved } from "../../../utils/productApproval";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 export default function Sales() {
   const [products, setProducts] = useState([]);
@@ -13,6 +14,10 @@ export default function Sales() {
   // Checkout State
   const [discount, setDiscount] = useState(0);
   const [taxRate, setTaxRate] = useState(0);
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
+
+  const { formatPrice } = useCurrency();
+  const formatCurrency = (val) => formatPrice(val, responseCurrency);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +31,9 @@ export default function Sales() {
             : Array.isArray(payload.data)
               ? payload.data
               : [];
+
+        const currency = payload.currency || payload.data?.currency || "GHS";
+        setResponseCurrency(currency);
 
         setProducts(
           list
@@ -112,13 +120,7 @@ export default function Sales() {
     });
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  // Local helper was removed in favor of hook
 
   return (
     <div className="h-[calc(100vh-6rem)] -m-6 flex flex-col lg:flex-row overflow-hidden">

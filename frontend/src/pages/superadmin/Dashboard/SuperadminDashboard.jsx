@@ -13,6 +13,7 @@ import KPICard from '../../../components/superadmin/Dashboard/KPICard';
 import RecentBusinessesTable from '../../../components/superadmin/Dashboard/RecentBusinessesTable';
 import superadminService from '../../../services/superadminService';
 import { showError } from '../../../utils/alerts';
+import { useCurrency } from '../../../utils/currencyUtils';
 
 const extractBusinesses = (response) => {
   const payload = response?.data || response || {};
@@ -84,6 +85,10 @@ export default function SuperadminDashboard() {
   const [revenueData, setRevenueData] = useState([]);
   const [planDistribution, setPlanDistribution] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
+  const [responseCurrency, setResponseCurrency] = useState("USD");
+
+  const { formatPrice } = useCurrency();
+  const formatCurrency = (val) => formatPrice(val, responseCurrency);
 
   useEffect(() => {
     fetchDashboardData();
@@ -99,6 +104,9 @@ export default function SuperadminDashboard() {
 
       const analytics = extractAnalytics(analyticsRes);
       const businesses = extractBusinesses(businessesRes).map(normalizeBusiness);
+      
+      const currency = analyticsRes?.currency || analyticsRes?.data?.currency || "USD";
+      setResponseCurrency(currency);
 
       const computedMRR = businesses.reduce((sum, business) => sum + (Number(business.mrr) || 0), 0);
       const totalUsers = businesses.reduce((sum, business) => sum + (Number(business.current_usage?.total_users) || 0), 0);
@@ -200,13 +208,7 @@ export default function SuperadminDashboard() {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
+  // Local helper removed
 
   if (loading) {
     return (
@@ -253,7 +255,7 @@ export default function SuperadminDashboard() {
           changeType="positive"
           icon={DollarSign}
           color="blue"
-          subtitle={`+$${(((stats?.mrrChange || 0) / 100) * (stats?.monthlyRecurringRevenue || 0)).toFixed(0)} this month`}
+          subtitle={`${stats?.mrrChange >= 0 ? '+' : ''}${formatCurrency(((stats?.mrrChange || 0) / 100) * (stats?.monthlyRecurringRevenue || 0))} this month`}
         />
         <KPICard
           title="Total Users"
@@ -376,9 +378,8 @@ export default function SuperadminDashboard() {
           </div>
         </div>
 
-        {/* Recent Businesses - Takes 2 columns */}
         <div className="lg:col-span-2">
-          <RecentBusinessesTable businesses={recentBusinesses} />
+          <RecentBusinessesTable businesses={recentBusinesses} responseCurrency={responseCurrency} />
         </div>
       </div>
     </div>

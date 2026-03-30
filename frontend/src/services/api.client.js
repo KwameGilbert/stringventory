@@ -123,8 +123,24 @@ apiClient.interceptors.request.use(
  */
 apiClient.interceptors.response.use(
   (response) => {
-    // Return only the data, not the entire response
-    return response.data;
+    const data = response.data;
+    
+    // Reactive Currency Interceptor: 
+    // Detect if currency or rates are present in the response summary or metadata
+    const currency = data?.currency || data?.data?.currency;
+    const rates = data?.rates || data?.exchangeRates || data?.data?.rates;
+    
+    // Only dispatch if we have rates (authoritative) 
+    // OR if this is a dedicated currency setting response to prevent reversions
+    const isCurrencyEndpoint = response.config?.url?.includes('/currency');
+    
+    if (rates || (currency && isCurrencyEndpoint)) {
+      window.dispatchEvent(new CustomEvent('app:currency-update', { 
+        detail: { currency, rates } 
+      }));
+    }
+    
+    return data;
   },
   async (error) => {
     const originalRequest = error.config;

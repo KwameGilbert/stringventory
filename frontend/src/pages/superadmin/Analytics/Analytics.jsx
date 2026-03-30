@@ -6,6 +6,7 @@ import AnalyticsUsers from './tabs/AnalyticsUsers';
 import AnalyticsSystem from './tabs/AnalyticsSystem';
 import superadminService from '../../../services/superadminService';
 import { showError } from '../../../utils/alerts';
+import { useCurrency } from '../../../utils/currencyUtils';
 
 const extractAnalytics = (response) => {
   const payload = response?.data || response || {};
@@ -68,6 +69,10 @@ export default function Analytics() {
   const [timeRange, setTimeRange] = useState('30days');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
+  const [responseCurrency, setResponseCurrency] = useState("USD");
+
+  const { formatPrice } = useCurrency();
+  const formatCurrency = (val) => formatPrice(val, responseCurrency);
 
   useEffect(() => {
     fetchAnalyticsData();
@@ -78,6 +83,10 @@ export default function Analytics() {
       setLoading(true);
       const response = await superadminService.getPlatformAnalytics({ timeRange });
       const analytics = extractAnalytics(response);
+      
+      const currency = response?.currency || response?.data?.currency || "USD";
+      setResponseCurrency(currency);
+      
       setData(normalizeAnalyticsData(analytics));
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -88,13 +97,7 @@ export default function Analytics() {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
+  // Local helper removed
 
   if (loading || !data) {
     return (

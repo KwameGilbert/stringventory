@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, ChevronLeft, ChevronRight, ShoppingBag, User, CreditCard, Clock, CheckCircle, XCircle, RotateCcw } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const ITEMS_PER_PAGE = 8;
 
@@ -50,6 +51,7 @@ const statusConfig = {
 };
 
 const OrdersTable = ({ orders }) => {
+  const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(orders.length / ITEMS_PER_PAGE);
@@ -60,13 +62,7 @@ const OrdersTable = ({ orders }) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  const formatCurrency = (val, currency = "GHS") => formatPrice(val, currency);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -169,9 +165,9 @@ const OrdersTable = ({ orders }) => {
 
                   {/* Total */}
                   <td className="px-4 py-3 text-right">
-                    <span className="text-sm font-bold text-gray-900">{formatCurrency(order.total)}</span>
+                    <span className="text-sm font-bold text-gray-900">{formatCurrency(order.total, order.currency)}</span>
                     {order.discountAmount > 0 && (
-                      <p className="text-xs text-emerald-600">-{formatCurrency(order.discountAmount)} discount</p>
+                      <p className="text-xs text-emerald-600">-{formatCurrency(order.discountAmount, order.currency)} discount</p>
                     )}
                   </td>
 

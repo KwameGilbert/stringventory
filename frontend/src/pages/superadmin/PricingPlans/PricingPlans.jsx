@@ -3,6 +3,7 @@ import { Edit, Users, DollarSign, TrendingUp, Check, X, Plus } from 'lucide-reac
 import { useNavigate } from 'react-router-dom';
 import superadminService from '../../../services/superadminService';
 import { showError } from '../../../utils/alerts';
+import { useCurrency } from '../../../utils/currencyUtils';
 
 const extractPlans = (response) => {
   const payload = response?.data || response || {};
@@ -53,6 +54,7 @@ const normalizePlan = (plan) => ({
 });
 
 export default function PricingPlans() {
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [plans, setPlans] = useState([]);
@@ -128,13 +130,7 @@ export default function PricingPlans() {
     return plan && plan.priceMonthly ? plan.priceMonthly * count : 0;
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
+  const formatCurrency = (amount) => formatPrice(amount, "USD");
 
   return (
     <div className="space-y-6">

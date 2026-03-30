@@ -58,6 +58,12 @@ const TransactionsTable = ({ transactions = [] }) => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = transactions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
+  const goToPage = (page) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  const formatCurrency = (val, currency = "GHS") => formatPrice(val, currency);
+
   const formatDate = (dateString) => {
     if (!dateString) return "—";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -153,7 +159,7 @@ const TransactionsTable = ({ transactions = [] }) => {
                     <div className="flex flex-col items-end">
                         <div className={`flex items-center gap-1 font-bold ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
                             {isOutflow ? <ArrowDownCircle size={14} /> : <ArrowUpCircle size={14} />}
-                            {formatCurrency(tx.amount)}
+                            {formatCurrency(tx.amount, tx.currency)}
                         </div>
                     </div>
                   </td>

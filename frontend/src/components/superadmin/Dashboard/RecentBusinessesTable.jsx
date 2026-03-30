@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { Eye, Edit, MoreVertical } from 'lucide-react';
 import PlanBadge from '../../shared/PlanBadge';
 import StatusBadge from '../../shared/StatusBadge';
+import { useCurrency } from '../../../utils/currencyUtils';
 
-export default function RecentBusinessesTable({ businesses = [] }) {
+export default function RecentBusinessesTable({ businesses = [], responseCurrency = "USD" }) {
+  const { formatPrice } = useCurrency();
   // Ensure businesses is always an array
   const businessList = Array.isArray(businesses) ? businesses : [];
 
@@ -15,12 +17,7 @@ export default function RecentBusinessesTable({ businesses = [] }) {
     });
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
-  };
+  const formatCurrency = (amount) => formatPrice(amount, responseCurrency);
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">

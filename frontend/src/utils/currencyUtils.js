@@ -1,14 +1,6 @@
 /**
- * Exchange rates relative to GHS (Base Currency)
- * These can be updated from an API in a production environment
+ * Currency Symbols Mapping
  */
-export const EXCHANGE_RATES = {
-  GHS: 1.0,
-  USD: 16.0,   // 1 USD = 16 GHS
-  EUR: 17.5,   // 1 EUR = 17.5 GHS
-  GBP: 20.2,   // 1 GBP = 20.2 GHS
-};
-
 export const CURRENCY_SYMBOLS = {
   GHS: "₵",
   USD: "$",
@@ -17,27 +9,39 @@ export const CURRENCY_SYMBOLS = {
 };
 
 /**
- * Convert an amount from GHS to target currency
- * @param {number} amount - Amount in GHS
- * @param {string} targetCurrency - Destination currency code
- * @returns {number} Converted amount
+ * Convert an amount from source to target currency
+ * @param {number|string} amount - The value to convert
+ * @param {string} targetCurrency - Destination currency code (e.g. "USD")
+ * @param {object} rates - Current nested exchange rates mapping { SOURCE: { TARGET: { rate: 0.1 } } }
+ * @param {string} sourceCurrency - The currency of the original amount (default "GHS")
+ * @returns {number} Converted amount or 0 if input is invalid
  */
-export const convertAmount = (amount, targetCurrency = "GHS", rates = EXCHANGE_RATES) => {
-  const rate = rates[targetCurrency] || EXCHANGE_RATES[targetCurrency] || 1;
-  if (targetCurrency === "GHS") return amount;
-  return amount / rate;
+export const convertAmount = (amount, targetCurrency = "GHS", rates = {}, sourceCurrency = "GHS") => {
+  const numericAmount = Number(amount);
+  
+  // Guard against non-numeric inputs or matching currencies
+  if (isNaN(numericAmount) || !isFinite(numericAmount)) return 0;
+  if (targetCurrency === sourceCurrency) return numericAmount;
+  
+  // Traverse rates object: rates[source][target].rate
+  // Fallback to 1 if the path is missing (no conversion)
+  const rateData = rates?.[sourceCurrency]?.[targetCurrency];
+  const rate = typeof rateData === 'object' ? rateData?.rate : (typeof rateData === 'number' ? rateData : 1);
+  
+  return numericAmount * rate;
 };
 
 /**
- * Format a number as a currency string
- * @param {number} amount - Amount in GHS (will be converted)
- * @param {string} targetCurrency - Selected currency
+ * Format a number as a currency string with automatic conversion
+ * @param {number|string} amount - Amount in source currency
+ * @param {string} targetCurrency - Selected display currency
  * @param {object} rates - Current exchange rates
+ * @param {string} sourceCurrency - The currency the 'amount' is currently in (default "GHS")
  * @returns {string} Formatted string (e.g., "$10.00")
  */
-export const formatCurrency = (amount, targetCurrency = "GHS", rates = EXCHANGE_RATES) => {
-  const converted = convertAmount(amount, targetCurrency, rates);
-  const symbol = CURRENCY_SYMBOLS[targetCurrency] || "₵";
+export const formatCurrency = (amount, targetCurrency = "GHS", rates = {}, sourceCurrency = "GHS") => {
+  const converted = convertAmount(amount, targetCurrency, rates, sourceCurrency);
+  const symbol = CURRENCY_SYMBOLS[targetCurrency?.toUpperCase()] || "₵";
   
   return `${symbol}${Number(converted).toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -49,17 +53,17 @@ import { useSettings } from "../contexts/SettingsContext";
 
 /**
  * Hook-ready formatter that uses the SettingsContext
- * Usage: const { formatPrice } = useCurrency();
+ * Usage: const { formatPrice, convert } = useCurrency();
  */
 export const useCurrency = () => {
   const { settings, rates } = useSettings();
   const targetCurrency = settings?.currency || "GHS";
   
   return {
-    formatPrice: (amount) => formatCurrency(amount, targetCurrency, rates),
-    convert: (amount) => convertAmount(amount, targetCurrency, rates),
-    symbol: CURRENCY_SYMBOLS[targetCurrency],
-    currencyCode: targetCurrency,
-    rates: rates || EXCHANGE_RATES
+    formatPrice: (amount, sourceCurrency = "GHS") => formatCurrency(amount, targetCurrency, rates, sourceCurrency),
+    convert: (amount, sourceCurrency = "GHS") => convertAmount(amount, targetCurrency, rates, sourceCurrency),
+    symbol: CURRENCY_SYMBOLS[targetCurrency?.toUpperCase()] || "₵",
+    currencyCode: targetCurrency?.toUpperCase(),
+    rates: rates || {}
   };
 };
