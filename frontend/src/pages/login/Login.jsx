@@ -25,8 +25,12 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await login(email, password);
-      navigate("/dashboard");
+      const userData = await login(email, password);
+      if (userData?.mustChangePassword) {
+        navigate("/force-password-change");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error("Login failed", error);
     } finally {

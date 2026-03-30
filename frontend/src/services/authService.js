@@ -90,6 +90,20 @@ export const authService = {
   verifyEmail: async (email, token) => {
     return await apiClient.get(API_ENDPOINTS.AUTH.VERIFY_EMAIL(email, token));
   },
+
+  /**
+   * Update password (authenticated)
+   */
+  updatePassword: async (passwordData) => {
+    const payload = {
+      ...passwordData,
+      current_password: passwordData.currentPassword || passwordData.current_password,
+      new_password: passwordData.newPassword || passwordData.new_password,
+      password: passwordData.newPassword || passwordData.password,
+      password_confirmation: passwordData.confirmPassword || passwordData.newPassword || passwordData.confirm_password
+    };
+    return await apiClient.post(API_ENDPOINTS.USERS.RESET_PASSWORD(), payload);
+  },
 };
 
 export default authService;
