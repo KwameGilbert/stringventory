@@ -1,10 +1,13 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Edit, Loader, X } from 'lucide-react';
 import { PRICING_PLANS } from '../../../constants/plans';
+import { useCurrency } from '../../../utils/currencyUtils';
 
 export default function ViewPricingPlan() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const plan = PRICING_PLANS.find(p => p.id === id);
 
   if (!plan) {
@@ -21,13 +24,7 @@ export default function ViewPricingPlan() {
     );
   }
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
+  const formatCurrency = (amount) => formatPrice(amount, "USD");
 
   return (
     <div className="space-y-6">

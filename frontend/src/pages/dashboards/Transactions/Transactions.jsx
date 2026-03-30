@@ -12,6 +12,7 @@ export default function Transactions() {
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
 
   const fetchData = async () => {
     setLoading(true);
@@ -20,7 +21,9 @@ export default function Transactions() {
       const payload = response?.data || response;
       
       if (payload?.transactions) {
-        setTransactions(payload.transactions);
+        const currency = response?.currency || response?.data?.currency || "GHS";
+        setResponseCurrency(currency);
+        setTransactions(payload.transactions.map(t => ({ ...t, currency })));
         setSummary(payload.summary || { totalInflow: 0, totalOutflow: 0, netProfitLoss: 0 });
       } else {
         setTransactions(Array.isArray(payload) ? payload : []);
@@ -102,7 +105,7 @@ export default function Transactions() {
             </div>
             <div>
                 <p className="text-sm font-medium text-gray-500 mb-1">Total Inflow</p>
-                <p className="text-2xl font-bold text-gray-900">{formatPrice(summary.totalInflow)}</p>
+                <p className="text-2xl font-bold text-gray-900">{formatPrice(summary.totalInflow, responseCurrency)}</p>
             </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -111,7 +114,7 @@ export default function Transactions() {
             </div>
             <div>
                 <p className="text-sm font-medium text-gray-500 mb-1">Total Outflow</p>
-                <p className="text-2xl font-bold text-gray-900">{formatPrice(summary.totalOutflow)}</p>
+                <p className="text-2xl font-bold text-gray-900">{formatPrice(summary.totalOutflow, responseCurrency)}</p>
             </div>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
@@ -121,7 +124,7 @@ export default function Transactions() {
             <div>
                 <p className="text-sm font-medium text-gray-500 mb-1">Net Profit/Loss</p>
                 <p className={`text-2xl font-bold ${summary.netProfitLoss >= 0 ? 'text-gray-900' : 'text-rose-600'}`}>
-                  {formatPrice(summary.netProfitLoss)}
+                  {formatPrice(summary.netProfitLoss, responseCurrency)}
                 </p>
             </div>
         </div>
