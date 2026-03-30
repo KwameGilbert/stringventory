@@ -30,7 +30,7 @@ const normalizeCustomer = (customer) => {
     name: customer?.name || `${firstName} ${lastName}`.trim() || "Unknown Customer",
     status: customer?.status || "active",
     totalOrders: Number(customer?.totalOrders ?? 0),
-    totalSpent: Number(customer?.totalSpent ?? 0),
+    totalSpent: Number(customer?.totalSpent ?? customer?.totalAmountSpent ?? 0),
   };
 };
 

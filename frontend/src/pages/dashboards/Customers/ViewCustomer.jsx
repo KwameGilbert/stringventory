@@ -25,11 +25,14 @@ export default function ViewCustomer() {
   const { formatPrice } = useCurrency();
   const [customer, setCustomer] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const customerRes = await customerService.getCustomerById(id);
+        const currency = customerRes?.currency || customerRes?.data?.currency || "GHS";
+        setResponseCurrency(currency);
         const found = extractCustomer(customerRes);
         if (found) {
           setCustomer({
@@ -37,7 +40,7 @@ export default function ViewCustomer() {
             name: found.name || `${found.firstName || ""} ${found.lastName || ""}`.trim(),
             status: found.status || "active",
             totalOrders: Number(found.totalOrders ?? 0),
-            totalSpent: Number(found.totalSpent ?? 0),
+            totalSpent: Number(found?.totalSpent ?? found?.totalAmountSpent ?? 0),
           });
           setOrders(extractOrders(found));
         }
@@ -174,7 +177,7 @@ export default function ViewCustomer() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Total Spent</p>
-                  <p className="text-2xl font-bold text-emerald-600">{formatPrice(customer.totalSpent)}</p>
+                  <p className="text-2xl font-bold text-emerald-600">{formatPrice(customer.totalSpent, responseCurrency)}</p>
                 </div>
               </div>
             </div>
@@ -200,7 +203,7 @@ export default function ViewCustomer() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">{formatPrice(order.total ?? 0)}</p>
+                      <p className="font-semibold text-gray-900">{formatPrice(order.total ?? 0, order.currency)}</p>
                       <span className={`text-xs font-medium ${
                         order.status === 'fulfilled' ? 'text-emerald-600' :
                         order.status === 'pending' ? 'text-amber-600' :
