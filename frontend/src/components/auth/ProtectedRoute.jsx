@@ -15,5 +15,9 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }
 
+  if (user.mustChangePassword && location.pathname !== "/force-password-change") {
+    return <Navigate to="/force-password-change" replace />;
+  }
+
   return children;
 }

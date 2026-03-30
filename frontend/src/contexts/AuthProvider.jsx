@@ -32,6 +32,9 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.login(email, password);
       const payload = response?.data || response || {};
       const authUser = payload?.user || payload || {};
+      console.log("Login Success - User Object:", authUser);
+      console.log("Login Success - Root Payload:", payload);
+      
       const role = authUser?.role || "";
       const normalizedRole = normalizeRole(role);
       const firstName = authUser?.firstName || authUser?.first_name || "";
@@ -53,6 +56,17 @@ export const AuthProvider = ({ children }) => {
         subscriptionStatus: authUser?.subscriptionStatus,
         isSuperAdmin: normalizedRole === ROLES.CEO,
         avatar: `https://ui-avatars.com/api/?name=${firstName || "User"}+${lastName || ""}&background=random&color=fff`,
+        mustChangePassword: !!(
+          payload?.first_login || 
+          payload?.must_change_password || 
+          payload?.mustChangePassword ||
+          payload?.is_new_user ||
+          authUser?.first_login || 
+          authUser?.must_change_password || 
+          authUser?.mustChangePassword ||
+          authUser?.must_detail_change ||
+          authUser?.is_new_user
+        ),
       };
 
       setUser(userData);

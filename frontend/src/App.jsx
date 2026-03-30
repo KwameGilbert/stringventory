@@ -57,6 +57,7 @@ import Sidebar from "./components/admin/layout/Siderbar";
 import Footer from "./components/admin/layout/Footer";
 import DashboardLayout from "./components/admin/layout/DashboardLayout";
 import Login from "./pages/login/Login";
+import ForcePasswordChange from "./pages/login/ForcePasswordChange";
 
 // Superadmin imports
 import SuperadminRoute from "./components/auth/SuperadminRoute";
@@ -100,6 +101,7 @@ export default function App() {
                 <Routes>
                   {/* Login Route - No Layout */}
                   <Route path="/" element={<Login />} />
+                  <Route path="/force-password-change" element={<ProtectedRoute><ForcePasswordChange /></ProtectedRoute>} />
 
                 {/* Superadmin Routes */}
                 <Route
