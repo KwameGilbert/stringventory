@@ -11,7 +11,7 @@ const OrdersHeader = ({
   const statuses = [
     { value: "", label: "All Status" },
     { value: "pending", label: "Pending" },
-    { value: "fulfilled", label: "Fulfilled" },
+    { value: "fulfilled", label: "Completed" },
     { value: "cancelled", label: "Cancelled" },
     { value: "refunded", label: "Refunded" },
   ];

@@ -74,7 +74,7 @@ const InventoryTable = ({ inventory, onAdjust }) => {
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[240px]">Product</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Batch #</th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Supplier</th>
               <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Unit Cost</th>
@@ -89,7 +89,7 @@ const InventoryTable = ({ inventory, onAdjust }) => {
             {paginatedInventory.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
                 {/* Product */}
-                <td className="px-4 py-3">
+                <td className="px-2 py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
                       {item.image ? (
@@ -110,9 +110,9 @@ const InventoryTable = ({ inventory, onAdjust }) => {
                         style={{ display: item.image ? "none" : "block" }}
                       />
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900 text-sm">{item.productName}</p>
-                      <p className="text-xs text-gray-400">{item.category}</p>
+                    <div className="max-w-[180px]">
+                      <p className="font-medium text-gray-900 text-sm truncate" title={item.productName}>{item.productName}</p>
+                      <p className="text-xs text-gray-400 truncate">{item.category}</p>
                     </div>
                   </div>
                 </td>

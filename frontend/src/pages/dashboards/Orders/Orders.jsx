@@ -109,9 +109,11 @@ export default function Orders() {
 
   // Calculate stats
   const totalOrders = orders.length;
-  const totalRevenue = orders.filter(o => o.status === 'fulfilled').reduce((sum, o) => sum + o.total, 0);
+  const totalRevenue = orders
+    .filter(o => !['cancelled', 'refunded', 'pending'].includes(o.status))
+    .reduce((sum, o) => sum + o.total, 0);
   const pendingOrders = orders.filter(o => o.status === 'pending').length;
-  const fulfilledOrders = orders.filter(o => o.status === 'fulfilled').length;
+  const completedOrders = orders.filter(o => ['fulfilled', 'completed', 'delivered', 'shipped'].includes(o.status)).length;
 
   // Filter orders
   const filteredOrders = orders.filter((order) => {
@@ -209,15 +211,15 @@ export default function Orders() {
           </div>
         </div>
 
-        {/* Fulfilled */}
+        {/* Completed */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-lg bg-green-50">
               <CheckCircle className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Fulfilled</p>
-              <p className="text-2xl font-bold text-gray-900">{fulfilledOrders}</p>
+              <p className="text-sm text-gray-500">Completed</p>
+              <p className="text-2xl font-bold text-gray-900">{completedOrders}</p>
             </div>
           </div>
         </div>
