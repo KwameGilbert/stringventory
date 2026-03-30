@@ -334,9 +334,9 @@ export default function Reports() {
         <div className="space-y-6 animate-fade-in">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
              {/* Sales Summary Cards */}
-             <SummaryCard title="Total Revenue" value={formatCurrency(data?.salesReport?.summary?.totalRevenue || 0)} icon={DollarSign} color="emerald" />
+             <SummaryCard title="Total Revenue" value={formatPrice(data?.salesReport?.summary?.totalRevenue || 0)} icon={DollarSign} color="emerald" />
              <SummaryCard title="Total Sales" value={data?.salesReport?.summary?.totalOrders || 0} icon={Package} color="blue" />
-             <SummaryCard title="Avg. Order Value" value={formatCurrency(data?.salesReport?.summary?.averageOrderValue || 0)} icon={TrendingUp} color="emerald " />
+             <SummaryCard title="Avg. Order Value" value={formatPrice(data?.salesReport?.summary?.averageOrderValue || 0)} icon={TrendingUp} color="emerald " />
              <SummaryCard title="Growth" value={`${data?.salesReport?.summary?.growth || 0}%`} icon={BarChart3} color="amber" />
           </div>
 

@@ -18,28 +18,15 @@ const extractCategories = (response) => {
   return [];
 };
 
-const extractPaymentMethods = (response) => {
-  const payload = response?.data || response || {};
-  const settings = payload?.settings || payload?.data?.settings || payload?.data || payload;
-  const methods = Array.isArray(settings?.paymentMethods) ? settings.paymentMethods : [];
-
-  const mappedMethods = methods
-    .filter((method) => method?.enabled !== false)
-    .map((method) => ({
-      id: method?.id || method?.type || method?.name,
-      name: method?.name || method?.type || "Payment Method",
-      value: method?.type || String(method?.name || "").toLowerCase().replace(/\s+/g, "_"),
-    }));
-
-  if (mappedMethods.length > 0) return mappedMethods;
-
+const extractPaymentMethods = () => {
   return [
     { id: "cash", name: "Cash", value: "cash" },
-    { id: "bank_transfer", name: "Bank Transfer", value: "bank_transfer" },
+    { id: "card", name: "Card", value: "card" },
+    { id: "bank", name: "Bank", value: "bank" },
     { id: "mobile_money", name: "Mobile Money", value: "mobile_money" },
-    { id: "credit_card", name: "Credit Card", value: "credit_card" },
   ];
 };
+
 
 const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting = false }) => {
   const navigate = useNavigate();
@@ -56,7 +43,6 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting
     amount: "",
     date: today,
     reference: "",
-    supplier: "",
     name: "",
     notes: "",
     isRecurring: false,
@@ -269,26 +255,12 @@ const ExpenseForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Additional Information</h3>
-                <p className="text-xs text-gray-500">Supplier, notes, and settings</p>
+                <p className="text-xs text-gray-500">Evidence and settings</p>
               </div>
             </div>
           </div>
           
           <div className="p-6 space-y-5">
-            {/* Supplier */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Linked Supplier <span className="text-gray-400 font-normal">(Optional)</span>
-              </label>
-              <input
-                type="text"
-                name="supplier"
-                value={formData.supplier}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-400 transition-all text-sm"
-                placeholder="e.g. Office Max"
-              />
-            </div>
 
             {/* Reference */}
             <div className="space-y-2">
