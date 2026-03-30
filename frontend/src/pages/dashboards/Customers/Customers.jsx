@@ -6,6 +6,7 @@ import customerService from "../../../services/customerService";
 import { showError } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
 import { canManageCatalog } from "../../../utils/accessControl";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractCustomers = (response) => {
   const payload = response?.data || response || {};
@@ -39,13 +40,19 @@ export default function Customers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(true);
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
   const canManage = canManageCatalog(user?.role || user?.normalizedRole);
+
+  const { formatPrice } = useCurrency();
+  const formatCurrency = (val) => formatPrice(val, responseCurrency);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await customerService.getCustomers();
-        setCustomers(extractCustomers(response).map(normalizeCustomer));
+        const currency = response?.currency || response?.data?.currency || "GHS";
+        setResponseCurrency(currency);
+        setCustomers(extractCustomers(response).map(c => ({ ...normalizeCustomer(c), currency })));
       } catch (error) {
         console.error("Error loading customers", error);
         showError(error?.message || "Failed to load customers");
@@ -78,13 +85,7 @@ export default function Customers() {
     return 0;
   });
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+  // Local helper removed
 
   if (loading) {
     return (

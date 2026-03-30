@@ -86,13 +86,16 @@ export default function Orders() {
   const [statusFilter, setStatusFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [permissionDenied, setPermissionDenied] = useState(false);
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setPermissionDenied(false);
         const response = await orderService.getOrders();
-        setOrders(extractOrders(response).map(normalizeOrder));
+        const currency = response?.currency || response?.data?.currency || "GHS";
+        setResponseCurrency(currency);
+        setOrders(extractOrders(response).map(o => ({ ...normalizeOrder(o), currency })));
       } catch (error) {
         console.error("Error loading orders", error);
         if (isForbiddenError(error)) {
@@ -193,7 +196,7 @@ export default function Orders() {
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{formatPrice(totalRevenue)}</p>
+              <p className="text-2xl font-bold text-gray-900">{formatPrice(totalRevenue, responseCurrency)}</p>
             </div>
           </div>
         </div>

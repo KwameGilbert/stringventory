@@ -21,9 +21,14 @@ export default function ViewSupplier() {
       try {
         const response = await supplierService.getSupplierById(id);
         const found = extractSupplier(response);
+        
+        // Extract source currency from response
+        const currency = response?.currency || response?.data?.currency || "GHS";
+
         if (found?.id) {
             setSupplier({
              ...found,
+             currency,
              status:
                found?.status === "active" || found?.isActive === true
                  ? "Active"
@@ -63,6 +68,8 @@ export default function ViewSupplier() {
     };
     fetchData();
   }, [id]);
+
+  const formatCurrency = (val) => formatPrice(val, supplier?.currency || "GHS");
 
   if (loading) {
     return (
@@ -194,13 +201,13 @@ export default function ViewSupplier() {
                       <div className="p-4 bg-gray-50 rounded-xl">
                          <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Lifetime Spend</p>
                          <p className="text-lg font-bold text-gray-900 leading-tight">
-                           {formatPrice(supplier.lifetimeSpend)}
+                           {formatCurrency(supplier.lifetimeSpend)}
                          </p>
                       </div>
                       <div className="p-4 bg-amber-50 rounded-xl">
                          <p className="text-xs text-amber-700 uppercase font-bold tracking-wider mb-1 text-[10px]">Pending Balance</p>
                          <p className="text-lg font-bold text-amber-700 leading-tight">
-                           {formatPrice(supplier.pendingBalance)}
+                           {formatCurrency(supplier.pendingBalance)}
                          </p>
                       </div>
                   </div>
@@ -236,7 +243,7 @@ export default function ViewSupplier() {
                      <td className="px-6 py-4 text-gray-900">{product.name}</td>
                      <td className="px-6 py-4 text-gray-500 font-mono text-xs">{product.sku}</td>
                      <td className="px-6 py-4 text-gray-900">
-                       {new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS" }).format(product.sellingPrice)}
+                       {formatCurrency(product.sellingPrice)}
                      </td>
                      <td className="px-6 py-4 text-right">
                        <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold ${
@@ -285,7 +292,7 @@ export default function ViewSupplier() {
                      <td className="px-6 py-4 font-bold text-gray-900">{purchase.purchaseNumber}</td>
                      <td className="px-6 py-4 text-xs font-medium">{new Date(purchase.purchaseDate).toLocaleDateString()}</td>
                      <td className="px-6 py-4 text-gray-900">
-                        {new Intl.NumberFormat("en-GH", { style: "currency", currency: "GHS" }).format(purchase.totalAmount)}
+                        {formatCurrency(purchase.totalAmount)}
                      </td>
                      <td className="px-6 py-4 text-right">
                        <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold ${

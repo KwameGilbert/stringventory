@@ -4,10 +4,12 @@ import { ArrowLeft, RefreshCw, AlertCircle, CheckCircle, Package, DollarSign } f
 import orderService from "../../../services/orderService";
 import refundService from "../../../services/refundService";
 import { confirmAction, showError, showSuccess } from "../../../utils/alerts";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 export default function CreateRefund() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,7 @@ export default function CreateRefund() {
 
     return {
       ...rawOrder,
+      currency: rawOrder?.currency || "GHS",
       total: totalAmount,
       items: Array.isArray(rawOrder?.items)
         ? rawOrder.items.map((item) => {
@@ -148,13 +151,7 @@ export default function CreateRefund() {
     }
   };
   
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  const formatCurrency = (value) => formatPrice(value, order?.currency || "GHS");
 
 
 

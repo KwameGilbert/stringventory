@@ -19,6 +19,7 @@ import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
 import { showError } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -38,6 +39,7 @@ export default function ViewInventory() {
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { formatPrice } = useCurrency();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,15 +123,9 @@ export default function ViewInventory() {
       }
     };
     fetchData();
-  }, [id, navigate]);
+  }, [id, navigate, formatPrice]);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  const formatCurrency = (value) => formatPrice(value, item?.currency || "GHS");
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";

@@ -41,6 +41,36 @@ export const settingsService = {
     return await apiClient.post(API_ENDPOINTS.SETTINGS.REGENERATE_API_KEY);
   },
 
+  // Currency Settings
+  getCurrencySettings: async () => {
+    return await apiClient.get(API_ENDPOINTS.SETTINGS.CURRENCY);
+  },
+
+  updateCurrencySettings: async (currencyData) => {
+    return await apiClient.put(API_ENDPOINTS.SETTINGS.CURRENCY, currencyData);
+  },
+
+  forceFetchRates: async () => {
+    return await apiClient.post(API_ENDPOINTS.SETTINGS.FETCH_LATEST_RATES);
+  },
+
+  // Currency Settings
+  getCurrencySettings: async () => {
+    return await apiClient.get(API_ENDPOINTS.SETTINGS.CURRENCY);
+  },
+
+  updateCurrencySettings: async (currencyData) => {
+    return await apiClient.put(API_ENDPOINTS.SETTINGS.CURRENCY, currencyData);
+  },
+
+  getCurrencyHistory: async (params = {}) => {
+    return await apiClient.get(API_ENDPOINTS.SETTINGS.CURRENCY_HISTORY, { params });
+  },
+
+  forceFetchRates: async () => {
+    return await apiClient.post(API_ENDPOINTS.SETTINGS.FETCH_LATEST_RATES);
+  },
+
   // Security/Password
   changePassword: async (currentPassword, newPassword) => {
     return await apiClient.post('/v1/auth/password/change', {

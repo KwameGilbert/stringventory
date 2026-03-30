@@ -3,6 +3,9 @@ import settingsService from '../services/settingsService';
 
 const SettingsContext = createContext();
 
+const CACHE_KEY = 'app_currency_rates';
+const CACHE_DURATION = 6 * 60 * 60 * 1000; // 6 hours
+
 export const useSettings = () => {
     const context = useContext(SettingsContext);
     if (!context) {
@@ -20,46 +23,89 @@ export const SettingsProvider = ({ children }) => {
         dashboardRefresh: 5,
     });
     const [loading, setLoading] = useState(true);
+    const [rates, setRates] = useState({});
 
-    const [rates, setRates] = useState({
-        GHS: 1.0,
-        USD: 16.0,
-        EUR: 17.5,
-        GBP: 20.2,
-    });
+    const saveRatesToCache = (newRates) => {
+        const cacheData = {
+            timestamp: Date.now(),
+            rates: newRates
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    };
 
-    const fetchRates = useCallback(async () => {
+    const loadRatesFromCache = () => {
         try {
-            const response = await fetch('https://open.er-api.com/v6/latest/GHS');
-            const data = await response.json();
-            if (data && data.rates) {
-                // We want the inverse rates because our logic expects: 1 USD = X GHS
-                // API returns: 1 GHS = Y USD
-                // So X = 1/Y
-                setRates({
-                    GHS: 1.0,
-                    USD: 1 / (data.rates.USD || (1 / 16.0)),
-                    EUR: 1 / (data.rates.EUR || (1 / 17.5)),
-                    GBP: 1 / (data.rates.GBP || (1 / 20.2)),
-                });
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (!cached) return null;
+            
+            const { timestamp, rates: cachedRates } = JSON.parse(cached);
+            const age = Date.now() - timestamp;
+            
+            if (age < CACHE_DURATION) {
+                return cachedRates;
             }
-        } catch (error) {
-            console.error('Failed to fetch exchange rates:', error);
+        } catch (e) {
+            console.error('Failed to load rates from cache', e);
+        }
+        return null;
+    };
+
+    const handleCurrencyUpdate = useCallback((event) => {
+        const { currency, rates: newRates } = event.detail;
+        
+        if (currency) {
+            setSettings(prev => ({ ...prev, currency }));
+        }
+        
+        if (newRates) {
+            setRates(prev => {
+                const updated = { ...prev, ...newRates };
+                saveRatesToCache(updated);
+                return updated;
+            });
         }
     }, []);
 
-    const fetchSettings = useCallback(async () => {
+    useEffect(() => {
+        window.addEventListener('app:currency-update', handleCurrencyUpdate);
+        return () => window.removeEventListener('app:currency-update', handleCurrencyUpdate);
+    }, [handleCurrencyUpdate]);
+
+    const fetchSettingsData = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await settingsService.getNotificationSettings();
-            const data = response?.data || response || {};
-            setSettings({
-                currency: data.currency || 'GHS',
-                lowStockThreshold: data.lowStockThreshold || 10,
-                expiryAlertDays: data.expiryAlertDays || 30,
-                emailNotifications: data.emailNotifications !== false,
-                dashboardRefresh: data.dashboardRefresh || 5,
-            });
+            
+            // 1. Try to load cached rates first for immediate display
+            const cachedRates = loadRatesFromCache();
+            if (cachedRates) {
+                setRates(cachedRates);
+            }
+
+            // 2. Fetch Notification & Alert Settings
+            const notifResponse = await settingsService.getNotificationSettings();
+            const notifData = notifResponse?.data || notifResponse || {};
+            
+            // 3. Fetch Currency & Rate Settings
+            const currencyResponse = await settingsService.getCurrencySettings();
+            const currencyPayload = currencyResponse?.data || currencyResponse || {};
+            const currencyData = currencyPayload?.data || currencyPayload;
+            
+            setSettings(prev => ({
+                ...prev,
+                currency: currencyData.currency || currencyData.currentCurrency || notifData.currency || 'GHS',
+                lowStockThreshold: notifData.lowStockThreshold || 10,
+                expiryAlertDays: notifData.expiryAlertDays || 30,
+                emailNotifications: notifData.emailNotifications !== false,
+                dashboardRefresh: notifData.dashboardRefresh || 5,
+            }));
+
+            if (currencyData.rates) {
+                setRates(prev => {
+                    const updated = { ...prev, ...currencyData.rates };
+                    saveRatesToCache(updated);
+                    return updated;
+                });
+            }
         } catch (error) {
             console.error('Failed to fetch settings:', error);
         } finally {
@@ -68,17 +114,28 @@ export const SettingsProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        fetchSettings();
-        fetchRates();
-    }, [fetchSettings, fetchRates]);
+        fetchSettingsData();
+    }, [fetchSettingsData]);
 
     const updateSettings = async (newSettings) => {
+        const previousSettings = { ...settings };
+        setSettings(prev => ({ ...prev, ...newSettings }));
+
         try {
-            await settingsService.updateNotificationSettings(newSettings);
-            setSettings(prev => ({ ...prev, ...newSettings }));
+            const { currency, ...otherSettings } = newSettings;
+
+            if (currency) {
+                await settingsService.updateCurrencySettings({ currency });
+            }
+            
+            if (Object.keys(otherSettings).length > 0) {
+                await settingsService.updateNotificationSettings(otherSettings);
+            }
+            
             return true;
         } catch (error) {
             console.error('Failed to update settings:', error);
+            setSettings(previousSettings);
             throw error;
         }
     };
@@ -88,7 +145,7 @@ export const SettingsProvider = ({ children }) => {
         currency: settings.currency,
         rates,
         updateSettings,
-        refreshSettings: fetchSettings,
+        refreshSettings: fetchSettingsData,
         loading
     };
 

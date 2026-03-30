@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Eye, Image, ChevronLeft, ChevronRight, Package } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const ITEMS_PER_PAGE = 8;
 
 const InventoryTable = ({ inventory, onAdjust }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const { formatPrice } = useCurrency();
 
   // Pagination logic
   const totalPages = Math.ceil(inventory.length / ITEMS_PER_PAGE);
@@ -21,13 +23,7 @@ const InventoryTable = ({ inventory, onAdjust }) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  const formatCurrency = (val, currency = "GHS") => formatPrice(val, currency);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -131,7 +127,7 @@ const InventoryTable = ({ inventory, onAdjust }) => {
 
                 {/* Unit Cost */}
                 <td className="px-4 py-3 text-right">
-                  <span className="text-sm text-gray-900">{formatCurrency(item.unitCost)}</span>
+                  <span className="text-sm text-gray-900">{formatCurrency(item.unitCost, item.currency)}</span>
                 </td>
 
                 {/* Quantity */}
@@ -141,7 +137,7 @@ const InventoryTable = ({ inventory, onAdjust }) => {
 
                 {/* Total Value */}
                 <td className="px-4 py-3 text-right">
-                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.totalValue)}</span>
+                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.totalValue, item.currency)}</span>
                 </td>
 
                 {/* Entry Date */}

@@ -9,6 +9,7 @@ import { showError, showSuccess } from "../../../utils/alerts";
 import { isProductApproved } from "../../../utils/productApproval";
 import CustomerSelect from "./components/CustomerSelect";
 import AddCustomerModal from "./components/AddCustomerModal";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -67,6 +68,10 @@ export default function CreateOrder() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [customerQuery, setCustomerQuery] = useState("");
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
+
+  const { formatPrice } = useCurrency();
+  const formatCurrency = (val) => formatPrice(val, responseCurrency);
 
   const [formData, setFormData] = useState({
     customerId: "",
@@ -96,6 +101,9 @@ export default function CreateOrder() {
           productService.getProducts(),
           customerService.getCustomers(),
         ]);
+
+        const currency = productsRes?.currency || productsRes?.data?.currency || "GHS";
+        setResponseCurrency(currency);
 
         const mappedProducts = extractList(productsRes, "products")
           .filter((product) => isProductApproved(product))
@@ -300,13 +308,7 @@ export default function CreateOrder() {
     return subtotal - formData.discount + tax;
   }, [subtotal, formData.discount, tax]);
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
+  // Local helper removed
 
   const handleSubmit = async (e) => {
     e.preventDefault();

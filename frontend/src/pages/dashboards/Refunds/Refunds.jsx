@@ -4,6 +4,7 @@ import { RefreshCw, DollarSign, Clock, CheckCircle, AlertCircle } from "lucide-r
 import refundService from "../../../services/refundService";
 import { showError } from "../../../utils/alerts";
 import RefundsTable from "../../../components/admin/Refunds/RefundsTable";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractRefunds = (response) => {
   const payload = response?.data || response || {};
@@ -17,12 +18,18 @@ export default function Refunds() {
   const [refunds, setRefunds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
+
+  const { formatPrice } = useCurrency();
+  const formatCurrency = (val) => formatPrice(val, responseCurrency);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await refundService.getRefunds();
-      setRefunds(extractRefunds(response));
+      const currency = response?.currency || response?.data?.currency || "GHS";
+      setResponseCurrency(currency);
+      setRefunds(extractRefunds(response).map(r => ({ ...r, currency })));
     } catch (error) {
       console.error("Error loading refunds", error);
       showError(error?.message || "Failed to load refunds");
@@ -48,13 +55,7 @@ export default function Refunds() {
     totalAmount: refunds.filter(r => r.refundStatus === 'completed').reduce((sum, r) => sum + Number(r.refundAmount || 0), 0)
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+  // Local helper removed
 
   if (loading) {
      return (

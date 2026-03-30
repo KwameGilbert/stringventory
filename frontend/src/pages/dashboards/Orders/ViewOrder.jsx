@@ -86,6 +86,7 @@ export default function ViewOrder() {
 
     return {
       ...rawOrder,
+      currency: rawOrder?.currency || "GHS",
       // Use orderNumber as the display reference
       displayRef: rawOrder?.orderNumber || rawOrder?.id,
       orderDate: rawOrder?.orderDate || rawOrder?.createdAt || rawOrder?.date,
@@ -441,7 +442,7 @@ export default function ViewOrder() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">{formatPrice(item.subtotal)}</p>
+                      <p className="font-semibold text-gray-900">{formatPrice(item.subtotal, order.currency)}</p>
                       {isFullyPicked && <span className="text-xs text-emerald-600 font-bold uppercase tracking-tight">Fully Fulfilled</span>}
                     </div>
                   </div>
@@ -453,7 +454,7 @@ export default function ViewOrder() {
             <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span className="text-gray-900">{formatPrice(order.subtotal)}</span>
+                <span className="text-gray-900">{formatPrice(order.subtotal, order.currency)}</span>
               </div>
                   {order.discountAmount > 0 && (
                 <div className="flex justify-between text-sm">
@@ -461,16 +462,16 @@ export default function ViewOrder() {
                     <Percent size={12} />
                     Discount
                   </span>
-                  <span className="text-emerald-600">-{formatPrice(order.discountAmount)}</span>
+                  <span className="text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Tax</span>
-                <span className="text-gray-900">{formatPrice(order.taxAmount || 0)}</span>
+                <span className="text-gray-900">{formatPrice(order.taxAmount || 0, order.currency)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
                 <span className="text-gray-900">Total</span>
-                <span className="text-gray-900">{formatPrice(order.total)}</span>
+                <span className="text-gray-900">{formatPrice(order.total, order.currency)}</span>
               </div>
             </div>
           </div>
@@ -532,7 +533,7 @@ export default function ViewOrder() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Amount Paid</p>
-                  <p className="font-bold text-gray-900 text-lg">{formatPrice(order.amountPaid || order.total)}</p>
+                  <p className="font-bold text-gray-900 text-lg">{formatPrice(order.amountPaid || order.total, order.currency)}</p>
                 </div>
               </div>
             </div>
@@ -599,15 +600,15 @@ export default function ViewOrder() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium text-gray-900">{formatPrice(order.subtotal)}</span>
+              <span className="font-medium text-gray-900">{formatPrice(order.subtotal, order.currency)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Discount</span>
-              <span className="font-medium text-gray-900">-{formatPrice(order.discountAmount)}</span>
+              <span className="font-medium text-gray-900">-{formatPrice(order.discountAmount, order.currency)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Tax</span>
-              <span className="font-medium text-gray-900">{formatPrice(order.taxAmount || 0)}</span>
+              <span className="font-medium text-gray-900">{formatPrice(order.taxAmount || 0, order.currency)}</span>
             </div>
           </div>
 
@@ -615,7 +616,7 @@ export default function ViewOrder() {
 
           <div className="flex justify-between text-base font-bold">
             <span>Total Paid</span>
-            <span>{formatPrice(order.total)}</span>
+            <span>{formatPrice(order.total, order.currency)}</span>
           </div>
         </div>
       </div>

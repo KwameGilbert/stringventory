@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Eye, Edit2, MessageSquare, ChevronLeft, ChevronRight, Users, Phone, Mail, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useCurrency } from "../../../utils/currencyUtils";
 import SendMessageModal from "./SendMessageModal";
 
 const ITEMS_PER_PAGE = 8;
 
 const CustomersTable = ({ customers, canManage = true }) => {
+  const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
   const [messageModal, setMessageModal] = useState({ isOpen: false, customer: null });
 
@@ -17,13 +19,7 @@ const CustomersTable = ({ customers, canManage = true }) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+  const formatCurrency = (val, currency = "GHS") => formatPrice(val, currency);
 
   const getInitials = (name) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -127,7 +123,7 @@ const CustomersTable = ({ customers, canManage = true }) => {
 
                 {/* Total Spent */}
                 <td className="px-4 py-4 text-right">
-                  <span className="text-sm font-bold text-emerald-600">{formatCurrency(customer.totalSpent)}</span>
+                  <span className="text-sm font-bold text-emerald-600">{formatCurrency(customer.totalSpent, customer.currency)}</span>
                 </td>
 
                 {/* Actions */}

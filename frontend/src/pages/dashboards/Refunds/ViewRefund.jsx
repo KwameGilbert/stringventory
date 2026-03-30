@@ -41,7 +41,8 @@ export default function ViewRefund() {
     try {
       const response = await refundService.getRefundById(id);
       const refundData = response?.data || response;
-      setRefund(refundData);
+      const currency = refundData?.currency || "GHS";
+      setRefund({ ...refundData, currency });
 
       // Fetch the order to get item names
       if (refundData?.orderId) {
@@ -198,7 +199,7 @@ export default function ViewRefund() {
                 </div>
                 <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
                     <span className="font-semibold text-gray-900">Total Refund Amount</span>
-                    <span className="text-xl font-bold text-rose-600">{formatPrice(refund.refundAmount)}</span>
+                    <span className="text-xl font-bold text-rose-600">{formatPrice(refund.refundAmount, refund.currency)}</span>
                 </div>
            </div>
 

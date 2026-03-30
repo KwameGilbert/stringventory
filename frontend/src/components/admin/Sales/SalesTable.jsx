@@ -95,7 +95,7 @@ const SalesTable = ({ sales, showPagination = true }) => {
                     </span>
                     </td>
                     <td className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
-                    {formatPrice(sale.amount)}
+                    {formatPrice(sale.amount, sale.currency)}
                     </td>
                     <td className="px-6 py-4 text-center">
                     <div className="flex items-center justify-center gap-2">
