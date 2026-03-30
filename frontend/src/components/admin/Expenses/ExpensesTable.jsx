@@ -53,8 +53,9 @@ const ExpensesTable = ({ expenses, onDelete }) => {
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Reference</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Supplier</th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
               <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
+              <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Notes</th>
               <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -73,7 +74,7 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="font-bold text-rose-600">{formatPrice(expense.amount)}</span>
+                  <span className="font-bold text-rose-600">{formatPrice(expense.amount, expense.currency)}</span>
                 </td>
                 <td className="px-6 py-4">
                   <span className="text-gray-600 text-sm">{formatDate(expense.date)}</span>
@@ -82,8 +83,8 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                   <span className="text-gray-900 text-sm">{expense.reference}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="text-gray-500 text-sm">
-                    {typeof expense.supplier === 'object' ? expense.supplier?.name : expense.supplier || "-"}
+                  <span className="text-gray-600 text-sm font-medium capitalize">
+                    {expense.paymentMethod?.replace(/_/g, " ") || "-"}
                   </span>
                 </td>
                 <td className="px-6 py-4 text-center">
@@ -93,6 +94,17 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                       : "bg-gray-100 text-gray-600"
                   }`}>
                     {expense.isRecurring ? "Recurring" : "One-Time"}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                    expense.status === 'paid' || expense.status === 'completed' || expense.status === 'successful'
+                      ? 'bg-emerald-100 text-emerald-700' :
+                    expense.status === 'pending' || expense.status === 'processing'
+                      ? 'bg-amber-100 text-amber-700' :
+                    'bg-gray-100 text-gray-600'
+                  }`}>
+                    {expense.status || 'pending'}
                   </span>
                 </td>
                 <td className="px-6 py-4">

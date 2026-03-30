@@ -19,17 +19,19 @@ const extractExpenses = (response) => {
 
 const normalizeExpense = (expense) => ({
   ...expense,
-  name: expense?.name || expense?.description || "Expense",
-  category: expense?.category || expense?.categoryName || "Uncategorized",
-  categoryName: expense?.categoryName || expense?.category || "Uncategorized",
+  name: expense?.name || expense?.description || expense?.category?.name || "Expense",
+  category: expense?.category?.name || expense?.category || "Uncategorized",
+  categoryName: expense?.category?.name || expense?.category || "Uncategorized",
   amount: Number(expense?.amount ?? 0),
-  date: expense?.date || expense?.createdAt,
-  supplier: expense?.supplier || expense?.vendor || "",
+  date: expense?.transactionDate || expense?.date || expense?.createdAt,
   paymentMethod: expense?.paymentMethod || "",
   notes: expense?.notes || expense?.description || "",
-  isRecurring: Boolean(expense?.isRecurring),
-  hasAttachment: Boolean(expense?.hasAttachment || expense?.receipt),
+  isRecurring: Boolean(expense?.isRecurring || expense?.expenseScheduleId),
+  hasAttachment: Boolean(expense?.hasAttachment || expense?.receipt || expense?.evidence),
   status: expense?.status || "pending",
+  createdBy: expense?.creator 
+    ? `${expense.creator.firstName || ""} ${expense.creator.lastName || ""}`.trim() 
+    : "System",
 });
 
 export default function Expenses() {
@@ -78,6 +80,7 @@ export default function Expenses() {
       expense.name.toLowerCase().includes(searchLower) ||
       expense.categoryName.toLowerCase().includes(searchLower) ||
       String(expense.paymentMethod || "").toLowerCase().includes(searchLower) ||
+      String(expense.createdBy || "").toLowerCase().includes(searchLower) ||
       (expense.notes && expense.notes.toLowerCase().includes(searchLower))
     );
   });
