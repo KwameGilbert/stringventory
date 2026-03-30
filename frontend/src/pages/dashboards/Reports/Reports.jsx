@@ -12,6 +12,8 @@ import {
   ArrowUp,
   ArrowDown,
   Clock,
+  CreditCard,
+  Activity,
 } from "lucide-react";
 import {
   BarChart,
@@ -41,7 +43,7 @@ const TABS = [
   { id: "inventory", label: "Inventory Report", icon: Package },
   { id: "expenses", label: "Expense Report", icon: DollarSign },
   { id: "pnl", label: "Profit & Loss", icon: BarChart3 },
-  { id: "stock", label: "Stock Movement Report", icon: ArrowUp },
+  // { id: "stock", label: "Stock Movement Report", icon: ArrowUp },
   { id: "users", label: "User Activity Report", icon: Users },
 ];
 
@@ -127,16 +129,33 @@ export default function Reports() {
             totalRevenue: Number(salesData?.summary?.totalSales ?? 0),
             totalOrders: Number(salesData?.summary?.totalOrders ?? 0),
             averageOrderValue: Number(salesData?.summary?.averageOrderValue ?? 0),
+            totalItems: Number(salesData?.summary?.totalItems ?? 0),
+            topPaymentMethod: salesData?.summary?.topPaymentMethod || "cash",
             growth: Number(dashboardData?.metrics?.grossRevenue?.change ?? 0),
           },
           monthlySales: (salesData?.byDate || []).map((row) => ({
+            date: row?.date,
             month: row?.date ? new Date(row.date).toLocaleDateString("en-US", { month: "short" }) : "N/A",
             revenue: Number(row?.sales || 0),
+            orders: Number(row?.orders || 0),
+            items: Number(row?.items || 0),
           })),
           topProducts: (salesData?.byProduct || []).slice(0, 8).map((row) => ({
+            id: row?.productId,
             name: row?.productName || "Product",
             units: Number(row?.quantity || 0),
             revenue: Number(row?.revenue || 0),
+          })),
+          topCustomers: (salesData?.byCustomer || []).slice(0, 8).map((row) => ({
+            id: row?.customerId,
+            name: row?.customerName || "Customer",
+            orders: Number(row?.orders || 0),
+            spent: Number(row?.spent || 0),
+          })),
+          paymentMethods: (salesData?.byPaymentMethod || []).map((row) => ({
+            name: row?.paymentMethod?.replace('_', ' ')?.toUpperCase() || "CASH",
+            revenue: Number(row?.revenue || 0),
+            orders: Number(row?.orders || 0),
           })),
         };
 
@@ -144,20 +163,33 @@ export default function Reports() {
           summary: {
             totalValue: Number(inventoryData?.summary?.totalValue ?? 0),
             totalItems: Number(inventoryData?.summary?.totalQuantity ?? 0),
+            totalProducts: Number(inventoryData?.summary?.totalProducts ?? 0),
             lowStockItems: Number(inventoryData?.summary?.lowStockItems ?? 0),
             outOfStockItems: Number(inventoryData?.summary?.outOfStockItems ?? 0),
           },
-          categoryValuation: (inventoryData?.byCategory || []).map((row) => ({
-            name: row?.categoryName || "Category",
-            value: Number(row?.value || 0),
-          })),
+          categoryValuation: (inventoryData?.byCategory || [])
+            .map((row) => ({
+              id: row?.categoryId,
+              name: row?.categoryName || "Category",
+              productCount: Number(row?.productCount || 0),
+              quantity: Number(row?.quantity || 0),
+              value: Number(row?.value || 0),
+            }))
+            .filter(cat => cat.productCount > 0 || cat.value > 0),
+          lowStockList: (inventoryData?.lowStockItems || []).map(item => ({
+            name: item.productName || item.name || "Product",
+            sku: item.sku || "N/A",
+            stock: Number(item.quantity || 0),
+            threshold: Number(item.reorderLevel || 0)
+          }))
         };
 
         const expenseReport = {
           summary: {
             totalExpenses: Number(expenseData?.summary?.totalExpenses ?? 0),
+            totalItems: Number(expenseData?.summary?.totalExpenseItems ?? 0),
+            averageExpense: Number(expenseData?.summary?.averageExpense ?? 0),
             largestCategory: (expenseData?.byCategory || []).sort((a, b) => Number(b?.amount || 0) - Number(a?.amount || 0))[0]?.categoryName || "N/A",
-            trend: Number(dashboardData?.metrics?.totalExpenses?.change ?? 0),
           },
           monthlyExpenses: (salesData?.byDate || []).map((row) => ({
             month: row?.date ? new Date(row.date).toLocaleDateString("en-US", { month: "short" }) : "N/A",
@@ -166,6 +198,7 @@ export default function Reports() {
           expensesByCategory: (expenseData?.byCategory || []).map((row) => ({
             name: row?.categoryName || "Category",
             amount: Number(row?.amount || 0),
+            itemCount: Number(row?.itemCount || 0),
           })),
         };
 
@@ -207,10 +240,22 @@ export default function Reports() {
           inventoryReport,
           expenseReport,
           profitAndLoss: {
+            income: {
+              sales: Number(financialData?.income?.sales || 0),
+              other: Number(financialData?.income?.other || 0),
+              total: Number(financialData?.income?.total || 0),
+            },
+            expenses: {
+              cogs: Number(financialData?.expenses?.costOfGoods || 0),
+              opex: Number(financialData?.expenses?.operationalExpenses || 0),
+              other: Number(financialData?.expenses?.other || 0),
+              total: Number(financialData?.expenses?.total || 0),
+            },
             summary: {
-              totalRevenue: Number(financialData?.income?.total ?? salesReport.summary.totalRevenue),
-              netProfit: Number(financialData?.summary?.netProfit ?? dashboardData?.metrics?.netProfit?.value ?? 0),
-              margin: Number(financialData?.summary?.profitMargin ?? 0),
+              grossProfit: Number(financialData?.summary?.grossProfit || 0),
+              netProfit: Number(financialData?.summary?.netProfit || 0),
+              profitMargin: Number(financialData?.summary?.profitMargin || 0),
+              roi: Number(financialData?.summary?.roi || 0),
             },
             monthlyPnL,
           },
@@ -336,14 +381,14 @@ export default function Reports() {
              {/* Sales Summary Cards */}
              <SummaryCard title="Total Revenue" value={formatPrice(data?.salesReport?.summary?.totalRevenue || 0)} icon={DollarSign} color="emerald" />
              <SummaryCard title="Total Sales" value={data?.salesReport?.summary?.totalOrders || 0} icon={Package} color="blue" />
-             <SummaryCard title="Avg. Order Value" value={formatPrice(data?.salesReport?.summary?.averageOrderValue || 0)} icon={TrendingUp} color="emerald " />
-             <SummaryCard title="Growth" value={`${data?.salesReport?.summary?.growth || 0}%`} icon={BarChart3} color="amber" />
+             <SummaryCard title="Avg. Order Value" value={formatPrice(data?.salesReport?.summary?.averageOrderValue || 0)} icon={TrendingUp} color="emerald" />
+             <SummaryCard title="Top Payment" value={data?.salesReport?.summary?.topPaymentMethod || "N/A"} icon={CreditCard} color="amber" />
           </div>
 
           {/* Sales Chart */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Sales Revenue</h3>
-            <div className="h-80">
+            <div className="w-full h-80 relative min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                  <AreaChart data={data?.salesReport?.monthlySales}>
                   <defs>
@@ -362,30 +407,76 @@ export default function Reports() {
             </div>
           </div>
           
-           {/* Top Products Table */}
-           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Top Selling Products</h3>
+          {/* Lower Grid: Products, Customers, and Payments */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            {/* Top Products */}
+            <div className="xl:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                <h3 className="font-semibold text-gray-900">Top Products</h3>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {data?.salesReport?.topProducts.map((product, idx) => (
+                  <div key={idx} className="px-6 py-3 flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm">{product.name}</p>
+                      <p className="text-xs text-gray-500">{product.units} units sold</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-emerald-600 text-sm">{formatPrice(product.revenue)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50/50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Product</th>
-                     <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Units Sold</th>
-                    <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Revenue</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {data?.salesReport?.topProducts.map((product, idx) => (
-                    <tr key={idx} className="hover:bg-gray-50/50">
-                      <td className="px-6 py-3 font-medium text-gray-900">{product.name}</td>
-                      <td className="px-6 py-3 text-right text-gray-600">{product.units}</td>
-                       <td className="px-6 py-3 text-right font-bold text-emerald-600">{formatPrice(product.revenue)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+            {/* Top Customers */}
+            <div className="xl:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                <h3 className="font-semibold text-gray-900">Top Customers</h3>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {data?.salesReport?.topCustomers.map((customer, idx) => (
+                  <div key={idx} className="px-6 py-3 flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm">{customer.name}</p>
+                      <p className="text-xs text-gray-500">{customer.orders} orders</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-blue-600 text-sm">{formatPrice(customer.spent)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Payment Methods */}
+            <div className="xl:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                <h3 className="font-semibold text-gray-900">Payment Methods</h3>
+              </div>
+              <div className="p-6">
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={data?.salesReport?.paymentMethods}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="revenue"
+                      >
+                        {data?.salesReport?.paymentMethods.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -396,36 +487,97 @@ export default function Reports() {
         <div className="space-y-6 animate-fade-in">
            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
              <SummaryCard title="Total Value" value={formatPrice(data?.inventoryReport?.summary?.totalValue || 0)} icon={DollarSign} color="emerald" />
-             <SummaryCard title="Total Items" value={data?.inventoryReport?.summary?.totalItems || 0} icon={Package} color="blue" />
-             <SummaryCard title="Low Stock" value={data?.inventoryReport?.summary?.lowStockItems || 0} icon={AlertTriangle} color="amber" />
-             <SummaryCard title="Out of Stock" value={data?.inventoryReport?.summary?.outOfStockItems || 0} icon={AlertTriangle} color="red" />
+             <SummaryCard title="Total Quantity" value={data?.inventoryReport?.summary?.totalItems || 0} icon={Package} color="blue" />
+             <SummaryCard title="Total Products" value={data?.inventoryReport?.summary?.totalProducts || 0} icon={Activity} color="rose" />
+             <SummaryCard title="Low Stock" value={data?.inventoryReport?.summary?.lowStockItems || 0} icon={AlertTriangle} color={data?.inventoryReport?.summary?.lowStockItems > 0 ? "rose" : "emerald"} />
           </div>
 
-          {/* Category Valuation Chart */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Inventory Valuation by Category</h3>
-             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data?.inventoryReport?.categoryValuation}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                   <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
-                  <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Category Valuation Chart */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-w-0">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Inventory Valuation by Category</h3>
+              <div className="w-full h-80 relative min-h-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data?.inventoryReport?.categoryValuation}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} />
+                    <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
+                    <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
+                    <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Category Breakdown List */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                <h3 className="font-semibold text-gray-900">Category Breakdown</h3>
+              </div>
+              <div className="divide-y divide-gray-50 max-h-[360px] overflow-y-auto">
+                {data?.inventoryReport?.categoryValuation.map((cat, idx) => (
+                  <div key={idx} className="px-6 py-3 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm">{cat.name}</p>
+                      <p className="text-xs text-gray-500">{cat.productCount} products • {cat.quantity} units</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-gray-900 text-sm">{formatPrice(cat.value)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+
+          {/* Low Stock Watchlist */}
+          {data?.inventoryReport?.lowStockList?.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-rose-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-rose-100 bg-rose-50/50">
+                <h3 className="font-semibold text-rose-900 flex items-center gap-2">
+                  <AlertTriangle size={18} className="text-rose-500" />
+                  Low Stock Watchlist
+                </h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left font-medium text-gray-500">Product</th>
+                      <th className="px-6 py-3 text-left font-medium text-gray-500">SKU</th>
+                      <th className="px-6 py-3 text-center font-medium text-gray-500">Current Stock</th>
+                      <th className="px-6 py-3 text-center font-medium text-gray-500">Threshold</th>
+                      <th className="px-6 py-3 text-right font-medium text-gray-500">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {data?.inventoryReport?.lowStockList.map((item, idx) => (
+                      <tr key={idx}>
+                        <td className="px-6 py-3 font-medium text-gray-900">{item.name}</td>
+                        <td className="px-6 py-3 text-gray-500">{item.sku}</td>
+                        <td className="px-6 py-3 text-center font-bold text-rose-600">{item.stock}</td>
+                        <td className="px-6 py-3 text-center text-gray-400">{item.threshold}</td>
+                        <td className="px-6 py-3 text-right">
+                          <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold uppercase">Critical</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* Expense Report */}
       {activeTab === "expenses" && (
          <div className="space-y-6 animate-fade-in">
-           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
              <SummaryCard title="Total Expenses" value={formatPrice(data?.expenseReport?.summary?.totalExpenses || 0)} icon={DollarSign} color="rose" />
-             <SummaryCard title="Largest Category" value={data?.expenseReport?.summary?.largestCategory || "N/A"} icon={BarChart3} color="emerald " />
-             <SummaryCard title="Trend" value={`${data?.expenseReport?.summary?.trend || 0}%`} icon={TrendingUp} color={data?.expenseReport?.summary?.trend > 0 ? "rose" : "emerald"} />
+             <SummaryCard title="Expense Items" value={data?.expenseReport?.summary?.totalItems || 0} icon={Package} color="blue" />
+             <SummaryCard title="Avg. Expense" value={formatPrice(data?.expenseReport?.summary?.averageExpense || 0)} icon={TrendingUp} color="amber" />
+             <SummaryCard title="Largest Focus" value={data?.expenseReport?.summary?.largestCategory || "N/A"} icon={BarChart3} color="emerald" />
           </div>
 
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -482,35 +634,88 @@ export default function Reports() {
 
       {/* Profit & Loss Report */}
       {activeTab === "pnl" && (
-         <div className="space-y-6 animate-fade-in">
-           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-             <SummaryCard title="Total Revenue" value={formatPrice(data?.profitAndLoss?.summary?.totalRevenue || 0)} icon={DollarSign} color="blue" />
-             <SummaryCard title="Net Profit" value={formatPrice(data?.profitAndLoss?.summary?.netProfit || 0)} icon={TrendingUp} color="emerald" />
-              <SummaryCard title="Profit Margin" value={`${data?.profitAndLoss?.summary?.margin || 0}%`} icon={BarChart} color="emerald " />
-          </div>
+          <div className="space-y-6 animate-fade-in">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <SummaryCard title="Gross Profit" value={formatPrice(data?.profitAndLoss?.summary?.grossProfit || 0)} icon={DollarSign} color="emerald" />
+              <SummaryCard title="Net Profit" value={formatPrice(data?.profitAndLoss?.summary?.netProfit || 0)} icon={TrendingUp} color="emerald" />
+              <SummaryCard title="Profit Margin" value={`${data?.profitAndLoss?.summary?.profitMargin?.toFixed(1) || 0}%`} icon={BarChart} color="blue" />
+              <SummaryCard title="ROI" value={`${data?.profitAndLoss?.summary?.roi?.toFixed(1) || 0}%`} icon={Activity} color="amber" />
+           </div>
+ 
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+             {/* Income vs Expenses Breakdown */}
+             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                 <h3 className="font-semibold text-gray-900">Financial Breakdown</h3>
+               </div>
+               <div className="p-6 space-y-6">
+                  {/* Income Section */}
+                  <div>
+                    <h4 className="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-3">Income / Revenue</h4>
+                    <div className="space-y-2">
+                       <div className="flex justify-between text-sm">
+                         <span className="text-gray-500">Total Sales</span>
+                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.income?.sales)}</span>
+                       </div>
+                       <div className="flex justify-between text-sm">
+                         <span className="text-gray-500">Other Income</span>
+                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.income?.other)}</span>
+                       </div>
+                       <div className="flex justify-between text-sm py-2 border-t border-gray-100 font-bold">
+                         <span className="text-emerald-700">Total Revenue</span>
+                         <span className="text-emerald-700">{formatPrice(data?.profitAndLoss?.income?.total)}</span>
+                       </div>
+                    </div>
+                  </div>
 
-           {/* P&L Chart */}
-           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue vs Expenses vs Profit</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                 <AreaChart data={data?.profitAndLoss?.monthlyPnL}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
-                    <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
-                    <Legend />
-                    <Area type="monotone" dataKey="revenue" stackId="1" stroke="#3B82F6" fill="#3B82F6" />
-                    <Area type="monotone" dataKey="expenses" stackId="2" stroke="#EF4444" fill="#EF4444" />
-                    <Area type="monotone" dataKey="profit" stackId="3" stroke="#10B981" fill="#10B981" />
-                 </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-         </div>
-      )}
+                  {/* Expenses Section */}
+                  <div>
+                    <h4 className="text-xs font-bold text-rose-600 uppercase tracking-widest mb-3">Cost & Expenses</h4>
+                    <div className="space-y-2">
+                       <div className="flex justify-between text-sm">
+                         <span className="text-gray-500">Cost of Goods Sold (COGS)</span>
+                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.expenses?.cogs)}</span>
+                       </div>
+                       <div className="flex justify-between text-sm">
+                         <span className="text-gray-500">Operational Expenses (OPEX)</span>
+                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.expenses?.opex)}</span>
+                       </div>
+                       <div className="flex justify-between text-sm">
+                         <span className="text-gray-500">Other Expenses</span>
+                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.expenses?.other)}</span>
+                       </div>
+                       <div className="flex justify-between text-sm py-2 border-t border-gray-100 font-bold">
+                         <span className="text-gray-900">Total Deductions</span>
+                         <span className="text-rose-600">{formatPrice(data?.profitAndLoss?.expenses?.total)}</span>
+                       </div>
+                    </div>
+                  </div>
+               </div>
+             </div>
 
-       {/* Stock Movement Report */}
+             {/* P&L Performance Chart */}
+             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-w-0">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">P&L Performance Trend</h3>
+              <div className="w-full h-80 relative min-h-0">
+                <ResponsiveContainer width="100%" height="100%">
+                   <AreaChart data={data?.profitAndLoss?.monthlyPnL}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                      <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${symbol}${(v/1000).toFixed(0)}k`} />
+                      <Tooltip formatter={(value) => formatPrice(value)} contentStyle={{ borderRadius: "8px" }} />
+                      <Legend />
+                      <Area type="monotone" dataKey="revenue" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
+                      <Area type="monotone" dataKey="expenses" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.3} />
+                      <Area type="monotone" dataKey="profit" stackId="3" stroke="#10B981" fill="#10B981" fillOpacity={0.8} />
+                   </AreaChart>
+                </ResponsiveContainer>
+              </div>
+             </div>
+           </div>
+          </div>
+       )}
+
+       {/* Stock Movement Report - Commented Out
        {activeTab === "stock" && (
         <div className="space-y-6 animate-fade-in">
            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -519,7 +724,6 @@ export default function Reports() {
              <SummaryCard title="Net Adjustments" value={data?.stockMovement?.summary?.adjustments || 0} icon={AlertTriangle} color="amber" />
           </div>
 
-          {/* Movements Table */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
               <h3 className="font-semibold text-gray-900">Recent Stock Movements</h3>
@@ -562,6 +766,7 @@ export default function Reports() {
           </div>
         </div>
       )}
+      */}
 
       {/* User Activity Report */}
       {activeTab === "users" && (
