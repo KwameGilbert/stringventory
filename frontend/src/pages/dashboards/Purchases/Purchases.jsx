@@ -5,6 +5,8 @@ import PurchasesTable from "../../../components/admin/Purchases/PurchasesTable";
 import purchaseService from "../../../services/purchaseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 import Swal from "sweetalert2";
 
 const extractPurchases = (response) => {
@@ -164,6 +166,47 @@ export default function Purchases() {
     }
   };
 
+  const handleExportExcel = () => {
+    if (purchases.length === 0) return;
+
+    const dataToExport = purchases.map((p) => ({
+      "Waybill #": p.waybillNumber || "—",
+      Supplier: p.supplierName,
+      Date: new Date(p.purchaseDate).toLocaleDateString("en-GB"),
+      Amount: p.totalAmount,
+      Status: p.status.toUpperCase(),
+      "Created By": p.createdBy,
+    }));
+
+    exportToExcel(dataToExport, "stringventory_purchases", "Purchases");
+  };
+
+  const handleExportPDF = async () => {
+    if (purchases.length === 0) return;
+
+    const tableData = {
+      headers: ["Waybill / Ref", "Supplier", "Date", "Amount", "Status", "Created By"],
+      rows: purchases.map((p) => [
+        p.waybillNumber || p.purchaseNumber || "—",
+        p.supplierName,
+        new Date(p.purchaseDate).toLocaleDateString("en-GB"),
+        p.totalAmount.toFixed(2),
+        p.status.toUpperCase(),
+        p.createdBy || "—",
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Inventory Purchase Orders Report",
+        fileName: "stringventory_purchases",
+        table: tableData,
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
@@ -186,10 +229,12 @@ export default function Purchases() {
         setSearchQuery={setSearchQuery}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Purchases */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">

@@ -5,6 +5,8 @@ import OrdersHeader from "../../../components/admin/Orders/OrdersHeader";
 import OrdersTable from "../../../components/admin/Orders/OrdersTable";
 import orderService from "../../../services/orderService";
 import { showError } from "../../../utils/alerts";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractOrders = (response) => {
@@ -129,6 +131,47 @@ export default function Orders() {
     return matchesSearch && matchesStatus;
   });
 
+  const handleExportExcel = () => {
+    if (filteredOrders.length === 0) return;
+
+    const dataToExport = filteredOrders.map((o) => ({
+      "Order #": o.orderNumber,
+      Date: new Date(o.orderDate).toLocaleDateString("en-GB"),
+      Customer: o.customer.name,
+      Status: o.status.toUpperCase(),
+      Items: o.itemCount,
+      Total: o.total,
+      "Payment Method": o.paymentMethod || "—",
+    }));
+
+    exportToExcel(dataToExport, "stringventory_sales", "Sales");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredOrders.length === 0) return;
+
+    const tableData = {
+      headers: ["Order #", "Date", "Customer", "Total", "Status"],
+      rows: filteredOrders.map((o) => [
+        o.orderNumber,
+        new Date(o.orderDate).toLocaleDateString("en-GB"),
+        o.customer.name,
+        o.total.toFixed(2),
+        o.status.toUpperCase(),
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Sales Transaction Report",
+        fileName: "stringventory_sales",
+        table: tableData,
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   if (loading) {
@@ -171,6 +214,8 @@ export default function Orders() {
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         totalOrders={orders.length}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
 
       {/* Stat Cards */}

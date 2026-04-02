@@ -4,6 +4,8 @@ import CustomersHeader from "../../../components/admin/Customers/CustomersHeader
 import CustomersTable from "../../../components/admin/Customers/CustomersTable";
 import customerService from "../../../services/customerService";
 import { showError } from "../../../utils/alerts";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 import { useAuth } from "../../../contexts/AuthContext";
 import { canManageCatalog } from "../../../utils/accessControl";
 import { useCurrency } from "../../../utils/currencyUtils";
@@ -85,6 +87,47 @@ export default function Customers() {
     return 0;
   });
 
+  const handleExportExcel = () => {
+    if (filteredCustomers.length === 0) return;
+
+    const dataToExport = filteredCustomers.map((c) => ({
+      Name: c.name,
+      Email: c.email || "—",
+      Phone: c.phone || "—",
+      Status: c.status.toUpperCase(),
+      "Total Orders": c.totalOrders,
+      "Total Spent": c.totalSpent,
+      "Joined Date": c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-GB") : "—",
+    }));
+
+    exportToExcel(dataToExport, "stringventory_customers", "Customers");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredCustomers.length === 0) return;
+
+    const tableData = {
+      headers: ["Customer", "Email", "Phone", "Orders", "Spent"],
+      rows: filteredCustomers.map((c) => [
+        c.name,
+        c.email || "—",
+        c.phone || "—",
+        c.totalOrders,
+        c.totalSpent.toFixed(2),
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Customer Directory Report",
+        fileName: "stringventory_customers",
+        table: tableData,
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   // Local helper removed
 
   if (loading) {
@@ -111,6 +154,8 @@ export default function Customers() {
         setSortBy={setSortBy}
         totalCustomers={customers.length}
         canManage={canManage}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
 
       {/* Stat Cards */}

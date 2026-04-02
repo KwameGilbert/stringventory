@@ -3,7 +3,10 @@ import { RefreshCw, Download, Filter, Search, TrendingUp, TrendingDown, Landmark
 import transactionService from "../../../services/transactionService";
 import TransactionsTable from "../../../components/admin/Transactions/TransactionsTable";
 import { showError } from "../../../utils/alerts";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { FileText } from "lucide-react";
 
 export default function Transactions() {
   const { formatPrice } = useCurrency();
@@ -58,6 +61,47 @@ export default function Transactions() {
     return matchesType && matchesSearch;
   });
 
+  const handleExportExcel = () => {
+    if (filteredTransactions.length === 0) return;
+
+    const dataToExport = filteredTransactions.map((tx) => ({
+      ID: tx.id,
+      Date: new Date(tx.transactionDate || tx.createdAt).toLocaleDateString("en-GB"),
+      Type: tx.transactionType.toUpperCase(),
+      Category: tx.category || "General",
+      Amount: tx.amount,
+      Method: tx.paymentMethod || "—",
+      Reference: tx.order?.orderNumber || tx.purchase?.purchaseNumber || "—",
+    }));
+
+    exportToExcel(dataToExport, "stringventory_transactions", "Transactions");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredTransactions.length === 0) return;
+
+    const tableData = {
+      headers: ["Date", "Type", "Amount", "Method", "Ref"],
+      rows: filteredTransactions.map((tx) => [
+        new Date(tx.transactionDate || tx.createdAt).toLocaleDateString("en-GB"),
+        tx.transactionType.toUpperCase(),
+        tx.amount.toFixed(2),
+        tx.paymentMethod || "—",
+        tx.order?.orderNumber || tx.purchase?.purchaseNumber || "—",
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Company Financial Ledger Report",
+        fileName: "stringventory_transactions",
+        table: tableData,
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   // Remove local calculation as we use summary from API
 
   if (loading) {
@@ -87,12 +131,25 @@ export default function Transactions() {
             <button 
                 onClick={fetchData}
                 className="p-2.5 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95"
+                title="Refresh"
             >
                 <RefreshCw size={18} className="text-gray-500" />
             </button>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition-all shadow-md shadow-rose-200 active:scale-95 text-sm font-medium">
-                <Download size={16} />
-                Export CSV
+            
+            <button 
+                onClick={handleExportExcel}
+                className="flex items-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-xl hover:bg-gray-50 transition-all border border-gray-200 text-sm font-medium shadow-sm"
+            >
+                <FileText size={16} className="text-emerald-600" />
+                Excel
+            </button>
+
+            <button 
+                onClick={handleExportPDF}
+                className="flex items-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-xl hover:bg-gray-50 transition-all border border-gray-200 text-sm font-medium shadow-sm"
+            >
+                <Download size={16} className="text-rose-600" />
+                PDF
             </button>
         </div>
       </div>

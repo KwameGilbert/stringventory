@@ -7,6 +7,8 @@ import { productService } from "../../../services/productService";
 import categoryService from "../../../services/categoryService";
 import supplierService from "../../../services/supplierService";
 import { showError, showSuccess, showInfo } from "../../../utils/alerts";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 import { isProductApproved } from "../../../utils/productApproval";
 import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
 import { useCurrency } from "../../../utils/currencyUtils";
@@ -190,6 +192,50 @@ export default function Inventory() {
     }
   };
 
+  const handleExportExcel = () => {
+    if (filteredInventory.length === 0) return;
+
+    const dataToExport = filteredInventory.map((item) => ({
+      Product: item.productName,
+      Batch: item.batchNumber,
+      Category: item.category,
+      Supplier: item.supplier,
+      "Unit Cost": item.unitCost,
+      Quantity: item.quantity,
+      "Total Value": item.totalValue,
+      "Entry Date": new Date(item.entryDate).toLocaleDateString("en-GB"),
+      "Expiry Date": item.expiryDate ? new Date(item.expiryDate).toLocaleDateString("en-GB") : "—",
+    }));
+
+    exportToExcel(dataToExport, "stringventory_inventory", "Inventory");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredInventory.length === 0) return;
+
+    const tableData = {
+      headers: ["Product", "Batch", "Category", "Qty", "Value", "Expiry"],
+      rows: filteredInventory.map((item) => [
+        item.productName,
+        item.batchNumber,
+        item.category,
+        item.quantity,
+        item.totalValue.toFixed(2),
+        item.expiryDate ? new Date(item.expiryDate).toLocaleDateString("en-GB") : "—",
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Stock Intake Inventory Report",
+        fileName: "stringventory_inventory",
+        table: tableData,
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   const formatCurrency = (val) => formatPrice(val, responseCurrency);
 
   if (loading) {
@@ -216,6 +262,8 @@ export default function Inventory() {
         setCategoryFilter={setCategoryFilter}
         categories={categories}
         totalItems={inventory.length}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
 
       {/* Stat Cards */}
