@@ -32,10 +32,10 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete, canManage = true }
         return (
           <div 
             key={category.id} 
-            className="bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group"
+            className={`bg-white rounded-xl border border-gray-100 hover-lift group ${activeMenu === category.id ? 'relative z-50' : 'relative'}`}
           >
             {/* Card Header with Image */}
-            <div className="relative h-40 overflow-hidden bg-gray-100">
+            <div className="relative h-40 bg-gray-100 rounded-t-xl overflow-hidden">
               <div className={`absolute inset-0 bg-linear-to-br ${colors.bg} flex items-center justify-center`}>
                 <IconComponent className="text-white" size={48} />
               </div>
@@ -53,41 +53,42 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete, canManage = true }
               )}
               
               {/* Actions Menu - Positioned over image */}
-              <div className="absolute top-3 right-3">
+              <div className="absolute top-3 right-3 z-20">
                 {canManage ? (
                   <>
                     <button 
                       onClick={() => setActiveMenu(activeMenu === category.id ? null : category.id)}
-                      className="p-1.5 text-white bg-black/20 backdrop-blur-sm hover:bg-black/40 rounded-lg transition-colors"
+                      className={`p-1.5 backdrop-blur-sm rounded-lg transition-colors ${activeMenu === category.id ? 'bg-white text-gray-900 shadow-md' : 'text-white bg-black/20 hover:bg-black/40'}`}
                     >
                       <MoreVertical size={18} />
                     </button>
                     
                     {activeMenu === category.id && (
-                      <div className="absolute right-0 top-10 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 min-w-35 z-10">
+                      <div className="absolute right-0 top-10 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 min-w-40 z-50 animate-in fade-in zoom-in-95 duration-100 origin-top-right">
                         <Link 
                           to={`/dashboard/categories/${category.id}`}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors font-medium"
                         >
-                          <Eye size={16} />
-                          View
+                          <Eye size={16} className="text-gray-400" />
+                          View Details
                         </Link>
                         <Link 
                           to={`/dashboard/categories/${category.id}/edit`}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors font-medium"
                         >
-                          <Edit2 size={16} />
-                          Edit
+                          <Edit2 size={16} className="text-gray-400" />
+                          Edit Category
                         </Link>
+                        <div className="my-1 border-t border-gray-50"></div>
                         <button
                           onClick={() => {
                             onDelete && onDelete(category.id);
                             setActiveMenu(null);
                           }}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors w-full"
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors w-full font-medium"
                         >
                           <Trash2 size={16} />
-                          Delete
+                          Delete Category
                         </button>
                       </div>
                     )}
