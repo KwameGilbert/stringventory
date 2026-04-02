@@ -581,57 +581,127 @@ export default function CreateOrder() {
 
               {/* Items List */}
               {formData.items.length > 0 ? (
-                <div className="border border-gray-200 rounded-xl overflow-hidden">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gray-50 text-xs font-semibold text-gray-500 uppercase">
-                        <th className="px-4 py-3 text-left">Product</th>
-                        <th className="px-4 py-3 text-center w-32">Quantity</th>
-                        <th className="px-4 py-3 text-right">Unit Price</th>
-                        <th className="px-4 py-3 text-right">Total</th>
-                        <th className="px-4 py-3 w-12"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {formData.items.map((item, index) => (
-                        <tr key={index} className="hover:bg-gray-50/50">
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                                <Package size={14} className="text-gray-400" />
-                              </div>
-                              <span className="text-sm font-medium text-gray-900">{item.productName}</span>
+                <div className="space-y-3">
+                  {/* Mobile Item Cards */}
+                  <div className="md:hidden space-y-3">
+                    {formData.items.map((item, index) => (
+                      <div key={index} className="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col gap-3">
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                              <Package size={18} className="text-gray-400" />
                             </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <input
-                              type="number"
-                              value={item.quantity}
-                              onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
-                              onFocus={(e) => e.target.select()}
-                              min="1"
-                              className="w-20 px-2 py-1 rounded-lg border border-gray-200 text-center text-sm mx-auto block"
-                            />
-                          </td>
-                          <td className="px-4 py-3 text-right text-sm text-gray-600">
-                            {formatCurrency(item.unitPrice)}
-                          </td>
-                          <td className="px-4 py-3 text-right text-sm font-semibold text-gray-900">
-                            {formatCurrency(item.quantity * item.unitPrice)}
-                          </td>
-                          <td className="px-4 py-3">
-                            <button
+                            <div>
+                              <p className="text-sm font-bold text-gray-900">{item.productName}</p>
+                              <p className="text-xs text-gray-500 font-medium">{formatCurrency(item.unitPrice)} / unit</p>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeItem(index)}
+                            className="p-1.5 text-rose-500 bg-white border border-rose-100 rounded-lg shadow-sm"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-gray-200/60">
+                          <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1 shadow-sm">
+                            <button 
                               type="button"
-                              onClick={() => removeItem(index)}
-                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                              onClick={() => updateItemQuantity(index, item.quantity - 1)}
+                              className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors font-bold"
                             >
-                              <Trash2 size={14} />
+                              -
                             </button>
-                          </td>
+                            <span className="w-8 text-center text-sm font-bold text-gray-900">{item.quantity}</span>
+                            <button 
+                              type="button"
+                              onClick={() => updateItemQuantity(index, item.quantity + 1)}
+                              className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors font-bold"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <div className="text-right">
+                             <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Subtotal</p>
+                             <p className="text-sm font-black text-gray-900">{formatCurrency(item.quantity * item.unitPrice)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block border border-gray-200 rounded-xl overflow-hidden shadow-sm bg-white">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                          <th className="px-5 py-4 text-left">Product</th>
+                          <th className="px-5 py-4 text-center w-36">Quantity</th>
+                          <th className="px-5 py-4 text-right">Unit Price</th>
+                          <th className="px-5 py-4 text-right">Total</th>
+                          <th className="px-5 py-4 w-12"></th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {formData.items.map((item, index) => (
+                          <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+                            <td className="px-5 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200 shadow-xs">
+                                  <Package size={16} className="text-gray-400" />
+                                </div>
+                                <span className="text-sm font-bold text-gray-900">{item.productName}</span>
+                              </div>
+                            </td>
+                            <td className="px-5 py-4">
+                              <div className="flex items-center justify-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => updateItemQuantity(index, item.quantity - 1)}
+                                  className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 border border-gray-200 rounded-lg hover:bg-white transition-all shadow-xs disabled:opacity-30"
+                                  disabled={item.quantity <= 1}
+                                >
+                                  -
+                                </button>
+                                <input
+                                  type="number"
+                                  value={item.quantity}
+                                  onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
+                                  onFocus={(e) => e.target.select()}
+                                  min="1"
+                                  className="w-14 px-1 py-2 text-center text-sm font-bold text-gray-900 bg-transparent border-none focus:outline-none"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => updateItemQuantity(index, item.quantity + 1)}
+                                  className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 border border-gray-200 rounded-lg hover:bg-white transition-all shadow-xs"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-5 py-4 text-right text-sm font-medium text-gray-600">
+                              {formatCurrency(item.unitPrice)}
+                            </td>
+                            <td className="px-5 py-4 text-right text-sm font-black text-gray-900">
+                              {formatCurrency(item.quantity * item.unitPrice)}
+                            </td>
+                            <td className="px-5 py-4">
+                              <button
+                                type="button"
+                                onClick={() => removeItem(index)}
+                                className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all border border-transparent hover:border-rose-100"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-400">

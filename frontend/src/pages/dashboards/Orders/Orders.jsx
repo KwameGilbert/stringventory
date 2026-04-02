@@ -135,13 +135,14 @@ export default function Orders() {
     if (filteredOrders.length === 0) return;
 
     const dataToExport = filteredOrders.map((o) => ({
-      "Order #": o.orderNumber,
-      Date: new Date(o.orderDate).toLocaleDateString("en-GB"),
-      Customer: o.customer.name,
-      Status: o.status.toUpperCase(),
-      Items: o.itemCount,
-      Total: o.total,
-      "Payment Method": o.paymentMethod || "—",
+      "Order #": o.orderNumber || "—",
+      Date: o.orderDate ? new Date(o.orderDate).toLocaleDateString("en-GB") : "—",
+      Customer: o.customer?.name || "Unknown",
+      Status: (o.status || "pending").toUpperCase(),
+      Items: Number(o.itemCount || 0),
+      Total: Number(o.total || 0).toFixed(2),
+      "Currency": o.currency || responseCurrency,
+      "Payment Method": (o.paymentMethod || "—").toUpperCase(),
     }));
 
     exportToExcel(dataToExport, "stringventory_sales", "Sales");
@@ -153,22 +154,24 @@ export default function Orders() {
     const tableData = {
       headers: ["Order #", "Date", "Customer", "Total", "Status"],
       rows: filteredOrders.map((o) => [
-        o.orderNumber,
-        new Date(o.orderDate).toLocaleDateString("en-GB"),
-        o.customer.name,
-        o.total.toFixed(2),
-        o.status.toUpperCase(),
+        o.orderNumber || "—",
+        o.orderDate ? new Date(o.orderDate).toLocaleDateString("en-GB") : "—",
+        o.customer?.name || "Unknown",
+        `${o.currency || responseCurrency} ${Number(o.total || 0).toFixed(2)}`,
+        (o.status || "pending").toUpperCase(),
       ]),
     };
 
     try {
       await exportToPDF({
         title: "Sales Transaction Report",
+        subtitle: `Generated for ${filteredOrders.length} records`,
         fileName: "stringventory_sales",
         table: tableData,
       });
     } catch (error) {
-      showError("Failed to generate PDF");
+      console.error("PDF Export Error:", error);
+      showError("Failed to generate PDF report");
     }
   };
 
@@ -219,55 +222,57 @@ export default function Orders() {
       />
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up">
         {/* Total Sales */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-blue-50">
-              <ShoppingBag className="w-5 h-5 text-blue-600" />
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
+              <ShoppingBag className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Sales</p>
-              <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Total Sales</p>
+              <p className="text-2xl font-black text-gray-900 tracking-tight">{totalOrders}</p>
             </div>
           </div>
         </div>
 
         {/* Total Revenue */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-emerald-50">
-              <DollarSign className="w-5 h-5 text-emerald-600" />
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+              <DollarSign className="w-6 h-6" />
             </div>
-            <div>
-              <p className="text-sm text-gray-500">Total Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{formatPrice(totalRevenue, responseCurrency)}</p>
+            <div className="min-w-0">
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Total Revenue</p>
+              <p className="text-2xl font-black text-gray-900 tracking-tight truncate">
+                {formatPrice(totalRevenue, responseCurrency)}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Pending */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-amber-50">
-              <Clock className="w-5 h-5 text-amber-600" />
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
+              <Clock className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Pending</p>
-              <p className="text-2xl font-bold text-gray-900">{pendingOrders}</p>
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Pending</p>
+              <p className="text-2xl font-black text-gray-900 tracking-tight">{pendingOrders}</p>
             </div>
           </div>
         </div>
 
         {/* Completed */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-green-50">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-green-50 text-green-600 group-hover:scale-110 transition-transform">
+              <CheckCircle className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Completed</p>
-              <p className="text-2xl font-bold text-gray-900">{completedOrders}</p>
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Completed</p>
+              <p className="text-2xl font-black text-gray-900 tracking-tight">{completedOrders}</p>
             </div>
           </div>
         </div>

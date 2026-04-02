@@ -276,7 +276,7 @@ export default function ViewOrder() {
   const StatusIcon = status.icon;
 
   return (
-    <div className="max-w-5xl mx-auto pb-8 animate-fade-in">
+    <div className="max-w-6xl mx-auto pb-12 animate-fade-in px-4 sm:px-6">
       <style>{`
         @media print {
           body * {
@@ -303,91 +303,93 @@ export default function ViewOrder() {
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/orders")}
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-6 group"
+        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-8 group"
       >
-        <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
+        <div className="p-2 rounded-xl bg-white border border-gray-200 shadow-xs group-hover:border-gray-300 transition-all group-hover:-translate-x-1">
           <ArrowLeft size={18} />
         </div>
-        <span className="font-medium">Back to Sales</span>
+        <span className="text-xs uppercase font-black tracking-widest">Back to Sales</span>
       </button>
 
-      {/* Header Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-        <div className="px-6 py-5 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                <Receipt className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-xl font-bold text-gray-900 font-mono">{order.displayRef || order.id}</h1>
-                  <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${status.bg} ${status.text}`}>
-                    <StatusIcon size={14} />
-                    {status.label}
-                  </span>
-                </div>
-                <p className="text-gray-500 text-sm mt-1">
-                  {formatDate(order.orderDate)} at {formatTime(order.orderDate)}
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={handleSave}
-                disabled={isSaving}
-                className={`flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors font-medium text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
-                {isSaving ? "Saving..." : "Save Pickup"}
-              </button>
-              <button 
-                onClick={handlePickAll}
-                disabled={isSaving || allItemsPicked}
-                className={`flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors font-medium text-sm ${
-                  allItemsPicked 
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-600' 
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
-              >
-                {isSaving ? <RefreshCw size={16} className="animate-spin" /> : <CheckCircle size={16} />}
-                {isSaving ? "Processing..." : (allItemsPicked ? 'All Picked' : 'Pick All')}
-              </button>
-              <button
-                onClick={handlePrint}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors font-medium text-sm"
-              >
-                <Printer size={16} />
-                Print
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors font-medium text-sm">
-                <Mail size={16} />
-                Email
-              </button>
-              <button 
-                onClick={() => navigate(`/dashboard/orders/${id}/refund`)}
-                className="flex items-center gap-2 px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm"
-              >
-                <RefreshCw size={16} />
-                Refund
-              </button>
-            </div>
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="flex items-center gap-5">
+          <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
+            <Receipt className="w-8 h-8 text-white" />
           </div>
+          <div>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl font-black text-gray-900 font-mono tracking-tighter">{order.displayRef || order.id}</h1>
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${status.bg} ${status.text} border-2 ${status.border}`}>
+                <StatusIcon size={12} />
+                {status.label}
+              </span>
+            </div>
+            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">
+              {formatDate(order.orderDate)} • {formatTime(order.orderDate)}
+            </p>
+          </div>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          <button 
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl transition-all font-bold text-xs shadow-lg shadow-gray-200 active:scale-95 disabled:opacity-50"
+          >
+            {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
+            SAVE PICKUP
+          </button>
+          <button 
+            onClick={handlePickAll}
+            disabled={isSaving || allItemsPicked}
+            className={`flex items-center gap-2 px-5 py-2.5 border-2 rounded-xl transition-all font-bold text-xs active:scale-95 disabled:opacity-50 ${
+              allItemsPicked 
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-600' 
+                : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+            }`}
+          >
+            {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+            {allItemsPicked ? 'ALL PICKED' : 'PICK ALL'}
+          </button>
+          
+          <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
+
+          <button
+            onClick={handlePrint}
+            className="p-2.5 bg-white border-2 border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-200 rounded-xl transition-all shadow-xs active:scale-95"
+            title="Print Receipt"
+          >
+            <Printer size={18} />
+          </button>
+          <button className="p-2.5 bg-white border-2 border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-200 rounded-xl transition-all shadow-xs active:scale-95">
+            <Mail size={18} />
+          </button>
+          <button 
+            onClick={() => navigate(`/dashboard/orders/${id}/refund`)}
+            className="p-2.5 bg-white border-2 border-rose-50 text-rose-400 hover:text-rose-600 hover:border-rose-100 rounded-xl transition-all shadow-xs active:scale-95"
+            title="Refund Sale"
+          >
+            <RefreshCw size={18} />
+          </button>
         </div>
       </div>
 
       {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col lg:flex-row gap-8 items-start">
         {/* Main Content - Order Items */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="flex-1 space-y-8 w-full">
           {/* Items Card */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <div className="flex items-center gap-2">
-                <Package className="w-5 h-5 text-gray-500" />
-                <h3 className="font-semibold text-gray-900">Sale Items</h3>
-                <span className="text-xs text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">{items.length} products</span>
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-8 py-6 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-2xl bg-white shadow-xs border border-gray-100">
+                  <Package className="w-6 h-6 text-gray-400" />
+                </div>
+                <div>
+                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Sale Items</h3>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{items.length} unique products</p>
+                </div>
               </div>
             </div>
             <div className="divide-y divide-gray-50">
@@ -397,181 +399,177 @@ export default function ViewOrder() {
                 const isFullyPicked = totalFulfilled >= item.quantity;
                 
                 return (
-                  <div key={index} className={`px-6 py-4 flex items-center gap-4 transition-colors ${isFullyPicked ? 'bg-emerald-50/50' : ''}`}>
-                    <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 relative">
-                      <Package className={`w-5 h-5 ${isFullyPicked ? 'text-emerald-500' : 'text-gray-400'}`} />
+                  <div key={index} className={`px-8 py-6 flex flex-col sm:flex-row items-start sm:items-center gap-6 transition-colors ${isFullyPicked ? 'bg-emerald-50/20' : ''}`}>
+                    <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 relative shadow-xs">
+                      <Package className={`w-6 h-6 ${isFullyPicked ? 'text-emerald-500' : 'text-gray-400'}`} />
                       {isFullyPicked && (
-                        <div className="absolute -top-1 -right-1 bg-emerald-500 rounded-full p-0.5 border-2 border-white">
-                          <CheckCircle size={10} className="text-white" />
+                        <div className="absolute -top-2 -right-2 bg-emerald-500 text-white rounded-full p-1 border-4 border-white shadow-sm scale-110">
+                          <CheckCircle size={12} />
                         </div>
                       )}
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">{item.productName || "Product"}</p>
-                      <div className="flex flex-col gap-1 mt-1">
-                        <div className="flex items-center gap-4">
-                            <p className="text-xs text-gray-400">Ordered: <span className="font-medium text-gray-600">{item.quantity}</span></p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-black text-gray-900 truncate tracking-tight">{item.productName || "Product"}</p>
+                      <div className="flex flex-col gap-3 mt-2">
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                            <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Ordered: <span className="text-gray-700">{item.quantity}</span></p>
                             {item.fulfilledQuantity > 0 && (
-                              <p className="text-xs text-emerald-600 font-medium">Fulfilled: {item.fulfilledQuantity}</p>
+                              <p className="text-[10px] uppercase font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 tracking-widest">Fulfilled: {item.fulfilledQuantity}</p>
                             )}
-                            <div className="flex items-center gap-1">
+                        </div>
+                        
+                        <div className="flex items-center gap-4">
+                           <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100 shadow-xs">
                                 <button 
-                                onClick={() => handleUpdatePicked(index, -1)}
-                                disabled={isSaving || picked <= 0}
-                                className="w-5 h-5 flex items-center justify-center rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-500 bg-white shadow-xs"
+                                  onClick={() => handleUpdatePicked(index, -1)}
+                                  disabled={isSaving || picked <= 0}
+                                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-black disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
                                 >
-                                -
+                                  -
                                 </button>
+                                <div className="w-10 text-center text-lg font-black text-blue-600 font-mono">
+                                    {picked}
+                                </div>
                                 <button 
-                                onClick={() => handleUpdatePicked(index, 1)}
-                                disabled={isSaving || picked >= item.remainingQuantity}
-                                className="w-5 h-5 flex items-center justify-center rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-gray-500 bg-white shadow-xs"
+                                  onClick={() => handleUpdatePicked(index, 1)}
+                                  disabled={isSaving || picked >= item.remainingQuantity}
+                                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-black disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
                                 >
-                                +
+                                  +
                                 </button>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <p className="text-sm font-medium text-gray-500">
-                            Pick Now: <span className={`font-bold ${picked > 0 ? 'text-blue-600' : 'text-gray-400'}`}>{picked}</span>
-                          </p>
-                          {item.remainingQuantity > 0 && picked === 0 && (
-                            <span className="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 font-bold uppercase">Pending {item.remainingQuantity}</span>
-                          )}
+                            {item.remainingQuantity > 0 && picked === 0 && (
+                              <span className="text-[10px] text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 font-black uppercase tracking-widest">
+                                {item.remainingQuantity} PENDING
+                              </span>
+                            )}
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-gray-900">{formatPrice(item.subtotal, order.currency)}</p>
-                      {isFullyPicked && <span className="text-xs text-emerald-600 font-bold uppercase tracking-tight">Fully Fulfilled</span>}
+                    <div className="w-full sm:w-auto flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 border-t sm:border-t-0 border-gray-50 pt-4 sm:pt-0">
+                      <p className="text-lg font-black text-gray-900 tracking-tight">{formatPrice(item.subtotal, order.currency)}</p>
+                      {isFullyPicked && <span className="text-[10px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md">Fulfilled</span>}
                     </div>
                   </div>
                 );
               })}
             </div>
             
-            {/* Order Summary */}
-            <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Subtotal</span>
-                <span className="text-gray-900">{formatPrice(order.subtotal, order.currency)}</span>
+            {/* Order Summary Footer */}
+            <div className="px-8 py-8 bg-gray-50/50 border-t border-gray-100 space-y-4">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Subtotal</span>
+                <span className="font-bold text-gray-900">{formatPrice(order.subtotal, order.currency)}</span>
               </div>
                   {order.discountAmount > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 flex items-center gap-1">
-                    <Percent size={12} />
-                    Discount
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
+                    <Percent size={14} className="text-emerald-500" />
+                    DISCOUNT
                   </span>
-                  <span className="text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
+                  <span className="font-black text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Tax</span>
-                <span className="text-gray-900">{formatPrice(order.taxAmount || 0, order.currency)}</span>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">TAX / VAT</span>
+                <span className="font-bold text-gray-900">{formatPrice(order.taxAmount || 0, order.currency)}</span>
               </div>
-              <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
-                <span className="text-gray-900">Total</span>
-                <span className="text-gray-900">{formatPrice(order.total, order.currency)}</span>
+              <div className="pt-6 mt-2 border-t-2 border-dashed border-gray-200">
+                <div className="flex justify-between items-center">
+                    <span className="text-xs uppercase font-black text-gray-900 tracking-widest">Grand Total</span>
+                    <span className="text-3xl font-black text-gray-900 tracking-tighter">{formatPrice(order.total, order.currency)}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Customer Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Customer</h3>
+        <div className="w-full lg:w-80 space-y-8 shrink-0">
+          {/* Customer Group */}
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
+              <h3 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Customer Information</h3>
             </div>
-            <div className="p-5 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-bold">
+            <div className="p-6 space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-sm font-black shadow-lg shadow-blue-500/20">
                   {order.customer.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">{order.customer.name}</p>
+                  <p className="text-base font-black text-gray-900 leading-tight tracking-tight">{order.customer.name}</p>
                 </div>
               </div>
 
-              <div className="space-y-3 pt-2">
-                <div className="flex items-center gap-3 text-sm">
-                  <div className="p-1.5 rounded-lg bg-gray-100">
-                    <AtSign className="w-3.5 h-3.5 text-gray-500" />
+              <div className="space-y-4 pt-2 border-t border-gray-50 text-sm">
+                <div className="flex items-center gap-4 group">
+                  <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-all">
+                    <AtSign className="w-4 h-4" />
                   </div>
-                  <span className="text-gray-600">{order.customer.email}</span>
+                  <span className="font-bold text-gray-600 break-all">{order.customer.email || "No Email"}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <div className="p-1.5 rounded-lg bg-gray-100">
-                    <Phone className="w-3.5 h-3.5 text-gray-500" />
+                <div className="flex items-center gap-4 group">
+                  <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-all">
+                    <Phone className="w-4 h-4" />
                   </div>
-                  <span className="text-gray-600">{order.customer.phone}</span>
+                  <span className="font-bold text-gray-600">{order.customer.phone || "No Phone"}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Payment Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Payment</h3>
+          {/* Payment Group */}
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
+              <h3 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Payment Data</h3>
             </div>
-            <div className="p-5 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-emerald-50">
-                  <CreditCard className="w-4 h-4 text-emerald-600" />
+            <div className="p-6 space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 shadow-xs border border-emerald-100">
+                  <CreditCard className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Payment Method</p>
-                  <p className="font-medium text-gray-900 capitalize">{order.paymentMethod.replace('_', ' ')}</p>
+                  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Method</p>
+                  <p className="font-black text-gray-900 uppercase text-xs tracking-wider">{order.paymentMethod.replace('_', ' ')}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-50">
-                  <DollarSign className="w-4 h-4 text-blue-600" />
+              <div className="flex items-center gap-4 pt-5 border-t border-gray-50">
+                <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 shadow-xs border border-blue-100">
+                  <DollarSign className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Amount Paid</p>
-                  <p className="font-bold text-gray-900 text-lg">{formatPrice(order.amountPaid || order.total, order.currency)}</p>
+                  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Total Paid</p>
+                  <p className="font-black text-gray-900 text-2xl tracking-tighter">{formatPrice(order.amountPaid || order.total, order.currency)}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Order Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Sale Details</h3>
+          {/* Details Group */}
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
+              <h3 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Metadata</h3>
             </div>
-            <div className="p-5 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="p-1.5 rounded-lg bg-gray-100">
-                  <Hash className="w-3.5 h-3.5 text-gray-500" />
+            <div className="p-6 space-y-5">
+              <div className="flex items-start gap-4">
+                <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 shrink-0">
+                  <Hash className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Sale ID</p>
-                  <p className="text-sm font-mono font-medium text-gray-900">{order.id}</p>
+                  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Internal Reference</p>
+                  <p className="text-[10px] font-mono font-bold text-gray-900 break-all">{order.id}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="p-1.5 rounded-lg bg-gray-100">
-                  <Calendar className="w-3.5 h-3.5 text-gray-500" />
+              <div className="flex items-start gap-4 pt-2">
+                <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 shrink-0">
+                  <Calendar className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400">Sale Date</p>
-                  <p className="text-sm font-medium text-gray-900">{formatDate(order.orderDate)}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className={`p-1.5 rounded-lg ${status.bg}`}>
-                  <StatusIcon className={`w-3.5 h-3.5 ${status.text}`} />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Status</p>
-                  <p className={`text-sm font-medium ${status.text}`}>{status.label}</p>
+                  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Creation Date</p>
+                  <p className="text-sm font-black text-gray-900">{formatDate(order.orderDate)}</p>
+                  <p className="text-xs text-gray-400 font-bold">{formatTime(order.orderDate)}</p>
                 </div>
               </div>
             </div>
@@ -579,44 +577,61 @@ export default function ViewOrder() {
         </div>
       </div>
 
+      {/* Hidden Receipt for Printing */}
       <div className="hidden print:block print-payment-summary">
-        <div className="border border-gray-200 rounded-lg p-5">
-          <h2 className="text-xl font-bold mb-1">Payment Summary</h2>
-          <p className="text-sm text-gray-600 mb-5">Receipt for sale {order.id}</p>
+        <div className="border-2 border-gray-200 rounded-2xl p-8">
+          <div className="text-center mb-8">
+             <h2 className="text-2xl font-black uppercase tracking-tighter">SALE RECEIPT</h2>
+             <p className="text-sm font-mono text-gray-500 mt-1">REF: {order.displayRef || order.id}</p>
+          </div>
 
-          <div className="space-y-2 text-sm mb-4">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Date</span>
-              <span className="font-medium text-gray-900">{formatDate(order.orderDate)}</span>
+          <div className="space-y-3 text-sm mb-6 pb-6 border-b border-gray-100">
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Date</span>
+              <span className="font-bold text-gray-900 text-right">{formatDate(order.orderDate)} {formatTime(order.orderDate)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Payment Method</span>
-              <span className="font-medium text-gray-900 capitalize">{order.paymentMethod.replace('_', ' ')}</span>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Customer</span>
+              <span className="font-bold text-gray-900 text-right">{order.customer.name}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Payment Method</span>
+              <span className="font-bold text-gray-900 uppercase text-right">{order.paymentMethod.replace('_', ' ')}</span>
             </div>
           </div>
 
-          <div className="h-px bg-gray-200 mb-4" />
+          <div className="space-y-4 mb-6">
+            <div className="flex justify-between text-[10px] font-black uppercase text-gray-400 tracking-widest pb-2 border-b border-gray-50">
+              <span>Item Description</span>
+              <span>Total</span>
+            </div>
+            {items.map((item, idx) => (
+              <div key={idx} className="flex justify-between text-sm">
+                <span className="font-bold text-gray-800">{item.productName} (x{item.quantity})</span>
+                <span className="font-black text-gray-900">{formatPrice(item.subtotal, order.currency)}</span>
+              </div>
+            ))}
+          </div>
 
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium text-gray-900">{formatPrice(order.subtotal, order.currency)}</span>
+          <div className="space-y-2 pt-6 border-t-2 border-gray-100">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Subtotal</span>
+              <span className="font-bold">{formatPrice(order.subtotal, order.currency)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Discount</span>
-              <span className="font-medium text-gray-900">-{formatPrice(order.discountAmount, order.currency)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Tax</span>
-              <span className="font-medium text-gray-900">{formatPrice(order.taxAmount || 0, order.currency)}</span>
+            {order.discountAmount > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-emerald-600">Discount</span>
+                <span className="font-bold text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
+              </div>
+            )}
+            <div className="flex justify-between text-lg font-black pt-4 mt-2 border-t border-gray-50">
+              <span className="uppercase tracking-widest text-xs">Total Amount</span>
+              <span className="text-2xl tracking-tighter">{formatPrice(order.total, order.currency)}</span>
             </div>
           </div>
 
-          <div className="h-px bg-gray-200 my-4" />
-
-          <div className="flex justify-between text-base font-bold">
-            <span>Total Paid</span>
-            <span>{formatPrice(order.total, order.currency)}</span>
+          <div className="text-center mt-12 text-[10px] font-black uppercase text-gray-400 tracking-widest">
+            Thank you for shopping with us!
           </div>
         </div>
       </div>

@@ -17,9 +17,10 @@ export const exportToPDF = ({ title, subtitle, fileName = "export", table, detai
     try {
       // 0. Helper to sanitize text for PDF (replaces symbols that jsPDF's basic fonts can't handle)
       const sanitize = (val) => {
-        if (typeof val !== "string") return val;
+        if (val === null || val === undefined) return "";
+        const strVal = String(val);
         // Replace Cedi symbol with GHS
-        return val.replace(/\u20B5/g, "GHS ").replace(/₵/g, "GHS ");
+        return strVal.replace(/\u20B5/g, "GHS ").replace(/₵/g, "GHS ");
       };
 
       // 1. Create a new jsPDF instance
