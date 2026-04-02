@@ -5,6 +5,8 @@ import purchaseService from "../../../services/purchaseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
+import { Download } from "lucide-react";
 import Swal from "sweetalert2";
 
 const extractPurchase = (response) => {
@@ -153,6 +155,52 @@ export default function ViewPurchase() {
     }
   };
 
+  const handleExportPDF = async () => {
+    if (!purchase || items.length === 0) return;
+
+    const details = [
+      { label: "Waybill / PO #", value: purchaseReference },
+      { label: "Purchase Date", value: formatDate(purchase.purchaseDate) },
+      { label: "Supplier", value: purchase.supplier.name },
+      { label: "Contact Person", value: purchase.supplier.contactPerson },
+      { label: "Email", value: purchase.supplier.email },
+      { label: "Phone", value: purchase.supplier.phone },
+      { label: "Status", value: purchase.status.toUpperCase() },
+      { label: "Payment Status", value: purchase.paymentStatus.toUpperCase() },
+    ];
+
+    const tableData = {
+      headers: ["Product", "Qty", "Unit Cost", "Selling Price", "Subtotal"],
+      rows: items.map((item) => [
+        item.productName || item.product?.name || "Product",
+        item.quantity,
+        formatPrice(item.unitCost),
+        formatPrice(item.sellingPrice),
+        formatPrice(item.subtotal),
+      ]),
+    };
+
+    const totals = [
+      { label: "Subtotal", value: formatPrice(purchase.subtotal) },
+      { label: "Tax", value: formatPrice(purchase.tax) },
+      { label: "Shipping", value: formatPrice(purchase.shippingCost) },
+      { label: "Total Payable", value: formatPrice(purchase.totalAmount), bold: true, color: 'emerald' },
+    ];
+
+    try {
+      await exportToPDF({
+        title: "Purchase Order Report",
+        subtitle: `Reference: ${purchaseReference}`,
+        fileName: `PO_${purchaseReference}`,
+        details,
+        table: tableData,
+        totals,
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   const getStatusBadge = (status) => {
     const badges = {
       pending: "bg-amber-100 text-amber-700",
@@ -266,6 +314,14 @@ export default function ViewPurchase() {
                 <Trash2 size={16} />
                 Delete
               </button>
+
+              <button
+                onClick={handleExportPDF}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors font-medium text-sm shadow-sm"
+              >
+                <Download size={16} className="text-rose-600" />
+                Download PDF
+              </button>
             </div>
           </div>
         </div>
@@ -363,8 +419,8 @@ export default function ViewPurchase() {
                             <span className="font-semibold text-gray-900">{formatPrice(purchase.shippingCost)}</span>
                         </div>
                         <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-                            <span className="text-base font-black text-gray-900 uppercase tracking-tight">Total Payable</span>
-                            <span className="text-xl font-black text-emerald-600">{formatPrice(purchase.totalAmount)}</span>
+                            <span className="text-base font-semibold text-gray-900 uppercase tracking-tight">Total Payable</span>
+                            <span className="text-xl font-semibold text-emerald-600">{formatPrice(purchase.totalAmount)}</span>
                         </div>
                     </div>
                 </div>

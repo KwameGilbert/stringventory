@@ -88,52 +88,53 @@ const TransactionsTable = ({ transactions = [] }) => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Reference</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-              <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+            <tr className="bg-gray-50/50 border-b border-gray-100">
+              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Reference</th>
+              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Type</th>
+              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</th>
+              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Payment</th>
+              <th className="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Amount</th>
+              <th className="px-6 py-4 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</th>
+              <th className="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-50/50">
             {paginatedData.map((tx) => {
               const type = transactionTypeConfig[tx.transactionType] || { label: tx.transactionType, icon: Info, color: "text-gray-500", bg: "bg-gray-50" };
               const Icon = type.icon;
               const isOutflow = tx.amount < 0;
 
               return (
-                <tr key={tx.id} className="hover:bg-gray-50/50 transition-colors group/row">
+                <tr key={tx.id} className="hover:bg-gray-50/50 transition-colors group">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
-                        <span className="text-xs font-bold text-gray-400 mb-0.5 uppercase tracking-tighter">TX-{tx.id}</span>
+                        <span className="text-[10px] font-mono font-bold text-gray-400 mb-0.5 uppercase tracking-tighter">TX-{tx.id}</span>
                         {(tx.orderId || tx.order) && (
-                            <Link to={`/dashboard/orders/${tx.orderId || tx.order?.id}`} className="text-sm font-semibold text-blue-600 hover:underline">
+                            <Link to={`/dashboard/orders/${tx.orderId || tx.order?.id}`} className="text-sm font-bold text-gray-900 hover:text-blue-600 transition-colors">
                                 {tx.order?.orderNumber || `Order #${tx.orderId}`}
                             </Link>
                         )}
                         {(tx.refundId || tx.refund) && (
-                            <Link to={`/dashboard/refunds/${tx.refundId || tx.refund?.id}`} className="text-sm font-semibold text-rose-600 hover:underline">
+                            <Link to={`/dashboard/refunds/${tx.refundId || tx.refund?.id}`} className="text-sm font-bold text-gray-900 hover:text-rose-600 transition-colors">
                                 {`Refund #${tx.refundId || tx.refund?.id}`}
                             </Link>
                         )}
                         {(tx.expenseId || tx.expense) && (
-                            <span className="text-sm font-medium text-amber-600">
+                            <span className="text-sm font-bold text-gray-900">
                                 {`Expense #${tx.expenseId || tx.expense?.id}`}
                             </span>
                         )}
                         {(tx.purchaseId || tx.purchase) && (
-                            <span className="text-sm font-medium text-indigo-600">
+                            <span className="text-sm font-bold text-gray-900">
                                 {tx.purchase?.purchaseNumber || `Purchase #${tx.purchaseId || tx.purchase?.id}`}
                             </span>
                         )}
-                        {tx.adjustmentId && <span className="text-sm font-medium text-gray-600">Adjustment #{tx.adjustmentId}</span>}
+                        {tx.adjustmentId && <span className="text-xs font-medium text-gray-600">Adjustment #{tx.adjustmentId}</span>}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -141,39 +142,33 @@ const TransactionsTable = ({ transactions = [] }) => {
                         <div className={`p-1.5 rounded-lg ${type.bg}`}>
                             <Icon size={14} className={type.color} />
                         </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-900 leading-tight">{type.label}</p>
-                            <p className="text-[10px] text-gray-400">{type.description}</p>
-                        </div>
+                        <span className="text-sm font-semibold text-gray-700">{type.label}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{formatDate(tx.createdAt)}</span>
+                    <span className="text-sm text-gray-600 font-medium">{formatDate(tx.createdAt)}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-700 capitalize">
+                    <span className="text-sm text-gray-500 font-medium capitalize">
                       {tx.paymentMethod ? tx.paymentMethod.replace(/_/g, ' ') : "—"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <div className="flex flex-col items-end">
-                        <div className={`flex items-center gap-1 font-bold ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
-                            {isOutflow ? <ArrowDownCircle size={14} /> : <ArrowUpCircle size={14} />}
-                            {formatCurrency(tx.amount, tx.currency)}
-                        </div>
-                    </div>
+                    <span className={`text-sm font-semibold ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
+                        {isOutflow ? '− ' : '+ '}{formatCurrency(tx.amount, tx.currency)}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-xs">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full font-medium ${tx.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider ${tx.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
                         {tx.status || 'pending'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <Link 
                         to={`/dashboard/transactions/${tx.id}`}
-                        className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all inline-flex items-center gap-2 group/btn"
+                        className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
                     >
-                        <Eye size={16} className="group-hover/btn:scale-110 transition-transform" />
+                        <Eye size={16} />
                     </Link>
                   </td>
                 </tr>
@@ -183,30 +178,90 @@ const TransactionsTable = ({ transactions = [] }) => {
         </table>
       </div>
 
+      {/* Mobile Card View */}
+      <div className="md:hidden divide-y divide-gray-100">
+        {paginatedData.map((tx) => {
+          const type = transactionTypeConfig[tx.transactionType] || { label: tx.transactionType, icon: Info, color: "text-gray-500", bg: "bg-gray-50" };
+          const Icon = type.icon;
+          const isOutflow = tx.amount < 0;
+
+          return (
+            <div key={tx.id} className="p-4 space-y-4 hover:bg-gray-50 transition-colors">
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-mono font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded w-fit">
+                        TX-{tx.id}
+                    </span>
+                    <h3 className="font-bold text-gray-900 text-lg tracking-tight">
+                        {tx.order?.orderNumber || tx.purchase?.purchaseNumber || tx.category || type.label}
+                    </h3>
+                    <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-gray-400 tracking-widest">
+                        <Icon size={12} className={type.color} />
+                        {type.label}
+                    </div>
+                </div>
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-widest ${tx.status === 'completed' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                  {tx.status || 'pending'}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center p-3 bg-gray-50/50 rounded-xl border border-gray-100">
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Value</span>
+                  <span className={`text-lg font-bold ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
+                    {isOutflow ? '− ' : '+ '}{formatCurrency(tx.amount, tx.currency)}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1 block">Date</span>
+                  <span className="text-sm font-semibold text-gray-700">{formatDate(tx.createdAt)}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Link
+                  to={`/dashboard/transactions/${tx.id}`}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-900 rounded-xl font-bold text-sm shadow-sm active:scale-95 transition-all"
+                >
+                  <Eye size={16} />
+                  View Details
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-6 py-3 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-          <p className="text-sm text-gray-500 lowercase">
-            Showing <span className="font-semibold">{startIndex + 1}</span>-
-            <span className="font-semibold">{Math.min(startIndex + ITEMS_PER_PAGE, transactions.length)}</span> of{" "}
-            <span className="font-semibold">{transactions.length}</span>
-          </p>
-          <div className="flex gap-1">
-            <button
-              onClick={() => setCurrentPage(c => Math.max(1, c - 1))}
-              disabled={currentPage === 1}
-              className="p-1 border border-gray-200 rounded-lg hover:bg-white disabled:opacity-30 transition-all"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              onClick={() => setCurrentPage(c => Math.min(totalPages, c + 1))}
-              disabled={currentPage === totalPages}
-              className="p-1 border border-gray-200 rounded-lg hover:bg-white disabled:opacity-30 transition-all"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
+        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                Showing <span className="text-gray-900">{startIndex + 1}</span> -{" "}
+                <span className="text-gray-900">{Math.min(startIndex + ITEMS_PER_PAGE, transactions.length)}</span> of{" "}
+                <span className="text-gray-900">{transactions.length}</span>
+            </p>
+            
+            <div className="flex items-center gap-2">
+                <button
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm group"
+                >
+                    <ChevronLeft size={18} className="text-gray-600 group-hover:-translate-x-0.5 transition-transform" />
+                </button>
+                
+                <div className="px-4 py-1.5 bg-gray-900 text-white rounded-xl text-xs font-semibold shadow-lg shadow-gray-900/10">
+                    {currentPage} / {totalPages}
+                </div>
+                
+                <button
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm group"
+                >
+                    <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+            </div>
         </div>
       )}
     </div>

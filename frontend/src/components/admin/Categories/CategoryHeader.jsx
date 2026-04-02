@@ -1,7 +1,7 @@
 import { Plus, Download, FileText, LayoutGrid, List } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const CategoryHeader = ({ view, setView, totalCategories, canManage = true }) => {
+const CategoryHeader = ({ view, setView, totalCategories, canManage = true, onExportExcel, onExportPDF }) => {
   return (
     <div className="space-y-4">
       {/* Title Row */}
@@ -13,11 +13,17 @@ const CategoryHeader = ({ view, setView, totalCategories, canManage = true }) =>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Export Buttons */}
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200">
+          <button 
+            onClick={onExportExcel}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200"
+          >
             <FileText size={15} className="text-emerald-600" />
             Excel
           </button>
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200">
+          <button 
+            onClick={onExportPDF}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200"
+          >
             <Download size={15} className="text-rose-600" />
             PDF
           </button>

@@ -15,6 +15,8 @@ import {
   CreditCard,
   Activity,
 } from "lucide-react";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 import {
   BarChart,
   Bar,
@@ -289,8 +291,108 @@ export default function Reports() {
     });
   };
 
-  const handleExport = (type) => {
-    alert(`Exporting ${activeTab} report as ${type.toUpperCase()}`);
+  const handleExport = async (type) => {
+    if (!data) return;
+
+    let fileName = `stringventory_${activeTab}_report_${dateRange}`;
+    let title = `${activeTab.toUpperCase()} Report`;
+    let tableData = { headers: [], rows: [] };
+    let details = [];
+
+    if (activeTab === "sales") {
+      title = "Sales Performance Report";
+      tableData = {
+        headers: ["Month", "Orders", "Items Sold", "Revenue"],
+        rows: data.salesReport.monthlySales.map((s) => [
+          s.month,
+          s.orders,
+          s.items,
+          formatPrice(s.revenue),
+        ]),
+      };
+      details = [
+        { label: "Total Revenue", value: formatPrice(data.salesReport.summary.totalRevenue) },
+        { label: "Avg. Order Value", value: formatPrice(data.salesReport.summary.averageOrderValue) },
+      ];
+    } else if (activeTab === "inventory") {
+      title = "Inventory Valuation Report";
+      tableData = {
+        headers: ["Category", "Product Count", "Quantity", "Value"],
+        rows: data.inventoryReport.categoryValuation.map((c) => [
+          c.name,
+          c.productCount,
+          c.quantity,
+          formatPrice(c.value),
+        ]),
+      };
+      details = [
+        { label: "Total Inventory Value", value: formatPrice(data.inventoryReport.summary.totalValue) },
+        { label: "Low Stock Items", value: data.inventoryReport.summary.lowStockItems },
+      ];
+    } else if (activeTab === "expenses") {
+      title = "Expense Allocation Report";
+      tableData = {
+        headers: ["Category", "Items", "Total Amount"],
+        rows: data.expenseReport.expensesByCategory.map((e) => [
+          e.name,
+          e.itemCount,
+          formatPrice(e.amount),
+        ]),
+      };
+      details = [
+        { label: "Total Expenditure", value: formatPrice(data.expenseReport.summary.totalExpenses) },
+      ];
+    } else if (activeTab === "pnl") {
+      title = "Profit & Loss Statement";
+      tableData = {
+        headers: ["Month", "Revenue", "Expenses", "Profit"],
+        rows: data.profitAndLoss.monthlyPnL.map((p) => [
+          p.month,
+          formatPrice(p.revenue),
+          formatPrice(p.expenses),
+          formatPrice(p.profit),
+        ]),
+      };
+      details = [
+        { label: "Gross Profit", value: formatPrice(data.profitAndLoss.summary.grossProfit) },
+        { label: "Net Profit", value: formatPrice(data.profitAndLoss.summary.netProfit) },
+        { label: "Profit Margin", value: `${data.profitAndLoss.summary.profitMargin?.toFixed(1)}%` },
+      ];
+    } else if (activeTab === "users") {
+      title = "User Activity Audit Report";
+      tableData = {
+        headers: ["Time", "User", "Module", "Action", "Details"],
+        rows: data.userActivity.recentActivity.map((a) => [
+          new Date(a.time).toLocaleString(),
+          a.user,
+          a.module,
+          a.action,
+          a.details,
+        ]),
+      };
+    }
+
+    if (type === "excel") {
+      const excelData = tableData.rows.map((row) => {
+        const obj = {};
+        tableData.headers.forEach((header, i) => {
+          obj[header] = row[i];
+        });
+        return obj;
+      });
+      exportToExcel(excelData, fileName, activeTab);
+    } else {
+      try {
+        await exportToPDF({
+          title,
+          fileName,
+          table: tableData,
+          details,
+        });
+      } catch (error) {
+        showError("Failed to generate PDF");
+      }
+    }
   };
 
   if (loading) {

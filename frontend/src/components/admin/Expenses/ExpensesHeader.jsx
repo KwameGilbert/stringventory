@@ -7,7 +7,9 @@ const ExpensesHeader = ({
   setSearchQuery,
   totalExpenses,
   recurringExpenses,
-  oneTimeExpenses
+  oneTimeExpenses,
+  onExportExcel,
+  onExportPDF
 }) => {
   const { formatPrice } = useCurrency();
 
@@ -20,21 +22,27 @@ const ExpensesHeader = ({
           <p className="text-gray-500 text-sm">Track minor and major expenses</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {/* Export Buttons */}
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors text-sm font-medium border border-emerald-200">
-            <FileText size={15} />
+          <button 
+            onClick={onExportExcel}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200 shadow-sm"
+          >
+            <FileText size={15} className="text-emerald-600" />
             Excel
           </button>
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition-colors text-sm font-medium border border-rose-200">
-            <Download size={15} />
+          <button 
+            onClick={onExportPDF}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200 shadow-sm"
+          >
+            <Download size={15} className="text-rose-600" />
             PDF
           </button>
 
           {/* Add Expense Button */}
           <Link
             to="/dashboard/expenses/new"
-            className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm shadow-lg shadow-gray-900/10"
+            className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium text-sm shadow-lg shadow-gray-900/10"
           >
             <Plus size={16} />
             Add Expense
@@ -43,7 +51,7 @@ const ExpensesHeader = ({
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
           <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500"></div>
           <p className="text-gray-500 text-sm mb-1">Total Expenses</p>
@@ -64,7 +72,7 @@ const ExpensesHeader = ({
       </div>
 
       {/* Search Row */}
-      <div className="relative max-w-lg">
+      <div className="relative w-full md:max-w-lg">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"

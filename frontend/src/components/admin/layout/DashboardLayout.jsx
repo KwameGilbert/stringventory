@@ -32,7 +32,7 @@ const DashboardLayout = ({ children }) => {
 
       {/* Main Content Area - responsive margin */}
       <DashboardDateFilterProvider>
-        <div className={`flex-1 transition-all duration-300 ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
+        <div className={`flex-1 transition-all duration-300 min-h-screen flex flex-col ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
           {/* Header with mobile menu toggle */}
           <Header 
             onMenuToggle={toggleMobileSidebar} 

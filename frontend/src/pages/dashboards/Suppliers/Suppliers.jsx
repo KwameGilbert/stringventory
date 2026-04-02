@@ -6,6 +6,9 @@ import {
 } from "lucide-react";
 import supplierService from "../../../services/supplierService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
+import { Download, FileText } from "lucide-react";
 
 const extractSuppliers = (response) => {
   const payload = response?.data || response || {};
@@ -81,6 +84,54 @@ export default function Suppliers() {
     }
   };
 
+  const handleExportExcel = () => {
+    if (filteredSuppliers.length === 0) return;
+
+    const dataToExport = filteredSuppliers.map((s) => ({
+      Name: s.name || "—",
+      "Contact Person": s.contactPerson || "—",
+      Email: s.email || "—",
+      Phone: s.phone || "—",
+      Address: s.address || "—",
+      "Products Count": Number(s.productsCount || 0),
+      Status: (s.status || "Active").toUpperCase(),
+    }));
+
+    exportToExcel(dataToExport, "stringventory_suppliers", "Suppliers");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredSuppliers.length === 0) return;
+
+    const tableData = {
+      headers: ["Supplier", "Contact", "Email", "Phone", "Status"],
+      rows: filteredSuppliers.map((s) => [
+        s.name || "—",
+        s.contactPerson || "—",
+        s.email || "—",
+        s.phone || "—",
+        (s.status || "Active").toUpperCase(),
+      ]),
+    };
+
+    try {
+      const totalProductsCount = filteredSuppliers.reduce((sum, s) => sum + Number(s.productsCount || 0), 0);
+
+      await exportToPDF({
+        title: "Supplier Directory Report",
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredSuppliers.length} supplier(s)`,
+        fileName: "stringventory_suppliers",
+        table: tableData,
+        totals: [
+          { label: "Total Managed Products", value: totalProductsCount.toLocaleString(), bold: true, color: 'emerald' },
+        ]
+      });
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      showError("Failed to generate PDF report");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -101,13 +152,33 @@ export default function Suppliers() {
           <p className="text-gray-500 mt-1">Manage your product suppliers and partnerships</p>
         </div>
         
-        <Link
-          to="/dashboard/suppliers/new"
-          className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20 font-medium"
-        >
-          <Plus size={18} />
-          Add Supplier
-        </Link>
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* Export Buttons */}
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button 
+              onClick={handleExportExcel}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200"
+            >
+              <FileText size={15} className="text-emerald-600" />
+              Excel
+            </button>
+            <button 
+              onClick={handleExportPDF}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200"
+            >
+              <Download size={15} className="text-rose-600" />
+              PDF
+            </button>
+          </div>
+
+          <Link
+            to="/dashboard/suppliers/new"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors shadow-lg shadow-gray-900/20 font-medium"
+          >
+            <Plus size={18} />
+            Add Supplier
+          </Link>
+        </div>
       </div>
 
       {/* Filters */}

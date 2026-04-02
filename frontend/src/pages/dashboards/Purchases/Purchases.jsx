@@ -5,6 +5,9 @@ import PurchasesTable from "../../../components/admin/Purchases/PurchasesTable";
 import purchaseService from "../../../services/purchaseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
+import { useCurrency } from "../../../utils/currencyUtils";
 import Swal from "sweetalert2";
 
 const extractPurchases = (response) => {
@@ -69,7 +72,7 @@ const normalizePurchase = (purchase) => ({
 });
 
 export default function Purchases() {
-  const { user } = useAuth();
+  const { formatPrice } = useCurrency();
   const currentUserRole = user?.role || user?.normalizedRole;
 
   const [purchases, setPurchases] = useState([]);
@@ -164,6 +167,55 @@ export default function Purchases() {
     }
   };
 
+  const handleExportExcel = () => {
+    if (purchases.length === 0) return;
+
+    const dataToExport = purchases.map((p) => ({
+      "Waybill / Ref": p.waybillNumber || p.purchaseNumber || "—",
+      Supplier: p.supplierName || "—",
+      Date: p.purchaseDate ? new Date(p.purchaseDate).toLocaleDateString("en-GB") : "—",
+      Amount: Number(p.totalAmount || 0).toFixed(2),
+      Currency: p.currency || "GHS",
+      Status: (p.status || "pending").toUpperCase(),
+      "Created By": p.createdBy || "System",
+    }));
+
+    exportToExcel(dataToExport, "stringventory_purchases", "Purchases");
+  };
+
+  const handleExportPDF = async () => {
+    if (purchases.length === 0) return;
+
+    const tableData = {
+      headers: ["Waybill / Ref", "Supplier", "Date", "Amount", "Status", "Created By"],
+      rows: purchases.map((p) => [
+        p.waybillNumber || p.purchaseNumber || "—",
+        p.supplierName || "—",
+        p.purchaseDate ? new Date(p.purchaseDate).toLocaleDateString("en-GB") : "—",
+        `${p.currency || "GHS"} ${Number(p.totalAmount || 0).toFixed(2)}`,
+        (p.status || "pending").toUpperCase(),
+        p.createdBy || "—",
+      ]),
+    };
+
+    try {
+      const totalSum = purchases.reduce((sum, p) => sum + Number(p.totalAmount || 0), 0);
+
+      await exportToPDF({
+        title: "Inventory Purchase Orders Report",
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${purchases.length} record(s)`,
+        fileName: "stringventory_purchases",
+        table: tableData,
+        totals: [
+          { label: "Total Purchases Value", value: formatPrice(totalSum, "GHS"), bold: true, color: 'emerald' },
+        ]
+      });
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      showError("Failed to generate PDF report");
+    }
+  };
+
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
@@ -186,10 +238,12 @@ export default function Purchases() {
         setSearchQuery={setSearchQuery}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Purchases */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">

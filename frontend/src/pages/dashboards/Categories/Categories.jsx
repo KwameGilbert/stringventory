@@ -7,6 +7,8 @@ import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
 import { canManageCatalog } from "../../../utils/accessControl";
 import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 
 const extractCategories = (response) => {
   const payload = response?.data || response || {};
@@ -110,6 +112,48 @@ export default function Categories() {
     }
   };
 
+  const handleExportExcel = () => {
+    if (categories.length === 0) return;
+
+    // Format data for Excel
+    const dataToExport = categories.map((cat) => ({
+      ID: cat.id,
+      Name: cat.name,
+      Description: cat.description || "N/A",
+      Status: cat.status.charAt(0).toUpperCase() + cat.status.slice(1),
+      "Products Count": cat.productsCount,
+      "Created At": cat.createdAt ? new Date(cat.createdAt).toLocaleDateString() : "N/A",
+      "Last Updated": cat.updatedAt ? new Date(cat.updatedAt).toLocaleDateString() : "N/A",
+    }));
+
+    exportToExcel(dataToExport, "stringventory_categories", "Categories");
+  };
+
+  const handleExportPDF = async () => {
+    if (categories.length === 0) return;
+
+    const tableData = {
+      headers: ["ID", "Name", "Description", "Status", "Products"],
+      rows: categories.map(cat => [
+        cat.id,
+        cat.name,
+        cat.description || "N/A",
+        cat.status.toUpperCase(),
+        cat.productsCount
+      ])
+    };
+
+    try {
+      await exportToPDF({
+        title: "Inventory Categories Report",
+        fileName: "stringventory_categories",
+        table: tableData
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
@@ -121,7 +165,14 @@ export default function Categories() {
 
   return (
     <div className="pb-8 animate-fade-in space-y-6">
-      <CategoryHeader view={view} setView={setView} totalCategories={categories.length} canManage={canManage} />
+      <CategoryHeader 
+        view={view} 
+        setView={setView} 
+        totalCategories={categories.length} 
+        canManage={canManage} 
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
+      />
       
       {view === 'grid' ? (
         <CategoryGrid categories={categories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} canManage={canManage} />

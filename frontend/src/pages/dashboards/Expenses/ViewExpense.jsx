@@ -218,7 +218,7 @@ export default function ViewExpense() {
             <div className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
               <div>
                 <p className="text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide">Expense Amount</p>
-                <p className="text-4xl font-black text-rose-600 font-mono tracking-tight">
+                <p className="text-4xl font-semibold text-rose-600 font-mono tracking-tight">
                   {formatPrice(expense.amount, expense.currency)}
                 </p>
               </div>

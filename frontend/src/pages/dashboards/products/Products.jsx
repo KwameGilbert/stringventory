@@ -9,6 +9,8 @@ import supplierService from "../../../services/supplierService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
 import { useAuth } from "../../../contexts/AuthContext";
 import { canManageCatalog } from "../../../utils/accessControl";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 
 const extractList = (response, key) => {
   const payload = response?.data || response || {};
@@ -141,6 +143,50 @@ export default function Products() {
     }
   };
 
+  const handleExportExcel = () => {
+    if (filteredProducts.length === 0) return;
+
+    const dataToExport = filteredProducts.map((p) => ({
+      Name: p.name,
+      Code: p.code,
+      SKU: p.sku,
+      Category: p.category,
+      Supplier: p.supplier,
+      "Cost Price": p.costPrice,
+      "Selling Price": p.sellingPrice,
+      "Current Stock": p.currentStock,
+      Status: p.status.toUpperCase(),
+    }));
+
+    exportToExcel(dataToExport, "stringventory_products", "Products");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredProducts.length === 0) return;
+
+    const tableData = {
+      headers: ["Product", "SKU", "Category", "Price", "Stock", "Status"],
+      rows: filteredProducts.map((p) => [
+        p.name,
+        p.sku || "—",
+        p.category,
+        p.sellingPrice.toFixed(2),
+        p.currentStock,
+        p.status.toUpperCase(),
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Inventory Products Report",
+        fileName: "stringventory_products",
+        table: tableData,
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
@@ -183,10 +229,12 @@ export default function Products() {
         categories={categories}
         totalProducts={products.length}
         canManage={canManage}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Products */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">

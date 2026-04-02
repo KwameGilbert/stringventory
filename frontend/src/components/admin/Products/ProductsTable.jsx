@@ -47,145 +47,213 @@ const ProductsTable = ({ products, onDelete, canManage = true }) => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">SKU</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Supplier</th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Cost</th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {paginatedProducts.map((product) => {
-              const isLowStock = product.currentStock <= product.reorderThreshold && product.currentStock > 0;
-              
-              return (
-                <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
-                  {/* Product with Image */}
-                  <td className="px-3 py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
-                        {product.image ? (
-                          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Image className="w-4 h-4 text-gray-400" />
+    <div className="space-y-4">
+      {/* Mobile Card View - Visible on small screens */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {paginatedProducts.map((product) => (
+          <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
+                {product.image ? (
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                ) : (
+                  <Image className="w-6 h-6 text-gray-400" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <Link 
+                      to={`/dashboard/products/${product.id}`}
+                      className="font-bold text-gray-900 hover:text-blue-600 transition-colors text-base block"
+                    >
+                      {product.name}
+                    </Link>
+                    <p className="text-xs text-gray-400 font-mono mt-0.5">{product.code}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-gray-900">{formatPrice(product.sellingPrice)}</p>
+                    <p className="text-xs text-gray-400">Cost: {formatPrice(product.costPrice)}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-2 font-medium">
+                  <span className="text-[11px] px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-100">
+                    {renderText(product.category, "Unknown")}
+                  </span>
+                  {product.status === 'inactive' ? (
+                    <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
+                      Inactive
+                    </span>
+                  ) : product.currentStock === 0 ? (
+                    <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-700">
+                      Out of Stock
+                    </span>
+                  ) : (
+                    <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
+                      {product.currentStock} in stock
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+              <div className="flex items-center gap-1">
+                <Link
+                  to={`/dashboard/products/${product.id}`}
+                  className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all border border-gray-100"
+                  title="View Details"
+                >
+                  <Eye size={18} />
+                </Link>
+                {canManage && (
+                  <Link
+                    to={`/dashboard/products/${product.id}/edit`}
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all border border-gray-100"
+                    title="Edit Product"
+                  >
+                    <Edit2 size={18} />
+                  </Link>
+                )}
+              </div>
+              {canManage && (
+                <button 
+                  onClick={() => onDelete && onDelete(product.id)}
+                  className="flex items-center gap-2 px-4 py-2.5 text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition-all text-sm font-semibold border border-rose-100"
+                >
+                  <Trash2 size={16} />
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table View - Visible on medium screens and up */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">SKU</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Supplier</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Cost</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {paginatedProducts.map((product) => {
+                const isLowStock = product.currentStock <= product.reorderThreshold && product.currentStock > 0;
+                
+                return (
+                  <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0 overflow-hidden">
+                          {product.image ? (
+                            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <Image className="w-4 h-4 text-gray-400" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <Link 
+                            to={`/dashboard/products/${product.id}`}
+                            className="font-medium text-gray-900 hover:text-blue-600 transition-colors text-sm block"
+                          >
+                            {product.name}
+                          </Link>
+                          <p className="text-xs text-gray-400 font-mono">{product.code}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className=" py-3">
+                      <span className="text-xs text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">{product.sku || "—"}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-gray-600">{renderText(product.category, "Unknown")}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-gray-600">{renderText(product.supplier)}</span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="text-sm text-gray-900 font-medium">
+                        {formatPrice(product.costPrice)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="text-sm text-gray-900 font-semibold">
+                        {formatPrice(product.sellingPrice)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        {isLowStock && <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />}
+                        <span className={`text-sm font-medium ${product.currentStock === 0 ? 'text-rose-600' : isLowStock ? 'text-amber-600' : 'text-gray-900'}`}>
+                          {product.currentStock}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {product.status === 'inactive' ? (
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+                          Inactive
+                        </span>
+                      ) : product.currentStock === 0 ? (
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-rose-100 text-rose-700">
+                          Out of Stock
+                        </span>
+                      ) : product.currentStock <= product.reorderThreshold ? (
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-amber-100 text-amber-700">
+                          Low Stock
+                        </span>
+                      ) : (
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                          In Stock
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link
+                          to={`/dashboard/products/${product.id}`}
+                          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                          title="View"
+                        >
+                          <Eye size={16} />
+                        </Link>
+                        {canManage && (
+                          <>
+                            <Link
+                              to={`/dashboard/products/${product.id}/edit`}
+                              className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                              title="Edit"
+                            >
+                              <Edit2 size={16} />
+                            </Link>
+                            <button 
+                              onClick={() => onDelete && onDelete(product.id)}
+                              className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </>
                         )}
                       </div>
-                      <div className="min-w-0">
-                        <Link 
-                          to={`/dashboard/products/${product.id}`}
-                          className="font-medium text-gray-900 hover:text-blue-600 transition-colors text-sm block"
-                        >
-                          {product.name}
-                        </Link>
-                        <p className="text-xs text-gray-400 font-mono">{product.code}</p>
-                      </div>
-                    </div>
-                  </td>
-                  
-                  {/* SKU */}
-                  <td className=" py-3">
-                    <span className="text-xs text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">{product.sku || "—"}</span>
-                  </td>
-                  
-                  {/* Category */}
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">{renderText(product.category, "Unknown")}</span>
-                  </td>
-                  
-                  {/* Supplier */}
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">{renderText(product.supplier)}</span>
-                  </td>
-                  
-                  {/* Cost Price */}
-                  <td className="px-4 py-3 text-right">
-                    <span className="text-sm text-gray-900 font-medium">
-                      {formatPrice(product.costPrice)}
-                    </span>
-                  </td>
-                  
-                  {/* Selling Price */}
-                  <td className="px-4 py-3 text-right">
-                    <span className="text-sm text-gray-900 font-semibold">
-                      {formatPrice(product.sellingPrice)}
-                    </span>
-                  </td>
-                  
-                  {/* Stock Level */}
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex items-center justify-center gap-1">
-                      {isLowStock && <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />}
-                      <span className={`text-sm font-medium ${product.currentStock === 0 ? 'text-rose-600' : isLowStock ? 'text-amber-600' : 'text-gray-900'}`}>
-                        {product.currentStock}
-                      </span>
-                    </div>
-                  </td>
-                  
-                  {/* Status */}
-                  <td className="px-4 py-3 text-center">
-                    {product.status === 'inactive' ? (
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-600">
-                        Inactive
-                      </span>
-                    ) : product.currentStock === 0 ? (
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-rose-100 text-rose-700">
-                        Out of Stock
-                      </span>
-                    ) : product.currentStock <= product.reorderThreshold ? (
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-amber-100 text-amber-700">
-                        Low Stock
-                      </span>
-                    ) : (
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                        In Stock
-                      </span>
-                    )}
-                  </td>
-                  
-                  {/* Actions - Always visible */}
-                  <td className="px-6 py-3 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <Link
-                        to={`/dashboard/products/${product.id}`}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-                        title="View"
-                      >
-                        <Eye size={16} />
-                      </Link>
-                      {canManage && (
-                        <>
-                          <Link
-                            to={`/dashboard/products/${product.id}/edit`}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-                            title="Edit"
-                          >
-                            <Edit2 size={16} />
-                          </Link>
-                          <button 
-                            onClick={() => onDelete && onDelete(product.id)}
-                            className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
       
       {/* Table Footer with Pagination */}
@@ -235,5 +303,3 @@ const ProductsTable = ({ products, onDelete, canManage = true }) => {
 };
 
 export default ProductsTable;
-
-
