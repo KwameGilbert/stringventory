@@ -9,6 +9,8 @@ const ProductsHeader = ({
   categories,
   totalProducts,
   canManage = true,
+  onExportExcel,
+  onExportPDF,
 }) => {
   return (
     <div className="space-y-4 mb-6 ">
@@ -19,21 +21,29 @@ const ProductsHeader = ({
           <p className="text-gray-500 text-sm">{totalProducts} products in inventory</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           {/* Export Buttons */}
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200">
-            <FileText size={15} className="text-emerald-600" />
-            Excel
-          </button>
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200">
-            <Download size={15} className="text-rose-600" />
-            PDF
-          </button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button 
+              onClick={onExportExcel}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200"
+            >
+              <FileText size={15} className="text-emerald-600" />
+              Excel
+            </button>
+            <button 
+              onClick={onExportPDF}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm border border-gray-200"
+            >
+              <Download size={15} className="text-rose-600" />
+              PDF
+            </button>
+          </div>
 
           {canManage && (
             <Link
               to="/dashboard/products/new"
-              className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm"
+              className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium text-sm"
             >
               <Plus size={16} />
               Add Product
@@ -43,16 +53,16 @@ const ProductsHeader = ({
       </div>
 
       {/* Search and Filter Row */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Search Input */}
-        <div className="flex-1 relative">
+        <div className="md:col-span-2 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search products..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all text-sm"
+            className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all text-sm"
           />
         </div>
 
@@ -62,7 +72,7 @@ const ProductsHeader = ({
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="pl-9 pr-8 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all text-sm bg-white min-w-40"
+            className="w-full pl-9 pr-8 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all text-sm bg-white min-w-40 appearance-none"
           >
             <option value="">All Categories</option>
             {categories.map((cat) => (
