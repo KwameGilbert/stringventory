@@ -625,7 +625,7 @@ export default function CreateOrder() {
                           </div>
                           <div className="text-right">
                              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Subtotal</p>
-                             <p className="text-sm font-black text-gray-900">{formatCurrency(item.quantity * item.unitPrice)}</p>
+                             <p className="text-sm font-semibold text-gray-900">{formatCurrency(item.quantity * item.unitPrice)}</p>
                           </div>
                         </div>
                       </div>
@@ -685,7 +685,7 @@ export default function CreateOrder() {
                             <td className="px-5 py-4 text-right text-sm font-medium text-gray-600">
                               {formatCurrency(item.unitPrice)}
                             </td>
-                            <td className="px-5 py-4 text-right text-sm font-black text-gray-900">
+                            <td className="px-5 py-4 text-right text-sm font-semibold text-gray-900">
                               {formatCurrency(item.quantity * item.unitPrice)}
                             </td>
                             <td className="px-5 py-4">

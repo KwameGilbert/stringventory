@@ -150,7 +150,7 @@ export default function ViewTransaction() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                     <h3 className="font-bold text-gray-900">Associated Activity</h3>
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${type.bg} ${type.color}`}>
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-widest ${type.bg} ${type.color}`}>
                         {type.label}
                     </span>
                 </div>

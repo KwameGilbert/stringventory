@@ -91,12 +91,13 @@ export default function Customers() {
     if (filteredCustomers.length === 0) return;
 
     const dataToExport = filteredCustomers.map((c) => ({
-      Name: c.name,
+      Name: c.name || "—",
       Email: c.email || "—",
       Phone: c.phone || "—",
-      Status: c.status.toUpperCase(),
-      "Total Orders": c.totalOrders,
-      "Total Spent": c.totalSpent,
+      Status: (c.status || "active").toUpperCase(),
+      "Total Orders": Number(c.totalOrders || 0),
+      "Total Spent": Number(c.totalSpent || 0).toFixed(2),
+      Currency: c.currency || responseCurrency,
       "Joined Date": c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-GB") : "—",
     }));
 
@@ -109,22 +110,27 @@ export default function Customers() {
     const tableData = {
       headers: ["Customer", "Email", "Phone", "Orders", "Spent"],
       rows: filteredCustomers.map((c) => [
-        c.name,
+        c.name || "—",
         c.email || "—",
         c.phone || "—",
-        c.totalOrders,
-        c.totalSpent.toFixed(2),
+        Number(c.totalOrders || 0),
+        `${c.currency || responseCurrency} ${Number(c.totalSpent || 0).toFixed(2)}`,
       ]),
     };
 
     try {
       await exportToPDF({
         title: "Customer Directory Report",
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredCustomers.length} customer(s)`,
         fileName: "stringventory_customers",
         table: tableData,
+        totals: [
+          { label: "Lifetime Revenue (Group)", value: formatCurrency(totalRevenue), bold: true, color: 'emerald' },
+        ]
       });
     } catch (error) {
-      showError("Failed to generate PDF");
+      console.error("PDF Export Error:", error);
+      showError("Failed to generate PDF report");
     }
   };
 

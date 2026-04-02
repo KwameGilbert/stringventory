@@ -114,191 +114,230 @@ export default function ViewRefund() {
   const StatusIcon = status.icon;
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 animate-fade-in">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate("/dashboard/refunds")}
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-6 group"
-      >
-        <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
-          <ArrowLeft size={18} />
-        </div>
-        <span className="font-medium">Back to Refunds</span>
-      </button>
+    <div className="max-w-6xl mx-auto pb-12 animate-fade-in px-4 sm:px-6">
+      {/* Navigation & Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <button
+          onClick={() => navigate("/dashboard/refunds")}
+          className="flex items-center gap-3 text-gray-500 hover:text-gray-900 transition-all group w-fit"
+        >
+          <div className="p-2.5 rounded-xl bg-white border border-gray-200 shadow-xs group-hover:border-gray-300 transition-all group-hover:-translate-x-1">
+            <ArrowLeft size={18} />
+          </div>
+          <span className="text-xs uppercase font-semibold tracking-widest">Back to Refunds</span>
+        </button>
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-             #{refund.id} Refund Request
-             <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${status.bg} ${status.text}`}>
-                <StatusIcon size={14} className={refund.refundStatus === 'pending' ? 'animate-spin' : ''} />
-                {status.label}
-             </span>
-          </h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Submitted on {formatDate(refund.createdAt)} for Order{" "}
-            <span className="font-semibold text-gray-900">{refund.order?.orderNumber || `#${refund.orderId}`}</span>
-          </p>
-        </div>
-        
         {refund.refundStatus === 'pending' && (
-           <div className="flex items-center gap-2">
+           <div className="flex items-center gap-3 w-full md:w-auto">
               <button 
                 onClick={() => handleStatusUpdate('rejected')}
                 disabled={isUpdating}
-                className="px-4 py-2 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-sm flex items-center gap-2"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 border-2 border-rose-100 text-rose-600 hover:bg-rose-50 rounded-2xl transition-all font-semibold text-xs uppercase tracking-widest active:scale-95"
               >
-                <XCircle size={16} />
+                <XCircle size={18} />
                 Reject
               </button>
               <button 
                 onClick={() => handleStatusUpdate('completed')}
                 disabled={isUpdating}
-                className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-colors font-medium text-sm flex items-center gap-2 shadow-sm"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white hover:bg-emerald-700 rounded-2xl transition-all font-semibold text-xs uppercase tracking-widest shadow-lg shadow-emerald-600/20 active:scale-95"
               >
-                <CheckCircle size={16} />
-                Approve & Complete
+                <CheckCircle size={18} />
+                Approve & Refund
               </button>
            </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Items and Details */}
-        <div className="lg:col-span-2 space-y-6">
-           {/* Items Table */}
-           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                    <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                        <Package className="w-4 h-4 text-gray-500" />
-                        Refunded Items
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Main Content: Refund Details */}
+        <div className="lg:col-span-8 space-y-8">
+            {/* Header Card */}
+            <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
+                    <StatusIcon size={120} />
+                </div>
+                
+                <div className="relative z-10 space-y-4">
+                    <div className="flex flex-wrap items-center gap-3">
+                        <span className="font-mono text-xs font-bold text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                            REF-{refund.id}
+                        </span>
+                        <span className={`inline-flex items-center gap-1.5 px-4 py-1 rounded-full text-[10px] font-semibold uppercase tracking-widest ${status.bg} ${status.text} border-2 border-transparent shadow-sm`}>
+                            <StatusIcon size={14} className={refund.refundStatus === 'pending' ? 'animate-spin' : ''} />
+                            {status.label}
+                        </span>
+                    </div>
+
+                    <h1 className="text-4xl font-semibold text-gray-900 tracking-tighter leading-none">
+                        Refund Request
+                    </h1>
+                    
+                    <p className="text-gray-500 font-medium max-w-md">
+                        Requested for order <Link to={`/dashboard/orders/${refund.orderId}`} className="text-blue-600 font-bold hover:underline">#{refund.order?.orderNumber || refund.orderId}</Link> on {formatDate(refund.createdAt)}
+                    </p>
+                </div>
+            </div>
+
+            {/* Items Section */}
+            <div className="bg-white rounded-4xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="px-8 py-6 border-b border-gray-100 bg-gray-50/30 flex justify-between items-center">
+                    <h3 className="text-[10px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
+                        <Package className="w-4 h-4" />
+                        Returned Items
                     </h3>
                 </div>
                 <div className="divide-y divide-gray-100">
                     {refund.items && refund.items.map((item, idx) => (
-                      <div key={idx} className="p-4 flex items-center justify-between">
-                            <div>
-                                <p className="font-medium text-gray-900">
+                      <div key={idx} className="p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50/50 transition-colors">
+                            <div className="space-y-1">
+                                <p className="text-lg font-bold text-gray-900 tracking-tight">
                                     {(() => {
                                         const orderItem = order?.items?.find(oi => String(oi.id) === String(item.orderItemId));
-                                        const productName = item.productName || orderItem?.product?.name || orderItem?.name;
-                                        return productName ? `${productName} (Item #${item.orderItemId})` : `Item #${item.orderItemId}`;
+                                        return item.productName || orderItem?.product?.name || orderItem?.name || `Product #${item.orderItemId}`;
                                     })()}
                                 </p>
-                                <p className="text-sm text-gray-500">
-                                    Quantity: <span className="font-medium text-gray-900">{item.quantity}</span>
-                                </p>
+                                <div className="flex items-center gap-3">
+                                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">
+                                        Quantity: <span className="text-gray-900">{item.quantity}</span>
+                                    </p>
+                                    <div className="w-1 h-1 rounded-full bg-gray-300"></div>
+                                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">
+                                        Ref: <span className="text-gray-900 font-mono">#{item.orderItemId}</span>
+                                    </p>
+                                </div>
                             </div>
-                            <div className="text-right">
+                            <div className="flex sm:flex-col items-center sm:items-end gap-2">
                                 {item.restock && (
-                                    <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mb-1 block">To be Restocked</span>
+                                    <span className="text-[9px] bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full font-semibold uppercase tracking-widest border border-emerald-100 shadow-xs">Restock Active</span>
                                 )}
                             </div>
                         </div>
                     ))}
                 </div>
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                    <span className="font-semibold text-gray-900">Total Refund Amount</span>
-                    <span className="text-xl font-bold text-rose-600">{formatPrice(refund.refundAmount, refund.currency)}</span>
-                </div>
-           </div>
-
-           {/* Reason & Notes */}
-           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-gray-500" />
-                    Refund Analysis
-                </h3>
-                <div className="space-y-4">
+                <div className="px-8 py-8 bg-rose-50/30 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Reason</label>
-                        <p className="text-gray-700 capitalize mt-1">{refund.refundType} - {refund.reason?.replace(/_/g, ' ')}</p>
+                        <p className="text-[10px] uppercase font-semibold text-rose-400 tracking-widest mb-1">Total Refund Value</p>
+                        <p className="text-4xl font-semibold text-rose-600 tracking-tighter">{formatPrice(refund.refundAmount, refund.currency)}</p>
                     </div>
-                    {refund.notes && (
-                        <div>
-                            <label className="text-xs text-gray-400 font-bold uppercase tracking-wider">Notes</label>
-                            <p className="text-gray-600 text-sm mt-1 italic">"{refund.notes}"</p>
-                        </div>
-                    )}
-                </div>
-           </div>
-        </div>
-
-        {/* Right: Meta Info */}
-        <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-                    <h3 className="font-semibold text-gray-900">Origin Sale</h3>
-                </div>
-                <div className="p-5 space-y-4">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-gray-100">
-                            <Hash className="w-4 h-4 text-gray-500" />
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-400">Order Number</p>
-                            <Link to={`/dashboard/orders/${refund.orderId}`} className="font-medium text-blue-600 hover:underline">
-                                {refund.order?.orderNumber || `#${refund.orderId}`}
-                            </Link>
-                        </div>
+                    <div className="px-4 py-2 bg-white rounded-2xl border border-rose-100 shadow-xs">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Currency: <span className="text-gray-900">{refund.currency}</span></p>
                     </div>
-                    {/* Customer Info Card */}
-                    <div className="pt-4 border-t border-gray-100">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2 rounded-lg bg-blue-50">
-                                <User className="w-4 h-4 text-blue-600" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-semibold text-gray-900">Customer Details</p>
-                            </div>
-                        </div>
-                        <div className="space-y-3">
-                            <div>
-                                <p className="text-xs text-gray-400">Name</p>
-                                <p className="text-sm font-medium text-gray-900">
-                                    {refund.customer?.firstName} {refund.customer?.lastName}
-                                    {refund.customer?.businessName && ` (${refund.businessName || refund.customer?.businessName})`}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400">Email</p>
-                                <p className="text-sm text-gray-600">{refund.customer?.email || "N/A"}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400">Phone</p>
-                                <p className="text-sm text-gray-600">{refund.customer?.phone || "N/A"}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
-                        <div className="p-2 rounded-lg bg-gray-100">
-                            <Calendar className="w-4 h-4 text-gray-500" />
-                        </div>
-                        <div>
-                            <p className="text-xs text-gray-400">Refund Created</p>
-                            <p className="font-medium text-gray-900">{formatDate(refund.createdAt)}</p>
-                        </div>
-                    </div>
-                    {refund.processedBy && (
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-gray-100">
-                                <User className="w-4 h-4 text-gray-500" />
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-400">Processed By</p>
-                                <p className="font-medium text-gray-900">{refund.processedBy}</p>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
 
-            <div className="bg-amber-50 rounded-xl p-4 border border-amber-100 border-dashed">
-                <div className="flex gap-3">
-                    <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-                    <p className="text-xs text-amber-700 leading-relaxed">
-                        Approving this refund will mark it as <span className="font-bold">Completed</span> and automatically restock items. This action will be recorded in the financial logs.
-                    </p>
+            {/* Analysis Section */}
+            <div className="bg-white rounded-4xl shadow-sm border border-gray-100 p-8 space-y-6">
+                <h3 className="text-[10px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    Internal Analysis
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest block">Reason for Request</label>
+                        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <p className="text-sm font-bold text-gray-900 capitalize tracking-tight">
+                                {refund.refundType} Process - {refund.reason?.replace(/_/g, ' ') || 'standard_payout'}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest block">System Notes</label>
+                        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 italic">
+                            <p className="text-sm text-gray-600 font-medium">
+                                {refund.notes ? `"${refund.notes}"` : "No special notes provided for this transaction."}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {/* Sidebar: Meta Context */}
+        <div className="lg:col-span-4 space-y-6">
+            {/* Origin Sale Card */}
+            <div className="bg-gray-900 rounded-4xl shadow-xl shadow-gray-900/10 overflow-hidden border border-gray-800">
+                <div className="px-6 py-5 border-b border-gray-800 bg-gray-800/30">
+                    <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest flex items-center gap-2">
+                        <Hash size={14} />
+                        Origin Transaction
+                    </h3>
+                </div>
+                <div className="p-6 space-y-6">
+                    <div className="flex items-center gap-4 group">
+                        <div className="p-3 rounded-2xl bg-gray-800 text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                            <Hash className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] uppercase font-bold text-gray-600 tracking-widest">Sale Reference</p>
+                            <Link to={`/dashboard/orders/${refund.orderId}`} className="text-lg font-semibold text-white hover:text-blue-400 transition-colors tracking-tight">
+                                {refund.order?.orderNumber || `SAL-${refund.orderId}`}
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Customer Info */}
+                    <div className="pt-6 border-t border-gray-800 space-y-4">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-2xl bg-gray-800 text-gray-400">
+                                <User className="w-5 h-5" />
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-[10px] uppercase font-bold text-gray-600 tracking-widest leading-none mb-1">Customer Profile</p>
+                                <p className="text-lg font-semibold text-white tracking-tight truncate">
+                                    {refund.customer?.firstName} {refund.customer?.lastName}
+                                </p>
+                                <p className="text-[11px] font-bold text-gray-500 tracking-tight truncate group-hover:text-gray-300">
+                                    {refund.customer?.businessName}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-2 pt-2">
+                            <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                <span className="p-1 rounded bg-gray-800"><Calendar size={10} /></span>
+                                Registered: {refund.customer?.createdAt ? new Date(refund.customer.createdAt).getFullYear() : 'N/A'}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Meta Dates */}
+                    <div className="pt-6 border-t border-gray-800 space-y-4">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-2xl bg-gray-800 text-gray-400">
+                                <Calendar className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] uppercase font-bold text-gray-600 tracking-widest">Submitted Date</p>
+                                <p className="text-sm font-semibold text-white tracking-tight">{formatDate(refund.createdAt)}</p>
+                            </div>
+                        </div>
+                        
+                        {refund.processedBy && (
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-gray-800 text-gray-400">
+                                    <User className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] uppercase font-bold text-gray-600 tracking-widest">Admin Handler</p>
+                                    <p className="text-sm font-semibold text-white tracking-tight">{refund.processedBy}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Context Warning */}
+            <div className="bg-amber-50 rounded-3xl p-6 border border-amber-200 shadow-sm shadow-amber-900/5">
+                <div className="flex gap-4">
+                    <AlertCircle className="w-6 h-6 text-amber-600 shrink-0" />
+                    <div>
+                        <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-widest mb-1">Impact Warning</p>
+                        <p className="text-[11px] text-amber-800 font-bold leading-relaxed tracking-tight">
+                            Approving this record will finalize the <span className="border-b-2 border-amber-300">financial reversal</span> and notify the customer. This action is recorded permanently.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

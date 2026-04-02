@@ -93,12 +93,13 @@ export default function Expenses() {
     if (filteredExpenses.length === 0) return;
 
     const dataToExport = filteredExpenses.map((e) => ({
-      Date: new Date(e.date).toLocaleDateString("en-GB"),
-      Name: e.name,
-      Category: e.categoryName,
-      Amount: e.amount,
+      Date: e.date ? new Date(e.date).toLocaleDateString("en-GB") : "—",
+      Name: e.name || "—",
+      Category: e.categoryName || "Uncategorized",
+      Amount: Number(e.amount || 0).toFixed(2),
+      Currency: e.currency || "GHS",
       Method: e.paymentMethod || "—",
-      "Created By": e.createdBy,
+      "Created By": e.createdBy || "System",
       Notes: e.notes || "—",
     }));
 
@@ -111,10 +112,10 @@ export default function Expenses() {
     const tableData = {
       headers: ["Date", "Expense", "Category", "Amount", "Method"],
       rows: filteredExpenses.map((e) => [
-        new Date(e.date).toLocaleDateString("en-GB"),
-        e.name,
-        e.categoryName,
-        formatPrice(e.amount),
+        e.date ? new Date(e.date).toLocaleDateString("en-GB") : "—",
+        e.name || "—",
+        e.categoryName || "—",
+        `${e.currency || "GHS"} ${Number(e.amount || 0).toFixed(2)}`,
         e.paymentMethod || "—",
       ]),
     };
@@ -122,15 +123,17 @@ export default function Expenses() {
     try {
       await exportToPDF({
         title: "Company Expense Report",
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredExpenses.length} expense(s)`,
         fileName: "stringventory_expenses",
         table: tableData,
         totals: [
-          { label: "Total Expenditure", value: formatPrice(totalExpenses) },
-          { label: "Recurring Total", value: formatPrice(recurringExpenses) },
+          { label: "Total Expenditure", value: formatPrice(totalExpenses), bold: true },
+          { label: "Recurring Total", value: formatPrice(recurringExpenses), color: 'emerald' },
         ],
       });
     } catch (error) {
-      showError("Failed to generate PDF");
+      console.error("PDF Export Error:", error);
+      showError("Failed to generate PDF report");
     }
   };
 

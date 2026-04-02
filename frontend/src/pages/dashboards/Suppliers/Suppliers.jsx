@@ -88,13 +88,13 @@ export default function Suppliers() {
     if (filteredSuppliers.length === 0) return;
 
     const dataToExport = filteredSuppliers.map((s) => ({
-      Name: s.name,
-      "Contact Person": s.contactPerson,
-      Email: s.email,
-      Phone: s.phone,
-      Address: s.address,
-      "Products Count": s.productsCount,
-      Status: s.status,
+      Name: s.name || "—",
+      "Contact Person": s.contactPerson || "—",
+      Email: s.email || "—",
+      Phone: s.phone || "—",
+      Address: s.address || "—",
+      "Products Count": Number(s.productsCount || 0),
+      Status: (s.status || "Active").toUpperCase(),
     }));
 
     exportToExcel(dataToExport, "stringventory_suppliers", "Suppliers");
@@ -106,22 +106,29 @@ export default function Suppliers() {
     const tableData = {
       headers: ["Supplier", "Contact", "Email", "Phone", "Status"],
       rows: filteredSuppliers.map((s) => [
-        s.name,
-        s.contactPerson,
-        s.email,
-        s.phone,
-        s.status,
+        s.name || "—",
+        s.contactPerson || "—",
+        s.email || "—",
+        s.phone || "—",
+        (s.status || "Active").toUpperCase(),
       ]),
     };
 
     try {
+      const totalProductsCount = filteredSuppliers.reduce((sum, s) => sum + Number(s.productsCount || 0), 0);
+
       await exportToPDF({
         title: "Supplier Directory Report",
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredSuppliers.length} supplier(s)`,
         fileName: "stringventory_suppliers",
         table: tableData,
+        totals: [
+          { label: "Total Managed Products", value: totalProductsCount.toLocaleString(), bold: true, color: 'emerald' },
+        ]
       });
     } catch (error) {
-      showError("Failed to generate PDF");
+      console.error("PDF Export Error:", error);
+      showError("Failed to generate PDF report");
     }
   };
 

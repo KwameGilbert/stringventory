@@ -196,15 +196,16 @@ export default function Inventory() {
     if (filteredInventory.length === 0) return;
 
     const dataToExport = filteredInventory.map((item) => ({
-      Product: item.productName,
-      Batch: item.batchNumber,
-      Category: item.category,
-      Supplier: item.supplier,
-      "Unit Cost": item.unitCost,
-      Quantity: item.quantity,
-      "Total Value": item.totalValue,
-      "Entry Date": new Date(item.entryDate).toLocaleDateString("en-GB"),
+      Product: item.productName || "—",
+      Batch: item.batchNumber || "—",
+      Category: item.category || "Uncategorized",
+      Supplier: item.supplier || "—",
+      "Unit Cost": Number(item.unitCost || 0).toFixed(2),
+      Quantity: Number(item.quantity || 0),
+      "Total Value": Number(item.totalValue || 0).toFixed(2),
+      "Entry Date": item.entryDate ? new Date(item.entryDate).toLocaleDateString("en-GB") : "—",
       "Expiry Date": item.expiryDate ? new Date(item.expiryDate).toLocaleDateString("en-GB") : "—",
+      Currency: item.currency || responseCurrency,
     }));
 
     exportToExcel(dataToExport, "stringventory_inventory", "Inventory");
@@ -216,11 +217,11 @@ export default function Inventory() {
     const tableData = {
       headers: ["Product", "Batch", "Category", "Qty", "Value", "Expiry"],
       rows: filteredInventory.map((item) => [
-        item.productName,
-        item.batchNumber,
-        item.category,
-        item.quantity,
-        item.totalValue.toFixed(2),
+        item.productName || "—",
+        item.batchNumber || "—",
+        item.category || "—",
+        Number(item.quantity || 0),
+        `${item.currency || responseCurrency} ${Number(item.totalValue || 0).toFixed(2)}`,
         item.expiryDate ? new Date(item.expiryDate).toLocaleDateString("en-GB") : "—",
       ]),
     };
@@ -228,11 +229,17 @@ export default function Inventory() {
     try {
       await exportToPDF({
         title: "Stock Intake Inventory Report",
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredInventory.length} record(s)`,
         fileName: "stringventory_inventory",
         table: tableData,
+        totals: [
+          { label: "Total Units in Stock", value: totalUnits.toLocaleString(), bold: true },
+          { label: "Total Inventory Value", value: formatCurrency(totalValue), bold: true, color: 'emerald' },
+        ]
       });
     } catch (error) {
-      showError("Failed to generate PDF");
+      console.error("PDF Export Error:", error);
+      showError("Failed to generate PDF report");
     }
   };
 
@@ -276,7 +283,7 @@ export default function Inventory() {
             </div>
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Batches</p>
-              <p className="text-2xl font-black text-gray-900">{totalEntries}</p>
+              <p className="text-2xl font-semibold text-gray-900">{totalEntries}</p>
             </div>
           </div>
         </div>
@@ -289,7 +296,7 @@ export default function Inventory() {
             </div>
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Stock</p>
-              <p className="text-2xl font-black text-gray-900">{totalUnits.toLocaleString()}</p>
+              <p className="text-2xl font-semibold text-gray-900">{totalUnits.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -302,7 +309,7 @@ export default function Inventory() {
             </div>
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Value</p>
-              <p className="text-2xl font-black text-gray-900">{formatCurrency(totalValue)}</p>
+              <p className="text-2xl font-semibold text-gray-900">{formatCurrency(totalValue)}</p>
             </div>
           </div>
         </div>
@@ -315,7 +322,7 @@ export default function Inventory() {
             </div>
             <div>
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Expiring Soon</p>
-              <p className="text-2xl font-black text-gray-900">{expiringCount} <span className="text-xs font-bold text-gray-400 italic">batches</span></p>
+              <p className="text-2xl font-semibold text-gray-900">{expiringCount} <span className="text-xs font-bold text-gray-400 italic">batches</span></p>
             </div>
           </div>
         </div>

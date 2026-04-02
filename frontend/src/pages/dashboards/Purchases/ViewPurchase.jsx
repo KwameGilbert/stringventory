@@ -419,8 +419,8 @@ export default function ViewPurchase() {
                             <span className="font-semibold text-gray-900">{formatPrice(purchase.shippingCost)}</span>
                         </div>
                         <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-                            <span className="text-base font-black text-gray-900 uppercase tracking-tight">Total Payable</span>
-                            <span className="text-xl font-black text-emerald-600">{formatPrice(purchase.totalAmount)}</span>
+                            <span className="text-base font-semibold text-gray-900 uppercase tracking-tight">Total Payable</span>
+                            <span className="text-xl font-semibold text-emerald-600">{formatPrice(purchase.totalAmount)}</span>
                         </div>
                     </div>
                 </div>

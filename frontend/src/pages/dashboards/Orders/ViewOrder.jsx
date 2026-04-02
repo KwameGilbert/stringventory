@@ -308,7 +308,7 @@ export default function ViewOrder() {
         <div className="p-2 rounded-xl bg-white border border-gray-200 shadow-xs group-hover:border-gray-300 transition-all group-hover:-translate-x-1">
           <ArrowLeft size={18} />
         </div>
-        <span className="text-xs uppercase font-black tracking-widest">Back to Sales</span>
+        <span className="text-xs uppercase font-semibold tracking-widest">Back to Sales</span>
       </button>
 
       {/* Header Section */}
@@ -319,8 +319,8 @@ export default function ViewOrder() {
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-black text-gray-900 font-mono tracking-tighter">{order.displayRef || order.id}</h1>
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${status.bg} ${status.text} border-2 ${status.border}`}>
+              <h1 className="text-2xl font-semibold text-gray-900 font-mono tracking-tighter">{order.displayRef || order.id}</h1>
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-widest ${status.bg} ${status.text} border-2 ${status.border}`}>
                 <StatusIcon size={12} />
                 {status.label}
               </span>
@@ -387,7 +387,7 @@ export default function ViewOrder() {
                   <Package className="w-6 h-6 text-gray-400" />
                 </div>
                 <div>
-                    <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Sale Items</h3>
+                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest">Sale Items</h3>
                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{items.length} unique products</p>
                 </div>
               </div>
@@ -409,12 +409,12 @@ export default function ViewOrder() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-base font-black text-gray-900 truncate tracking-tight">{item.productName || "Product"}</p>
+                      <p className="text-base font-semibold text-gray-900 truncate tracking-tight">{item.productName || "Product"}</p>
                       <div className="flex flex-col gap-3 mt-2">
                         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                            <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Ordered: <span className="text-gray-700">{item.quantity}</span></p>
+                            <p className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Ordered: <span className="text-gray-700">{item.quantity}</span></p>
                             {item.fulfilledQuantity > 0 && (
-                              <p className="text-[10px] uppercase font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 tracking-widest">Fulfilled: {item.fulfilledQuantity}</p>
+                              <p className="text-[10px] uppercase font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 tracking-widest">Fulfilled: {item.fulfilledQuantity}</p>
                             )}
                         </div>
                         
@@ -423,23 +423,23 @@ export default function ViewOrder() {
                                 <button 
                                   onClick={() => handleUpdatePicked(index, -1)}
                                   disabled={isSaving || picked <= 0}
-                                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-black disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
+                                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
                                 >
                                   -
                                 </button>
-                                <div className="w-10 text-center text-lg font-black text-blue-600 font-mono">
+                                <div className="w-10 text-center text-lg font-semibold text-blue-600 font-mono">
                                     {picked}
                                 </div>
                                 <button 
                                   onClick={() => handleUpdatePicked(index, 1)}
                                   disabled={isSaving || picked >= item.remainingQuantity}
-                                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-black disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
+                                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
                                 >
                                   +
                                 </button>
                             </div>
                             {item.remainingQuantity > 0 && picked === 0 && (
-                              <span className="text-[10px] text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 font-black uppercase tracking-widest">
+                              <span className="text-[10px] text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 font-semibold uppercase tracking-widest">
                                 {item.remainingQuantity} PENDING
                               </span>
                             )}
@@ -447,8 +447,8 @@ export default function ViewOrder() {
                       </div>
                     </div>
                     <div className="w-full sm:w-auto flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 border-t sm:border-t-0 border-gray-50 pt-4 sm:pt-0">
-                      <p className="text-lg font-black text-gray-900 tracking-tight">{formatPrice(item.subtotal, order.currency)}</p>
-                      {isFullyPicked && <span className="text-[10px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md">Fulfilled</span>}
+                      <p className="text-lg font-semibold text-gray-900 tracking-tight">{formatPrice(item.subtotal, order.currency)}</p>
+                      {isFullyPicked && <span className="text-[10px] text-emerald-600 font-semibold uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md">Fulfilled</span>}
                     </div>
                   </div>
                 );
@@ -467,7 +467,7 @@ export default function ViewOrder() {
                     <Percent size={14} className="text-emerald-500" />
                     DISCOUNT
                   </span>
-                  <span className="font-black text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
+                  <span className="font-semibold text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
                 </div>
               )}
               <div className="flex justify-between items-center text-sm">
@@ -476,8 +476,8 @@ export default function ViewOrder() {
               </div>
               <div className="pt-6 mt-2 border-t-2 border-dashed border-gray-200">
                 <div className="flex justify-between items-center">
-                    <span className="text-xs uppercase font-black text-gray-900 tracking-widest">Grand Total</span>
-                    <span className="text-3xl font-black text-gray-900 tracking-tighter">{formatPrice(order.total, order.currency)}</span>
+                    <span className="text-xs uppercase font-semibold text-gray-900 tracking-widest">Grand Total</span>
+                    <span className="text-3xl font-semibold text-gray-900 tracking-tighter">{formatPrice(order.total, order.currency)}</span>
                 </div>
               </div>
             </div>
@@ -489,15 +489,15 @@ export default function ViewOrder() {
           {/* Customer Group */}
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
-              <h3 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Customer Information</h3>
+              <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Customer Information</h3>
             </div>
             <div className="p-6 space-y-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-sm font-black shadow-lg shadow-blue-500/20">
+                <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-sm font-semibold shadow-lg shadow-blue-500/20">
                   {order.customer.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <p className="text-base font-black text-gray-900 leading-tight tracking-tight">{order.customer.name}</p>
+                  <p className="text-base font-semibold text-gray-900 leading-tight tracking-tight">{order.customer.name}</p>
                 </div>
               </div>
 
@@ -521,7 +521,7 @@ export default function ViewOrder() {
           {/* Payment Group */}
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
-              <h3 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Payment Data</h3>
+              <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Payment Data</h3>
             </div>
             <div className="p-6 space-y-6">
               <div className="flex items-center gap-4">
@@ -530,7 +530,7 @@ export default function ViewOrder() {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Method</p>
-                  <p className="font-black text-gray-900 uppercase text-xs tracking-wider">{order.paymentMethod.replace('_', ' ')}</p>
+                  <p className="font-semibold text-gray-900 uppercase text-xs tracking-wider">{order.paymentMethod.replace('_', ' ')}</p>
                 </div>
               </div>
 
@@ -540,7 +540,7 @@ export default function ViewOrder() {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Total Paid</p>
-                  <p className="font-black text-gray-900 text-2xl tracking-tighter">{formatPrice(order.amountPaid || order.total, order.currency)}</p>
+                  <p className="font-semibold text-gray-900 text-2xl tracking-tighter">{formatPrice(order.amountPaid || order.total, order.currency)}</p>
                 </div>
               </div>
             </div>
@@ -549,7 +549,7 @@ export default function ViewOrder() {
           {/* Details Group */}
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
-              <h3 className="text-[10px] uppercase font-black text-gray-400 tracking-widest">Metadata</h3>
+              <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Metadata</h3>
             </div>
             <div className="p-6 space-y-5">
               <div className="flex items-start gap-4">
@@ -568,7 +568,7 @@ export default function ViewOrder() {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Creation Date</p>
-                  <p className="text-sm font-black text-gray-900">{formatDate(order.orderDate)}</p>
+                  <p className="text-sm font-semibold text-gray-900">{formatDate(order.orderDate)}</p>
                   <p className="text-xs text-gray-400 font-bold">{formatTime(order.orderDate)}</p>
                 </div>
               </div>
@@ -581,34 +581,34 @@ export default function ViewOrder() {
       <div className="hidden print:block print-payment-summary">
         <div className="border-2 border-gray-200 rounded-2xl p-8">
           <div className="text-center mb-8">
-             <h2 className="text-2xl font-black uppercase tracking-tighter">SALE RECEIPT</h2>
+             <h2 className="text-2xl font-semibold uppercase tracking-tighter">SALE RECEIPT</h2>
              <p className="text-sm font-mono text-gray-500 mt-1">REF: {order.displayRef || order.id}</p>
           </div>
 
           <div className="space-y-3 text-sm mb-6 pb-6 border-b border-gray-100">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Date</span>
+              <span className="text-[10px] font-semibold uppercase text-gray-400 tracking-widest">Date</span>
               <span className="font-bold text-gray-900 text-right">{formatDate(order.orderDate)} {formatTime(order.orderDate)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Customer</span>
+              <span className="text-[10px] font-semibold uppercase text-gray-400 tracking-widest">Customer</span>
               <span className="font-bold text-gray-900 text-right">{order.customer.name}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Payment Method</span>
+              <span className="text-[10px] font-semibold uppercase text-gray-400 tracking-widest">Payment Method</span>
               <span className="font-bold text-gray-900 uppercase text-right">{order.paymentMethod.replace('_', ' ')}</span>
             </div>
           </div>
 
           <div className="space-y-4 mb-6">
-            <div className="flex justify-between text-[10px] font-black uppercase text-gray-400 tracking-widest pb-2 border-b border-gray-50">
+            <div className="flex justify-between text-[10px] font-semibold uppercase text-gray-400 tracking-widest pb-2 border-b border-gray-50">
               <span>Item Description</span>
               <span>Total</span>
             </div>
             {items.map((item, idx) => (
               <div key={idx} className="flex justify-between text-sm">
                 <span className="font-bold text-gray-800">{item.productName} (x{item.quantity})</span>
-                <span className="font-black text-gray-900">{formatPrice(item.subtotal, order.currency)}</span>
+                <span className="font-semibold text-gray-900">{formatPrice(item.subtotal, order.currency)}</span>
               </div>
             ))}
           </div>
@@ -624,13 +624,13 @@ export default function ViewOrder() {
                 <span className="font-bold text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
               </div>
             )}
-            <div className="flex justify-between text-lg font-black pt-4 mt-2 border-t border-gray-50">
+            <div className="flex justify-between text-lg font-semibold pt-4 mt-2 border-t border-gray-50">
               <span className="uppercase tracking-widest text-xs">Total Amount</span>
               <span className="text-2xl tracking-tighter">{formatPrice(order.total, order.currency)}</span>
             </div>
           </div>
 
-          <div className="text-center mt-12 text-[10px] font-black uppercase text-gray-400 tracking-widest">
+          <div className="text-center mt-12 text-[10px] font-semibold uppercase text-gray-400 tracking-widest">
             Thank you for shopping with us!
           </div>
         </div>

@@ -141,7 +141,7 @@ export default function Orders() {
       Status: (o.status || "pending").toUpperCase(),
       Items: Number(o.itemCount || 0),
       Total: Number(o.total || 0).toFixed(2),
-      "Currency": o.currency || responseCurrency,
+      Currency: o.currency || responseCurrency,
       "Payment Method": (o.paymentMethod || "—").toUpperCase(),
     }));
 
@@ -165,9 +165,12 @@ export default function Orders() {
     try {
       await exportToPDF({
         title: "Sales Transaction Report",
-        subtitle: `Generated for ${filteredOrders.length} records`,
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredOrders.length} record(s)`,
         fileName: "stringventory_sales",
         table: tableData,
+        totals: [
+          { label: "Total Revenue (Estimated)", value: formatPrice(totalRevenue, responseCurrency), bold: true, color: 'emerald' },
+        ]
       });
     } catch (error) {
       console.error("PDF Export Error:", error);
@@ -231,7 +234,7 @@ export default function Orders() {
             </div>
             <div>
               <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Total Sales</p>
-              <p className="text-2xl font-black text-gray-900 tracking-tight">{totalOrders}</p>
+              <p className="text-2xl font-semibold text-gray-900 tracking-tight">{totalOrders}</p>
             </div>
           </div>
         </div>
@@ -244,7 +247,7 @@ export default function Orders() {
             </div>
             <div className="min-w-0">
               <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Total Revenue</p>
-              <p className="text-2xl font-black text-gray-900 tracking-tight truncate">
+              <p className="text-2xl font-semibold text-gray-900 tracking-tight truncate">
                 {formatPrice(totalRevenue, responseCurrency)}
               </p>
             </div>
@@ -259,7 +262,7 @@ export default function Orders() {
             </div>
             <div>
               <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Pending</p>
-              <p className="text-2xl font-black text-gray-900 tracking-tight">{pendingOrders}</p>
+              <p className="text-2xl font-semibold text-gray-900 tracking-tight">{pendingOrders}</p>
             </div>
           </div>
         </div>
@@ -272,7 +275,7 @@ export default function Orders() {
             </div>
             <div>
               <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Completed</p>
-              <p className="text-2xl font-black text-gray-900 tracking-tight">{completedOrders}</p>
+              <p className="text-2xl font-semibold text-gray-900 tracking-tight">{completedOrders}</p>
             </div>
           </div>
         </div>
