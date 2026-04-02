@@ -5,8 +5,8 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-4 px-6 ml-64 z-30">
-      <div className="flex items-center justify-between text-sm text-gray-600">
+    <footer className="bg-white border-t border-gray-200 py-6 px-6 mt-auto">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 text-center sm:text-left">
         {/* Copyright */}
         <div>
           <p>© {currentYear} StringVentory. All rights reserved.</p>

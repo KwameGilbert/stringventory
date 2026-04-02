@@ -8,6 +8,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { canManageCatalog } from "../../../utils/accessControl";
 import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
 import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 
 const extractCategories = (response) => {
   const payload = response?.data || response || {};
@@ -128,6 +129,31 @@ export default function Categories() {
     exportToExcel(dataToExport, "stringventory_categories", "Categories");
   };
 
+  const handleExportPDF = async () => {
+    if (categories.length === 0) return;
+
+    const tableData = {
+      headers: ["ID", "Name", "Description", "Status", "Products"],
+      rows: categories.map(cat => [
+        cat.id,
+        cat.name,
+        cat.description || "N/A",
+        cat.status.toUpperCase(),
+        cat.productsCount
+      ])
+    };
+
+    try {
+      await exportToPDF({
+        title: "Inventory Categories Report",
+        fileName: "stringventory_categories",
+        table: tableData
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
@@ -145,6 +171,7 @@ export default function Categories() {
         totalCategories={categories.length} 
         canManage={canManage} 
         onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
       
       {view === 'grid' ? (
