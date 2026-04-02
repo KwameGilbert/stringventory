@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { RefreshCw, DollarSign, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { RefreshCw, DollarSign, Clock, CheckCircle, AlertCircle, FileText, Download } from "lucide-react";
 import refundService from "../../../services/refundService";
 import { showError } from "../../../utils/alerts";
 import RefundsTable from "../../../components/admin/Refunds/RefundsTable";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 
 const extractRefunds = (response) => {
   const payload = response?.data || response || {};
@@ -47,6 +49,50 @@ export default function Refunds() {
     return refund.refundStatus === statusFilter;
   });
 
+  const handleExportExcel = () => {
+    if (filteredRefunds.length === 0) return;
+
+    const dataToExport = filteredRefunds.map((r) => ({
+      ID: r.id,
+      Date: new Date(r.createdAt).toLocaleDateString("en-GB"),
+      Order: r.order?.orderNumber || "—",
+      Amount: r.refundAmount,
+      "Reason Category": r.reasonCategory || "Other",
+      Status: r.refundStatus.toUpperCase(),
+      "Processed By": r.processedBy || "System",
+    }));
+
+    exportToExcel(dataToExport, "stringventory_refunds", "Refunds");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredRefunds.length === 0) return;
+
+    const tableData = {
+      headers: ["Date", "Order #", "Amount", "Reason", "Status"],
+      rows: filteredRefunds.map((r) => [
+        new Date(r.createdAt).toLocaleDateString("en-GB"),
+        r.order?.orderNumber || "—",
+        formatPrice(r.refundAmount, responseCurrency),
+        r.reasonCategory || "Other",
+        r.refundStatus.toUpperCase(),
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Refund Management Report",
+        fileName: "stringventory_refunds",
+        table: tableData,
+        totals: [
+          { label: "Total Refunded Amount", value: formatPrice(stats.totalAmount, responseCurrency) },
+        ],
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   // Stats
   const stats = {
     total: refunds.length,
@@ -79,10 +125,25 @@ export default function Refunds() {
           <p className="text-gray-500 text-sm">Monitor and approve customer refund requests</p>
         </div>
         <div className="flex items-center gap-2">
+            <button 
+                onClick={handleExportExcel}
+                className="flex items-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-all border border-gray-200 text-sm font-medium shadow-sm"
+            >
+                <FileText size={15} className="text-emerald-600" />
+                Excel
+            </button>
+            <button 
+                onClick={handleExportPDF}
+                className="flex items-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-all border border-gray-200 text-sm font-medium shadow-sm"
+            >
+                <Download size={15} className="text-rose-600" />
+                PDF
+            </button>
+            <div className="w-px h-8 bg-gray-200 mx-1 hidden md:block"></div>
             <select 
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all"
+                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all shadow-sm"
             >
                 <option value="">All Statuses</option>
                 <option value="pending">Pending</option>
@@ -91,7 +152,7 @@ export default function Refunds() {
             </select>
             <button 
                 onClick={fetchData}
-                className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
                 title="Refresh"
             >
                 <RefreshCw size={20} className="text-gray-500" />

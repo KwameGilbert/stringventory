@@ -7,7 +7,9 @@ const ExpensesHeader = ({
   setSearchQuery,
   totalExpenses,
   recurringExpenses,
-  oneTimeExpenses
+  oneTimeExpenses,
+  onExportExcel,
+  onExportPDF
 }) => {
   const { formatPrice } = useCurrency();
 
@@ -22,12 +24,18 @@ const ExpensesHeader = ({
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Export Buttons */}
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors text-sm font-medium border border-emerald-200">
-            <FileText size={15} />
+          <button 
+            onClick={onExportExcel}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200 shadow-sm"
+          >
+            <FileText size={15} className="text-emerald-600" />
             Excel
           </button>
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition-colors text-sm font-medium border border-rose-200">
-            <Download size={15} />
+          <button 
+                onClick={onExportPDF}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium border border-gray-200 shadow-sm"
+          >
+            <Download size={15} className="text-rose-600" />
             PDF
           </button>
 

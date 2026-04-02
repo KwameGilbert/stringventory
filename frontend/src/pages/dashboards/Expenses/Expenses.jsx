@@ -3,6 +3,9 @@ import ExpensesHeader from "../../../components/admin/Expenses/ExpensesHeader";
 import ExpensesTable from "../../../components/admin/Expenses/ExpensesTable";
 import expenseService from "../../../services/expenseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractExpenses = (response) => {
   const payload = response?.data || response || {};
@@ -35,6 +38,7 @@ const normalizeExpense = (expense) => ({
 });
 
 export default function Expenses() {
+  const { formatPrice } = useCurrency();
   const [expenses, setExpenses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -85,6 +89,51 @@ export default function Expenses() {
     );
   });
 
+  const handleExportExcel = () => {
+    if (filteredExpenses.length === 0) return;
+
+    const dataToExport = filteredExpenses.map((e) => ({
+      Date: new Date(e.date).toLocaleDateString("en-GB"),
+      Name: e.name,
+      Category: e.categoryName,
+      Amount: e.amount,
+      Method: e.paymentMethod || "—",
+      "Created By": e.createdBy,
+      Notes: e.notes || "—",
+    }));
+
+    exportToExcel(dataToExport, "stringventory_expenses", "Expenses");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredExpenses.length === 0) return;
+
+    const tableData = {
+      headers: ["Date", "Expense", "Category", "Amount", "Method"],
+      rows: filteredExpenses.map((e) => [
+        new Date(e.date).toLocaleDateString("en-GB"),
+        e.name,
+        e.categoryName,
+        formatPrice(e.amount),
+        e.paymentMethod || "—",
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Company Expense Report",
+        fileName: "stringventory_expenses",
+        table: tableData,
+        totals: [
+          { label: "Total Expenditure", value: formatPrice(totalExpenses) },
+          { label: "Recurring Total", value: formatPrice(recurringExpenses) },
+        ],
+      });
+    } catch (error) {
+      showError("Failed to generate PDF");
+    }
+  };
+
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
@@ -107,6 +156,8 @@ export default function Expenses() {
         totalExpenses={totalExpenses}
         recurringExpenses={recurringExpenses}
         oneTimeExpenses={oneTimeExpenses}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
 
       <ExpensesTable 

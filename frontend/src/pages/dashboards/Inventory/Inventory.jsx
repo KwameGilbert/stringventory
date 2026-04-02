@@ -253,7 +253,7 @@ export default function Inventory() {
   }
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6">
+    <div className="pb-8 animate-fade-in space-y-6 px-4 sm:px-0">
       {/* Header */}
       <InventoryHeader
         searchQuery={searchQuery}
@@ -269,53 +269,53 @@ export default function Inventory() {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Entries */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-blue-50">
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-blue-50">
               <Package className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Entries</p>
-              <p className="text-2xl font-bold text-gray-900">{totalEntries}</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Batches</p>
+              <p className="text-2xl font-black text-gray-900">{totalEntries}</p>
             </div>
           </div>
         </div>
 
         {/* Total Units */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-emerald-50">
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-emerald-50">
               <Package className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Units</p>
-              <p className="text-2xl font-bold text-gray-900">{totalUnits.toLocaleString()}</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Stock</p>
+              <p className="text-2xl font-black text-gray-900">{totalUnits.toLocaleString()}</p>
             </div>
           </div>
         </div>
 
         {/* Total Value */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-emerald-50">
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-emerald-50">
               <DollarSign className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Value</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalValue)}</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Value</p>
+              <p className="text-2xl font-black text-gray-900">{formatCurrency(totalValue)}</p>
             </div>
           </div>
         </div>
 
         {/* Expiring Soon */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-amber-50">
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-amber-50">
               <Clock className="w-5 h-5 text-amber-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Expiring Soon</p>
-              <p className="text-2xl font-bold text-gray-900">{expiringCount} <span className="text-sm font-normal text-gray-400">batches</span></p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Expiring Soon</p>
+              <p className="text-2xl font-black text-gray-900">{expiringCount} <span className="text-xs font-bold text-gray-400 italic">batches</span></p>
             </div>
           </div>
         </div>
