@@ -90,18 +90,23 @@ export default function Customers() {
   const handleExportExcel = () => {
     if (filteredCustomers.length === 0) return;
 
-    const dataToExport = filteredCustomers.map((c) => ({
-      Name: c.name || "—",
-      Email: c.email || "—",
-      Phone: c.phone || "—",
-      Status: (c.status || "active").toUpperCase(),
-      "Total Orders": Number(c.totalOrders || 0),
-      "Total Spent": Number(c.totalSpent || 0).toFixed(2),
-      Currency: c.currency || responseCurrency,
-      "Joined Date": c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-GB") : "—",
-    }));
+    try {
+      const dataToExport = filteredCustomers.map((c) => ({
+        Name: c.name || "—",
+        Email: c.email || "—",
+        Phone: c.phone || "—",
+        Status: (c.status || "active").toUpperCase(),
+        "Total Orders": Number(c.totalOrders || 0),
+        "Total Spent": Number(c.totalSpent || 0).toFixed(2),
+        Currency: c.currency || responseCurrency,
+        "Joined Date": c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-GB") : "—",
+      }));
 
-    exportToExcel(dataToExport, "stringventory_customers", "Customers");
+      exportToExcel(dataToExport, "stringventory_customers", "Customers");
+    } catch (error) {
+      console.error("Excel Export Error:", error);
+      showError("Failed to generate Excel report");
+    }
   };
 
   const handleExportPDF = async () => {
@@ -120,12 +125,12 @@ export default function Customers() {
 
     try {
       await exportToPDF({
-        title: "Customer Directory Report",
-        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredCustomers.length} customer(s)`,
+        title: "Customer Intelligence Report",
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredCustomers.length} customer profile(s)`,
         fileName: "stringventory_customers",
         table: tableData,
         totals: [
-          { label: "Lifetime Revenue (Group)", value: formatCurrency(totalRevenue), bold: true, color: 'emerald' },
+          { label: "Total Lifetime Revenue", value: formatCurrency(totalRevenue), bold: true, color: 'emerald' },
         ]
       });
     } catch (error) {
@@ -134,93 +139,95 @@ export default function Customers() {
     }
   };
 
-  // Local helper removed
-
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
-        <div className="h-16 bg-gray-200 rounded-xl animate-pulse"></div>
+        <div className="h-20 bg-gray-100 rounded-3xl animate-pulse"></div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 bg-gray-200 rounded-xl animate-pulse"></div>
+            <div key={i} className="h-32 bg-gray-100 rounded-3xl animate-pulse"></div>
           ))}
         </div>
-        <div className="h-96 bg-gray-200 rounded-xl animate-pulse"></div>
+        <div className="h-96 bg-gray-100 rounded-3xl animate-pulse"></div>
       </div>
     );
   }
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6 ">
-      {/* Header */}
-      <CustomersHeader
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        totalCustomers={customers.length}
-        canManage={canManage}
-        onExportExcel={handleExportExcel}
-        onExportPDF={handleExportPDF}
-      />
+    <div className="pb-8 space-y-6 animate-fade-in">
+      {/* Immersive Header */}
+      <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+        <CustomersHeader
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          totalCustomers={customers.length}
+          canManage={canManage}
+          onExportExcel={handleExportExcel}
+          onExportPDF={handleExportPDF}
+        />
+      </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Immersive Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up">
         {/* Total Customers */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-blue-50">
-              <Users className="w-5 h-5 text-blue-600" />
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+          <div className="flex items-center gap-4">
+            <div className="p-4 bg-blue-50 rounded-2xl group-hover:scale-110 transition-transform">
+              <Users className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Customers</p>
-              <p className="text-2xl font-bold text-gray-900">{totalCustomers}</p>
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Total Profiles</p>
+              <p className="text-2xl font-bold text-gray-900 tracking-tight">{totalCustomers}</p>
             </div>
           </div>
         </div>
 
         {/* Active Customers */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-emerald-50">
-              <TrendingUp className="w-5 h-5 text-emerald-600" />
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+          <div className="flex items-center gap-4">
+            <div className="p-4 bg-emerald-50 rounded-2xl group-hover:scale-110 transition-transform">
+              <TrendingUp className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Active</p>
-              <p className="text-2xl font-bold text-gray-900">{activeCustomers}</p>
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Active Status</p>
+              <p className="text-2xl font-bold text-gray-900 tracking-tight">{activeCustomers}</p>
             </div>
           </div>
         </div>
 
         {/* Total Orders */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-emerald-50">
-              <ShoppingBag className="w-5 h-5 text-emerald-600" />
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+          <div className="flex items-center gap-4">
+            <div className="p-4 bg-indigo-50 rounded-2xl group-hover:scale-110 transition-transform">
+              <ShoppingBag className="w-6 h-6 text-indigo-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Sales</p>
-              <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Engagement</p>
+              <p className="text-2xl font-bold text-gray-900 tracking-tight"><span className="text-indigo-600">{totalOrders}</span> <span className="text-sm">Trans.</span></p>
             </div>
           </div>
         </div>
 
         {/* Lifetime Revenue */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-amber-50">
-              <DollarSign className="w-5 h-5 text-amber-600" />
+        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
+          <div className="flex items-center gap-4">
+            <div className="p-4 bg-emerald-50 rounded-2xl group-hover:scale-110 transition-transform">
+              <DollarSign className="w-6 h-6 text-emerald-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Lifetime Revenue</p>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalRevenue)}</p>
+              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Lifetime Revenue</p>
+              <p className="text-2xl font-bold text-emerald-600 tracking-tight">{formatCurrency(totalRevenue)}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Customers Table */}
-      <CustomersTable customers={filteredCustomers} canManage={canManage} />
+      <div className="animate-fade-in-up md:animate-delay-100">
+        <CustomersTable customers={filteredCustomers} canManage={canManage} />
+      </div>
     </div>
   );
 }

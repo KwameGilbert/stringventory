@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Plus, Search, Edit2, Trash2, Tag, Download, FileText } from "lucide-react";
 import expenseService from "../../../services/expenseService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
 
 const extractCategories = (response) => {
   const payload = response?.data || response || {};
@@ -149,7 +151,42 @@ export default function ExpenseCategories() {
     }
   };
 
+  const handleExportExcel = () => {
+    if (filteredCategories.length === 0) return;
+    try {
+      const dataToExport = filteredCategories.map((c) => ({
+        Name: c.name,
+        Description: c.description || "—",
+        Status: c.status,
+        Expenses: c.expenseCount || 0,
+      }));
+      exportToExcel(dataToExport, "expense_categories", "Categories");
+    } catch (error) {
+      showError("Export failed");
+    }
+  };
 
+  const handleExportPDF = async () => {
+    if (filteredCategories.length === 0) return;
+    try {
+      await exportToPDF({
+        title: "Expense Categories Report",
+        subtitle: `Generated for ${filteredCategories.length} categories`,
+        fileName: "expense_categories",
+        table: {
+          headers: ["Category Name", "Description", "Status", "Expenses"],
+          rows: filteredCategories.map((c) => [
+            c.name,
+            c.description || "—",
+            c.status.toUpperCase(),
+            c.expenseCount || 0,
+          ]),
+        },
+      });
+    } catch (error) {
+      showError("Export failed");
+    }
+  };
 
   if (loading) {
     return (
@@ -165,7 +202,7 @@ export default function ExpenseCategories() {
   }
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6 ">
+    <div className="px-1 sm:px-4 md:px-0 pb-8 animate-fade-in space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -173,18 +210,24 @@ export default function ExpenseCategories() {
           <p className="text-gray-500 text-sm">{categories.length} categories</p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors text-sm font-medium border border-emerald-200">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <button 
+            onClick={handleExportExcel}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition-colors text-sm font-medium border border-emerald-200"
+          >
             <FileText size={15} />
             Excel
           </button>
-          <button className="flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition-colors text-sm font-medium border border-rose-200">
+          <button 
+            onClick={handleExportPDF}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition-colors text-sm font-medium border border-rose-200"
+          >
             <Download size={15} />
             PDF
           </button>
           <button
             onClick={() => handleOpenModal()}
-            className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-medium text-sm shadow-lg shadow-gray-900/10"
+            className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium text-sm shadow-lg shadow-gray-900/10"
           >
             <Plus size={16} />
             Add Category
@@ -193,7 +236,7 @@ export default function ExpenseCategories() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="relative w-full md:max-w-md">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
@@ -233,8 +276,8 @@ export default function ExpenseCategories() {
               </div>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">{category.name}</h3>
-            <p className="text-sm text-gray-500 line-clamp-2 mb-3">{category.description}</p>
-            <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500 line-clamp-2 mb-3 truncate-lines-2">{category.description}</p>
+            <div className="flex items-center justify-between mt-auto">
               <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
                 category.status === 'active' 
                   ? 'bg-emerald-100 text-emerald-700' 
@@ -308,8 +351,6 @@ export default function ExpenseCategories() {
                   placeholder="Brief description of this category..."
                 />
               </div>
-
-
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                 <button
