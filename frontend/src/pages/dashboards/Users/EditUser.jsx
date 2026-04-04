@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { User, Mail, Shield, CheckCircle, Phone, Save, ArrowLeft, ShieldCheck, KeyRound, Eye, EyeOff } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { showError, showSuccess } from "../../../utils/alerts";
+import { handleApiError } from "../../../utils/errorHandler";
 import userService from "../../../services/userService";
 import roleService from "../../../services/roleService";
 import { BUSINESS_ROLES } from "../../../services/roleService";
@@ -138,7 +139,7 @@ export default function EditUser() {
         });
       } catch (error) {
         console.error("Error fetching user", error);
-        showError(error?.message || "Failed to load user");
+        handleApiError(error);
       } finally {
         setLoading(false);
       }
@@ -201,7 +202,7 @@ export default function EditUser() {
       navigate("/dashboard/users");
     } catch (error) {
       console.error("Failed to update user", error);
-      showError(error?.message || "Failed to update user");
+      handleApiError(error);
     } finally {
       setSubmitting(false);
     }

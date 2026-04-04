@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import supplierService from "../../../services/supplierService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
+import { handleApiError } from "../../../utils/errorHandler";
 import { exportToExcel } from "../../../utils/exportUtils";
 import { exportToPDF } from "../../../utils/pdfUtils";
 import { Download, FileText } from "lucide-react";
@@ -51,7 +52,7 @@ export default function Suppliers() {
         setSuppliers(extractSuppliers(response).map(normalizeSupplier));
       } catch (error) {
         console.error("Error fetching suppliers:", error);
-        showError(error?.message || "Failed to load suppliers");
+        handleApiError(error);
       } finally {
         setLoading(false);
       }
@@ -80,7 +81,7 @@ export default function Suppliers() {
       showSuccess("Supplier deleted successfully");
     } catch (error) {
       console.error("Failed to delete supplier", error);
-      showError(error?.message || "Failed to delete supplier");
+      handleApiError(error);
     }
   };
 

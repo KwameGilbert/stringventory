@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import UserList from "../../../components/admin/Users/UserList";
 import ActivityLogs from "../../../components/admin/Users/ActivityLogs";
 import { showSuccess, showError, confirmDelete } from "../../../utils/alerts";
+import { handleApiError } from "../../../utils/errorHandler";
 import userService from "../../../services/userService";
 import { useAuth } from "../../../contexts/AuthContext";
 import { canManageUsers } from "../../../utils/accessControl";
@@ -48,11 +49,6 @@ const normalizeUser = (user) => {
   };
 };
 
-const isForbiddenError = (error) => {
-  const statusCode = error?.statusCode || error?.status;
-  const message = String(error?.message || "").toLowerCase();
-  return statusCode === 403 || message.includes("insufficient permissions") || message.includes("forbidden");
-};
 
 export default function Users() {
   const navigate = useNavigate();
@@ -75,11 +71,11 @@ export default function Users() {
         setUsers(fetchedUsers);
       } catch (error) {
         console.error("Error fetching user data", error);
-        if (isForbiddenError(error)) {
+        if (error.status === 403) {
           setPermissionDenied(true);
           return;
         }
-        showError(error?.message || "Failed to fetch users");
+        handleApiError(error);
       } finally {
         setLoading(false);
       }
@@ -107,7 +103,7 @@ export default function Users() {
         showSuccess("User deleted successfully");
       } catch (error) {
         console.error("Failed to delete user", error);
-        showError(error?.message || "Failed to delete user");
+        handleApiError(error);
       }
     }
   };

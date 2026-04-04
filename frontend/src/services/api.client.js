@@ -5,6 +5,7 @@
 
 import axios from "axios";
 import { API_ENDPOINTS, BASE_URL } from "./api.endpoints";
+import { parseApiError } from "../utils/errorHandler";
 
 const getFirstString = (...values) =>
   values.find((value) => typeof value === "string" && value.trim());
@@ -201,12 +202,8 @@ apiClient.interceptors.response.use(
     }
 
     // Handle other errors
-    const errorData = error.response?.data || {
-      status: "error",
-      message: error.message || "An error occurred",
-    };
-
-    return Promise.reject(errorData);
+    const parsedError = parseApiError(error);
+    return Promise.reject(parsedError);
   },
 );
 
