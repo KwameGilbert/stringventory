@@ -31,6 +31,7 @@ export default function Notifications() {
     notifications, 
     unreadCount, 
     loading, 
+    notificationPermission,
     markAsRead, 
     markAllAsRead, 
     deleteNotification,
@@ -40,6 +41,8 @@ export default function Notifications() {
   const [filter, setFilter] = useState("all");
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const isSubscribed = notificationPermission === "granted";
 
   useEffect(() => {
     loadNotifications();
@@ -53,6 +56,15 @@ export default function Notifications() {
       }),
     [notifications, filter]
   );
+
+  const handleSubscribe = async () => {
+    setActionLoading(true);
+    const success = await subscribeToPush();
+    if (success) {
+      showSuccess("Desktop alerts enabled successfully!");
+    }
+    setActionLoading(false);
+  };
 
   const handleMarkAsRead = async (id) => {
     setActionLoading(true);
@@ -129,12 +141,17 @@ export default function Notifications() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={subscribeToPush}
-            disabled={actionLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 border border-emerald-600 rounded-lg text-sm font-medium text-white hover:bg-emerald-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleSubscribe}
+            disabled={actionLoading || isSubscribed}
+            className={`
+              flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm
+              ${isSubscribed 
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default" 
+                : "bg-emerald-600 text-white border border-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"}
+            `}
           >
-            <Bell className="w-4 h-4" />
-            Enable Desktop Alerts
+            {isSubscribed ? <CheckCircle2 className="w-4 h-4" /> : <Bell className="w-4 h-4" />}
+            {isSubscribed ? "Desktop Alerts Active" : "Enable Desktop Alerts"}
           </button>
           
           {unreadCount > 0 && (

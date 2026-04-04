@@ -10,6 +10,8 @@ export const NotificationProvider = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
 
+    const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+
     const loadNotifications = useCallback(async (quiet = false) => {
         if (!user) return;
         if (!quiet) setLoading(true);
@@ -23,7 +25,7 @@ export const NotificationProvider = ({ children }) => {
                     const latestOldId = prev[0]?.id || 0;
                     const newItems = newFetchedItems.filter(n => !n.isRead && n.id > latestOldId);
                     
-                    if (newItems.length > 0 && Notification.permission === 'granted') {
+                    if (newItems.length > 0 && notificationPermission === 'granted') {
                         newItems.forEach(item => {
                             new Notification(item.title || 'New Notification', {
                                 body: item.message,
@@ -50,16 +52,21 @@ export const NotificationProvider = ({ children }) => {
         } finally {
             if (!quiet) setLoading(false);
         }
-    }, [user]);
+    }, [user, notificationPermission]);
 
     useEffect(() => {
         if (user) {
             loadNotifications();
             const interval = setInterval(() => loadNotifications(true), 60000);
             
-            // Request notification permission
+            // Update permission status
+            setNotificationPermission(Notification.permission);
+            
+            // Request notification permission if default
             if (Notification.permission === 'default') {
-                Notification.requestPermission();
+                Notification.requestPermission().then(permission => {
+                    setNotificationPermission(permission);
+                });
             }
 
             return () => clearInterval(interval);
@@ -103,10 +110,15 @@ export const NotificationProvider = ({ children }) => {
     const subscribeToPush = async () => {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
             console.warn('Push messaging is not supported');
-            return;
+            return false;
         }
 
         try {
+            const permission = await Notification.requestPermission();
+            setNotificationPermission(permission);
+            
+            if (permission !== 'granted') return false;
+
             const registration = await navigator.serviceWorker.ready;
             const publicVapidKey = 'BL3JrSg6sjq0qLorIElteJUHrhM5DqO_rico2_s0tHvIj20YS48G_G9XsPAARCTVn3wRRlsSa3cH6p85Dc2wB0E'; 
             
@@ -119,9 +131,10 @@ export const NotificationProvider = ({ children }) => {
             // await apiClient.post('/v1/notifications/subscribe', subscription);
             console.log('User is subscribed:', subscription);
             
-            return subscription;
+            return true;
         } catch (err) {
             console.error('Failed to subscribe the user: ', err);
+            return false;
         }
     };
 
@@ -130,6 +143,7 @@ export const NotificationProvider = ({ children }) => {
             notifications,
             unreadCount,
             loading,
+            notificationPermission,
             loadNotifications,
             markAsRead,
             markAllAsRead,
