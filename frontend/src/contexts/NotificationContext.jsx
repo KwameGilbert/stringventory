@@ -62,11 +62,9 @@ export const NotificationProvider = ({ children }) => {
             // Update permission status
             setNotificationPermission(Notification.permission);
             
-            // Request notification permission if default
-            if (Notification.permission === 'default') {
-                Notification.requestPermission().then(permission => {
-                    setNotificationPermission(permission);
-                });
+            // Automatically try to enable desktop alerts on login
+            if (Notification.permission === 'default' || Notification.permission === 'granted') {
+                subscribeToPush();
             }
 
             return () => clearInterval(interval);
