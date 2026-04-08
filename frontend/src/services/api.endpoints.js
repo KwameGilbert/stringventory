@@ -3,7 +3,7 @@
  * Centralized endpoint paths for all API calls
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://stringventory-api.onrender.com';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://stringventry-api.kantatech.io';
 
 export const API_ENDPOINTS = {
   // Authentication
