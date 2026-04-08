@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Loader } from 'lucide-react';
 import { PRICING_PLANS } from '../../../constants/plans';
+import { handleApiError } from '../../../utils/errorHandler';
 
 export default function AddBusiness() {
   const navigate = useNavigate();
@@ -141,6 +142,7 @@ export default function AddBusiness() {
       navigate('/superadmin/businesses');
     } catch (error) {
       console.error('Error adding business:', error);
+      handleApiError(error);
     } finally {
       setLoading(false);
     }

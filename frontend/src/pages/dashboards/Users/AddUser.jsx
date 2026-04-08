@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { User, Mail, Shield, CheckCircle, Phone, Lock, Save, ArrowLeft, ShieldCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { showError, showSuccess } from "../../../utils/alerts";
+import { handleApiError } from "../../../utils/errorHandler";
 import userService from "../../../services/userService";
 import roleService from "../../../services/roleService";
 import { BUSINESS_ROLES } from "../../../services/roleService";
@@ -129,7 +130,7 @@ export default function AddUser() {
       navigate("/dashboard/users");
     } catch (error) {
       console.error("Failed to create user", error);
-      showError(error?.message || "Failed to create user");
+      handleApiError(error);
     } finally {
       setSubmitting(false);
     }

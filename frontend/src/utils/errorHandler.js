@@ -1,7 +1,12 @@
+import { showError as defaultShowError } from './alerts';
+
 /**
  * Error Handling Utilities
  * Parse and handle API errors consistently across the application
  */
+
+const getFirstString = (...values) =>
+  values.find((value) => typeof value === "string" && value.trim());
 
 /**
  * Parse API error response
@@ -20,20 +25,27 @@ export const parseApiError = (error) => {
 
   // If error is from axios response
   if (error.response) {
+    const data = error.response.data || {};
     return {
-      message: error.response.data?.message || error.message,
-      details: error.response.data?.details || {},
-      code: error.response.data?.code || 'API_ERROR',
+      message: getFirstString(
+        data.message,
+        data.error,
+        data.errorMessage,
+        error.message,
+        'An unexpected error occurred'
+      ),
+      details: data.details || data.errors || {},
+      code: data.code || data.errorCode || 'API_ERROR',
       status: error.response.status,
     };
   }
 
   // If error is from our API client (already parsed)
-  if (error.message && error.code) {
+  if (error.message && (error.code || error.status)) {
     return {
       message: error.message,
       details: error.details || {},
-      code: error.code,
+      code: error.code || 'ERROR',
       status: error.status || 500,
     };
   }
@@ -100,6 +112,13 @@ export const isForbiddenError = (error) => isErrorStatus(error, 403);
 export const isNotFoundError = (error) => isErrorStatus(error, 404);
 
 /**
+ * Check if error is 409 Conflict
+ * @param {Object} error - Error object
+ * @returns {Boolean}
+ */
+export const isConflictError = (error) => isErrorStatus(error, 409);
+
+/**
  * Check if error is 422 Validation Error
  * @param {Object} error - Error object
  * @returns {Boolean}
@@ -109,63 +128,41 @@ export const isValidationError = (error) => isErrorStatus(error, 422);
 /**
  * Handle API error and display appropriate message
  * @param {Object} error - Error object
- * @param {Function} showError - Error display function (e.g., showError from alerts)
+ * @param {Function} displayFn - Optional error display function (defaults to showAlert)
  */
-export const handleApiError = (error, showError) => {
+export const handleApiError = (error, displayFn) => {
   const parsed = parseApiError(error);
+  const showAlert = typeof displayFn === 'function' ? displayFn : defaultShowError;
 
   if (isUnauthorizedError(error)) {
-    showError('Session expired. Please log in again.');
+    const defaultMsg = 'Session expired. Please log in again.';
+    // Prefer specific backend message if it's not a generic "unauthorized" string
+    const useBackendMsg = parsed.message && 
+      !parsed.message.toLowerCase().includes('unauthorized') && 
+      parsed.message.length < 100;
+    
+    showAlert(useBackendMsg ? parsed.message : defaultMsg);
   } else if (isForbiddenError(error)) {
-    showError('You do not have permission to perform this action.');
+    showAlert('You do not have permission to perform this action.');
   } else if (isNotFoundError(error)) {
-    showError('The requested resource was not found.');
+    showAlert('The requested resource was not found.');
+  } else if (isConflictError(error)) {
+    showAlert(parsed.message || 'This record already exists.');
   } else if (isValidationError(error)) {
-    const fieldErrors = Object.entries(parsed.details)
-      .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
-      .join('\n');
-    showError(fieldErrors || parsed.message);
+    let fieldErrors = '';
+    if (typeof parsed.details === 'object') {
+      fieldErrors = Object.entries(parsed.details)
+        .map(([field, errors]) => {
+          const msg = Array.isArray(errors) ? errors.join(', ') : errors;
+          return `${field}: ${msg}`;
+        })
+        .join('\n');
+    }
+    showAlert(fieldErrors || parsed.message);
   } else {
-    showError(parsed.message);
+    showAlert(parsed.message);
   }
 };
-
-/**
- * Create error boundary wrapper for components
- */
-export class ApiErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('API Error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
-          <h3 className="font-semibold">Something went wrong</h3>
-          <p className="text-sm mt-2">{this.state.error?.message}</p>
-          <button
-            onClick={() => this.setState({ hasError: false })}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Retry
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
 
 /**
  * Validation error formatter

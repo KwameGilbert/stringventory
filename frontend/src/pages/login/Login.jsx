@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.js";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { ForgotPasswordModal, SuccessAlert } from "../../components/auth";
+import { handleApiError } from "../../utils/errorHandler";
 
 export default function Login() {
   const { login } = useAuth();
@@ -33,6 +34,7 @@ export default function Login() {
       }
     } catch (error) {
       console.error("Login failed", error);
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }
