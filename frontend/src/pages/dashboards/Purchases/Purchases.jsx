@@ -72,6 +72,7 @@ const normalizePurchase = (purchase) => ({
 });
 
 export default function Purchases() {
+  const { user } = useAuth();
   const { formatPrice } = useCurrency();
   const currentUserRole = user?.role || user?.normalizedRole;
 
