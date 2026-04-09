@@ -1,11 +1,21 @@
+import React, { lazy, Suspense } from "react";
 import DashboardHeader from "../../../components/admin/Dashboard/DashboardHeader";
 import KPICards from "../../../components/admin/Dashboard/KPICards";
-import SalesExpensesChart from "../../../components/admin/Dashboard/SalesExpensesChart";
-import TopProductsChart from "../../../components/admin/Dashboard/TopProductsChart";
-import TopCustomers from "../../../components/admin/Dashboard/TopCustomers";
-import PaymentDistribution from "../../../components/admin/Dashboard/PaymentDistribution";
 import QuickLists from "../../../components/admin/Dashboard/QuickLists";
 import { useDashboardDateFilter } from "../../../contexts/DashboardDateFilterContext";
+
+// Lazy load heavy chart components
+const SalesExpensesChart = lazy(() => import("../../../components/admin/Dashboard/SalesExpensesChart"));
+const TopProductsChart = lazy(() => import("../../../components/admin/Dashboard/TopProductsChart"));
+const TopCustomers = lazy(() => import("../../../components/admin/Dashboard/TopCustomers"));
+const PaymentDistribution = lazy(() => import("../../../components/admin/Dashboard/PaymentDistribution"));
+
+const ChartPlaceholder = () => (
+  <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm animate-pulse h-[400px]">
+    <div className="h-6 bg-gray-100 rounded w-1/3 mb-6"></div>
+    <div className="h-full bg-gray-50 rounded-xl"></div>
+  </div>
+);
 
 export default function Dashboard() {
   const { filter, setPreset } = useDashboardDateFilter();
@@ -34,19 +44,27 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Sales & Expenses Trend - 2 columns */}
           <div className="xl:col-span-2">
-            <SalesExpensesChart dateRange={effectiveDateRange} />
+            <Suspense fallback={<ChartPlaceholder />}>
+              <SalesExpensesChart dateRange={effectiveDateRange} />
+            </Suspense>
           </div>
           
           {/* Payment Distribution - 1 column */}
           <div>
-            <PaymentDistribution dateRange={effectiveDateRange} />
+            <Suspense fallback={<ChartPlaceholder />}>
+              <PaymentDistribution dateRange={effectiveDateRange} />
+            </Suspense>
           </div>
         </div>
 
         {/* Top Products & Top Customers - 2 columns */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <TopProductsChart dateRange={effectiveDateRange} />
-          <TopCustomers dateRange={effectiveDateRange} />
+          <Suspense fallback={<ChartPlaceholder />}>
+            <TopProductsChart dateRange={effectiveDateRange} />
+          </Suspense>
+          <Suspense fallback={<ChartPlaceholder />}>
+            <TopCustomers dateRange={effectiveDateRange} />
+          </Suspense>
         </div>
       </div>
 

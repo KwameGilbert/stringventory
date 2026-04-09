@@ -1,85 +1,89 @@
+import React, { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthProvider";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import RoleRoute from "./components/auth/RoleRoute";
-import Dashboard from "./pages/dashboards/Dashboard/Dashboard";
-import Categories from "./pages/dashboards/Categories/Categories";
-import CreateCategory from "./pages/dashboards/Categories/CreateCategory";
-import EditCategory from "./pages/dashboards/Categories/EditCategory";
-import ViewCategory from "./pages/dashboards/Categories/ViewCategory";
-import Products from "./pages/dashboards/products/Products";
-import CreateProduct from "./pages/dashboards/products/CreateProduct";
-import EditProduct from "./pages/dashboards/products/EditProduct";
-import ViewProduct from "./pages/dashboards/products/ViewProduct";
-import Purchases from "./pages/dashboards/Purchases/Purchases";
-import ViewPurchase from "./pages/dashboards/Purchases/ViewPurchase";
-import CreatePurchase from "./pages/dashboards/Purchases/CreatePurchase";
-import EditPurchase from "./pages/dashboards/Purchases/EditPurchase";
-import Inventory from "./pages/dashboards/Inventory/Inventory";
-import AddInventory from "./pages/dashboards/Inventory/AddInventory";
-import EditInventory from "./pages/dashboards/Inventory/EditInventory";
-import ViewInventory from "./pages/dashboards/Inventory/ViewInventory";
-import Orders from "./pages/dashboards/Orders/Orders";
-import ViewOrder from "./pages/dashboards/Orders/ViewOrder";
-import CreateOrder from "./pages/dashboards/Orders/CreateOrder";
-import CreateRefund from "./pages/dashboards/Orders/CreateRefund";
-import Refunds from "./pages/dashboards/Refunds/Refunds";
-import ViewRefund from "./pages/dashboards/Refunds/ViewRefund";
-import Transactions from "./pages/dashboards/Transactions/Transactions";
-import ViewTransaction from "./pages/dashboards/Transactions/ViewTransaction";
-import SalesMain from "./pages/dashboards/Sales/SalesMain";
-// POS, ViewSales, ViewSale, SalesRefund, PaymentPage imports removed
-import Customers from "./pages/dashboards/Customers/Customers";
-import ViewCustomer from "./pages/dashboards/Customers/ViewCustomer";
-import CreateCustomer from "./pages/dashboards/Customers/CreateCustomer";
-import EditCustomer from "./pages/dashboards/Customers/EditCustomer";
-import Expenses from "./pages/dashboards/Expenses/Expenses";
-import AddExpense from "./pages/dashboards/Expenses/AddExpense";
-import ViewExpense from "./pages/dashboards/Expenses/ViewExpense";
-import EditExpense from "./pages/dashboards/Expenses/EditExpense";
-import ExpenseCategories from "./pages/dashboards/Expenses/ExpenseCategories";
-import Reports from "./pages/dashboards/Reports/Reports";
-import Users from "./pages/dashboards/Users/Users";
-import AddUser from "./pages/dashboards/Users/AddUser";
-import EditUser from "./pages/dashboards/Users/EditUser";
-import CreateSupplier from "./pages/dashboards/Suppliers/CreateSupplier";
-import EditSupplier from "./pages/dashboards/Suppliers/EditSupplier";
-import ViewSupplier from "./pages/dashboards/Suppliers/ViewSupplier";
-import Suppliers from "./pages/dashboards/Suppliers/Suppliers";
-import ViewUser from "./pages/dashboards/Users/ViewUser";
-import Messaging from "./pages/dashboards/Messaging/Messaging";
-import Settings from "./pages/dashboards/Settings/Settings";
-import Notifications from "./pages/dashboards/Notifications/Notifications";
-import Profile from "./pages/dashboards/Profile/Profile";
-import Header from "./components/admin/layout/Header";
-import Sidebar from "./components/admin/layout/Siderbar";
-import Footer from "./components/admin/layout/Footer";
-import DashboardLayout from "./components/admin/layout/DashboardLayout";
-import Login from "./pages/login/Login";
-import ForcePasswordChange from "./pages/login/ForcePasswordChange";
-
-// Superadmin imports
 import SuperadminRoute from "./components/auth/SuperadminRoute";
-import SuperadminLayout from "./components/superadmin/layout/SuperadminLayout";
-import SuperadminDashboard from "./pages/superadmin/Dashboard/SuperadminDashboard";
-import Businesses from "./pages/superadmin/Businesses/Businesses";
-import BusinessDetails from "./pages/superadmin/Businesses/BusinessDetails";
-import EditBusiness from "./pages/superadmin/Businesses/EditBusiness";
-import AddBusiness from "./pages/superadmin/Businesses/AddBusiness";
-import PricingPlans from "./pages/superadmin/PricingPlans/PricingPlans";
-import CreatePricingPlan from "./pages/superadmin/PricingPlans/CreatePricingPlan";
-import ViewPricingPlan from "./pages/superadmin/PricingPlans/ViewPricingPlan";
-import Analytics from "./pages/superadmin/Analytics/Analytics";
-import SuperadminSettings from "./pages/superadmin/Settings/Settings";
-import SuperadminMessaging from "./pages/superadmin/Messaging/Messaging";
-import SuperadminNotifications from "./pages/superadmin/Notifications/Notifications";
-import SuperadminProfile from "./pages/superadmin/Profile/Profile";
 import { TenantProvider } from "./contexts/TenantProvider";
 import { SubscriptionProvider } from "./contexts/SubscriptionProvider";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { ROLES } from "./utils/accessControl";
+
+// Layout and Entry components (static)
+import Header from "./components/admin/layout/Header";
+import Sidebar from "./components/admin/layout/Siderbar";
+import Footer from "./components/admin/layout/Footer";
+import DashboardLayout from "./components/admin/layout/DashboardLayout";
+import SuperadminLayout from "./components/superadmin/layout/SuperadminLayout";
+import Login from "./pages/login/Login";
+import ForcePasswordChange from "./pages/login/ForcePasswordChange";
+import PageLoader from "./components/shared/PageLoader";
+
+// Lazy-loaded Dashboard pages
+const Dashboard = lazy(() => import("./pages/dashboards/Dashboard/Dashboard"));
+const Categories = lazy(() => import("./pages/dashboards/Categories/Categories"));
+const CreateCategory = lazy(() => import("./pages/dashboards/Categories/CreateCategory"));
+const EditCategory = lazy(() => import("./pages/dashboards/Categories/EditCategory"));
+const ViewCategory = lazy(() => import("./pages/dashboards/Categories/ViewCategory"));
+const Products = lazy(() => import("./pages/dashboards/products/Products"));
+const CreateProduct = lazy(() => import("./pages/dashboards/products/CreateProduct"));
+const EditProduct = lazy(() => import("./pages/dashboards/products/EditProduct"));
+const ViewProduct = lazy(() => import("./pages/dashboards/products/ViewProduct"));
+const Purchases = lazy(() => import("./pages/dashboards/Purchases/Purchases"));
+const ViewPurchase = lazy(() => import("./pages/dashboards/Purchases/ViewPurchase"));
+const CreatePurchase = lazy(() => import("./pages/dashboards/Purchases/CreatePurchase"));
+const EditPurchase = lazy(() => import("./pages/dashboards/Purchases/EditPurchase"));
+const Inventory = lazy(() => import("./pages/dashboards/Inventory/Inventory"));
+const AddInventory = lazy(() => import("./pages/dashboards/Inventory/AddInventory"));
+const EditInventory = lazy(() => import("./pages/dashboards/Inventory/EditInventory"));
+const ViewInventory = lazy(() => import("./pages/dashboards/Inventory/ViewInventory"));
+const Orders = lazy(() => import("./pages/dashboards/Orders/Orders"));
+const ViewOrder = lazy(() => import("./pages/dashboards/Orders/ViewOrder"));
+const CreateOrder = lazy(() => import("./pages/dashboards/Orders/CreateOrder"));
+const CreateRefund = lazy(() => import("./pages/dashboards/Orders/CreateRefund"));
+const Refunds = lazy(() => import("./pages/dashboards/Refunds/Refunds"));
+const ViewRefund = lazy(() => import("./pages/dashboards/Refunds/ViewRefund"));
+const Transactions = lazy(() => import("./pages/dashboards/Transactions/Transactions"));
+const ViewTransaction = lazy(() => import("./pages/dashboards/Transactions/ViewTransaction"));
+const Customers = lazy(() => import("./pages/dashboards/Customers/Customers"));
+const ViewCustomer = lazy(() => import("./pages/dashboards/Customers/ViewCustomer"));
+const CreateCustomer = lazy(() => import("./pages/dashboards/Customers/CreateCustomer"));
+const EditCustomer = lazy(() => import("./pages/dashboards/Customers/EditCustomer"));
+const Expenses = lazy(() => import("./pages/dashboards/Expenses/Expenses"));
+const AddExpense = lazy(() => import("./pages/dashboards/Expenses/AddExpense"));
+const ViewExpense = lazy(() => import("./pages/dashboards/Expenses/ViewExpense"));
+const EditExpense = lazy(() => import("./pages/dashboards/Expenses/EditExpense"));
+const ExpenseCategories = lazy(() => import("./pages/dashboards/Expenses/ExpenseCategories"));
+const Reports = lazy(() => import("./pages/dashboards/Reports/Reports"));
+const Users = lazy(() => import("./pages/dashboards/Users/Users"));
+const AddUser = lazy(() => import("./pages/dashboards/Users/AddUser"));
+const EditUser = lazy(() => import("./pages/dashboards/Users/EditUser"));
+const ViewUser = lazy(() => import("./pages/dashboards/Users/ViewUser"));
+const CreateSupplier = lazy(() => import("./pages/dashboards/Suppliers/CreateSupplier"));
+const EditSupplier = lazy(() => import("./pages/dashboards/Suppliers/EditSupplier"));
+const ViewSupplier = lazy(() => import("./pages/dashboards/Suppliers/ViewSupplier"));
+const Suppliers = lazy(() => import("./pages/dashboards/Suppliers/Suppliers"));
+const Messaging = lazy(() => import("./pages/dashboards/Messaging/Messaging"));
+const Settings = lazy(() => import("./pages/dashboards/Settings/Settings"));
+const Notifications = lazy(() => import("./pages/dashboards/Notifications/Notifications"));
+const Profile = lazy(() => import("./pages/dashboards/Profile/Profile"));
+
+// Lazy-loaded Superadmin pages
+const SuperadminDashboard = lazy(() => import("./pages/superadmin/Dashboard/SuperadminDashboard"));
+const Businesses = lazy(() => import("./pages/superadmin/Businesses/Businesses"));
+const BusinessDetails = lazy(() => import("./pages/superadmin/Businesses/BusinessDetails"));
+const EditBusiness = lazy(() => import("./pages/superadmin/Businesses/EditBusiness"));
+const AddBusiness = lazy(() => import("./pages/superadmin/Businesses/AddBusiness"));
+const PricingPlans = lazy(() => import("./pages/superadmin/PricingPlans/PricingPlans"));
+const CreatePricingPlan = lazy(() => import("./pages/superadmin/PricingPlans/CreatePricingPlan"));
+const ViewPricingPlan = lazy(() => import("./pages/superadmin/PricingPlans/ViewPricingPlan"));
+const Analytics = lazy(() => import("./pages/superadmin/Analytics/Analytics"));
+const SuperadminSettings = lazy(() => import("./pages/superadmin/Settings/Settings"));
+const SuperadminMessaging = lazy(() => import("./pages/superadmin/Messaging/Messaging"));
+const SuperadminNotifications = lazy(() => import("./pages/superadmin/Notifications/Notifications"));
+const SuperadminProfile = lazy(() => import("./pages/superadmin/Profile/Profile"));
 
 export default function App() {
   const allRoles = [ROLES.CEO, ROLES.MANAGER, ROLES.SALES];
@@ -98,7 +102,8 @@ export default function App() {
             <SettingsProvider>
               <NotificationProvider>
                 <Router>
-                <Routes>
+                  <Suspense fallback={<PageLoader />}>
+                    <Routes>
                   {/* Login Route - No Layout */}
                   <Route path="/" element={<Login />} />
                   <Route path="/force-password-change" element={<ProtectedRoute><ForcePasswordChange /></ProtectedRoute>} />
@@ -193,6 +198,7 @@ export default function App() {
                   }
                 />
               </Routes>
+                    </Suspense>
                 </Router>
               </NotificationProvider>
             </SettingsProvider>
