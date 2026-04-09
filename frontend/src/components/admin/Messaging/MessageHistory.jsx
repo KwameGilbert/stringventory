@@ -19,7 +19,12 @@ const extractMessages = (response) => {
 const normalizeMessage = (message) => {
   const subject = message?.subject || message?.title || "Untitled message";
   const body = message?.body || message?.content || message?.message || "";
-  const type = String(message?.type || message?.channel || "SMS").toUpperCase();
+  const type = (
+    message?.type || 
+    message?.channel || 
+    (Array.isArray(message?.channels) ? message.channels.join(', ') : message?.channels) || 
+    "SMS"
+  ).toUpperCase();
   const recipientCount =
     Number(message?.recipientCount) ||
     Number(message?.totalRecipients) ||
@@ -137,12 +142,19 @@ export default function MessageHistory({ onViewDetails }) {
                   <p className="text-xs text-gray-500 truncate max-w-sm">{msg.body}</p>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                    msg.type === 'SMS' ? 'bg-indigo-50 text-indigo-700' : 'bg-orange-50 text-orange-700'
-                  }`}>
-                    {msg.type === 'SMS' ? <MessageSquare size={12} /> : <Mail size={12} />}
-                    {msg.type}
-                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {msg.type.split(',').map((type, idx) => {
+                      const cleanType = type.trim().toUpperCase();
+                      return (
+                        <span key={idx} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          cleanType === 'SMS' ? 'bg-indigo-50 text-indigo-700' : 'bg-orange-50 text-orange-700'
+                        }`}>
+                          {cleanType === 'SMS' ? <MessageSquare size={10} /> : <Mail size={10} />}
+                          {cleanType}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col">

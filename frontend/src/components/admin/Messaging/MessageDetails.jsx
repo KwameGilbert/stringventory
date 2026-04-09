@@ -116,11 +116,18 @@ export default function MessageDetails({ message, onClose }) {
             <div className="flex items-center gap-2 mt-1">
                <span className="text-xs text-gray-500">Sent on {new Date(message.createdAt).toLocaleString()}</span>
                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-               <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                  message.type === 'SMS' ? 'bg-indigo-50 text-indigo-700' : 'bg-orange-50 text-orange-700'
-               }`}>
-                 {message.type}
-               </span>
+               <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+               {String(message.type).split(',').map((type, idx) => {
+                  const cleanType = type.trim().toUpperCase();
+                  return (
+                    <span key={idx} className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                       cleanType === 'SMS' ? 'bg-indigo-50 text-indigo-700' : 'bg-orange-50 text-orange-700'
+                    }`}>
+                      {cleanType === 'SMS' ? <MessageSquare size={10} /> : <Mail size={10} />}
+                      {cleanType}
+                    </span>
+                  );
+               })}
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
