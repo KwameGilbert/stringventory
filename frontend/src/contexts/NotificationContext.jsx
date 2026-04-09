@@ -105,6 +105,16 @@ export const NotificationProvider = ({ children }) => {
         }
     };
 
+    const deleteAllNotifications = async () => {
+        try {
+            await notificationService.deleteAllNotifications();
+            setNotifications([]);
+            setUnreadCount(0);
+        } catch (err) {
+            console.error("Failed to delete all notifications:", err);
+        }
+    };
+
     const subscribeToPush = async () => {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
             console.warn('Push messaging is not supported');
@@ -146,6 +156,7 @@ export const NotificationProvider = ({ children }) => {
             markAsRead,
             markAllAsRead,
             deleteNotification,
+            deleteAllNotifications,
             subscribeToPush
         }}>
             {children}
