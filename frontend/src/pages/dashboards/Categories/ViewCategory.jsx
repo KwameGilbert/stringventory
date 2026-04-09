@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit2, Trash2, Calendar, Clock, Hash, Image, Package } from "lucide-react";
+import { ArrowLeft, Edit2, Trash2, Calendar, Clock, Hash, Image, Package, Eye, AlertCircle } from "lucide-react";
 import categoryService from "../../../services/categoryService";
 import { confirmDelete, showError, showSuccess } from "../../../utils/alerts";
 import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
+import { useCurrency } from "../../../utils/currencyUtils";
 
 const extractCategory = (response) => {
   const payload = response?.data || response || {};
@@ -13,7 +14,9 @@ const extractCategory = (response) => {
 export default function ViewCategory() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { formatPrice } = useCurrency();
   const [category, setCategory] = useState(null);
+  const [sourceCurrency, setSourceCurrency] = useState("GHS");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -21,6 +24,10 @@ export default function ViewCategory() {
     const fetchData = async () => {
       try {
         const response = await categoryService.getCategoryById(id);
+        const data = response?.data || response;
+        const currentSourceCurrency = data?.currency || "GHS";
+        setSourceCurrency(currentSourceCurrency);
+        
         const found = extractCategory(response);
         if (found?.id) {
           setCategory({
@@ -32,7 +39,12 @@ export default function ViewCategory() {
               found.productsCount ??
               found.products_count ??
               found.productCount ??
+              found.products?.length ??
               0,
+            products: (found.products || []).map(p => ({
+              ...p,
+              image: resolveApiMediaUrl(p.image || p.image_url || null)
+            }))
           });
         } else {
           setError("Category not found");
@@ -99,7 +111,7 @@ export default function ViewCategory() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto pb-8 animate-fade-in">
+    <div className="max-w-5xl mx-auto pb-8 animate-fade-in">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/categories")}
@@ -181,18 +193,105 @@ export default function ViewCategory() {
             </div>
           </div>
 
-          {/* Products Card */}
+          {/* Products Table Card */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900">Products in Category</h3>
-              <span className="text-sm text-gray-500">{category.productsCount} items</span>
-            </div>
-            <div className="p-8 text-center">
-              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                <Package className="w-8 h-8 text-gray-400" />
+              <div className="flex items-center gap-2">
+                <Package size={18} className="text-gray-400" />
+                <h3 className="font-semibold text-gray-900">Products in Category</h3>
               </div>
-              <p className="text-gray-500 mb-1">Product list integration coming soon</p>
-              <p className="text-sm text-gray-400">This category contains {category.productsCount} products</p>
+              <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-bold uppercase tracking-wider">
+                {category.products?.length || 0} Products
+              </span>
+            </div>
+            
+            <div className="overflow-x-auto">
+              {category.products && category.products.length > 0 ? (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50/50">
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Product</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 text-right">Selling Price</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 text-right">Cost Price</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">Soonest Expiry</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {category.products.map((product) => (
+                      <tr key={product.id} className="hover:bg-gray-50/50 transition-colors group">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                              {product.image ? (
+                                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <Package className="w-5 h-5 text-gray-300" />
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">{product.name}</p>
+                              <p className="text-xs text-gray-400 font-mono mt-0.5">{product.sku}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <p className="text-sm font-bold text-gray-900">
+                            {formatPrice(product.sellingPrice || 0, sourceCurrency)}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <p className="text-sm font-medium text-gray-500">
+                            {formatPrice(product.costPrice || 0, sourceCurrency)}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4">
+                          {product.soonestExpiryDate ? (
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700">
+                                <Calendar size={12} className="text-gray-400" />
+                                {new Date(product.soonestExpiryDate).toLocaleDateString(undefined, {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric'
+                                })}
+                              </div>
+                              {/* Simple expiry warning logic: if within 30 days */}
+                              {new Date(product.soonestExpiryDate) <= new Date(new Date().setDate(new Date().getDate() + 30)) && (
+                                <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-tighter font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                                  <AlertCircle size={10} />
+                                  Expiring Soon
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <Link
+                            to={`/dashboard/products/${product.id}`}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-900 hover:text-white rounded-lg transition-all text-xs font-bold"
+                          >
+                            <Eye size={14} />
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="p-12 text-center">
+                  <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                    <Package className="w-8 h-8 text-gray-300" />
+                  </div>
+                  <h4 className="text-gray-900 font-bold mb-1">No products found</h4>
+                  <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                    This category doesn't have any products assigned to it yet.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
