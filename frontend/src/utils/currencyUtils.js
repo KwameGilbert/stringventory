@@ -31,6 +31,23 @@ export const convertAmount = (amount, targetCurrency = "GHS", rates = {}, source
   return numericAmount * rate;
 };
 
+// Cache for Intl.NumberFormat instances to avoid expensive recreation
+const formatterCache = new Map();
+
+const getFormatter = (currency, options = {}) => {
+  const key = `${currency}-${JSON.stringify(options)}`;
+  if (!formatterCache.has(key)) {
+    formatterCache.set(key, new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      ...options
+    }));
+  }
+  return formatterCache.get(key);
+};
+
 /**
  * Format a number as a currency string with automatic conversion
  * @param {number|string} amount - Amount in source currency
@@ -40,16 +57,25 @@ export const convertAmount = (amount, targetCurrency = "GHS", rates = {}, source
  * @returns {string} Formatted string (e.g., "$10.00")
  */
 export const formatCurrency = (amount, targetCurrency = "GHS", rates = {}, sourceCurrency = "GHS") => {
-  const converted = convertAmount(amount, targetCurrency, rates, sourceCurrency);
-  const symbol = CURRENCY_SYMBOLS[targetCurrency?.toUpperCase()] || "₵";
+  const target = targetCurrency?.toUpperCase() || "GHS";
+  const converted = convertAmount(amount, target, rates, sourceCurrency);
   
-  return `${symbol}${Number(converted).toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  try {
+    // Try using high-performance Intl formatter
+    return getFormatter(target).format(converted);
+  } catch (e) {
+    // Fallback for untrusted currency codes or environments
+    const symbol = CURRENCY_SYMBOLS[target] || target || "₵";
+    return `${symbol}${Number(converted).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  }
 };
 
 import { useSettings } from "../contexts/SettingsContext";
+
+import { useMemo, useCallback } from "react";
 
 /**
  * Hook-ready formatter that uses the SettingsContext
@@ -59,11 +85,19 @@ export const useCurrency = () => {
   const { settings, rates } = useSettings();
   const targetCurrency = settings?.currency || "GHS";
   
-  return {
-    formatPrice: (amount, sourceCurrency = "GHS") => formatCurrency(amount, targetCurrency, rates, sourceCurrency),
-    convert: (amount, sourceCurrency = "GHS") => convertAmount(amount, targetCurrency, rates, sourceCurrency),
+  const formatPrice = useCallback((amount, sourceCurrency = "GHS") => 
+    formatCurrency(amount, targetCurrency, rates, sourceCurrency), 
+  [targetCurrency, rates]);
+
+  const convert = useCallback((amount, sourceCurrency = "GHS") => 
+    convertAmount(amount, targetCurrency, rates, sourceCurrency), 
+  [targetCurrency, rates]);
+
+  return useMemo(() => ({
+    formatPrice,
+    convert,
     symbol: CURRENCY_SYMBOLS[targetCurrency?.toUpperCase()] || "₵",
     currencyCode: targetCurrency?.toUpperCase(),
     rates: rates || {}
-  };
+  }), [formatPrice, convert, targetCurrency, rates]);
 };

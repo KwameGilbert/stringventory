@@ -130,6 +130,12 @@ export const NotificationProvider = ({ children }) => {
             const registration = await navigator.serviceWorker.ready;
             const publicVapidKey = 'BL3JrSg6sjq0qLorIElteJUHrhM5DqO_rico2_s0tHvIj20YS48G_G9XsPAARCTVn3wRRlsSa3cH6p85Dc2wB0E'; 
             
+            // Proactively unsubscribe existing registration to avoid "applicationServerKey mismatched" errors
+            const existingSubscription = await registration.pushManager.getSubscription();
+            if (existingSubscription) {
+                await existingSubscription.unsubscribe();
+            }
+
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: publicVapidKey
