@@ -59,6 +59,10 @@ export const SettingsProvider = ({ children }) => {
         
         if (newRates) {
             setRates(prev => {
+                // Perform deep equality check to prevent redundant updates
+                const isIdentical = JSON.stringify(prev) === JSON.stringify({ ...prev, ...newRates });
+                if (isIdentical) return prev;
+
                 const updated = { ...prev, ...newRates };
                 saveRatesToCache(updated);
                 return updated;
@@ -140,14 +144,14 @@ export const SettingsProvider = ({ children }) => {
         }
     };
 
-    const value = {
+    const value = React.useMemo(() => ({
         settings,
         currency: settings.currency,
         rates,
         updateSettings,
         refreshSettings: fetchSettingsData,
         loading
-    };
+    }), [settings, rates, updateSettings, fetchSettingsData, loading]);
 
     return (
         <SettingsContext.Provider value={value}>

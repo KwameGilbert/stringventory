@@ -63,6 +63,9 @@ export const notificationService = {
   deleteNotification: async (id) => {
     return await apiClient.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE(id));
   },
+  deleteAllNotifications: async () => {
+    return await apiClient.delete(API_ENDPOINTS.NOTIFICATIONS.DELETE_ALL);
+  },
 };
 
 export default notificationService;

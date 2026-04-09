@@ -173,6 +173,7 @@ export const API_ENDPOINTS = {
     MARK_AS_READ: (id) => `/v1/notifications/${id}/read`,
     MARK_ALL_AS_READ: '/v1/notifications/read-all',
     DELETE: (id) => `/v1/notifications/${id}`,
+    DELETE_ALL: '/v1/notifications/delete-all',
   },
 
   // Settings

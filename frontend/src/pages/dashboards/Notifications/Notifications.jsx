@@ -35,6 +35,7 @@ export default function Notifications() {
     markAsRead, 
     markAllAsRead, 
     deleteNotification,
+    deleteAllNotifications,
     loadNotifications,
     subscribeToPush
   } = useNotifications();
@@ -87,8 +88,8 @@ export default function Notifications() {
   const clearAll = async () => {
     try {
       setActionLoading(true);
-      // Logic for mass deletion if service supports it, or sequential
-      await Promise.all(notifications.map(n => deleteNotification(n.id)));
+      // Integrated bulk delete endpoint
+      await deleteAllNotifications();
       showSuccess("All notifications cleared");
     } catch (err) {
       showError("Failed to clear some notifications");
