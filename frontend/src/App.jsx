@@ -21,6 +21,9 @@ import Login from "./pages/login/Login";
 import ForcePasswordChange from "./pages/login/ForcePasswordChange";
 import PageLoader from "./components/shared/PageLoader";
 
+// Public Page
+const LandingPage = lazy(() => import("./pages/public/LandingPage"));
+
 // Lazy-loaded Dashboard pages
 const Dashboard = lazy(() => import("./pages/dashboards/Dashboard/Dashboard"));
 const Categories = lazy(() => import("./pages/dashboards/Categories/Categories"));
@@ -106,9 +109,10 @@ export default function App() {
                 <Router>
                   <Suspense fallback={<PageLoader />}>
                     <Routes>
-                  {/* Login Routes - No Layout */}
-                  <Route path="/" element={<Login />} />
-                  <Route path="/superadmin/login" element={<SuperadminLogin />} />
+                    {/* Login Routes - No Layout */}
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/superadmin/login" element={<SuperadminLogin />} />
                   <Route path="/force-password-change" element={<ProtectedRoute><ForcePasswordChange /></ProtectedRoute>} />
 
                 {/* Superadmin Routes */}
