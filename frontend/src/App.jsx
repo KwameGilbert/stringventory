@@ -85,6 +85,8 @@ const SuperadminMessaging = lazy(() => import("./pages/superadmin/Messaging/Mess
 const SuperadminNotifications = lazy(() => import("./pages/superadmin/Notifications/Notifications"));
 const SuperadminProfile = lazy(() => import("./pages/superadmin/Profile/Profile"));
 
+const SuperadminLogin = lazy(() => import("./pages/superadmin/login/SuperadminLogin"));
+
 export default function App() {
   const allRoles = [ROLES.CEO, ROLES.MANAGER, ROLES.SALES];
   const managementRoles = [ROLES.CEO, ROLES.MANAGER];
@@ -104,8 +106,9 @@ export default function App() {
                 <Router>
                   <Suspense fallback={<PageLoader />}>
                     <Routes>
-                  {/* Login Route - No Layout */}
+                  {/* Login Routes - No Layout */}
                   <Route path="/" element={<Login />} />
+                  <Route path="/superadmin/login" element={<SuperadminLogin />} />
                   <Route path="/force-password-change" element={<ProtectedRoute><ForcePasswordChange /></ProtectedRoute>} />
 
                 {/* Superadmin Routes */}

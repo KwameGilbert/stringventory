@@ -6,6 +6,10 @@ import { ROLES, normalizeRole } from "../utils/accessControl";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
+    // Check for isolated superadmin session first
+    const superadminStored = localStorage.getItem("stringventory_superadmin_user");
+    if (superadminStored) return JSON.parse(superadminStored);
+
     const storedUser = localStorage.getItem(
       import.meta.env.VITE_AUTH_USER_KEY || "stringventory_user"
     );

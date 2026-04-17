@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
+import superadminAuthService from '../../../services/superadminAuthService';
 import { 
   User, 
   Mail, 
@@ -13,7 +13,12 @@ import {
 } from 'lucide-react';
 
 export default function Profile() {
-  const { user, logout } = useAuth();
+  const user = superadminAuthService.getCurrentUser() || {
+    name: 'Dev Admin',
+    email: 'dev@stringventory.com',
+    role: 'CEO'
+  };
+  const logout = () => superadminAuthService.logout();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -82,32 +87,33 @@ export default function Profile() {
 
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
-        <p className="text-gray-600">Manage your account settings and preferences</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">My Profile</h1>
+        <p className="text-slate-600">Manage your account settings and preferences</p>
       </div>
 
       {/* Profile Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
         {/* Profile Header */}
-        <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 px-6 py-8">
-          <div className="flex items-center gap-6">
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px]"></div>
+          <div className="flex items-center gap-6 relative z-10">
             <div className="relative">
               <img
-                src={user?.avatar || `https://ui-avatars.com/api/?name=${formData.name}&background=ffffff&color=7c3aed&size=100`}
+                src={user?.avatar || `https://ui-avatars.com/api/?name=${formData.name}&background=ffffff&color=0f172a&size=100`}
                 alt={formData.name}
-                className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
+                className="w-24 h-24 rounded-full border-4 border-white shadow-xl"
               />
-              <button className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
-                <Camera className="w-4 h-4 text-gray-600" />
+              <button className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-md hover:bg-slate-50 transition-colors">
+                <Camera className="w-4 h-4 text-slate-600" />
               </button>
             </div>
             <div className="text-white">
-              <h2 className="text-2xl font-bold">{formData.name}</h2>
-              <p className="text-emerald-200 flex items-center gap-2 mt-1">
+              <h2 className="text-3xl font-bold">{formData.name}</h2>
+              <p className="text-emerald-400 font-medium flex items-center gap-2 mt-2">
                 <Shield className="w-4 h-4" />
-                {user?.role || 'Super Administrator'}
+                {user?.role || 'Platform Administrator'}
               </p>
-              <p className="text-emerald-200 flex items-center gap-2 mt-1">
+              <p className="text-slate-300 flex items-center gap-2 mt-1 text-sm">
                 <Mail className="w-4 h-4" />
                 {formData.email}
               </p>

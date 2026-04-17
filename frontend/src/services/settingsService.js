@@ -1,131 +1,115 @@
 /**
- * Settings Management API Service
+ * Settings Management API Service - MOCKED FOR FRONTEND DEV
  */
-
-import { apiClient, API_ENDPOINTS } from './api.client';
 
 export const settingsService = {
   // Business Settings
   getBusinessSettings: async () => {
-    return await apiClient.get(API_ENDPOINTS.SETTINGS.BUSINESS);
+    return Promise.resolve({
+      data: {
+        name: 'StringVentory Global',
+        email: 'support@stringventory.com',
+        phone: '+1 234 567 890',
+        address: '123 Cloud Avenue, Tech City',
+        currency: 'USD',
+        timezone: 'UTC'
+      }
+    });
   },
 
   updateBusinessSettings: async (businessData) => {
-    return await apiClient.put(API_ENDPOINTS.SETTINGS.BUSINESS, businessData);
+    console.log('Mock: Updating business settings', businessData);
+    return Promise.resolve({ data: businessData });
   },
 
   // Notification Settings
   getNotificationSettings: async () => {
-    return await apiClient.get(API_ENDPOINTS.SETTINGS.NOTIFICATIONS);
+    return Promise.resolve({
+      data: {
+        emailNotifications: true,
+        pushNotifications: true,
+        smsNotifications: false,
+        lowStockAlerts: true,
+        subscriptionReminders: true,
+        lowStockThreshold: 10,
+        expiryAlertDays: 30,
+        dashboardRefresh: 5
+      }
+    });
   },
 
   updateNotificationSettings: async (notificationData) => {
-    return await apiClient.put(API_ENDPOINTS.SETTINGS.NOTIFICATIONS, notificationData);
+    console.log('Mock: Updating notification settings', notificationData);
+    return Promise.resolve({ data: notificationData });
   },
 
   // Payment Settings
   getPaymentSettings: async () => {
-    return await apiClient.get(API_ENDPOINTS.SETTINGS.PAYMENT);
-  },
-
-  updatePaymentSettings: async (paymentData) => {
-    return await apiClient.put(API_ENDPOINTS.SETTINGS.PAYMENT, paymentData);
+    return Promise.resolve({
+      data: {
+        gateway: 'stripe',
+        currency: 'USD',
+        payoutFrequency: 'weekly',
+        autoTax: true
+      }
+    });
   },
 
   // API Settings
   getApiSettings: async () => {
-    return await apiClient.get(API_ENDPOINTS.SETTINGS.API);
-  },
-
-  regenerateApiKey: async () => {
-    return await apiClient.post(API_ENDPOINTS.SETTINGS.REGENERATE_API_KEY);
-  },
-
-  // Currency Settings
-  getCurrencySettings: async () => {
-    return await apiClient.get(API_ENDPOINTS.SETTINGS.CURRENCY);
-  },
-
-  updateCurrencySettings: async (currencyData) => {
-    return await apiClient.put(API_ENDPOINTS.SETTINGS.CURRENCY, currencyData);
-  },
-
-  forceFetchRates: async () => {
-    return await apiClient.post(API_ENDPOINTS.SETTINGS.FETCH_LATEST_RATES);
+    return Promise.resolve({
+      data: {
+        apiKey: 'sk_test_51MzS2...vF8y',
+        webhookUrl: 'https://api.stringventory.com/hooks/v1',
+        environment: 'production'
+      }
+    });
   },
 
   // Currency Settings
   getCurrencySettings: async () => {
-    return await apiClient.get(API_ENDPOINTS.SETTINGS.CURRENCY);
+    return Promise.resolve({
+      data: {
+        currency: 'USD',
+        currentCurrency: 'USD',
+        rates: {
+          GHS: 12.5,
+          NGN: 1560.0,
+          KES: 132.0,
+          ZAR: 18.5
+        }
+      }
+    });
   },
 
   updateCurrencySettings: async (currencyData) => {
-    return await apiClient.put(API_ENDPOINTS.SETTINGS.CURRENCY, currencyData);
+    console.log('Mock: Updating currency settings', currencyData);
+    return Promise.resolve({ data: currencyData });
   },
 
   getCurrencyHistory: async (params = {}) => {
-    return await apiClient.get(API_ENDPOINTS.SETTINGS.CURRENCY_HISTORY, { params });
-  },
-
-  forceFetchRates: async () => {
-    return await apiClient.post(API_ENDPOINTS.SETTINGS.FETCH_LATEST_RATES);
-  },
-
-  // Security/Password
-  changePassword: async (currentPassword, newPassword) => {
-    return await apiClient.post('/v1/auth/password/change', {
-      currentPassword,
-      newPassword,
-      current_password: currentPassword, 
-      new_password: newPassword,
-      password: newPassword,
-      password_confirmation: newPassword
+    return Promise.resolve({
+      data: [
+        { date: '2026-04-10', rate: 12.1 },
+        { date: '2026-04-12', rate: 12.3 },
+        { date: '2026-04-15', rate: 12.5 }
+      ]
     });
   },
 
-  // MFA/2FA
-  enableMFA: async (phoneNumber) => {
-    return await apiClient.post('/v1/auth/mfa/enable', {
-      phoneNumber,
-    });
-  },
-
-  disableMFA: async () => {
-    return await apiClient.post('/v1/auth/mfa/disable');
-  },
-
-  // Subscription
+  // Subscription Info
   getSubscriptionInfo: async () => {
-    return await apiClient.get('/v1/subscription');
-  },
-
-  getPricingPlans: async () => {
-    return await apiClient.get('/v1/pricing-plans');
-  },
-
-  upgradePlan: async (planId) => {
-    return await apiClient.post('/v1/subscription/upgrade', { planId });
-  },
-
-  // Billing & Payments
-  getBillingHistory: async (params = {}) => {
-    return await apiClient.get('/v1/billing/history', { params });
-  },
-
-  getPaymentMethods: async () => {
-    return await apiClient.get('/v1/payment-methods');
-  },
-
-  addPaymentMethod: async (cardData) => {
-    return await apiClient.post('/v1/payment-methods', cardData);
-  },
-
-  deletePaymentMethod: async (methodId) => {
-    return await apiClient.delete(`/v1/payment-methods/${methodId}`);
-  },
-
-  setDefaultPaymentMethod: async (methodId) => {
-    return await apiClient.put(`/v1/payment-methods/${methodId}/default`);
+    return Promise.resolve({
+      data: {
+        plan: 'Platform Admin',
+        status: 'active',
+        nextBilling: '2026-05-01',
+        usage: {
+          businesses: 193,
+          users: 1450
+        }
+      }
+    });
   },
 };
 
