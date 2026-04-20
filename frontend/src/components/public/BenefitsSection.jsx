@@ -64,9 +64,9 @@ const BenefitsSection = () => {
               <Zap className="w-4 h-4 text-emerald-600 mr-2" />
               <span className="text-emerald-700 text-sm font-bold uppercase tracking-wider">Benefits</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-8 font-display">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-8 leading-[1.2]">
               Designed for High <br />
-              <span className="text-emerald-600 font-black">Performance Teams</span>
+              <span className="text-emerald-600 font-bold">Performance Teams</span>
             </h2>
             <p className="text-lg text-slate-600 mb-10 leading-relaxed">
               StringVentory isn't just an inventory tool—it's a productivity multiplier. 

@@ -4,7 +4,7 @@ import { TrendingUp, Box } from "lucide-react";
 
 const MacBookFrame = ({ sidebar, children }) => {
   return (
-    <div className="relative w-full max-w-5xl">
+    <div className="relative w-full max-w-6xl">
       {/* FLOATING ELEMENTS */}
       <motion.div 
         animate={{ y: [0, -10, 0] }} 

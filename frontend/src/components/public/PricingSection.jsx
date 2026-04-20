@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Check, Zap } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
-const PricingCard = ({ tier, price, description, features, highlighted }) => (
+const PricingCard = ({ tier, price, interval, description, features, highlighted, onSelect }) => (
   <motion.div 
     variants={{
       hidden: { opacity: 0, y: 30 },
@@ -12,27 +13,27 @@ const PricingCard = ({ tier, price, description, features, highlighted }) => (
       y: -12,
       transition: { duration: 0.3 }
     }}
-    className={`p-8 rounded-[2.5rem] flex flex-col h-full transition-all duration-300 ${
+    className={`p-6 rounded-[1.4rem] flex flex-col h-full transition-all duration-300 ${
       highlighted 
         ? "bg-slate-900 text-white shadow-2xl shadow-emerald-200/20 scale-105 z-10 border-4 border-emerald-500" 
         : "bg-white text-slate-900 border border-slate-100 shadow-xl"
     }`}
   >
     {highlighted && (
-      <div className="bg-emerald-500 text-white text-xs font-black px-4 py-1.5 rounded-full self-start mb-6 uppercase tracking-widest shadow-lg shadow-emerald-500/20">
+      <div className="bg-emerald-500 text-white text-xs font-black px-4 py-1.5 rounded-full self-start mb-4 -mt-10 uppercase tracking-widest shadow-lg shadow-emerald-500/20">
         Most Popular
       </div>
     )}
-    <h3 className="text-2xl font-bold mb-2">{tier}</h3>
-    <div className="flex items-baseline mb-4">
-      <span className="text-4xl font-black">${price}</span>
-      <span className={`text-sm font-bold ml-2 ${highlighted ? "text-slate-400" : "text-slate-500"}`}>/month</span>
+    <h3 className="text-2xl font-semibold mb-2">{tier}</h3>
+    <div className="flex items-baseline mb-2">
+      <span className="text-4xl font-bold">${price}</span>
+      <span className={`text-sm font-bold ml-2 ${highlighted ? "text-slate-400" : "text-slate-500"}`}>/{interval}</span>
     </div>
     <p className={`text-sm mb-8 leading-relaxed font-medium ${highlighted ? "text-slate-400" : "text-slate-500"}`}>
       {description}
     </p>
     
-    <div className="space-y-4 mb-10 flex-1">
+    <div className="space-y-4 mb-6 flex-1">
       {features.map((feature, index) => (
         <div key={index} className="flex items-start">
           <div className={`w-5 h-5 rounded-full flex items-center justify-center mr-3 mt-0.5 ${highlighted ? "bg-emerald-500" : "bg-emerald-100"}`}>
@@ -44,6 +45,7 @@ const PricingCard = ({ tier, price, description, features, highlighted }) => (
     </div>
 
     <motion.button 
+      onClick={() => onSelect({ tier, price, interval, description, features })}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={`w-full py-4 rounded-2xl font-bold transition-all duration-300 ${
@@ -58,10 +60,18 @@ const PricingCard = ({ tier, price, description, features, highlighted }) => (
 );
 
 const PricingSection = () => {
+  const navigate = useNavigate();
+  const [billingCycle, setBillingCycle] = useState("monthly"); // "monthly" or "yearly"
+
+  const handleSelectPlan = (plan) => {
+    navigate("/signup", { state: plan });
+  };
+
   const plans = [
     {
       tier: "Basic",
-      price: "29",
+      price: billingCycle === "monthly" ? "29" : "290",
+      interval: billingCycle === "monthly" ? "mo" : "yr",
       description: "Perfect for small shops and individual retailers getting started.",
       features: [
         "Up to 500 Products",
@@ -73,7 +83,8 @@ const PricingSection = () => {
     },
     {
       tier: "Pro",
-      price: "79",
+      price: billingCycle === "monthly" ? "79" : "790",
+      interval: billingCycle === "monthly" ? "mo" : "yr",
       description: "Everything you need to scale your growing retail business.",
       features: [
         "Unlimited Products",
@@ -87,7 +98,8 @@ const PricingSection = () => {
     },
     {
       tier: "Enterprise",
-      price: "199",
+      price: billingCycle === "monthly" ? "199" : "1990",
+      interval: billingCycle === "monthly" ? "mo" : "yr",
       description: "Advanced features for high-volume, multi-national retailers.",
       features: [
         "Unlimited Everything",
@@ -111,7 +123,7 @@ const PricingSection = () => {
   };
 
   return (
-    <section id="pricing" className="py-24 bg-white relative overflow-hidden max-w-7xl mx-auto">
+    <section id="pricing" className="py-14 bg-white relative overflow-hidden max-w-7xl mx-auto">
       {/* Decorative background components */}
       <div className="absolute top-1/2 left-0 w-64 h-64 bg-slate-50 rounded-full -translate-x-1/2 -z-0 blur-3xl" />
       
@@ -121,20 +133,53 @@ const PricingSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-20"
+          className="text-center mb-8"
         >
           <div className="inline-flex items-center px-4 py-1.5 bg-emerald-100/50 rounded-full mb-4">
             <Zap className="w-4 h-4 text-emerald-600 mr-2" />
             <span className="text-emerald-700 text-sm font-bold uppercase tracking-wider">Pricing Plans</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-display">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-[1.2]">
             Simple Pricing for <br />
-            <span className="text-emerald-600 font-black">Infinite Growth</span>
+            <span className="text-emerald-600 font-bold">Infinite Growth</span>
           </h2>
-          <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+          <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-10">
             Choose the plan that fits your current scale. You can always upgrade 
             as your business grows. No hidden fees or long-term contracts.
           </p>
+
+          {/* Billing Toggle UI */}
+          <div className="flex justify-center items-center gap-4 mb-12">
+             <div className="bg-slate-100 p-1 rounded-2xl flex items-center relative overflow-hidden">
+                <button 
+                  onClick={() => setBillingCycle("monthly")}
+                  className={`relative z-10 px-8 py-2.5 text-xs font-bold uppercase tracking-widest transition-colors ${
+                    billingCycle === "monthly" ? "text-white" : "text-slate-400"
+                  }`}
+                >
+                   Monthly
+                </button>
+                <button 
+                  onClick={() => setBillingCycle("yearly")}
+                  className={`relative z-10 px-8 py-2.5 text-xs font-bold uppercase tracking-widest transition-colors ${
+                    billingCycle === "yearly" ? "text-white" : "text-slate-400"
+                  }`}
+                >
+                   Annually
+                </button>
+                
+                {/* Active Indicator Backdrop */}
+                <motion.div 
+                   animate={{ x: billingCycle === "monthly" ? 0 : "100%" }}
+                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                   className="absolute top-1 left-1 bottom-1 w-[calc(50%-4px)] bg-slate-900 rounded-xl"
+                />
+             </div>
+             
+             <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-emerald-100">
+                <span className="animate-pulse">✨</span> Save 20%
+             </div>
+          </div>
         </motion.div>
 
         <motion.div 
@@ -145,7 +190,7 @@ const PricingSection = () => {
           className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 items-center"
         >
           {plans.map((plan, index) => (
-            <PricingCard key={index} {...plan} />
+            <PricingCard key={index} {...plan} onSelect={handleSelectPlan} />
           ))}
         </motion.div>
       </div>
@@ -154,3 +199,5 @@ const PricingSection = () => {
 };
 
 export default PricingSection;
+
+

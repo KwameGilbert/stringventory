@@ -9,6 +9,15 @@ import {
   Truck, 
   TrendingUp, 
   Box,
+  List,
+  Users,
+  Tag,
+  Receipt,
+  BarChart3,
+  UserCircle,
+  MessageSquare,
+  Bell,
+  Settings,
   RefreshCcw as SyncIcon,
   ShieldCheck as ShieldIcon,
   Zap as ZapIcon
@@ -25,6 +34,18 @@ import ProductsView from "./showcase/ProductsView";
 import SalesView from "./showcase/SalesView";
 import CategoriesView from "./showcase/CategoriesView";
 import SuppliersView from "./showcase/SuppliersView";
+import PurchasesView from "./showcase/PurchasesView";
+import InventoryView from "./showcase/InventoryView";
+import RefundsView from "./showcase/RefundsView";
+import TransactionsView from "./showcase/TransactionsView";
+import CustomersView from "./showcase/CustomersView";
+import ExpenseCategoriesView from "./showcase/ExpenseCategoriesView";
+import ExpensesView from "./showcase/ExpensesView";
+import ReportsView from "./showcase/ReportsView";
+import UsersView from "./showcase/UsersView";
+import MessagingView from "./showcase/MessagingView";
+import NotificationsMenuView from "./showcase/NotificationsMenuView";
+import SettingsView from "./showcase/SettingsView";
 
 /**
  * Premium Interactive Showcase Section
@@ -41,9 +62,18 @@ const ProductShowcase = () => {
     { id: "suppliers", icon: Truck, label: "Suppliers" },
     { id: "products", icon: Package, label: "Products" },
     { id: "purchases", icon: ShoppingCart, label: "Purchases" },
+    { id: "inventory", icon: List, label: "Inventory" },
     { id: "sales", icon: TrendingUp, label: "Sales" },
     { id: "refunds", icon: RefreshCcw, label: "Refunds" },
     { id: "transactions", icon: ArrowRightLeft, label: "Transactions" },
+    { id: "customers", icon: Users, label: "Customers" },
+    { id: "expense-categories", icon: Tag, label: "Expense Categories" },
+    { id: "expenses", icon: Receipt, label: "Expenses" },
+    { id: "reports", icon: BarChart3, label: "Reports" },
+    { id: "users", icon: UserCircle, label: "Users" },
+    { id: "messaging", icon: MessageSquare, label: "Messaging" },
+    { id: "notifications-menu", icon: Bell, label: "Notifications" },
+    { id: "settings", icon: Settings, label: "Settings" },
   ];
 
   return (
@@ -90,9 +120,21 @@ const ProductShowcase = () => {
                    {activeTab === "sales" && <SalesView key="sales" />}
                    {activeTab === "categories" && <CategoriesView key="categories" />}
                    {activeTab === "suppliers" && <SuppliersView key="suppliers" />}
+                   {activeTab === "purchases" && <PurchasesView key="purchases" />}
+                   {activeTab === "inventory" && <InventoryView key="inventory" />}
+                   {activeTab === "refunds" && <RefundsView key="refunds" />}
+                   {activeTab === "transactions" && <TransactionsView key="transactions" />}
+                   {activeTab === "customers" && <CustomersView key="customers" />}
+                   {activeTab === "expense-categories" && <ExpenseCategoriesView key="expense-categories" />}
+                   {activeTab === "expenses" && <ExpensesView key="expenses" />}
+                   {activeTab === "reports" && <ReportsView key="reports" />}
+                   {activeTab === "users" && <UsersView key="users" />}
+                   {activeTab === "messaging" && <MessagingView key="messaging" />}
+                   {activeTab === "notifications-menu" && <NotificationsMenuView key="notifications-menu" />}
+                   {activeTab === "settings" && <SettingsView key="settings" />}
                    
-                   {/* Fallback for unimplemented tabs */}
-                   {!["dashboard", "products", "sales", "categories", "suppliers"].includes(activeTab) && (
+                   {/* Fallback for unimplemented tabs (should be empty now) */}
+                   {!["dashboard", "products", "sales", "categories", "suppliers", "purchases", "inventory", "refunds", "transactions", "customers", "expense-categories", "expenses", "reports", "users", "messaging", "notifications-menu", "settings"].includes(activeTab) && (
                      <motion.div 
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                         className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4"
