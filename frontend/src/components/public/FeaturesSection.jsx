@@ -14,6 +14,7 @@ import {
   Layers
 } from "lucide-react";
 import { motion } from "framer-motion";
+import BackgroundLines from "./BackgroundLines";
 
 const FeatureCard = ({ icon: Icon, title, description, color }) => (
   <motion.div 
@@ -25,7 +26,7 @@ const FeatureCard = ({ icon: Icon, title, description, color }) => (
       y: -8,
       transition: { duration: 0.3 }
     }}
-    className="p-6 bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 group cursor-default h-full"
+    className="p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 group cursor-default h-full"
   >
     <motion.div 
       whileHover={{ scale: 1.1, rotate: 5 }}
@@ -115,8 +116,10 @@ const FeaturesSection = () => {
   };
 
   return (
-    <section id="features" className="py-24 bg-slate-50/50 max-w-7xl mx-auto">
-      <div className="container mx-auto px-6">
+    <section id="features" className="py-14 bg-slate-50/50 max-w-7xl mx-auto relative overflow-hidden">
+      <BackgroundLines />
+      
+      <div className="container mx-auto px-6 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -128,9 +131,9 @@ const FeaturesSection = () => {
             <Zap className="w-4 h-4 text-emerald-600 mr-2" />
             <span className="text-emerald-700 text-sm font-bold uppercase tracking-wider">Features</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-display">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-display leading-snug">
             Everything You Need to <br />
-            <span className="text-emerald-600 font-black">Scale Your Business</span>
+            <span className="text-emerald-600 font-semibold">Scale Your Business</span>
           </h2>
           <p className="text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto">
             A powerful suite of tools designed to remove friction from your daily operations 
@@ -142,7 +145,7 @@ const FeaturesSection = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true, margin: "-100px" }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
         >
           {features.map((feature, index) => (

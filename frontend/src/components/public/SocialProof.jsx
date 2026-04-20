@@ -11,14 +11,10 @@ const SocialProof = () => {
   ];
 
   return (
-    <section className="py-12 bg-white border-y border-slate-100 max-w-7xl mx-auto overflow-hidden relative">
-      {/* Gradient Masks */}
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10" />
-
+    <section className="py-8 max-w-7xl mx-auto overflow-hidden relative">
       <div className="container mx-auto px-6 mb-8">
         <p className="text-center text-sm font-bold text-slate-400 uppercase tracking-widest">
-          Trusted by 2,000+ businesses worldwide
+          Trusted by 20+ businesses worldwide
         </p>
       </div>
       

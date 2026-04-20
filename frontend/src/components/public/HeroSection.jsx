@@ -34,7 +34,7 @@ const HeroSection = () => {
           y: [0, -20, 0]
         }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-100/40 rounded-full blur-3xl -z-10" 
+        className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-200/50 rounded-full blur-3xl -z-10" 
       />
       <motion.div 
         animate={{ 
@@ -44,7 +44,7 @@ const HeroSection = () => {
           y: [0, 30, 0]
         }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-100/30 rounded-full blur-3xl -z-10" 
+        className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-200/40 rounded-full blur-3xl -z-10" 
       />
 
       <div className="container mx-auto px-6">
