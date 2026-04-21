@@ -7,6 +7,9 @@ import ProductShowcase from "../../components/public/ProductShowcase";
 import HowItWorks from "../../components/public/HowItWorks";
 import BenefitsSection from "../../components/public/BenefitsSection";
 import PricingSection from "../../components/public/PricingSection";
+import TestimonialsSection from "../../components/public/TestimonialsSection";
+import ComparisonSection from "../../components/public/ComparisonSection";
+import FAQSection from "../../components/public/FAQSection";
 import CTASection from "../../components/public/CTASection";
 import LandingFooter from "../../components/public/LandingFooter";
 
@@ -22,6 +25,9 @@ const LandingPage = () => {
         <HowItWorks />
         <BenefitsSection />
         <PricingSection />
+        <TestimonialsSection />
+        <ComparisonSection />
+        <FAQSection />
         <CTASection />
       </main>
       <LandingFooter />
