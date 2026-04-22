@@ -23,7 +23,7 @@ const LandingFooter = () => {
         { name: "Careers", href: "#" },
         { name: "Blog", href: "#" },
         { name: "Partners", href: "#" },
-        { name: "Contact", href: "#" },
+        { name: "Contact", href: "/contact" },
       ],
     },
     {

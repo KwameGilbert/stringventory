@@ -109,7 +109,7 @@ const HowItWorks = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="flex flex-col lg:flex-row items-start justify-between gap-12 lg:gap-4 relative"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 relative"
         >
           {steps.map((step, index) => (
             <Step 

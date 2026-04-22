@@ -14,7 +14,7 @@ import {
   Layers
 } from "lucide-react";
 import { motion } from "framer-motion";
-import BackgroundLines from "./BackgroundLines";
+import BackgroundLines from "../../shared/BackgroundLines";
 
 const FeatureCard = ({ icon: Icon, title, description, color }) => (
   <motion.div 

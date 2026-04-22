@@ -24,28 +24,28 @@ import {
 } from "lucide-react";
 
 // Showcase Components
-import MacBookFrame from "./showcase/MacBookFrame";
-import ShowcaseSidebar from "./showcase/ShowcaseSidebar";
-import ShowcaseHeader from "./showcase/ShowcaseHeader";
+import MacBookFrame from "../../showcase/MacBookFrame";
+import ShowcaseSidebar from "../../showcase/ShowcaseSidebar";
+import ShowcaseHeader from "../../showcase/ShowcaseHeader";
 
 // View Tabs
-import DashboardView from "./showcase/DashboardView";
-import ProductsView from "./showcase/ProductsView";
-import SalesView from "./showcase/SalesView";
-import CategoriesView from "./showcase/CategoriesView";
-import SuppliersView from "./showcase/SuppliersView";
-import PurchasesView from "./showcase/PurchasesView";
-import InventoryView from "./showcase/InventoryView";
-import RefundsView from "./showcase/RefundsView";
-import TransactionsView from "./showcase/TransactionsView";
-import CustomersView from "./showcase/CustomersView";
-import ExpenseCategoriesView from "./showcase/ExpenseCategoriesView";
-import ExpensesView from "./showcase/ExpensesView";
-import ReportsView from "./showcase/ReportsView";
-import UsersView from "./showcase/UsersView";
-import MessagingView from "./showcase/MessagingView";
-import NotificationsMenuView from "./showcase/NotificationsMenuView";
-import SettingsView from "./showcase/SettingsView";
+import DashboardView from "../../showcase/DashboardView";
+import ProductsView from "../../showcase/ProductsView";
+import SalesView from "../../showcase/SalesView";
+import CategoriesView from "../../showcase/CategoriesView";
+import SuppliersView from "../../showcase/SuppliersView";
+import PurchasesView from "../../showcase/PurchasesView";
+import InventoryView from "../../showcase/InventoryView";
+import RefundsView from "../../showcase/RefundsView";
+import TransactionsView from "../../showcase/TransactionsView";
+import CustomersView from "../../showcase/CustomersView";
+import ExpenseCategoriesView from "../../showcase/ExpenseCategoriesView";
+import ExpensesView from "../../showcase/ExpensesView";
+import ReportsView from "../../showcase/ReportsView";
+import UsersView from "../../showcase/UsersView";
+import MessagingView from "../../showcase/MessagingView";
+import NotificationsMenuView from "../../showcase/NotificationsMenuView";
+import SettingsView from "../../showcase/SettingsView";
 
 /**
  * Premium Interactive Showcase Section
@@ -77,7 +77,7 @@ const ProductShowcase = () => {
   ];
 
   return (
-    <section className="relative py-24 px-6 overflow-hidden bg-slate-50/50" id="product-showcase">
+    <section className="relative py-14 px-6 overflow-hidden bg-slate-50/50" id="product-showcase">
       <div className="max-w-7xl mx-auto flex flex-col items-center">
         {/* HEADER */}
         <div className="text-center mb-16">
@@ -98,55 +98,51 @@ const ProductShowcase = () => {
         </div>
 
         {/* INTERACTIVE MACBOOK MOCKUP */}
-        <MacBookFrame 
-          sidebar={
-            <ShowcaseSidebar 
-              menuItems={menuItems} 
-              activeTab={activeTab} 
-              setActiveTab={setActiveTab} 
-            />
-          }
-        >
-          <main className="flex-1 flex flex-col bg-[#f8fafc] overflow-hidden">
-             <ShowcaseHeader 
-               searchQuery={searchQuery} 
-               setSearchQuery={setSearchQuery} 
-             />
+        <div className="w-full max-w-6xl mx-auto px-4 perspective-1000">
+          <div className="relative transform transition-all duration-1000 hover:rotate-y-2 group">
+            {/* Responsiveness Wrapper: Scales the frame down on smaller screens */}
+            <div className="scale-[0.4] sm:scale-[0.5] md:scale-[0.75] lg:scale-100 origin-top transition-transform duration-500 mb-[-30%] sm:mb-[-20%] md:mb-[-10%] lg:mb-0">
+               <MacBookFrame 
+                sidebar={
+                  <ShowcaseSidebar 
+                    menuItems={menuItems} 
+                    activeTab={activeTab} 
+                    setActiveTab={setActiveTab} 
+                  />
+                }
+              >
+                <main className="flex-1 flex flex-col bg-[#f8fafc] overflow-hidden">
+                   <ShowcaseHeader 
+                     searchQuery={searchQuery} 
+                     setSearchQuery={setSearchQuery} 
+                   />
 
-             <div className="flex-1 p-8 overflow-y-auto custom-scrollbar">
-                <AnimatePresence mode="wait">
-                   {activeTab === "dashboard" && <DashboardView key="dashboard" />}
-                   {activeTab === "products" && <ProductsView key="products" />}
-                   {activeTab === "sales" && <SalesView key="sales" />}
-                   {activeTab === "categories" && <CategoriesView key="categories" />}
-                   {activeTab === "suppliers" && <SuppliersView key="suppliers" />}
-                   {activeTab === "purchases" && <PurchasesView key="purchases" />}
-                   {activeTab === "inventory" && <InventoryView key="inventory" />}
-                   {activeTab === "refunds" && <RefundsView key="refunds" />}
-                   {activeTab === "transactions" && <TransactionsView key="transactions" />}
-                   {activeTab === "customers" && <CustomersView key="customers" />}
-                   {activeTab === "expense-categories" && <ExpenseCategoriesView key="expense-categories" />}
-                   {activeTab === "expenses" && <ExpensesView key="expenses" />}
-                   {activeTab === "reports" && <ReportsView key="reports" />}
-                   {activeTab === "users" && <UsersView key="users" />}
-                   {activeTab === "messaging" && <MessagingView key="messaging" />}
-                   {activeTab === "notifications-menu" && <NotificationsMenuView key="notifications-menu" />}
-                   {activeTab === "settings" && <SettingsView key="settings" />}
-                   
-                   {/* Fallback for unimplemented tabs (should be empty now) */}
-                   {!["dashboard", "products", "sales", "categories", "suppliers", "purchases", "inventory", "refunds", "transactions", "customers", "expense-categories", "expenses", "reports", "users", "messaging", "notifications-menu", "settings"].includes(activeTab) && (
-                     <motion.div 
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4"
-                     >
-                        <SyncIcon className="w-12 h-12 animate-spin-slow opacity-20" />
-                        <p className="text-sm font-medium italic">Component for "{activeTab}" is coming soon...</p>
-                     </motion.div>
-                   )}
-                </AnimatePresence>
-             </div>
-          </main>
-        </MacBookFrame>
+                   <div className="flex-1 p-8 overflow-y-auto custom-scrollbar">
+                      <AnimatePresence mode="wait">
+                         {activeTab === "dashboard" && <DashboardView key="dashboard" />}
+                         {activeTab === "products" && <ProductsView key="products" />}
+                         {activeTab === "sales" && <SalesView key="sales" />}
+                         {activeTab === "categories" && <CategoriesView key="categories" />}
+                         {activeTab === "suppliers" && <SuppliersView key="suppliers" />}
+                         {activeTab === "purchases" && <PurchasesView key="purchases" />}
+                         {activeTab === "inventory" && <InventoryView key="inventory" />}
+                         {activeTab === "refunds" && <RefundsView key="refunds" />}
+                         {activeTab === "transactions" && <TransactionsView key="transactions" />}
+                         {activeTab === "customers" && <CustomersView key="customers" />}
+                         {activeTab === "expense-categories" && <ExpenseCategoriesView key="expense-categories" />}
+                         {activeTab === "expenses" && <ExpensesView key="expenses" />}
+                         {activeTab === "reports" && <ReportsView key="reports" />}
+                         {activeTab === "users" && <UsersView key="users" />}
+                         {activeTab === "messaging" && <MessagingView key="messaging" />}
+                         {activeTab === "notifications-menu" && <NotificationsMenuView key="notifications-menu" />}
+                         {activeTab === "settings" && <SettingsView key="settings" />}
+                      </AnimatePresence>
+                   </div>
+                </main>
+              </MacBookFrame>
+            </div>
+          </div>
+        </div>
 
         {/* BOTTOM FEATURES BAR */}
         <div className="mt-40 grid grid-cols-2 md:grid-cols-4 gap-12 w-full">

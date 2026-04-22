@@ -3,7 +3,7 @@ import { Search, Calendar, Bell } from "lucide-react";
 
 const ShowcaseHeader = ({ searchQuery, setSearchQuery }) => {
   return (
-    <header className="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-8 shrink-0">
+    <header className="h-16 md:h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 md:px-8 shrink-0">
        <div className="flex items-center gap-4 flex-1">
           <div className="relative w-full max-w-sm group">
              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-emerald-500 transition-colors" />

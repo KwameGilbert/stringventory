@@ -24,7 +24,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden bg-[#fafafa] max-w-7xl mx-auto">
+    <section className="relative pt-20 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-[#fafafa] max-w-7xl mx-auto font-sans">
       {/* Background Orbs */}
       <motion.div 
         animate={{ 
@@ -66,7 +66,7 @@ const HeroSection = () => {
 
             <motion.h1 
               variants={itemVariants}
-              className="text-6xl font-semibold text-slate-900 leading-[1.05] tracking-tight mb-8"
+              className="text-4xl sm:text-5xl md:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight mb-8 font-sans"
             >
               Manage your <br />
               inventory <span className="bg-clip-text text-transparent bg-linear-to-r from-violet-500 to-emerald-400">smarter,</span> <br />
@@ -75,7 +75,7 @@ const HeroSection = () => {
 
             <motion.p 
               variants={itemVariants}
-              className="text-xl text-slate-500 mb-12 max-w-xl leading-relaxed"
+              className="text-xl text-slate-500 mb-12 max-w-xl leading-relaxed font-sans"
             >
               All-in-one inventory, sales, and financial tracking for modern businesses. 
               Real-time stock, multi-channel sales, and beautiful analytics.
@@ -88,7 +88,7 @@ const HeroSection = () => {
               <motion.button 
                 whileHover={{ scale: 1.05, backgroundColor: "#047857" }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center group shadow-lg shadow-emerald-200"
+                className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center group shadow-lg shadow-emerald-200 font-sans"
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -96,7 +96,7 @@ const HeroSection = () => {
               <motion.button 
                 whileHover={{ scale: 1.05, backgroundColor: "#ffffff", borderColor: "#cbd5e1" }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto px-8 py-4 bg-slate-50 text-slate-600 font-bold rounded-xl border border-slate-200 transition-all duration-300 flex items-center justify-center space-x-2"
+                className="w-full sm:w-auto px-8 py-4 bg-slate-50 text-slate-600 font-bold rounded-xl border border-slate-200 transition-all duration-300 flex items-center justify-center space-x-2 font-sans"
               >
                 <Play className="w-5 h-5 fill-slate-400 text-slate-400" />
                 <span>View Demo</span>

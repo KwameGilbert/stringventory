@@ -4,7 +4,7 @@ import { TrendingUp, Box } from "lucide-react";
 
 const MacBookFrame = ({ sidebar, children }) => {
   return (
-    <div className="relative w-full max-w-6xl">
+    <div className="relative w-full max-w-6xl px-4 md:px-0">
       {/* FLOATING ELEMENTS */}
       <motion.div 
         animate={{ y: [0, -10, 0] }} 
@@ -39,10 +39,10 @@ const MacBookFrame = ({ sidebar, children }) => {
       </motion.div>
 
       {/* MACBOOK FRAME */}
-      <div className="relative transform transition-all duration-700 hover:scale-[1.01] flex flex-col items-center">
-         {/* SCREEN */}
-         <div className="relative bg-[#1e1e1e] rounded-[3rem] p-3 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border-[3px] border-[#2a2a2a] w-full aspect-[16/10] overflow-hidden">
-            <div className="bg-white h-full w-full rounded-[2.2rem] overflow-hidden flex flex-col md:flex-row border border-[#333]">
+      <div className="relative w-full overflow-hidden md:overflow-visible flex flex-col items-center">
+         {/* SCREEN CONTAINER WITH ASPECT RATIO */}
+         <div className="relative w-full aspect-[16/10] bg-[#1e1e1e] rounded-[1.5rem] md:rounded-[3rem] p-1 md:p-3 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border border-[#2a2a2a] overflow-hidden">
+            <div className="bg-white h-full w-full rounded-[1rem] md:rounded-[2.2rem] overflow-hidden flex border border-[#333]">
                {sidebar}
                {children}
             </div>
@@ -53,9 +53,9 @@ const MacBookFrame = ({ sidebar, children }) => {
          </div>
 
          {/* BASE */}
-         <div className="relative w-[110%] -mt-1 h-6 bg-[#2a2a2a] rounded-b-2xl shadow-2xl flex justify-center border-t border-white/5">
+         {/* <div className="relative w-[110%] -mt-1 h-6 bg-[#2a2a2a] rounded-b-2xl shadow-2xl flex justify-center border-t border-white/5">
             <div className="w-40 h-1.5 bg-black/40 rounded-full mt-1.5" />
-         </div>
+         </div> */}
       </div>
 
       {/* SHADOW FOR MACBOOK BASE */}

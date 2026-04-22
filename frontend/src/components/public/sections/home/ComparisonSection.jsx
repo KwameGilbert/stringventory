@@ -62,7 +62,7 @@ const ComparisonSection = () => {
   };
 
   return (
-    <section className="py-24 bg-white max-w-7xl mx-auto px-6" id="comparison">
+    <section className="py-14 bg-white max-w-7xl mx-auto px-6" id="comparison">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <motion.div 
@@ -81,23 +81,23 @@ const ComparisonSection = () => {
         </div>
 
         {/* COMPARISON TABLE */}
-        <div className="overflow-x-auto rounded-[2.5rem] border border-slate-100 shadow-2xl">
+        <div className="overflow-x-auto rounded-[1.8rem] border border-slate-100 shadow-xl">
            <table className="w-full text-center border-collapse bg-white min-w-[800px]">
               <thead>
                  <tr className="bg-slate-900 text-white">
-                    <th className="px-8 py-10 text-left text-lg font-bold">Features</th>
-                    <th className="px-8 py-10">
+                    <th className="px-8 py-6 text-left text-lg font-bold">Features</th>
+                    <th className="px-8 py-6">
                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Basic</p>
                        <p className="text-2xl font-bold">$29<span className="text-xs text-slate-500 font-medium lowercase">/mo</span></p>
                     </th>
-                    <th className="px-8 py-10 relative">
-                       <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-emerald-500/20">
+                    <th className="px-8 py-6 relative">
+                       <div className="absolute top-6 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-emerald-500/20">
                           Most Popular
                        </div>
                        <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Professional</p>
                        <p className="text-2xl font-bold">$79<span className="text-xs text-slate-500 font-medium lowercase">/mo</span></p>
                     </th>
-                    <th className="px-8 py-10">
+                    <th className="px-8 py-6">
                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Enterprise</p>
                        <p className="text-2xl font-bold">$199<span className="text-xs text-slate-500 font-medium lowercase">/mo</span></p>
                     </th>
@@ -123,16 +123,16 @@ const ComparisonSection = () => {
                  ))}
                  {/* Bottom Static CTA Bar */}
                  <tr className="bg-slate-900 border-none">
-                    <td className="px-8 py-10 text-left text-white">
+                    <td className="px-8 py-6 text-left text-white">
                        <p className="text-sm font-bold">Ready to scale your inventory?</p>
                     </td>
-                    <td className="px-8 py-10">
+                    <td className="px-8 py-6">
                        <button className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white text-white hover:text-slate-900 text-[10px] font-black uppercase tracking-widest transition-all">Select</button>
                     </td>
-                    <td className="px-8 py-10 bg-emerald-500 shadow-xl">
+                    <td className="px-8 py-6 bg-emerald-500 shadow-xl">
                        <button className="px-6 py-2.5 rounded-xl bg-white text-emerald-600 shadow-lg shadow-emerald-900/10 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95">Upgrade to Pro</button>
                     </td>
-                    <td className="px-8 py-10">
+                    <td className="px-8 py-6">
                        <button className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white text-white hover:text-slate-900 text-[10px] font-black uppercase tracking-widest transition-all">Contact Sales</button>
                     </td>
                  </tr>

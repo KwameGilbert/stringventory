@@ -9,26 +9,26 @@ const DashboardView = () => (
     exit={{ opacity: 0, y: -10 }}
     className="space-y-6"
   >
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {[
         { label: "Total Revenue", value: "$128,430", trend: "+12.5%", isUp: true, color: "text-emerald-600" },
         { label: "Active Orders", value: "1,240", trend: "+8.2%", isUp: true, color: "text-sky-600" },
         { label: "Stock Level", value: "84%", trend: "-2.1%", isUp: false, color: "text-amber-600" },
         { label: "Total Customers", value: "12,400", trend: "+5.4%", isUp: true, color: "text-purple-600" }
       ].map((stat, i) => (
-        <div key={i} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-          <h4 className="text-xl font-semibold text-slate-900">{stat.value}</h4>
-          <div className={`mt-2 flex items-center text-[10px] font-bold ${stat.isUp ? 'text-emerald-500' : 'text-rose-500'}`}>
-             {stat.isUp ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
+        <div key={i} className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+          <p className="text-[8px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+          <h4 className="text-sm md:text-xl font-semibold text-slate-900">{stat.value}</h4>
+          <div className={`mt-1 md:mt-2 flex items-center text-[8px] md:text-[10px] font-bold ${stat.isUp ? 'text-emerald-500' : 'text-rose-500'}`}>
+             {stat.isUp ? <TrendingUp className="w-2 md:w-3 h-2 md:h-3 mr-1" /> : <TrendingDown className="w-2 md:w-3 h-2 md:h-3 mr-1" />}
              {stat.trend}
           </div>
         </div>
       ))}
     </div>
 
-    <div className="grid grid-cols-12 gap-6">
-      <div className="col-span-8 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="lg:col-span-8 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-slate-900 text-sm">Monthly Performance</h3>
           <div className="flex gap-2">
@@ -44,7 +44,7 @@ const DashboardView = () => (
           </svg>
         </div>
       </div>
-      <div className="col-span-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center justify-center">
+      <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center justify-center">
           <h3 className="font-bold text-slate-900 text-sm mb-4 w-full">Payment Distribution</h3>
           <div className="relative w-32 h-32">
              <svg viewBox="0 0 100 100" className="rotate-[-90deg]">

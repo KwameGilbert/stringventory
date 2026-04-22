@@ -57,21 +57,21 @@ const ProductsView = () => (
     </div>
 
     {/* Stat Cards Row */}
-    <div className="grid grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
        {[
          { label: "Total Products", value: "17", icon: Package, color: "text-sky-500", bg: "bg-sky-50" },
          { label: "Active Products", value: "17", icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50" },
          { label: "Low Stock Items", value: "0", sub: "+12 out of stock", icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-50" }
        ].map((stat, i) => (
-         <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4 group hover:shadow-md transition-shadow">
-            <div className={`w-14 h-14 rounded-2xl ${stat.bg} flex items-center justify-center ${stat.color} transition-transform group-hover:scale-110`}>
-               <stat.icon className="w-6 h-6" />
+         <div key={i} className="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-100 shadow-sm flex items-center gap-4 group hover:shadow-md transition-shadow">
+            <div className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl ${stat.bg} flex items-center justify-center ${stat.color} transition-transform group-hover:scale-110`}>
+               <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
             </div>
             <div>
-               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">{stat.label}</p>
+               <p className="text-[8px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-widest">{stat.label}</p>
                <div className="flex items-baseline gap-2">
-                  <h4 className="text-2xl font-bold text-slate-900">{stat.value}</h4>
-                  {stat.sub && <p className="text-[10px] font-bold text-rose-500">{stat.sub}</p>}
+                  <h4 className="text-lg md:text-2xl font-bold text-slate-900">{stat.value}</h4>
+                  {stat.sub && <p className="text-[8px] md:text-[10px] font-bold text-rose-500 hidden md:block">{stat.sub}</p>}
                </div>
             </div>
          </div>
@@ -79,8 +79,8 @@ const ProductsView = () => (
     </div>
 
     {/* Products Table */}
-    <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden min-h-[400px]">
-       <table className="w-full text-left">
+    <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-x-auto custom-scrollbar min-h-[400px]">
+       <table className="w-full text-left min-w-[1000px]">
           <thead>
              <tr className="border-b border-slate-50">
                 <th className="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Product</th>

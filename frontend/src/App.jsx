@@ -23,6 +23,7 @@ import PageLoader from "./components/shared/PageLoader";
 
 // Public Page
 const LandingPage = lazy(() => import("./pages/public/LandingPage"));
+const ContactPage = lazy(() => import("./pages/public/ContactPage"));
 const CheckoutPage = lazy(() => import("./pages/public/CheckoutPage"));
 
 // Lazy-loaded Dashboard pages
@@ -112,6 +113,7 @@ export default function App() {
                     <Routes>
                     {/* Login Routes - No Layout */}
                     <Route path="/" element={<LandingPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
                     <Route path="/signup" element={<CheckoutPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/superadmin/login" element={<SuperadminLogin />} />
