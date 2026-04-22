@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import superadminService from '../../../services/superadminService';
 import { showError } from '../../../utils/alerts';
 import { useCurrency } from '../../../utils/currencyUtils';
+import PlanComparisonTable from '../../../components/superadmin/PricingPlans/PlanComparisonTable';
 
 const extractPlans = (response) => {
   const payload = response?.data || response || {};
@@ -65,6 +66,8 @@ export default function PricingPlans() {
     avgRevenuePerUser: 0,
     planStats: {}
   });
+  const [activeTab, setActiveTab] = useState('overview');
+  const [comparisonData, setComparisonData] = useState([]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -103,6 +106,10 @@ export default function PricingPlans() {
           avgRevenuePerUser,
           planStats,
         });
+
+        // Fetch comparison data
+        const comparisonRes = await superadminService.getPlanComparison();
+        setComparisonData(comparisonRes?.data || []);
       } catch (error) {
         console.error('Error fetching pricing stats:', error);
         showError(error?.message || 'Failed to load pricing plans');
@@ -149,8 +156,36 @@ export default function PricingPlans() {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* Tabs */}
+      <div className="border-b border-gray-200">
+        <nav className="flex space-x-8">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'overview' 
+                ? 'border-emerald-600 text-emerald-600' 
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Plans Overview
+          </button>
+          <button
+            onClick={() => setActiveTab('comparison')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'comparison' 
+                ? 'border-emerald-600 text-emerald-600' 
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Comparison Matrix
+          </button>
+        </nav>
+      </div>
+
+      {activeTab === 'overview' ? (
+        <>
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
@@ -312,6 +347,10 @@ export default function PricingPlans() {
           );
         })}
       </div>
+    </>
+  ) : (
+    <PlanComparisonTable comparisonData={comparisonData} />
+  )}
 
       {/* Plan Details Modal (simple version) */}
       {selectedPlan && (

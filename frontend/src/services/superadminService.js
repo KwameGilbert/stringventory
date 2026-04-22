@@ -218,6 +218,39 @@ export const superadminService = {
       }
     });
   },
+
+  getPlanComparison: async () => {
+    return Promise.resolve({
+      data: [
+        {
+          category: "Stock Management",
+          features: [
+            { name: "Product Limit", starter: "500", pro: "5000", enterprise: "Unlimited" },
+            { name: "Bulk Import/Export", starter: true, pro: true, enterprise: true },
+            { name: "Low Stock Alerts", starter: true, pro: true, enterprise: true },
+            { name: "Barcode Generation", starter: false, pro: true, enterprise: true },
+            { name: "Multi-location", starter: "1 Store", pro: "5 Stores", enterprise: "Unlimited" },
+          ]
+        },
+        {
+          category: "Sales & CRM",
+          features: [
+            { name: "Point of Sale (POS)", starter: true, pro: true, enterprise: true },
+            { name: "Customer Profiles", starter: "Basic", pro: "Advanced", enterprise: "Enterprise" },
+            { name: "Bulk Discounts", starter: false, pro: true, enterprise: true },
+          ]
+        },
+        {
+          category: "Analytics & Reports",
+          features: [
+            { name: "Sales Reports", starter: "Basic", pro: "Detailed", enterprise: "Custom" },
+            { name: "Inventory Forecasting", starter: false, pro: true, enterprise: true },
+            { name: "Tax Management", starter: "Basic", pro: "Multi-Tax", enterprise: "Custom" },
+          ]
+        }
+      ]
+    });
+  }
 };
 
 export default superadminService;
