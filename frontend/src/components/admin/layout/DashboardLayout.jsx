@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "./Header";
-import Sidebar from "./Siderbar";
+import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 import { DashboardDateFilterProvider } from "../../../contexts/DashboardDateFilterContext";
 

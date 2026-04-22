@@ -14,59 +14,8 @@ import RecentBusinessesTable from '../../../components/superadmin/Dashboard/Rece
 import superadminService from '../../../services/superadminService';
 import { showError } from '../../../utils/alerts';
 import { useCurrency } from '../../../utils/currencyUtils';
-
-const extractBusinesses = (response) => {
-  const payload = response?.data || response || {};
-
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload.businesses)) return payload.businesses;
-  if (Array.isArray(payload.items)) return payload.items;
-  if (Array.isArray(payload.results)) return payload.results;
-  if (Array.isArray(payload.data)) return payload.data;
-  if (Array.isArray(payload.data?.businesses)) return payload.data.businesses;
-
-  return [];
-};
-
-const extractAnalytics = (response) => {
-  const payload = response?.data || response || {};
-
-  if (payload?.analytics) return payload.analytics;
-  if (payload?.data?.analytics) return payload.data.analytics;
-  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
-
-  return payload;
-};
-
-const normalizeBusiness = (business) => ({
-  ...business,
-  id: business?.id,
-  name: business?.name || business?.businessName || 'Unnamed Business',
-  email: business?.email || business?.ownerEmail || '',
-  subscription_plan: business?.subscription_plan || business?.subscriptionPlan || business?.plan || 'starter',
-  status: String(business?.status || 'active').toLowerCase(),
-  current_usage: {
-    total_users:
-      Number(business?.current_usage?.total_users) ||
-      Number(business?.currentUsage?.totalUsers) ||
-      Number(business?.totalUsers) ||
-      0,
-  },
-  usage_limits: {
-    maxUsers:
-      Number(business?.usage_limits?.maxUsers) ||
-      Number(business?.usageLimits?.maxUsers) ||
-      Number(business?.planLimits?.maxUsers) ||
-      0,
-  },
-  mrr:
-    Number(business?.mrr) ||
-    Number(business?.monthlyRecurringRevenue) ||
-    Number(business?.revenue?.mrr) ||
-    0,
-  created_at: business?.created_at || business?.createdAt || new Date().toISOString(),
-  logo_url: business?.logo_url || business?.logoUrl || null,
-});
+import { extractBusinesses, normalizeBusiness } from '../../../models/business';
+import { extractAnalytics } from '../../../models/analytics';
 
 export default function SuperadminDashboard() {
   const [stats, setStats] = useState({

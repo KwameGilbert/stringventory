@@ -7,16 +7,7 @@ import AnalyticsSystem from './tabs/AnalyticsSystem';
 import superadminService from '../../../services/superadminService';
 import { showError } from '../../../utils/alerts';
 import { useCurrency } from '../../../utils/currencyUtils';
-
-const extractAnalytics = (response) => {
-  const payload = response?.data || response || {};
-
-  if (payload?.analytics) return payload.analytics;
-  if (payload?.data?.analytics) return payload.data.analytics;
-  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
-
-  return payload;
-};
+import { extractAnalytics } from '../../../models/analytics';
 
 const normalizeAnalyticsData = (raw) => {
   const kpiSource = raw?.kpi || {};
