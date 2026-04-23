@@ -1,8 +1,0 @@
-[
-  { "month": "Jul", "revenue": 3500, "projected": 4000 },
-  { "month": "Aug", "revenue": 3000, "projected": 3000 },
-  { "month": "Sep", "revenue": 1900, "projected": 2000 },
-  { "month": "Oct", "revenue": 1600, "projected": 1800 },
-  { "month": "Nov", "revenue": 3013.89, "projected": 3000, "isCurrent": true },
-  { "month": "Dec", "revenue": 4000, "projected": 4200 }
-]

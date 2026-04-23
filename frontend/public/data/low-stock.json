@@ -1,6 +1,0 @@
-[
-  { "name": "Coca-Cola Classic 500ml", "current": 45, "threshold": 50, "unit": "Crate" },
-  { "name": "Pepsi 500ml", "current": 38, "threshold": 40, "unit": "Crate" },
-  { "name": "Sprite 500ml", "current": 12, "threshold": 30, "unit": "Crate" },
-  { "name": "Orange Juice 1L", "current": 8, "threshold": 10, "unit": "Carton" }
-]

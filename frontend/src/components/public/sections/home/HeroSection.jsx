@@ -28,22 +28,18 @@ const HeroSection = () => {
       {/* Background Orbs */}
       <motion.div 
         animate={{ 
-          scale: [1, 1.1, 1],
-          opacity: [0.3, 0.4, 0.3],
-          x: [0, 20, 0],
-          y: [0, -20, 0]
+          scale: [1, 1.05, 1],
+          opacity: [0.3, 0.35, 0.3],
         }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-200/50 rounded-full blur-3xl -z-10" 
       />
       <motion.div 
         animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.3, 0.2],
-          x: [0, -30, 0],
-          y: [0, 30, 0]
+          scale: [1, 1.1, 1],
+          opacity: [0.2, 0.25, 0.2],
         }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-200/40 rounded-full blur-3xl -z-10" 
       />
 
@@ -190,7 +186,7 @@ const HeroSection = () => {
                         <motion.path 
                           initial={{ pathLength: 0 }}
                           animate={{ pathLength: 1 }}
-                          transition={{ duration: 2, delay: 1, ease: "easeInOut" }}
+                          transition={{ duration: 1.2, delay: 0.8, ease: "easeOut" }}
                           d="M0,35 Q10,30 20,32 Q30,34 40,25 Q50,15 60,20 Q70,25 80,10 Q90,5 100,12" 
                           fill="none" 
                           stroke="#10b981" 

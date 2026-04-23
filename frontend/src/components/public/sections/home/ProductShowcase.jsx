@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   LayoutDashboard, 
@@ -28,24 +28,37 @@ import MacBookFrame from "../../showcase/MacBookFrame";
 import ShowcaseSidebar from "../../showcase/ShowcaseSidebar";
 import ShowcaseHeader from "../../showcase/ShowcaseHeader";
 
-// View Tabs
-import DashboardView from "../../showcase/DashboardView";
-import ProductsView from "../../showcase/ProductsView";
-import SalesView from "../../showcase/SalesView";
-import CategoriesView from "../../showcase/CategoriesView";
-import SuppliersView from "../../showcase/SuppliersView";
-import PurchasesView from "../../showcase/PurchasesView";
-import InventoryView from "../../showcase/InventoryView";
-import RefundsView from "../../showcase/RefundsView";
-import TransactionsView from "../../showcase/TransactionsView";
-import CustomersView from "../../showcase/CustomersView";
-import ExpenseCategoriesView from "../../showcase/ExpenseCategoriesView";
-import ExpensesView from "../../showcase/ExpensesView";
-import ReportsView from "../../showcase/ReportsView";
-import UsersView from "../../showcase/UsersView";
-import MessagingView from "../../showcase/MessagingView";
-import NotificationsMenuView from "../../showcase/NotificationsMenuView";
-import SettingsView from "../../showcase/SettingsView";
+// Lazy-loaded View Tabs
+const DashboardView = lazy(() => import("../../showcase/DashboardView"));
+const ProductsView = lazy(() => import("../../showcase/ProductsView"));
+const SalesView = lazy(() => import("../../showcase/SalesView"));
+const CategoriesView = lazy(() => import("../../showcase/CategoriesView"));
+const SuppliersView = lazy(() => import("../../showcase/SuppliersView"));
+const PurchasesView = lazy(() => import("../../showcase/PurchasesView"));
+const InventoryView = lazy(() => import("../../showcase/InventoryView"));
+const RefundsView = lazy(() => import("../../showcase/RefundsView"));
+const TransactionsView = lazy(() => import("../../showcase/TransactionsView"));
+const CustomersView = lazy(() => import("../../showcase/CustomersView"));
+const ExpenseCategoriesView = lazy(() => import("../../showcase/ExpenseCategoriesView"));
+const ExpensesView = lazy(() => import("../../showcase/ExpensesView"));
+const ReportsView = lazy(() => import("../../showcase/ReportsView"));
+const UsersView = lazy(() => import("../../showcase/UsersView"));
+const MessagingView = lazy(() => import("../../showcase/MessagingView"));
+const NotificationsMenuView = lazy(() => import("../../showcase/NotificationsMenuView"));
+const SettingsView = lazy(() => import("../../showcase/SettingsView"));
+
+/**
+ * Shimmer loader specifically for the Showcase views
+ */
+const ShowcaseLoader = () => (
+  <div className="w-full h-full flex flex-col gap-6 animate-pulse p-4">
+    <div className="h-10 bg-slate-100 rounded-2xl w-1/3" />
+    <div className="grid grid-cols-4 gap-4">
+      {[1, 2, 3, 4].map(i => <div key={i} className="h-24 bg-slate-100 rounded-2xl" />)}
+    </div>
+    <div className="h-64 bg-slate-100 rounded-3xl w-full" />
+  </div>
+);
 
 /**
  * Premium Interactive Showcase Section
@@ -118,25 +131,27 @@ const ProductShowcase = () => {
                    />
 
                    <div className="flex-1 p-8 overflow-y-auto custom-scrollbar">
-                      <AnimatePresence mode="wait">
-                         {activeTab === "dashboard" && <DashboardView key="dashboard" />}
-                         {activeTab === "products" && <ProductsView key="products" />}
-                         {activeTab === "sales" && <SalesView key="sales" />}
-                         {activeTab === "categories" && <CategoriesView key="categories" />}
-                         {activeTab === "suppliers" && <SuppliersView key="suppliers" />}
-                         {activeTab === "purchases" && <PurchasesView key="purchases" />}
-                         {activeTab === "inventory" && <InventoryView key="inventory" />}
-                         {activeTab === "refunds" && <RefundsView key="refunds" />}
-                         {activeTab === "transactions" && <TransactionsView key="transactions" />}
-                         {activeTab === "customers" && <CustomersView key="customers" />}
-                         {activeTab === "expense-categories" && <ExpenseCategoriesView key="expense-categories" />}
-                         {activeTab === "expenses" && <ExpensesView key="expenses" />}
-                         {activeTab === "reports" && <ReportsView key="reports" />}
-                         {activeTab === "users" && <UsersView key="users" />}
-                         {activeTab === "messaging" && <MessagingView key="messaging" />}
-                         {activeTab === "notifications-menu" && <NotificationsMenuView key="notifications-menu" />}
-                         {activeTab === "settings" && <SettingsView key="settings" />}
-                      </AnimatePresence>
+                      <Suspense fallback={<ShowcaseLoader />}>
+                        <AnimatePresence mode="wait">
+                           {activeTab === "dashboard" && <DashboardView key="dashboard" />}
+                           {activeTab === "products" && <ProductsView key="products" />}
+                           {activeTab === "sales" && <SalesView key="sales" />}
+                           {activeTab === "categories" && <CategoriesView key="categories" />}
+                           {activeTab === "suppliers" && <SuppliersView key="suppliers" />}
+                           {activeTab === "purchases" && <PurchasesView key="purchases" />}
+                           {activeTab === "inventory" && <InventoryView key="inventory" />}
+                           {activeTab === "refunds" && <RefundsView key="refunds" />}
+                           {activeTab === "transactions" && <TransactionsView key="transactions" />}
+                           {activeTab === "customers" && <CustomersView key="customers" />}
+                           {activeTab === "expense-categories" && <ExpenseCategoriesView key="expense-categories" />}
+                           {activeTab === "expenses" && <ExpensesView key="expenses" />}
+                           {activeTab === "reports" && <ReportsView key="reports" />}
+                           {activeTab === "users" && <UsersView key="users" />}
+                           {activeTab === "messaging" && <MessagingView key="messaging" />}
+                           {activeTab === "notifications-menu" && <NotificationsMenuView key="notifications-menu" />}
+                           {activeTab === "settings" && <SettingsView key="settings" />}
+                        </AnimatePresence>
+                      </Suspense>
                    </div>
                 </main>
               </MacBookFrame>

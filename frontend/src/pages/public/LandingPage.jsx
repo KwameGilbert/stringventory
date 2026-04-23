@@ -1,17 +1,24 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import Navbar from "../../components/public/layout/Navbar";
 import HeroSection from "../../components/public/sections/home/HeroSection";
 import SocialProof from "../../components/public/sections/home/SocialProof";
-import FeaturesSection from "../../components/public/sections/home/FeaturesSection";
-import ProductShowcase from "../../components/public/sections/home/ProductShowcase";
-import HowItWorks from "../../components/public/sections/home/HowItWorks";
-import BenefitsSection from "../../components/public/sections/home/BenefitsSection";
-import PricingSection from "../../components/public/sections/home/PricingSection";
-import TestimonialsSection from "../../components/public/sections/home/TestimonialsSection";
-import ComparisonSection from "../../components/public/sections/home/ComparisonSection";
-import FAQSection from "../../components/public/sections/home/FAQSection";
-import CTASection from "../../components/public/sections/home/CTASection";
 import LandingFooter from "../../components/public/layout/LandingFooter";
+
+// Lazy-loaded sections
+const FeaturesSection = lazy(() => import("../../components/public/sections/home/FeaturesSection"));
+const ProductShowcase = lazy(() => import("../../components/public/sections/home/ProductShowcase"));
+const HowItWorks = lazy(() => import("../../components/public/sections/home/HowItWorks"));
+const BenefitsSection = lazy(() => import("../../components/public/sections/home/BenefitsSection"));
+const PricingSection = lazy(() => import("../../components/public/sections/home/PricingSection"));
+const TestimonialsSection = lazy(() => import("../../components/public/sections/home/TestimonialsSection"));
+const ComparisonSection = lazy(() => import("../../components/public/sections/home/ComparisonSection"));
+const FAQSection = lazy(() => import("../../components/public/sections/home/FAQSection"));
+const CTASection = lazy(() => import("../../components/public/sections/home/CTASection"));
+
+/**
+ * Minimal placeholder for lazy-loading sections
+ */
+const SectionLoading = () => <div className="h-40 w-full animate-pulse bg-slate-50 border-y border-slate-100" />;
 
 const LandingPage = () => {
   return (
@@ -20,15 +27,42 @@ const LandingPage = () => {
       <main>
         <HeroSection />
         <SocialProof />
-        <FeaturesSection />
-        <ProductShowcase />
-        <HowItWorks />
-        <BenefitsSection />
-        <PricingSection />
-        <TestimonialsSection />
-        <ComparisonSection />
-        <FAQSection />
-        <CTASection />
+        
+        <Suspense fallback={<SectionLoading />}>
+          <FeaturesSection />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoading />}>
+          <ProductShowcase />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoading />}>
+          <HowItWorks />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoading />}>
+          <BenefitsSection />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoading />}>
+          <PricingSection />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoading />}>
+          <TestimonialsSection />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoading />}>
+          <ComparisonSection />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoading />}>
+          <FAQSection />
+        </Suspense>
+        
+        <Suspense fallback={<SectionLoading />}>
+          <CTASection />
+        </Suspense>
       </main>
       <LandingFooter />
     </div>
