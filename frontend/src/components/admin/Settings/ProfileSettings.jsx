@@ -1,11 +1,13 @@
 import { useState, useEffect, useContext } from "react";
 import { User, Mail, Phone, MapPin, Globe, Camera, AlertCircle } from "lucide-react";
 import { AuthContext } from "../../../contexts/AuthContext";
+import { useSettings } from "../../../contexts/SettingsContext";
 import settingsService from "../../../services/settingsService";
 import { showSuccess, showError } from "../../../utils/alerts";
 
 export default function ProfileSettings() {
   const { user } = useContext(AuthContext);
+  const { refreshSettings } = useSettings();
   const [formData, setFormData] = useState({
     businessName: "",
     email: "",
@@ -93,6 +95,9 @@ export default function ProfileSettings() {
         website: formData.website,
         avatar: formData.avatar.startsWith('data:') ? formData.avatar : undefined,
       });
+      
+      // Refresh global settings to update sidebar branding
+      await refreshSettings();
       
       showSuccess("Profile updated successfully");
     } catch (err) {

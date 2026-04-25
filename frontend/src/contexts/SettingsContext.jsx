@@ -21,6 +21,12 @@ export const SettingsProvider = ({ children }) => {
         expiryAlertDays: 30,
         emailNotifications: true,
         dashboardRefresh: 5,
+        businessInfo: {
+            name: '',
+            logo: '',
+            address: '',
+            phone: ''
+        }
     });
     const [loading, setLoading] = useState(true);
     const [rates, setRates] = useState({});
@@ -89,7 +95,29 @@ export const SettingsProvider = ({ children }) => {
             const notifResponse = await settingsService.getNotificationSettings();
             const notifData = notifResponse?.data || notifResponse || {};
             
-            // 3. Fetch Currency & Rate Settings
+            setSettings(prev => ({
+                ...prev,
+                lowStockThreshold: notifData.lowStockThreshold || 10,
+                expiryAlertDays: notifData.expiryAlertDays || 30,
+                emailNotifications: notifData.emailNotifications !== false,
+                dashboardRefresh: notifData.dashboardRefresh || 5,
+            }));
+
+            // 3. Fetch Business Profile Settings
+            const businessResponse = await settingsService.getBusinessSettings();
+            const businessData = businessResponse?.data || businessResponse || {};
+            
+            setSettings(prev => ({
+                ...prev,
+                businessInfo: {
+                    name: businessData.businessName || businessData.name || '',
+                    logo: businessData.avatar || businessData.logo || '',
+                    address: businessData.address || '',
+                    phone: businessData.phone || ''
+                }
+            }));
+            
+            // 4. Fetch Currency & Rate Settings
             const currencyResponse = await settingsService.getCurrencySettings();
             const currencyPayload = currencyResponse?.data || currencyResponse || {};
             const currencyData = currencyPayload?.data || currencyPayload;
@@ -147,6 +175,7 @@ export const SettingsProvider = ({ children }) => {
     const value = React.useMemo(() => ({
         settings,
         currency: settings.currency,
+        businessInfo: settings.businessInfo,
         rates,
         updateSettings,
         refreshSettings: fetchSettingsData,

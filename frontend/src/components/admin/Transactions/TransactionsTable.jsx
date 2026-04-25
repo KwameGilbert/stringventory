@@ -155,7 +155,7 @@ const TransactionsTable = ({ transactions = [] }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <span className={`text-sm font-semibold ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
-                        {isOutflow ? '− ' : '+ '}{formatCurrency(tx.amount, tx.currency)}
+                        {formatCurrency(Math.abs(tx.amount), tx.currency)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -209,7 +209,7 @@ const TransactionsTable = ({ transactions = [] }) => {
                 <div className="flex flex-col">
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Value</span>
                   <span className={`text-lg font-bold ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
-                    {isOutflow ? '− ' : '+ '}{formatCurrency(tx.amount, tx.currency)}
+                    {formatCurrency(Math.abs(tx.amount), tx.currency)}
                   </span>
                 </div>
                 <div className="text-right">

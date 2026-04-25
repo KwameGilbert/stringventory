@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useTheme } from "../../../contexts/ThemeContext";
+import { useSettings } from "../../../contexts/SettingsContext";
 import { useAuth } from "../../../contexts/AuthContext.js";
 import { getRoleMenuItems } from "../../../utils/accessControl";
 import { useLocation, Link } from "react-router-dom";
@@ -30,6 +30,7 @@ import {
 const Sidebar = ({ mobileOpen, onClose, isOpen, onToggle }) => {
   useTheme(); // Hook maintained for potential future use
   const { user } = useAuth();
+  const { businessInfo } = useSettings();
   const location = useLocation();
 
   const toggleSidebar = () => {
@@ -80,15 +81,26 @@ const Sidebar = ({ mobileOpen, onClose, isOpen, onToggle }) => {
       <div className="flex items-center justify-between px-4 py-5 border-b border-slate-800">
         <div
           className={`flex items-center gap-3 transition-all duration-300 ${
-            isOpen ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
+            isOpen ? "opacity-100" : "opacity-100"
           }`}
         >
-          <div className="bg-emerald-500 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0">
-            <Package className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-lg font-bold text-white tracking-tight">
-            Stringventory
-          </span>
+          {businessInfo?.logo ? (
+            <img 
+              src={businessInfo.logo} 
+              alt="Logo" 
+              className={`w-9 h-9 rounded-xl shadow-lg object-cover bg-white ${!isOpen && "mx-auto"}`} 
+            />
+          ) : (
+            <div className={`bg-emerald-500 w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 shrink-0 ${!isOpen && "mx-auto"}`}>
+              <Package className="w-5 h-5 text-white" />
+            </div>
+          )}
+          
+          {isOpen && (
+            <span className="text-lg font-bold text-white tracking-tight truncate max-w-[140px]">
+              {businessInfo?.name || "Stringventory"}
+            </span>
+          )}
         </div>
 
         {/* Toggle Button - hidden on mobile */}

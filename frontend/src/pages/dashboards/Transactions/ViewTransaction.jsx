@@ -138,7 +138,7 @@ export default function ViewTransaction() {
             <div className="text-left md:text-right border-t md:border-t-0 pt-6 md:pt-0 border-gray-50">
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Transaction Value</p>
                 <p className={`text-5xl font-semibold tracking-tighter ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
-                    {isOutflow ? '− ' : '+ '}{formatPrice(transaction.amount)}
+                    {formatPrice(Math.abs(transaction.amount))}
                 </p>
             </div>
         </div>
@@ -185,11 +185,11 @@ export default function ViewTransaction() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Gross Inflow</p>
-                                    <p className="text-sm font-bold text-gray-900">{formatPrice(transaction.order.amount || transaction.amount)}</p>
+                                    <p className="text-sm font-bold text-gray-900">{formatPrice(Math.abs(transaction.order.amount || transaction.amount))}</p>
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Net Realized</p>
-                                    <p className="text-sm font-semibold text-emerald-600">{formatPrice(transaction.order.discountedTotalPrice || transaction.amount)}</p>
+                                    <p className="text-sm font-semibold text-emerald-600">{formatPrice(Math.abs(transaction.order.discountedTotalPrice || transaction.amount))}</p>
                                 </div>
                             </div>
 
@@ -231,7 +231,7 @@ export default function ViewTransaction() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Outflow</p>
-                                    <p className="text-sm font-semibold text-rose-600">{formatPrice(transaction.purchase.totalAmount)}</p>
+                                    <p className="text-sm font-semibold text-rose-600">{formatPrice(Math.abs(transaction.purchase.totalAmount))}</p>
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">PO Status</p>
@@ -282,7 +282,7 @@ export default function ViewTransaction() {
                             <div className="grid grid-cols-2 gap-6 p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Amount</p>
-                                    <p className="text-xl font-semibold text-rose-600">{formatPrice(transaction.expense.amount)}</p>
+                                    <p className="text-xl font-semibold text-rose-600">{formatPrice(Math.abs(transaction.expense.amount))}</p>
                                 </div>
                                 <div>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Internal Cat</p>

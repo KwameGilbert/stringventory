@@ -1,19 +1,39 @@
 import { useState } from "react";
-import { X, MessageSquare, Mail, Phone } from "lucide-react";
+import { X, MessageSquare, Mail, Phone, RefreshCw } from "lucide-react";
+import messagingService from "../../../services/messagingService";
+import { showSuccess, showError } from "../../../utils/alerts";
 
 export default function SendMessageModal({ isOpen, onClose, customer }) {
   const [message, setMessage] = useState("");
   const [channel, setChannel] = useState("sms");
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Sending message:", { customer, channel, message });
-    // Here you would integrate with your messaging service
-    alert(`Message sent via ${channel.toUpperCase()} to ${customer.name}`);
-    setMessage("");
-    onClose();
+    setLoading(true);
+    
+    try {
+      const payload = {
+        recipientId: customer.id,
+        recipientType: 'customer',
+        channel,
+        content: message,
+        recipientContact: channel === 'email' ? customer.email : customer.phone
+      };
+
+      await messagingService.sendMessage(payload);
+      
+      showSuccess(`Message dispatched via ${channel.toUpperCase()} successfully`);
+      setMessage("");
+      onClose();
+    } catch (error) {
+      console.error("Messaging Error:", error);
+      showError(error?.message || `Failed to dispatch ${channel.toUpperCase()} message`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const channels = [
@@ -129,9 +149,17 @@ export default function SendMessageModal({ isOpen, onClose, customer }) {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg text-sm font-medium hover:from-blue-700 hover:to-cyan-700 transition-all shadow-sm"
+              disabled={loading}
+              className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg text-sm font-medium hover:from-blue-700 hover:to-cyan-700 transition-all shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Send Message
+              {loading ? (
+                <>
+                  <RefreshCw size={18} className="animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Send Message"
+              )}
             </button>
           </div>
         </form>

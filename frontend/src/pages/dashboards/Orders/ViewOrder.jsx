@@ -57,6 +57,8 @@ export default function ViewOrder() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [businessSettings, setBusinessSettings] = useState(null);
+  const [loadingBusiness, setLoadingBusiness] = useState(false);
 
   const extractOrder = (response) => {
     const payload = response?.data || response || {};
@@ -124,16 +126,28 @@ export default function ViewOrder() {
   const loadData = async (showPulse = true) => {
     if (showPulse) setLoading(true);
     try {
-      const response = await orderService.getOrderById(id);
-      const found = normalizeOrder(extractOrder(response));
-      if (!found) {
-        showError("Order not found");
-        navigate("/dashboard/orders");
-        return;
+      // Load both order and business settings in parallel for speed
+      const [orderRes, businessRes] = await Promise.allSettled([
+        orderService.getOrderById(id),
+        import("../../../services/settingsService").then(m => m.default.getBusinessSettings())
+      ]);
+
+      if (orderRes.status === 'fulfilled') {
+        const found = normalizeOrder(extractOrder(orderRes.value));
+        if (!found) {
+          showError("Order not found");
+          navigate("/dashboard/orders");
+          return;
+        }
+        setOrder(found);
+        setItems(found.items || []);
+      } else {
+        throw orderRes.reason;
       }
 
-      setOrder(found);
-      setItems(found.items || []);
+      if (businessRes.status === 'fulfilled') {
+        setBusinessSettings(businessRes.value?.data || businessRes.value);
+      }
     } catch (error) {
       console.error("Error fetching order", error);
       showError(error?.message || "Failed to fetch sale details");
@@ -579,59 +593,98 @@ export default function ViewOrder() {
 
       {/* Hidden Receipt for Printing */}
       <div className="hidden print:block print-payment-summary">
-        <div className="border-2 border-gray-200 rounded-2xl p-8">
-          <div className="text-center mb-8">
-             <h2 className="text-2xl font-semibold uppercase tracking-tighter">SALE RECEIPT</h2>
-             <p className="text-sm font-mono text-gray-500 mt-1">REF: {order.displayRef || order.id}</p>
-          </div>
-
-          <div className="space-y-3 text-sm mb-6 pb-6 border-b border-gray-100">
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-semibold uppercase text-gray-400 tracking-widest">Date</span>
-              <span className="font-bold text-gray-900 text-right">{formatDate(order.orderDate)} {formatTime(order.orderDate)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-semibold uppercase text-gray-400 tracking-widest">Customer</span>
-              <span className="font-bold text-gray-900 text-right">{order.customer.name}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-semibold uppercase text-gray-400 tracking-widest">Payment Method</span>
-              <span className="font-bold text-gray-900 uppercase text-right">{order.paymentMethod.replace('_', ' ')}</span>
+        <div className="border-4 border-double border-gray-900 rounded-3xl p-10">
+          {/* Company Branding */}
+          <div className="flex flex-col items-center text-center mb-10 pb-10 border-b-2 border-dashed border-gray-100">
+            {businessSettings?.avatar && (
+                <img src={businessSettings.avatar} alt="Logo" className="h-20 w-auto mb-4 grayscale" />
+            )}
+            <h2 className="text-4xl font-black uppercase tracking-tighter text-gray-900">
+                {businessSettings?.businessName || "SALE RECEIPT"}
+            </h2>
+            <div className="mt-4 space-y-1 text-sm font-bold text-gray-500 uppercase tracking-widest">
+                <p>{businessSettings?.address || "Store Location"}</p>
+                <p>Phone: {businessSettings?.phone || "—"}</p>
+                {businessSettings?.email && <p>{businessSettings.email}</p>}
             </div>
           </div>
 
-          <div className="space-y-4 mb-6">
-            <div className="flex justify-between text-[10px] font-semibold uppercase text-gray-400 tracking-widest pb-2 border-b border-gray-50">
-              <span>Item Description</span>
-              <span>Total</span>
-            </div>
-            {items.map((item, idx) => (
-              <div key={idx} className="flex justify-between text-sm">
-                <span className="font-bold text-gray-800">{item.productName} (x{item.quantity})</span>
-                <span className="font-semibold text-gray-900">{formatPrice(item.subtotal, order.currency)}</span>
+          <div className="grid grid-cols-2 gap-8 mb-10">
+            <div className="space-y-4">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Transaction Ref</p>
+                <p className="font-mono font-bold text-gray-900 uppercase">#ORD-{order.displayRef || order.id}</p>
               </div>
-            ))}
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Payment Method</p>
+                <p className="font-bold text-gray-900 uppercase">{order.paymentMethod.replace('_', ' ')}</p>
+              </div>
+            </div>
+            <div className="space-y-4 text-right">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Date & Time</p>
+                <p className="font-bold text-gray-900">{formatDate(order.orderDate)} {formatTime(order.orderDate)}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Customer</p>
+                <p className="font-bold text-gray-900">{order.customer.name}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-2 pt-6 border-t-2 border-gray-100">
+          {/* Itemized Table */}
+          <div className="mb-10">
+            <table className="w-full">
+                <thead>
+                    <tr className="border-b-2 border-gray-900">
+                        <th className="py-3 text-left text-[10px] font-black uppercase tracking-widest">Item Description</th>
+                        <th className="py-3 text-center text-[10px] font-black uppercase tracking-widest">Qty</th>
+                        <th className="py-3 text-right text-[10px] font-black uppercase tracking-widest">Unit</th>
+                        <th className="py-3 text-right text-[10px] font-black uppercase tracking-widest">Total</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                    {items.map((item, idx) => (
+                        <tr key={idx}>
+                            <td className="py-4 text-sm font-bold text-gray-900">{item.productName}</td>
+                            <td className="py-4 text-center text-sm font-bold text-gray-700">{item.quantity}</td>
+                            <td className="py-4 text-right text-sm font-medium text-gray-500">{formatPrice(item.unitPrice, order.currency)}</td>
+                            <td className="py-4 text-right text-sm font-black text-gray-900">{formatPrice(item.subtotal, order.currency)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+          </div>
+
+          {/* Financial Breakdown */}
+          <div className="space-y-3 pt-6 border-t-2 border-gray-900">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Subtotal</span>
+              <span className="text-gray-500 uppercase font-bold tracking-widest text-[10px]">Subtotal</span>
               <span className="font-bold">{formatPrice(order.subtotal, order.currency)}</span>
             </div>
             {order.discountAmount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-emerald-600">Discount</span>
-                <span className="font-bold text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
+                <span className="text-gray-900 uppercase font-bold tracking-widest text-[10px]">Discount Applied</span>
+                <span className="font-black">-{formatPrice(order.discountAmount, order.currency)}</span>
               </div>
             )}
-            <div className="flex justify-between text-lg font-semibold pt-4 mt-2 border-t border-gray-50">
-              <span className="uppercase tracking-widest text-xs">Total Amount</span>
-              <span className="text-2xl tracking-tighter">{formatPrice(order.total, order.currency)}</span>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500 uppercase font-bold tracking-widest text-[10px]">Tax & Regulatory</span>
+              <span className="font-bold">{formatPrice(order.taxAmount || 0, order.currency)}</span>
+            </div>
+            <div className="flex justify-between items-end pt-6 mt-4 border-t-4 border-double border-gray-900">
+              <span className="uppercase font-black tracking-widest text-xs">Total Amount Paid</span>
+              <span className="text-4xl font-black tracking-tighter text-gray-900">{formatPrice(order.total, order.currency)}</span>
             </div>
           </div>
 
-          <div className="text-center mt-12 text-[10px] font-semibold uppercase text-gray-400 tracking-widest">
-            Thank you for shopping with us!
+          <div className="mt-16 text-center space-y-6">
+            <div className="inline-block px-6 py-2 border border-gray-900 text-[10px] font-black uppercase tracking-widest">
+                No Returns Without Original Receipt
+            </div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Thank you for choosing {businessSettings?.businessName || "our store"}!
+            </p>
           </div>
         </div>
       </div>
