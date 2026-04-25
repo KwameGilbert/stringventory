@@ -250,6 +250,66 @@ export const superadminService = {
         }
       ]
     });
+  },
+
+  getSettings: async () => {
+    console.log('Mock: Fetching platform settings');
+    return Promise.resolve({
+      data: {
+        general: {
+          platformName: 'StringVentory',
+          platformEmail: 'admin@stringventory.com',
+          supportEmail: 'support@stringventory.com',
+          companyName: 'StringTech Solutions',
+          maintenanceMode: false,
+        },
+        appearance: {
+          primaryColor: 'emerald',
+          themeMode: 'light',
+          density: 'comfortable',
+        },
+        notifications: {
+          emailNotifications: true,
+          newBusinessNotification: true,
+          paymentNotification: true,
+          systemAlerts: true,
+          emailProvider: 'smtp',
+          smtpConfig: {
+            host: 'smtp.mailtrap.io',
+            port: '587',
+            user: 'user_123',
+            senderName: 'StringVentory Admin',
+            senderEmail: 'noreply@stringventory.com',
+          }
+        },
+        billing: {
+          currency: 'USD',
+          taxRate: 15.0,
+          invoicePrefix: 'SV-',
+          enableTrials: true,
+          trialDays: 14,
+        },
+        security: {
+          twoFactorAuth: true,
+          sessionTimeout: 30,
+          passwordExpiry: 90,
+          loginAttempts: 5,
+        },
+        integrations: {
+          apiKeys: [
+            { id: '1', name: 'Frontend API', key: 'pk_live_****************', status: 'active', createdAt: '2026-01-01' }
+          ],
+          webhooks: [
+            { id: '1', url: 'https://hooks.slack.com/services/...', event: 'business.signup', status: 'active' }
+          ]
+        }
+      }
+    });
+  },
+
+  updateSettings: async (payload) => {
+    console.log('Mock: Updating platform settings', payload);
+    return Promise.resolve({ data: payload });
   }
 };
 

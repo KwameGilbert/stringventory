@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { BrowserRouter as Router, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Providers from "./contexts/Providers";
 import PageLoader from "./components/shared/PageLoader";
 
@@ -23,6 +23,8 @@ export default function App() {
 
             {/* Superadmin Portal */}
             {superadminRoutes}
+            <Route path="/super-admin" element={<Navigate to="/superadmin" replace />} />
+            <Route path="/super-admin/*" element={<Navigate to="/superadmin" replace />} />
 
             {/* Business Dashboard */}
             {dashboardRoutes}
