@@ -45,6 +45,7 @@ const Users = lazy(() => import("../pages/dashboards/Users/Users"));
 const AddUser = lazy(() => import("../pages/dashboards/Users/AddUser"));
 const EditUser = lazy(() => import("../pages/dashboards/Users/EditUser"));
 const ViewUser = lazy(() => import("../pages/dashboards/Users/ViewUser"));
+const ActivityLogs = lazy(() => import("../pages/dashboards/ActivityLogs/ActivityLogs"));
 const Suppliers = lazy(() => import("../pages/dashboards/Suppliers/Suppliers"));
 const CreateSupplier = lazy(() => import("../pages/dashboards/Suppliers/CreateSupplier"));
 const EditSupplier = lazy(() => import("../pages/dashboards/Suppliers/EditSupplier"));
@@ -108,6 +109,7 @@ const dashboardRoutes = (
             <Route path="/expenses/:id/edit" element={withRoles(managementRoles, <EditExpense />)} />
             <Route path="/expenses/categories" element={withRoles(managementRoles, <ExpenseCategories />)} />
             <Route path="/reports" element={withRoles(managementRoles, <Reports />)} />
+            <Route path="/activity-logs" element={withRoles(managementRoles, <ActivityLogs />)} />
             <Route path="/users" element={withRoles(managementRoles, <Users />)} />
             <Route path="/users/new" element={withRoles(ceoOnly, <AddUser />)} />
             <Route path="/users/:id" element={withRoles(managementRoles, <ViewUser />)} />

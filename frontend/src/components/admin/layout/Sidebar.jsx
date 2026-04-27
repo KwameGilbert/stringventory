@@ -24,6 +24,7 @@ import {
   Truck,
   RotateCcw,
   Landmark,
+  Activity,
   X,
 } from "lucide-react";
 
@@ -58,6 +59,7 @@ const Sidebar = ({ mobileOpen, onClose, isOpen, onToggle }) => {
     { key: "expense-categories", icon: Tag, label: "Expense Categories", path: "/dashboard/expenses/categories" },
     { key: "expenses", icon: DollarSign, label: "Expenses", path: "/dashboard/expenses" },
     { key: "reports", icon: BarChart3, label: "Reports", path: "/dashboard/reports" },
+    { key: "activity-logs", icon: Activity, label: "Activity Logs", path: "/dashboard/activity-logs" },
     { key: "users", icon: UserCog, label: "Users", path: "/dashboard/users" },
     { key: "messaging", icon: MessageSquare, label: "Messaging", path: "/dashboard/messaging" },
     { key: "notifications", icon: Bell, label: "Notifications", path: "/dashboard/notifications" },

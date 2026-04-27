@@ -155,6 +155,7 @@ export const API_ENDPOINTS = {
     CUSTOMER_REPORT: '/v1/analytics/customer-report',
     EXPENSE_REPORT: '/v1/analytics/expense-report',
     EXPORT: (type) => `/v1/analytics/export/${type}`,
+    ACTIVITY_LOGS: '/v1/analytics/activity-logs',
   },
 
   // Messaging

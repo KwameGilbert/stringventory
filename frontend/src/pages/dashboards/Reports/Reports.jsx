@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   BarChart3,
   Package,
@@ -36,7 +37,6 @@ import {
 } from "recharts";
 import analyticsService from "../../../services/analyticsService";
 import orderService from "../../../services/orderService";
-import userService from "../../../services/userService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 import { useCurrency } from "../../../utils/currencyUtils";
 
@@ -56,6 +56,7 @@ export default function Reports() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState("all");
+  const [userPage, setUserPage] = useState(1);
   const { formatPrice, symbol } = useCurrency();
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export default function Reports() {
           customerRes,
           dashboardRes,
           ordersRes,
-          usersRes,
+          logsRes,
         ] = await Promise.all([
           analyticsService.getSalesReport(params),
           analyticsService.getInventoryReport(params),
@@ -82,7 +83,7 @@ export default function Reports() {
           analyticsService.getCustomerReport(params),
           analyticsService.getDashboardOverview(params),
           orderService.getOrders({ limit: 100 }),
-          userService.getUsers({ limit: 50 }),
+          analyticsService.getActivityLogs({ ...params, page: userPage, limit: 10 }),
         ]);
 
         const unwrap = (response) => {
@@ -106,14 +107,7 @@ export default function Reports() {
               ? orderPayload.data
               : [];
 
-        const userPayload = usersRes?.data || usersRes || {};
-        const users = Array.isArray(userPayload)
-          ? userPayload
-          : Array.isArray(userPayload.users)
-            ? userPayload.users
-            : Array.isArray(userPayload.data)
-              ? userPayload.data
-              : [];
+        const logsData = unwrap(logsRes);
 
         const groupedMonthly = {};
         (dashboardData?.charts?.revenueByDate || []).forEach((row) => {
@@ -223,18 +217,19 @@ export default function Reports() {
 
         const userActivity = {
           summary: {
-            activeUsers: users.filter((user) => user?.isActive ?? user?.status === "active").length,
-            totalActions: orders.length,
-            mostActiveUser: users[0]?.firstName ? `${users[0].firstName} ${users[0]?.lastName || ""}`.trim() : "N/A",
+            activeUsers: logsData?.summary?.activeUsers || 0,
+            totalActions: logsData?.summary?.totalActions || 0,
+            mostActiveUser: logsData?.summary?.mostActiveUser?.name || "N/A",
           },
-          recentActivity: orders.slice(0, 10).map((order, index) => ({
-            id: `act-${index}`,
-            time: order?.orderDate || order?.date || order?.createdAt || new Date().toISOString(),
-            user: order?.customerName || order?.customer?.name || "System",
-            module: "Sales",
-            action: "Order processed",
-            details: order?.orderNumber || order?.id || "Order",
+          recentActivity: (logsData?.logs || []).map((log) => ({
+            id: log.id,
+            time: log.time,
+            user: log.user.name,
+            module: log.module,
+            action: log.action,
+            details: log.details,
           })),
+          pagination: logsData?.pagination || { total: 0, page: 1, limit: 10 },
         };
 
         setData({
@@ -279,7 +274,7 @@ export default function Reports() {
       }
     };
     fetchData();
-  }, [dateRange]);
+  }, [dateRange, userPage]);
 
   // Replaced local formatCurrency with useCurrency's formatPrice logic
 
@@ -427,7 +422,10 @@ export default function Reports() {
           <div className="flex items-center gap-2">
             <select
               value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
+              onChange={(e) => {
+                setDateRange(e.target.value);
+                setUserPage(1);
+              }}
               className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10 font-medium"
             >
               <option value="all">All Time</option>
@@ -813,6 +811,31 @@ export default function Reports() {
                 </ResponsiveContainer>
               </div>
              </div>
+             
+             {/* Pagination Controls */}
+             {data?.userActivity?.pagination && data.userActivity.pagination.total > data.userActivity.pagination.limit && (
+               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
+                 <p className="text-sm text-gray-500">
+                   Showing Page <span className="font-semibold text-gray-900">{data.userActivity.pagination.page}</span> of <span className="font-semibold text-gray-900">{Math.ceil(data.userActivity.pagination.total / data.userActivity.pagination.limit)}</span>
+                 </p>
+                 <div className="flex gap-2">
+                   <button
+                     onClick={() => setUserPage(prev => Math.max(1, prev - 1))}
+                     disabled={userPage === 1}
+                     className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
+                   >
+                     Previous
+                   </button>
+                   <button
+                     onClick={() => setUserPage(prev => prev + 1)}
+                     disabled={userPage >= Math.ceil(data.userActivity.pagination.total / data.userActivity.pagination.limit)}
+                     className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
+                   >
+                     Next
+                   </button>
+                 </div>
+               </div>
+             )}
            </div>
           </div>
        )}
@@ -881,8 +904,15 @@ export default function Reports() {
 
           {/* Activity Table */}
            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
               <h3 className="font-semibold text-gray-900">Recent User Activity</h3>
+              <Link 
+                to="/dashboard/activity-logs" 
+                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+              >
+                View Full Logs
+                <TrendingUp size={12} />
+              </Link>
             </div>
              <div className="overflow-x-auto">
               <table className="w-full">

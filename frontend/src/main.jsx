@@ -6,18 +6,28 @@ createRoot(document.getElementById('root')).render(
   <App />
 )
 
-// Register Service Worker
-// Register Service Worker with a delay to prioritize initial load speed
+// Register Service Worker for PWA
+// The vite-plugin-pwa will handle most of the registration,
+// but we also register our custom service worker for push notifications
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    setTimeout(() => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          console.log('SW registered: ', registration);
-        })
-        .catch(registrationError => {
-          console.log('SW registration failed: ', registrationError);
-        });
-    }, 2000); // 2 second delay to clear the main thread for FCP/TBT
+    // Let vite-plugin-pwa handle the main registration
+    // Our custom push notification logic is in the generated SW
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      console.log(`${registrations.length} service worker(s) registered`);
+      registrations.forEach(registration => {
+        console.log('Active Service Worker:', registration);
+      });
+    }).catch(error => {
+      console.error('Error accessing service worker registrations:', error);
+    });
+
+    // Request notification permission on first load
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        console.log('Notification permission:', permission);
+      });
+    }
   });
 }
+
