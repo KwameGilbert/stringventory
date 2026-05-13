@@ -62,7 +62,7 @@ const ComparisonSection = () => {
   };
 
   return (
-    <section className="py-14 bg-white max-w-7xl mx-auto px-6" id="comparison">
+    <section className="py-14 bg-white max-w-8xl mx-auto px-20" id="comparison">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <motion.div 
@@ -91,7 +91,7 @@ const ComparisonSection = () => {
                        <p className="text-2xl font-bold">$29<span className="text-xs text-slate-500 font-medium lowercase">/mo</span></p>
                     </th>
                     <th className="px-8 py-6 relative">
-                       <div className="absolute top-6 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-emerald-500/20">
+                       <div className="absolute top-6 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-emerald-500/20">
                           Most Popular
                        </div>
                        <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1">Professional</p>
@@ -107,7 +107,7 @@ const ComparisonSection = () => {
                  {categories.map((cat, idx) => (
                     <React.Fragment key={idx}>
                        <tr className="bg-slate-50/50">
-                          <td colSpan="4" className="px-8 py-4 text-left font-black text-[11px] uppercase tracking-[0.2em] text-slate-400 border-t border-slate-100">
+                          <td colSpan="4" className="px-8 py-4 text-left font-bold text-[11px] uppercase tracking-[0.2em] text-slate-400 border-t border-slate-100">
                              {cat.name}
                           </td>
                        </tr>
@@ -127,13 +127,13 @@ const ComparisonSection = () => {
                        <p className="text-sm font-bold">Ready to scale your inventory?</p>
                     </td>
                     <td className="px-8 py-6">
-                       <button className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white text-white hover:text-slate-900 text-[10px] font-black uppercase tracking-widest transition-all">Select</button>
+                       <button className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white text-white hover:text-slate-900 text-[10px] font-bold uppercase tracking-widest transition-all">Select</button>
                     </td>
                     <td className="px-8 py-6 bg-emerald-500 shadow-xl">
-                       <button className="px-6 py-2.5 rounded-xl bg-white text-emerald-600 shadow-lg shadow-emerald-900/10 text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95">Upgrade to Pro</button>
+                       <button className="px-6 py-2.5 rounded-xl bg-white text-emerald-600 shadow-lg shadow-emerald-900/10 text-[10px] font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95">Upgrade to Pro</button>
                     </td>
                     <td className="px-8 py-6">
-                       <button className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white text-white hover:text-slate-900 text-[10px] font-black uppercase tracking-widest transition-all">Contact Sales</button>
+                       <button className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white text-white hover:text-slate-900 text-[10px] font-bold uppercase tracking-widest transition-all">Contact Sales</button>
                     </td>
                  </tr>
               </tbody>

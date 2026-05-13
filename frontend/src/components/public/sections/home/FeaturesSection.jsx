@@ -26,7 +26,7 @@ const FeatureCard = ({ icon: Icon, title, description, color }) => (
       y: -8,
       transition: { duration: 0.3 }
     }}
-    className="p-6 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 group cursor-default h-full"
+    className="p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 group cursor-default h-full"
   >
     <motion.div 
       whileHover={{ scale: 1.1, rotate: 5 }}
@@ -34,7 +34,7 @@ const FeatureCard = ({ icon: Icon, title, description, color }) => (
     >
       <Icon className="w-5 h-5" />
     </motion.div>
-    <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
+    <h3 className="text-xl font-semibold text-slate-900 mb-2">{title}</h3>
     <p className="text-slate-600 leading-relaxed text-sm">
       {description}
     </p>
@@ -116,7 +116,7 @@ const FeaturesSection = () => {
   };
 
   return (
-    <section id="features" className="py-14 bg-slate-50/50 max-w-7xl mx-auto relative overflow-hidden">
+    <section id="features" className="py-14 bg-slate-50/50 max-w-8xl mx-auto px-20 relative overflow-hidden">
       <BackgroundLines />
       
       <div className="container mx-auto px-6 relative z-10">
@@ -159,14 +159,14 @@ const FeaturesSection = () => {
               visible: { opacity: 1, y: 0 }
             }}
             whileHover={{ y: -4 }}
-            className="md:col-span-2 p-8 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-xl flex flex-col md:flex-row items-center gap-8 overflow-hidden relative group cursor-default"
+            className="md:col-span-2 p-5 bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-xl flex flex-col md:flex-row items-center gap-8 overflow-hidden relative group cursor-default"
           >
-            <div className="absolute top-0 right-0 p-12 bg-emerald-500/10 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700" />
+            <div className="absolute top-0 right-0 p-6 bg-emerald-500/10 rounded-full -mr-12 -mt-12 group-hover:scale-125 transition-transform duration-700" />
             <div className="relative z-10 flex-1">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/20">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center mb-3 shadow-lg shadow-emerald-500/20">
                 <Layers className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">Seamless Integrations</h3>
+              <h3 className="text-2xl font-bold text-white mb-2">Seamless Integrations</h3>
               <p className="text-slate-300 text-sm leading-relaxed">
                 Full API access and native integrations with your favorite tools. 
                 StringVentory fits perfectly into your existing ecosystem.

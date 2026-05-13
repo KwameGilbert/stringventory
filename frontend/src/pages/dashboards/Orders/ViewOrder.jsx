@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
-import { 
-  ArrowLeft, Printer, Mail, User, Phone, AtSign, Calendar, Hash, 
-  CreditCard, Clock, CheckCircle, XCircle, RotateCcw, Package, 
+import {
+  ArrowLeft, Printer, Mail, User, Phone, AtSign, Calendar, Hash,
+  CreditCard, Clock, CheckCircle, XCircle, RotateCcw, Package,
   DollarSign, Percent, Receipt, Save, RefreshCw
 } from "lucide-react";
 import orderService from "../../../services/orderService";
@@ -102,23 +102,23 @@ export default function ViewOrder() {
       customer,
       items: Array.isArray(rawOrder?.items)
         ? rawOrder.items.map((item) => {
-            const quantity = Number(item?.quantity ?? 0);
-            const fulfilledQuantity = Number(item?.fulfilledQuantity ?? 0);
-            return {
-              ...item,
-              // Product name is nested under item.product.name
-              productName: item?.product?.name || item?.productName || item?.name || "Unknown Product",
-              quantity,
-              fulfilledQuantity,
-              remainingQuantity: Math.max(0, quantity - fulfilledQuantity),
-              // API returns sellingPrice as the unit price
-              unitPrice: Number(item?.sellingPrice ?? item?.unitPrice ?? item?.price ?? 0),
-              // API returns totalPrice as the line total
-              subtotal: Number(item?.totalPrice ?? item?.subtotal ?? item?.total ?? 0),
-              // pickedQuantity is for the CURRENT pickup session
-              pickedQuantity: 0,
-            };
-          })
+          const quantity = Number(item?.quantity ?? 0);
+          const fulfilledQuantity = Number(item?.fulfilledQuantity ?? 0);
+          return {
+            ...item,
+            // Product name is nested under item.product.name
+            productName: item?.product?.name || item?.productName || item?.name || "Unknown Product",
+            quantity,
+            fulfilledQuantity,
+            remainingQuantity: Math.max(0, quantity - fulfilledQuantity),
+            // API returns sellingPrice as the unit price
+            unitPrice: Number(item?.sellingPrice ?? item?.unitPrice ?? item?.price ?? 0),
+            // API returns totalPrice as the line total
+            subtotal: Number(item?.totalPrice ?? item?.subtotal ?? item?.total ?? 0),
+            // pickedQuantity is for the CURRENT pickup session
+            pickedQuantity: 0,
+          };
+        })
         : [],
     };
   };
@@ -167,7 +167,7 @@ export default function ViewOrder() {
       const item = newItems[index];
       // Only allow picking up to the remaining quantity
       const newPicked = Math.max(0, Math.min(item.remainingQuantity, (item.pickedQuantity || 0) + change));
-      
+
       newItems[index] = { ...item, pickedQuantity: newPicked };
       return newItems;
     });
@@ -176,7 +176,7 @@ export default function ViewOrder() {
   const handlePickAll = async () => {
     const unfulfilledItems = items.filter(item => item.remainingQuantity > 0);
     if (unfulfilledItems.length === 0) return;
-    
+
     setIsSaving(true);
     try {
       // 1. Prepare fulfillment payload for remaining quantities
@@ -187,7 +187,7 @@ export default function ViewOrder() {
 
       // 2. Persist to API
       await orderService.fulfillOrder(id, { items: fulfillmentPayload });
-      
+
       // 3. Update local state for snappy UI
       setItems(prevItems => prevItems.map(item => ({
         ...item,
@@ -344,9 +344,9 @@ export default function ViewOrder() {
             </p>
           </div>
         </div>
-        
+
         <div className="flex flex-wrap items-center gap-2">
-          <button 
+          <button
             onClick={handleSave}
             disabled={isSaving}
             className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl transition-all font-bold text-xs shadow-lg shadow-gray-200 active:scale-95 disabled:opacity-50"
@@ -354,19 +354,18 @@ export default function ViewOrder() {
             {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
             SAVE PICKUP
           </button>
-          <button 
+          <button
             onClick={handlePickAll}
             disabled={isSaving || allItemsPicked}
-            className={`flex items-center gap-2 px-5 py-2.5 border-2 rounded-xl transition-all font-bold text-xs active:scale-95 disabled:opacity-50 ${
-              allItemsPicked 
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-600' 
+            className={`flex items-center gap-2 px-5 py-2.5 border-2 rounded-xl transition-all font-bold text-xs active:scale-95 disabled:opacity-50 ${allItemsPicked
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
                 : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
-            }`}
+              }`}
           >
             {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle size={14} />}
             {allItemsPicked ? 'ALL PICKED' : 'PICK ALL'}
           </button>
-          
+
           <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
 
           <button
@@ -379,7 +378,7 @@ export default function ViewOrder() {
           <button className="p-2.5 bg-white border-2 border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-200 rounded-xl transition-all shadow-xs active:scale-95">
             <Mail size={18} />
           </button>
-          <button 
+          <button
             onClick={() => navigate(`/dashboard/orders/${id}/refund`)}
             className="p-2.5 bg-white border-2 border-rose-50 text-rose-400 hover:text-rose-600 hover:border-rose-100 rounded-xl transition-all shadow-xs active:scale-95"
             title="Refund Sale"
@@ -401,8 +400,8 @@ export default function ViewOrder() {
                   <Package className="w-6 h-6 text-gray-400" />
                 </div>
                 <div>
-                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest">Sale Items</h3>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{items.length} unique products</p>
+                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest">Sale Items</h3>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{items.length} unique products</p>
                 </div>
               </div>
             </div>
@@ -411,7 +410,7 @@ export default function ViewOrder() {
                 const picked = item.pickedQuantity || 0;
                 const totalFulfilled = item.fulfilledQuantity + picked;
                 const isFullyPicked = totalFulfilled >= item.quantity;
-                
+
                 return (
                   <div key={index} className={`px-8 py-6 flex flex-col sm:flex-row items-start sm:items-center gap-6 transition-colors ${isFullyPicked ? 'bg-emerald-50/20' : ''}`}>
                     <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 relative shadow-xs">
@@ -426,37 +425,37 @@ export default function ViewOrder() {
                       <p className="text-base font-semibold text-gray-900 truncate tracking-tight">{item.productName || "Product"}</p>
                       <div className="flex flex-col gap-3 mt-2">
                         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                            <p className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Ordered: <span className="text-gray-700">{item.quantity}</span></p>
-                            {item.fulfilledQuantity > 0 && (
-                              <p className="text-[10px] uppercase font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 tracking-widest">Fulfilled: {item.fulfilledQuantity}</p>
-                            )}
+                          <p className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Ordered: <span className="text-gray-700">{item.quantity}</span></p>
+                          {item.fulfilledQuantity > 0 && (
+                            <p className="text-[10px] uppercase font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 tracking-widest">Fulfilled: {item.fulfilledQuantity}</p>
+                          )}
                         </div>
-                        
+
                         <div className="flex items-center gap-4">
-                           <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100 shadow-xs">
-                                <button 
-                                  onClick={() => handleUpdatePicked(index, -1)}
-                                  disabled={isSaving || picked <= 0}
-                                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
-                                >
-                                  -
-                                </button>
-                                <div className="w-10 text-center text-lg font-semibold text-blue-600 font-mono">
-                                    {picked}
-                                </div>
-                                <button 
-                                  onClick={() => handleUpdatePicked(index, 1)}
-                                  disabled={isSaving || picked >= item.remainingQuantity}
-                                  className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
-                                >
-                                  +
-                                </button>
+                          <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100 shadow-xs">
+                            <button
+                              onClick={() => handleUpdatePicked(index, -1)}
+                              disabled={isSaving || picked <= 0}
+                              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
+                            >
+                              -
+                            </button>
+                            <div className="w-10 text-center text-lg font-semibold text-blue-600 font-mono">
+                              {picked}
                             </div>
-                            {item.remainingQuantity > 0 && picked === 0 && (
-                              <span className="text-[10px] text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 font-semibold uppercase tracking-widest">
-                                {item.remainingQuantity} PENDING
-                              </span>
-                            )}
+                            <button
+                              onClick={() => handleUpdatePicked(index, 1)}
+                              disabled={isSaving || picked >= item.remainingQuantity}
+                              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
+                            >
+                              +
+                            </button>
+                          </div>
+                          {item.remainingQuantity > 0 && picked === 0 && (
+                            <span className="text-[10px] text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 font-semibold uppercase tracking-widest">
+                              {item.remainingQuantity} PENDING
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -468,14 +467,14 @@ export default function ViewOrder() {
                 );
               })}
             </div>
-            
+
             {/* Order Summary Footer */}
             <div className="px-8 py-8 bg-gray-50/50 border-t border-gray-100 space-y-4">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Subtotal</span>
                 <span className="font-bold text-gray-900">{formatPrice(order.subtotal, order.currency)}</span>
               </div>
-                  {order.discountAmount > 0 && (
+              {order.discountAmount > 0 && (
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
                     <Percent size={14} className="text-emerald-500" />
@@ -490,8 +489,8 @@ export default function ViewOrder() {
               </div>
               <div className="pt-6 mt-2 border-t-2 border-dashed border-gray-200">
                 <div className="flex justify-between items-center">
-                    <span className="text-xs uppercase font-semibold text-gray-900 tracking-widest">Grand Total</span>
-                    <span className="text-3xl font-semibold text-gray-900 tracking-tighter">{formatPrice(order.total, order.currency)}</span>
+                  <span className="text-xs uppercase font-semibold text-gray-900 tracking-widest">Grand Total</span>
+                  <span className="text-3xl font-semibold text-gray-900 tracking-tighter">{formatPrice(order.total, order.currency)}</span>
                 </div>
               </div>
             </div>
@@ -597,15 +596,15 @@ export default function ViewOrder() {
           {/* Company Branding */}
           <div className="flex flex-col items-center text-center mb-10 pb-10 border-b-2 border-dashed border-gray-100">
             {businessSettings?.avatar && (
-                <img src={businessSettings.avatar} alt="Logo" className="h-20 w-auto mb-4 grayscale" />
+              <img src={businessSettings.avatar} alt="Logo" className="h-20 w-auto mb-4 grayscale" />
             )}
-            <h2 className="text-4xl font-black uppercase tracking-tighter text-gray-900">
-                {businessSettings?.businessName || "SALE RECEIPT"}
+            <h2 className="text-4xl font-bold uppercase tracking-tighter text-gray-900">
+              {businessSettings?.businessName || "SALE RECEIPT"}
             </h2>
             <div className="mt-4 space-y-1 text-sm font-bold text-gray-500 uppercase tracking-widest">
-                <p>{businessSettings?.address || "Store Location"}</p>
-                <p>Phone: {businessSettings?.phone || "—"}</p>
-                {businessSettings?.email && <p>{businessSettings.email}</p>}
+              <p>{businessSettings?.address || "Store Location"}</p>
+              <p>Phone: {businessSettings?.phone || "—"}</p>
+              {businessSettings?.email && <p>{businessSettings.email}</p>}
             </div>
           </div>
 
@@ -635,24 +634,24 @@ export default function ViewOrder() {
           {/* Itemized Table */}
           <div className="mb-10">
             <table className="w-full">
-                <thead>
-                    <tr className="border-b-2 border-gray-900">
-                        <th className="py-3 text-left text-[10px] font-black uppercase tracking-widest">Item Description</th>
-                        <th className="py-3 text-center text-[10px] font-black uppercase tracking-widest">Qty</th>
-                        <th className="py-3 text-right text-[10px] font-black uppercase tracking-widest">Unit</th>
-                        <th className="py-3 text-right text-[10px] font-black uppercase tracking-widest">Total</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                    {items.map((item, idx) => (
-                        <tr key={idx}>
-                            <td className="py-4 text-sm font-bold text-gray-900">{item.productName}</td>
-                            <td className="py-4 text-center text-sm font-bold text-gray-700">{item.quantity}</td>
-                            <td className="py-4 text-right text-sm font-medium text-gray-500">{formatPrice(item.unitPrice, order.currency)}</td>
-                            <td className="py-4 text-right text-sm font-black text-gray-900">{formatPrice(item.subtotal, order.currency)}</td>
-                        </tr>
-                    ))}
-                </tbody>
+              <thead>
+                <tr className="border-b-2 border-gray-900">
+                  <th className="py-3 text-left text-[10px] font-bold uppercase tracking-widest">Item Description</th>
+                  <th className="py-3 text-center text-[10px] font-bold uppercase tracking-widest">Qty</th>
+                  <th className="py-3 text-right text-[10px] font-bold uppercase tracking-widest">Unit</th>
+                  <th className="py-3 text-right text-[10px] font-bold uppercase tracking-widest">Total</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {items.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="py-4 text-sm font-bold text-gray-900">{item.productName}</td>
+                    <td className="py-4 text-center text-sm font-bold text-gray-700">{item.quantity}</td>
+                    <td className="py-4 text-right text-sm font-medium text-gray-500">{formatPrice(item.unitPrice, order.currency)}</td>
+                    <td className="py-4 text-right text-sm font-bold text-gray-900">{formatPrice(item.subtotal, order.currency)}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
 
@@ -665,7 +664,7 @@ export default function ViewOrder() {
             {order.discountAmount > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-900 uppercase font-bold tracking-widest text-[10px]">Discount Applied</span>
-                <span className="font-black">-{formatPrice(order.discountAmount, order.currency)}</span>
+                <span className="font-bold">-{formatPrice(order.discountAmount, order.currency)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm">
@@ -673,17 +672,17 @@ export default function ViewOrder() {
               <span className="font-bold">{formatPrice(order.taxAmount || 0, order.currency)}</span>
             </div>
             <div className="flex justify-between items-end pt-6 mt-4 border-t-4 border-double border-gray-900">
-              <span className="uppercase font-black tracking-widest text-xs">Total Amount Paid</span>
-              <span className="text-4xl font-black tracking-tighter text-gray-900">{formatPrice(order.total, order.currency)}</span>
+              <span className="uppercase font-bold tracking-widest text-xs">Total Amount Paid</span>
+              <span className="text-4xl font-bold tracking-tighter text-gray-900">{formatPrice(order.total, order.currency)}</span>
             </div>
           </div>
 
           <div className="mt-16 text-center space-y-6">
-            <div className="inline-block px-6 py-2 border border-gray-900 text-[10px] font-black uppercase tracking-widest">
-                No Returns Without Original Receipt
+            <div className="inline-block px-6 py-2 border border-gray-900 text-[10px] font-bold uppercase tracking-widest">
+              No Returns Without Original Receipt
             </div>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                Thank you for choosing {businessSettings?.businessName || "our store"}!
+              Thank you for choosing {businessSettings?.businessName || "our store"}!
             </p>
           </div>
         </div>

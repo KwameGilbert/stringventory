@@ -74,7 +74,7 @@ const FAQSection = () => {
   ];
 
   return (
-    <section className="py-24 bg-slate-50/50 max-w-7xl mx-auto px-6 overflow-hidden" id="faq">
+    <section className="py-24 bg-slate-50/50 max-w-8xl mx-auto px-20 overflow-hidden" id="faq">
       <div className="container mx-auto">
         <div className="flex flex-col lg:flex-row gap-16 items-start">
           
@@ -105,7 +105,7 @@ const FAQSection = () => {
                   <h4 className="text-xl font-bold mb-2">Still have questions?</h4>
                   <p className="text-sm text-slate-400 font-medium">Our growth specialists are available 24/7 to help you choose the best plan for your scale.</p>
                </div>
-               <button className="w-full py-4 bg-white text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-xl active:scale-95">
+               <button className="w-full py-4 bg-white text-slate-900 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-xl active:scale-95">
                   Chat With Support
                </button>
             </div>

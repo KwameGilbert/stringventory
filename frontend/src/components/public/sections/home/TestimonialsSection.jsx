@@ -63,7 +63,7 @@ const TestimonialsSection = () => {
 
   return (
     <section className="py-24 bg-white relative overflow-hidden" id="testimonials">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-8xl mx-auto px-20">
         <div className="text-center mb-16">
           <motion.div 
             initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}

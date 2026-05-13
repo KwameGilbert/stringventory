@@ -91,7 +91,7 @@ const ProductShowcase = () => {
 
   return (
     <section className="relative py-14 px-6 overflow-hidden bg-slate-50/50" id="product-showcase">
-      <div className="max-w-7xl mx-auto flex flex-col items-center">
+      <div className="max-w-8xl px-20 mx-auto flex flex-col items-center">
         {/* HEADER */}
         <div className="text-center mb-16">
           <motion.div 

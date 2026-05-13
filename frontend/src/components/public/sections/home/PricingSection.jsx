@@ -20,7 +20,7 @@ const PricingCard = ({ tier, price, interval, description, features, highlighted
     }`}
   >
     {highlighted && (
-      <div className="bg-emerald-500 text-white text-xs font-black px-4 py-1.5 rounded-full self-start mb-4 -mt-10 uppercase tracking-widest shadow-lg shadow-emerald-500/20">
+      <div className="bg-emerald-500 text-white text-xs font-bold px-4 py-1.5 rounded-full self-start mb-4 -mt-10 uppercase tracking-widest shadow-lg shadow-emerald-500/20">
         Most Popular
       </div>
     )}
@@ -123,7 +123,7 @@ const PricingSection = () => {
   };
 
   return (
-    <section id="pricing" className="py-14 bg-white relative overflow-hidden max-w-7xl mx-auto">
+    <section id="pricing" className="py-14 bg-white relative overflow-hidden max-w-8xl px-20 mx-auto">
       {/* Decorative background components */}
       <div className="absolute top-1/2 left-0 w-64 h-64 bg-slate-50 rounded-full -translate-x-1/2 -z-0 blur-3xl" />
       

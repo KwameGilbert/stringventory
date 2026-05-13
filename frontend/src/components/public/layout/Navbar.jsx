@@ -30,7 +30,7 @@ const Navbar = () => {
           : "py-6 bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <div className="max-w-8xl mx-auto px-6 flex items-center justify-between px-20">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2 group">
           <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">

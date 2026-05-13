@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
-  Save, 
-  Globe, 
-  Mail, 
+import {
+  Save,
+  Globe,
+  Mail,
   Bell,
   Shield,
   CreditCard,
@@ -28,7 +28,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [copying, setCopying] = useState(null);
-  
+
   const [settings, setSettings] = useState({
     general: {
       platformName: 'StringVentory',
@@ -210,8 +210,8 @@ export default function Settings() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`
                       w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-left group
-                      ${isActive 
-                        ? 'bg-emerald-50 text-emerald-700 font-bold shadow-sm' 
+                      ${isActive
+                        ? 'bg-emerald-50 text-emerald-700 font-bold shadow-sm'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }
                     `}
@@ -242,7 +242,7 @@ export default function Settings() {
                       <p className="text-sm text-gray-500">Basic platform identity and status</p>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-gray-700">Platform Name</label>
@@ -334,8 +334,8 @@ export default function Settings() {
                             onClick={() => updateNestedField('appearance', 'primaryColor', color.id)}
                             className={`
                               flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all
-                              ${settings.appearance.primaryColor === color.id 
-                                ? `border-${color.id === 'slate' ? 'slate-800' : color.id + '-500'} bg-${color.id === 'slate' ? 'slate-50' : color.id + '-50'}` 
+                              ${settings.appearance.primaryColor === color.id
+                                ? `border-${color.id === 'slate' ? 'slate-800' : color.id + '-500'} bg-${color.id === 'slate' ? 'slate-50' : color.id + '-50'}`
                                 : 'border-transparent bg-gray-50 hover:bg-gray-100'
                               }
                             `}
@@ -360,8 +360,8 @@ export default function Settings() {
                               onClick={() => updateNestedField('appearance', 'themeMode', mode)}
                               className={`
                                 py-2 px-3 rounded-lg border text-xs font-bold capitalize transition-all
-                                ${settings.appearance.themeMode === mode 
-                                  ? 'bg-emerald-600 border-emerald-600 text-white shadow-md' 
+                                ${settings.appearance.themeMode === mode
+                                  ? 'bg-emerald-600 border-emerald-600 text-white shadow-md'
                                   : 'bg-white border-gray-200 text-gray-600 hover:border-emerald-300'
                                 }
                               `}
@@ -384,8 +384,8 @@ export default function Settings() {
                               onClick={() => updateNestedField('appearance', 'density', d)}
                               className={`
                                 py-2 px-3 rounded-lg border text-xs font-bold capitalize transition-all
-                                ${settings.appearance.density === d 
-                                  ? 'bg-emerald-600 border-emerald-600 text-white shadow-md' 
+                                ${settings.appearance.density === d
+                                  ? 'bg-emerald-600 border-emerald-600 text-white shadow-md'
                                   : 'bg-white border-gray-200 text-gray-600 hover:border-emerald-300'
                                 }
                               `}
@@ -438,8 +438,8 @@ export default function Settings() {
                         onClick={() => updateNestedField('notifications', 'emailProvider', provider)}
                         className={`
                           p-4 rounded-xl border-2 transition-all text-left
-                          ${settings.notifications.emailProvider === provider 
-                            ? 'border-emerald-500 bg-emerald-50' 
+                          ${settings.notifications.emailProvider === provider
+                            ? 'border-emerald-500 bg-emerald-50'
                             : 'border-gray-100 bg-gray-50 hover:border-emerald-200'
                           }
                         `}
@@ -536,7 +536,7 @@ export default function Settings() {
                             <p className="font-bold text-gray-900">{key.name}</p>
                             <div className="flex items-center gap-2 mt-0.5">
                               <code className="text-xs bg-gray-200 px-1.5 py-0.5 rounded text-gray-700">{key.key}</code>
-                              <button 
+                              <button
                                 onClick={() => handleCopy(key.key, `key-${key.id}`)}
                                 className="text-gray-400 hover:text-emerald-600 transition-colors"
                               >
@@ -550,7 +550,7 @@ export default function Settings() {
                             <p className="text-xs text-gray-500">Created</p>
                             <p className="text-xs font-bold text-gray-700">{key.createdAt}</p>
                           </div>
-                          <span className="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-full tracking-wider">
+                          <span className="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase rounded-full tracking-wider">
                             {key.status}
                           </span>
                           <button className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100">
@@ -601,7 +601,7 @@ export default function Settings() {
                       <p className="text-sm text-gray-500">Configure platform {activeTab} preferences</p>
                     </div>
                   </div>
-                  
+
                   {/* Reuse existing logic for these tabs or slightly enhance */}
                   {activeTab === 'notifications' && (
                     <div className="space-y-4">
@@ -711,16 +711,16 @@ export default function Settings() {
                       </div>
 
                       <div className="mt-8 p-8 bg-rose-50 border border-rose-100 rounded-2xl">
-                        <h3 className="font-black text-rose-900 text-lg mb-2 flex items-center gap-2 uppercase tracking-tight">
+                        <h3 className="font-bold text-rose-900 text-lg mb-2 flex items-center gap-2 uppercase tracking-tight">
                           <AlertTriangle className="w-6 h-6" />
                           Critical Infrastructure Zone
                         </h3>
                         <p className="text-rose-700 mb-6 font-medium">These actions are irreversible and will affect all businesses on the platform.</p>
                         <div className="flex flex-wrap gap-4">
-                          <button className="px-6 py-3 bg-rose-600 text-white font-black rounded-xl hover:bg-rose-700 shadow-lg shadow-rose-600/20 active:scale-95 transition-all uppercase text-xs tracking-widest">
+                          <button className="px-6 py-3 bg-rose-600 text-white font-bold rounded-xl hover:bg-rose-700 shadow-lg shadow-rose-600/20 active:scale-95 transition-all uppercase text-xs tracking-widest">
                             Flush All Caches
                           </button>
-                          <button className="px-6 py-3 bg-white border-2 border-rose-200 text-rose-600 font-black rounded-xl hover:bg-rose-50 transition-all uppercase text-xs tracking-widest">
+                          <button className="px-6 py-3 bg-white border-2 border-rose-200 text-rose-600 font-bold rounded-xl hover:bg-rose-50 transition-all uppercase text-xs tracking-widest">
                             Reset System Constants
                           </button>
                         </div>
@@ -789,7 +789,7 @@ export default function Settings() {
                 Last updated: April 25, 2026 at 14:45 UTC
               </p>
               <div className="flex items-center gap-4">
-                <button 
+                <button
                   onClick={() => setActiveTab('general')}
                   className="text-sm font-bold text-gray-500 hover:text-emerald-600 transition-colors"
                 >

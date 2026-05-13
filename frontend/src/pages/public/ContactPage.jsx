@@ -11,7 +11,7 @@ const ContactPage = () => {
       <Navbar />
       
       <main className="pt-32 pb-24 px-6">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-8xl px-20 mx-auto">
           <ContactHeader />
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             <ContactForm />

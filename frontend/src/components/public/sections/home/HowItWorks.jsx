@@ -87,7 +87,7 @@ const HowItWorks = () => {
   };
 
   return (
-    <section id="how-it-works" className="py-14 bg-white max-w-7xl mx-auto overflow-hidden">
+    <section id="how-it-works" className="py-14 bg-white max-w-8xl px-20 mx-auto overflow-hidden">
       <div className="container mx-auto px-6">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}

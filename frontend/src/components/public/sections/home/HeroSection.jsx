@@ -24,7 +24,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative pt-20 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-[#fafafa] max-w-7xl mx-auto font-sans">
+    <section className="relative pt-20 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-[#fafafa] max-w-8xl px-20 mx-auto font-sans">
       {/* Background Orbs */}
       <motion.div 
         animate={{ 
