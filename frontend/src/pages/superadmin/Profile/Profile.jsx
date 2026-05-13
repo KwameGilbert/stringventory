@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import superadminAuthService from '../../../services/superadminAuthService';
+import { useAuth } from '../../../contexts/AuthContext';
 import { 
   User, 
   Mail, 
@@ -13,38 +13,24 @@ import {
 } from 'lucide-react';
 
 export default function Profile() {
-  const user = superadminAuthService.getCurrentUser() || {
-    name: 'Dev Admin',
-    email: 'dev@stringventory.com',
-    role: 'CEO'
-  };
-  const logout = () => superadminAuthService.logout();
+  const { user, logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   
   const [formData, setFormData] = useState({
-    name: user?.name || 'Super Admin',
-    email: user?.email || 'admin@stringventory.com',
-    phone: '+1 (555) 123-4567',
-    timezone: 'America/New_York'
+    name: user?.name || 'Platform Administrator',
+    email: user?.email || '',
+    phone: '',
+    timezone: 'Africa/Accra'
   });
-
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
 
-  // Mock activity log
-  const activityLog = [
-    { id: 1, action: 'Logged in', time: '5 minutes ago', ip: '192.168.1.1' },
-    { id: 2, action: 'Updated business settings', time: '1 hour ago', ip: '192.168.1.1' },
-    { id: 3, action: 'Created new pricing plan', time: '2 hours ago', ip: '192.168.1.1' },
-    { id: 4, action: 'Added new business', time: '1 day ago', ip: '192.168.1.1' },
-    { id: 5, action: 'Changed password', time: '3 days ago', ip: '192.168.1.1' }
-  ];
 
   const handleSave = async () => {
     setIsSaving(true);

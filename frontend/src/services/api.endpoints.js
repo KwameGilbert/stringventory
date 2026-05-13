@@ -206,9 +206,14 @@ export const API_ENDPOINTS = {
       CREATE: '/superadmin/pricing-plans',
       UPDATE: (id) => `/superadmin/pricing-plans/${id}`,
       DELETE: (id) => `/superadmin/pricing-plans/${id}`,
+      COMPARE: '/superadmin/pricing-plans/comparison',
     },
     ANALYTICS: {
       PLATFORM: '/superadmin/analytics/platform',
+    },
+    SETTINGS: {
+      GET: '/superadmin/settings',
+      UPDATE: '/superadmin/settings',
     },
   },
 };

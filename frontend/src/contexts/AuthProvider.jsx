@@ -6,10 +6,7 @@ import { ROLES, normalizeRole } from "../utils/accessControl";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    // Check for isolated superadmin session first
-    const superadminStored = localStorage.getItem("stringventory_superadmin_user");
-    if (superadminStored) return JSON.parse(superadminStored);
-
+    // Single unified storage key for all user types
     const storedUser = localStorage.getItem(
       import.meta.env.VITE_AUTH_USER_KEY || "stringventory_user"
     );
@@ -58,7 +55,11 @@ export const AuthProvider = ({ children }) => {
         businessId: authUser?.businessId,
         subscriptionPlan: authUser?.subscriptionPlan,
         subscriptionStatus: authUser?.subscriptionStatus,
-        isSuperAdmin: normalizedRole === ROLES.CEO,
+        // isSuperAdmin: true if role is CEO (superadmin, admin, etc.) OR if the API
+        // explicitly returns isSuperAdmin: true on the user/payload object
+        isSuperAdmin: normalizedRole === ROLES.CEO ||
+          !!authUser?.isSuperAdmin ||
+          !!payload?.isSuperAdmin,
         avatar: `https://ui-avatars.com/api/?name=${firstName || "User"}+${lastName || ""}&background=random&color=fff`,
         mustChangePassword: !!(
           payload?.first_login || 
@@ -106,6 +107,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem(
         import.meta.env.VITE_AUTH_USER_KEY || "stringventory_user"
       );
+      // Also clear legacy superadmin keys from old isolated auth system
+      localStorage.removeItem("stringventory_superadmin_user");
+      localStorage.removeItem("stringventory_superadmin_token");
       window.location.href = "/";
     }
   };

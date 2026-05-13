@@ -1,15 +1,18 @@
 import React, { lazy } from "react";
-import { Route } from "react-router-dom";
+import { Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 const Login = lazy(() => import("../pages/login/Login"));
 const ForcePasswordChange = lazy(() => import("../pages/login/ForcePasswordChange"));
-const SuperadminLogin = lazy(() => import("../pages/superadmin/login/SuperadminLogin"));
 
 const authRoutes = (
   <>
+    {/* Single unified login for all user types — role-based redirect after auth */}
     <Route path="/login" element={<Login />} />
-    <Route path="/superadmin/login" element={<SuperadminLogin />} />
+
+    {/* Legacy superadmin login URL — redirect to unified login */}
+    <Route path="/superadmin/login" element={<Navigate to="/login" replace />} />
+
     <Route
       path="/force-password-change"
       element={

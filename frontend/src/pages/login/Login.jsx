@@ -20,7 +20,7 @@ export default function Login() {
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
-  // Handle login
+  // Handle login — redirects based on role after successful authentication
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -29,7 +29,11 @@ export default function Login() {
       const userData = await login(email, password);
       if (userData?.mustChangePassword) {
         navigate("/force-password-change");
+      } else if (userData?.isSuperAdmin) {
+        // Platform administrators go to the superadmin portal
+        navigate("/superadmin");
       } else {
+        // All business users (CEO, Manager, Sales) go to the business dashboard
         navigate("/dashboard");
       }
     } catch (error) {

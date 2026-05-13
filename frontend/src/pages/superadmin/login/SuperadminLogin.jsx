@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2, ShieldCheck, Activity, Globe } from "lucide-react";
 import { SuccessAlert } from "../../../components/auth";
-import superadminAuthService from "../../../services/superadminAuthService";
 
 export default function SuperadminLogin() {
   const navigate = useNavigate();
@@ -16,28 +15,9 @@ export default function SuperadminLogin() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // Using the isolated superadmin auth service
-      await superadminAuthService.login(email, password);
-      
-      setShowSuccessAlert(true);
-      
-      // Artificial delay for success animation
-      setTimeout(() => {
-        // Hard redirect to clear any previous context/state and ensure 
-        // AuthProvider picks up the specific storage key
-        window.location.href = "/superadmin";
-      }, 1500);
-
-    } catch (error) {
-      console.error("Superadmin login failed", error);
-      // Simple alert for mock mode
-      alert(error.message || "Login failed");
-    } finally {
-      setIsLoading(false);
-    }
+    // This page is no longer active. /superadmin/login redirects to /login.
+    // Keeping this file as a historical reference only.
+    window.location.href = '/login';
   };
 
   return (
