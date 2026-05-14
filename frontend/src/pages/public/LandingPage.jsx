@@ -1,19 +1,19 @@
-import React, { lazy, Suspense } from "react";
+﻿import React, { lazy, Suspense } from "react";
 import Navbar from "../../components/public/layout/Navbar";
-import HeroSection from "../../components/public/sections/home/HeroSection";
-import SocialProof from "../../components/public/sections/home/SocialProof";
+import HeroSection from "../../components/public/home/HeroSection";
+import SocialProof from "../../components/public/home/SocialProof";
 import LandingFooter from "../../components/public/layout/LandingFooter";
 
 // Lazy-loaded sections
-const FeaturesSection = lazy(() => import("../../components/public/sections/home/FeaturesSection"));
-const ProductShowcase = lazy(() => import("../../components/public/sections/home/ProductShowcase"));
-const HowItWorks = lazy(() => import("../../components/public/sections/home/HowItWorks"));
-const BenefitsSection = lazy(() => import("../../components/public/sections/home/BenefitsSection"));
-const PricingSection = lazy(() => import("../../components/public/sections/home/PricingSection"));
-const TestimonialsSection = lazy(() => import("../../components/public/sections/home/TestimonialsSection"));
-const ComparisonSection = lazy(() => import("../../components/public/sections/home/ComparisonSection"));
-const FAQSection = lazy(() => import("../../components/public/sections/home/FAQSection"));
-const CTASection = lazy(() => import("../../components/public/sections/home/CTASection"));
+const FeaturesSection = lazy(() => import("../../components/public/home/FeaturesSection"));
+const ProductShowcase = lazy(() => import("../../components/public/home/ProductShowcase"));
+const HowItWorks = lazy(() => import("../../components/public/home/HowItWorks"));
+const BenefitsSection = lazy(() => import("../../components/public/home/BenefitsSection"));
+const PricingSection = lazy(() => import("../../components/public/home/PricingSection"));
+const TestimonialsSection = lazy(() => import("../../components/public/home/TestimonialsSection"));
+const ComparisonSection = lazy(() => import("../../components/public/home/ComparisonSection"));
+const FAQSection = lazy(() => import("../../components/public/home/FAQSection"));
+const CTASection = lazy(() => import("../../components/public/home/CTASection"));
 
 /**
  * Minimal placeholder for lazy-loading sections

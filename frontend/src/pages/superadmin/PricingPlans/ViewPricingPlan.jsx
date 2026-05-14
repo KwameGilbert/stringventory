@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -13,7 +13,7 @@ import {
   Globe,
   Database
 } from 'lucide-react';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 import { useCurrency } from '../../../utils/currencyUtils';
 import { showError } from '../../../utils/alerts';
 

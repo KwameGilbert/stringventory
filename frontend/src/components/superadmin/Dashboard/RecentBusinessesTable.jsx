@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { Eye, Edit, MoreVertical } from 'lucide-react';
-import PlanBadge from '../../shared/PlanBadge';
-import StatusBadge from '../../shared/StatusBadge';
+import PlanBadge from '../../ui/PlanBadge';
+import StatusBadge from '../../ui/StatusBadge';
 import { useCurrency } from '../../../utils/currencyUtils';
 
 export default function RecentBusinessesTable({ businesses = [], responseCurrency = "USD" }) {

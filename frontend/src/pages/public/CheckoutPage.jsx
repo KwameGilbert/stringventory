@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 
 // Modular Components
-import CheckoutHeader from "../../components/public/sections/checkout/CheckoutHeader";
-import CheckoutTrustBar from "../../components/public/sections/checkout/CheckoutTrustBar";
+import CheckoutHeader from "../../components/public/checkout/CheckoutHeader";
+import CheckoutTrustBar from "../../components/public/checkout/CheckoutTrustBar";
 import Step1_ChoosePlan from "../../components/public/registration/Step1_ChoosePlan";
 import Step2_CompanyForm from "../../components/public/registration/Step2_CompanyForm";
 import Step3_BillingForm from "../../components/public/registration/Step3_BillingForm";

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Save, Loader, HelpCircle } from 'lucide-react';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 import { showSuccess, showError } from '../../../utils/alerts';
 
 export default function CreatePricingPlan() {

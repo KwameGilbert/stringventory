@@ -1,5 +1,5 @@
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext.js';
+﻿import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../providers/AuthContext.js';
 import { normalizeRole } from '../../utils/accessControl';
 
 export default function RoleRoute({ children, allowedRoles = [] }) {

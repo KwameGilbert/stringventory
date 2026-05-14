@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { 
   Building2, 
   CreditCard, 
@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import KPICard from '../../../components/superadmin/Dashboard/KPICard';
 import RecentBusinessesTable from '../../../components/superadmin/Dashboard/RecentBusinessesTable';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 import { showError } from '../../../utils/alerts';
 import { useCurrency } from '../../../utils/currencyUtils';
 import { extractBusinesses, normalizeBusiness } from '../../../models/business';

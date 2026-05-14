@@ -1,0 +1,44 @@
+﻿import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ProductForm from "../../../components/dashboard/Products/ProductForm";
+import { productService } from "../../../services/business/productService";
+import { showError, showSuccess } from "../../../utils/alerts";
+
+export default function CreateProduct() {
+  const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleCreate = async (data) => {
+    setSubmitting(true);
+    try {
+      await productService.createProduct({
+        ...data,
+        unit: data.unit || data.unitOfMeasure || data.unitOfMeasurementId || "piece",
+        costPrice: Number(data.costPrice ?? data.cost ?? 0),
+        sellingPrice: Number(data.sellingPrice ?? data.price ?? 0),
+        cost: Number(data.costPrice ?? data.cost ?? 0),
+        price: Number(data.sellingPrice ?? data.price ?? 0),
+        quantity: Number(data.currentStock ?? data.quantity ?? 0),
+        reorderLevel: Number(data.reorderThreshold ?? data.reorderLevel ?? 0),
+      });
+      showSuccess("Product created successfully");
+      navigate("/dashboard/products");
+    } catch (error) {
+      console.error("Failed to create product", error);
+      showError(error?.message || "Failed to create product");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="pb-8 animate-fade-in">
+      <ProductForm 
+        title="Add New Product"
+        subTitle="Create a new product in your inventory"
+        onSubmit={handleCreate}
+        isSubmitting={submitting}
+      />
+    </div>
+  );
+}

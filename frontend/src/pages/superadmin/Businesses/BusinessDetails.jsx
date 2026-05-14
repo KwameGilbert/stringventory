@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -13,7 +13,7 @@ import BusinessOverview from './tabs/BusinessOverview';
 import BusinessUsers from './tabs/BusinessUsers';
 import BusinessActivity from './tabs/BusinessActivity';
 import BusinessSettings from './tabs/BusinessSettings';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 
 const extractBusiness = (response) => {
   const payload = response?.data || response || {};

@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { useTheme } from "../../contexts/ThemeContext";
+import { useTheme } from "../../providers/ThemeContext";
 
 export default function SuccessAlert({ 
   isOpen, 

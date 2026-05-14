@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { SubscriptionContext } from './TenantContext';
+import { SubscriptionContext } from '../providers/TenantContext';
 
 export const useSubscription = () => {
   const context = useContext(SubscriptionContext);

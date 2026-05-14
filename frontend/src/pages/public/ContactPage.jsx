@@ -1,9 +1,9 @@
-import React from "react";
+﻿import React from "react";
 import Navbar from "../../components/public/layout/Navbar";
 import LandingFooter from "../../components/public/layout/LandingFooter";
-import ContactHeader from "../../components/public/sections/contact/ContactHeader";
-import ContactForm from "../../components/public/sections/contact/ContactForm";
-import ContactInfoSection from "../../components/public/sections/contact/ContactInfoSection";
+import ContactHeader from "../../components/public/contact/ContactHeader";
+import ContactForm from "../../components/public/contact/ContactForm";
+import ContactInfoSection from "../../components/public/contact/ContactInfoSection";
 
 const ContactPage = () => {
   return (

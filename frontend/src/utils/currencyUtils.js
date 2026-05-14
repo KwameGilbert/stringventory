@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Currency Symbols Mapping
  */
 export const CURRENCY_SYMBOLS = {
@@ -73,7 +73,7 @@ export const formatCurrency = (amount, targetCurrency = "GHS", rates = {}, sourc
   }
 };
 
-import { useSettings } from "../contexts/SettingsContext";
+import { useSettings } from "../providers/SettingsContext";
 
 import { useMemo, useCallback } from "react";
 

@@ -1,7 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { Eye, Edit, Trash2 } from 'lucide-react';
-import PlanBadge from '../../../../components/shared/PlanBadge';
-import StatusBadge from '../../../../components/shared/StatusBadge';
+import PlanBadge from '../../../../components/ui/PlanBadge';
+import StatusBadge from '../../../../components/ui/StatusBadge';
 
 export default function BusinessTable({ 
   businesses, 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import {
   Save,
   Globe,
@@ -21,7 +21,7 @@ import {
   RefreshCw,
   AlertTriangle
 } from 'lucide-react';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState('general');

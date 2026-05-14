@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import BusinessStats from './components/BusinessStats';
 import BusinessFilters from './components/BusinessFilters';
 import BusinessTable from './components/BusinessTable';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 import { showError, showSuccess } from '../../../utils/alerts';
 import { extractBusinesses, normalizeBusiness } from '../../../models/business';
 

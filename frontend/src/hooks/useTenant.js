@@ -1,5 +1,5 @@
 import {useContext} from 'react';
-import { TenantContext } from './TenantContext';
+import { TenantContext } from '../providers/TenantContext';
 
 export const useTenant = () => {
   const context = useContext(TenantContext);

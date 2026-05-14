@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Loader } from 'lucide-react';
 import { PRICING_PLANS } from '../../../constants/plans';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 import { showError, showSuccess } from '../../../utils/alerts';
 
 const extractBusiness = (response) => {

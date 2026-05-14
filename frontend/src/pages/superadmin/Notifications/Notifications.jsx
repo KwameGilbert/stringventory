@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   Bell,
   Check,
@@ -11,7 +11,7 @@ import {
   Settings,
   X,
 } from 'lucide-react';
-import notificationService from '../../../services/notificationService';
+import notificationService from '../../../services/business/notificationService';
 import { showError, showSuccess } from '../../../utils/alerts';
 
 const typeConfig = {

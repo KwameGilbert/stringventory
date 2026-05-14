@@ -1,13 +1,13 @@
-import React, { Suspense } from "react";
+﻿import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Providers from "./contexts/Providers";
-import PageLoader from "./components/shared/PageLoader";
+import Providers from "./providers/Providers";
+import PageLoader from "./components/ui/PageLoader";
 
 // Route modules
-import publicRoutes from "./routes/publicRoutes";
-import authRoutes from "./routes/authRoutes";
-import dashboardRoutes from "./routes/dashboardRoutes";
-import superadminRoutes from "./routes/superadminRoutes";
+import publicRoutes from "./router/publicRoutes";
+import authRoutes from "./router/authRoutes";
+import dashboardRoutes from "./router/dashboardRoutes";
+import superadminRoutes from "./router/superadminRoutes";
 
 export default function App() {
   return (

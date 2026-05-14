@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Edit, Users, DollarSign, TrendingUp, Check, X, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 import { showError } from '../../../utils/alerts';
 import { useCurrency } from '../../../utils/currencyUtils';
 import PlanComparisonTable from '../../../components/superadmin/PricingPlans/PlanComparisonTable';

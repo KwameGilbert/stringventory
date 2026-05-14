@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Download } from 'lucide-react';
 import AnalyticsOverview from './tabs/AnalyticsOverview';
 import AnalyticsRevenue from './tabs/AnalyticsRevenue';
 import AnalyticsUsers from './tabs/AnalyticsUsers';
 import AnalyticsSystem from './tabs/AnalyticsSystem';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 import { showError } from '../../../utils/alerts';
 import { useCurrency } from '../../../utils/currencyUtils';
 import { extractAnalytics } from '../../../models/analytics';
