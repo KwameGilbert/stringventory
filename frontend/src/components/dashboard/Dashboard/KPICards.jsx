@@ -27,26 +27,28 @@ const PrimaryCard = ({ kpi, Icon }) => {
       blue: "bg-[#2176FF]",
       orange: "bg-[#FF9F43]",
       navy: "bg-[#1B283F]",
+     
     };
     return colors[color] || colors.emerald;
   };
 
   const isUp = kpi.trend === "up";
+  const displayChange = kpi.change ? kpi.change : "0.0%";
   
   return (
-    <div className={`relative ${getBgColor(kpi.color)} rounded-lg p-5 shadow-lg flex items-center gap-4 transition-all duration-300 hover:scale-[1.02] overflow-hidden group`}>
+    <div className={`relative ${getBgColor(kpi.color)} rounded-xl p-5 shadow-lg flex items-center gap-4 transition-all duration-300 hover:scale-[1.02] overflow-hidden group`}>
       <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
-      <div className="bg-white p-2 rounded-md shadow-sm z-10 shrink-0">
-        <Icon className={`w-5 h-5 ${kpi.color === 'navy' ? 'text-[#1B283F]' : 'text-slate-700'}`} />
+      <div className="bg-white p-2.5 rounded-lg shadow-sm z-10 shrink-0">
+        <Icon className={`w-5 h-5 ${kpi.color === 'navy' ? 'text-[#1B283F]' : 'text-slate-800'}`} />
       </div>
-      <div className="flex-1 z-10">
-        <p className="text-[#eee] text-sm font-semibold mb-0.5">{kpi.title}</p>
-        <h3 className="text-2xl font-bold text-white tracking-tight">{kpi.value}</h3>
+      <div className="flex-1 z-10 min-w-0">
+        <p className="text-white/90 text-xs font-bold mb-1 uppercase tracking-wider">{kpi.title}</p>
+        <h3 className="text-2xl font-bold text-white tracking-tight truncate">{kpi.value}</h3>
       </div>
-      {kpi.change && kpi.trend !== 'alert' && (
-        <div className={`z-10 px-2 py-1 rounded-lg flex items-center gap-0.5 ${isUp ? 'bg-emerald-400/20 text-white' : 'bg-rose-400/20 text-white'}`}>
-          {isUp ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-          <span className="text-[10px] font-semibold">{kpi.change}</span>
+      {kpi.trend !== 'alert' && (
+        <div className={`z-10 px-2 py-1 rounded-lg flex items-center gap-0.5 backdrop-blur-xs ${isUp ? 'bg-white/25 text-white' : 'bg-black/15 text-white'}`}>
+          {isUp ? <ArrowUpRight className="w-3.5 h-3.5 shrink-0" /> : <ArrowDownRight className="w-3.5 h-3.5 shrink-0" />}
+          <span className="text-[11px] font-bold tracking-wider">{displayChange}</span>
         </div>
       )}
     </div>
@@ -57,40 +59,51 @@ const SecondaryCard = ({ kpi, Icon }) => {
   const isUp = kpi.trend === "up";
   const isAlert = kpi.trend === "alert";
 
-  const getIconColor = (color) => {
-    const colors = {
-      emerald: "bg-emerald-100 text-emerald-500",
-      orange: "bg-orange-100 text-orange-500",
-      blue: "bg-blue-100 text-blue-500",
-      rose: "bg-rose-100 text-rose-500",
-      red: "bg-red-100 text-red-500",
-      yellow: "bg-amber-100 text-amber-600",
+  const getCardBgColor = (color) => {
+    const bgColors = {
+      emerald: "bg-emerald-100/70 border-emerald-100/80",
+      orange: "bg-orange-100/70 border-orange-100/80",
+      blue: "bg-blue-100/70 border-blue-100/80",
+      rose: "bg-rose-100/70 border-rose-100/80",
+      red: "bg-red-100/70 border-red-100/80",
+      yellow: "bg-amber-100/70 border-amber-100/80",
     };
-    return colors[color] || colors.emerald;
+    return bgColors[color] || "bg-slate-50/70 border-slate-100/80";
+  };
+
+  const getIconColor = (color) => {
+    const iconColors = {
+      emerald: "bg-white text-emerald-600 shadow-xs border border-emerald-100/50",
+      orange: "bg-white text-orange-600 shadow-xs border border-orange-100/50",
+      blue: "bg-white text-blue-600 shadow-xs border border-blue-100/50",
+      rose: "bg-white text-rose-600 shadow-xs border border-rose-100/50",
+      red: "bg-white text-red-600 shadow-xs border border-red-100/50",
+      yellow: "bg-white text-amber-600 shadow-xs border border-amber-100/50",
+    };
+    return iconColors[color] || "bg-white text-slate-600 shadow-xs";
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 border border-slate-200 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full group">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-lg font-bold text-slate-900 mb-0.5">{kpi.value}</h3>
-          <p className="text-slate-500 text-sm font-medium">{kpi.title}</p>
+    <div className={`rounded-xl px-4 py-6 border ${getCardBgColor(kpi.color)} shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full group`}>
+      <div className="flex justify-between items-start mb-6">
+        <div className="min-w-0 pr-3">
+          <h3 className="text-xl font-bold text-slate-900 mb-1 tracking-tight truncate">{kpi.value}</h3>
+          <p className="text-slate-600 text-xs font-bold">{kpi.title}</p>
         </div>
-        <div className={`p-2.5 rounded-xl ${getIconColor(kpi.color)} group-hover:scale-110 transition-transform duration-300`}>
-          <Icon className="w-6 h-6" />
+        <div className={`p-3 rounded-xl ${getIconColor(kpi.color)} group-hover:scale-110 transition-transform duration-300 shrink-0`}>
+          <Icon className="w-5 h-5" />
         </div>
       </div>
 
-      <div className="flex justify-between items-center pt-4 border-t border-slate-50">
+      <div className="flex justify-between items-center pt-4 border-t border-slate-200/50">
         <div className="flex items-center gap-1">
-          {kpi.change && (
-            <span className={`text-xs font-bold flex items-center gap-0.5 ${isUp ? 'text-emerald-500' : isAlert ? 'text-rose-500' : 'text-slate-500'}`}>
-              {kpi.change} <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider ml-1">{isAlert ? '' : 'vs Last Month'}</span>
-            </span>
-          )}
+          <span className={`text-xs font-bold flex items-center gap-1 ${isAlert ? 'text-rose-600' : isUp ? 'text-emerald-600' : 'text-slate-700'}`}>
+            {kpi.change || "0.0%"} 
+            {!isAlert && <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">vs Last Month</span>}
+          </span>
         </div>
         {kpi.link && (
-          <Link to={kpi.link} className="text-slate-400 hover:text-emerald-500 text-xs font-bold flex items-center gap-1 transition-colors">
+          <Link to={kpi.link} className="text-slate-400 hover:text-emerald-600 text-xs font-bold flex items-center gap-1 transition-colors">
             View All <ArrowRight className="w-3 h-3" />
           </Link>
         )}
@@ -215,7 +228,7 @@ const KPICards = ({ dateRange }) => {
         change: formatChange(metrics?.netProfit?.change),
         trend: metrics?.netProfit?.trend || toTrend(metrics?.netProfit?.change),
         icon: TrendingUp,
-        color: "emerald",
+        color: "navy",
         link: "/dashboard/reports",
       },
       {

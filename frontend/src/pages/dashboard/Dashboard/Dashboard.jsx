@@ -6,7 +6,7 @@ import QuickLists from "../../../components/dashboard/Dashboard/QuickLists";
 import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
 import { productService } from "../../../services/business/productService";
 
-// Lazy load heavy chart components
+const PaymentDistribution = lazy(() => import("../../../components/dashboard/Dashboard/PaymentDistribution"));
 const RecentTransactions = lazy(() => import("../../../components/dashboard/Dashboard/RecentTransactions"));
 const SalesExpensesChart = lazy(() => import("../../../components/dashboard/Dashboard/SalesExpensesChart"));
 const TopProductsChart = lazy(() => import("../../../components/dashboard/Dashboard/TopProductsChart"));
@@ -156,11 +156,18 @@ export default function Dashboard() {
           </Suspense>
         </div>
 
-        {/* Row 3: Recent Transactions Section */}
-        <div>
-          <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
-            <RecentTransactions />
-          </Suspense>
+        {/* Row 3: Recent Transactions & Payment Distribution */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+          <div className="xl:col-span-2">
+            <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
+              <RecentTransactions />
+            </Suspense>
+          </div>
+          <div>
+            <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
+              <PaymentDistribution dateRange={effectiveDateRange} />
+            </Suspense>
+          </div>
         </div>
       </div>
 
