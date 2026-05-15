@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { Flag } from "lucide-react";
 import orderService from "../../../services/business/orderService";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { useAuth } from "../../../providers/AuthContext";
+import { normalizeRole, ROLES } from "../../../utils/accessControl";
 
-const tabs = ["Sale", "Purchase", "Expenses"];
+const ALL_TABS = ["Sale", "Purchase", "Expenses"];
 
 const MOCK_TRANSACTIONS = {
   Sale: [
@@ -23,10 +25,16 @@ const MOCK_TRANSACTIONS = {
 };
 
 const RecentTransactions = () => {
+  const { user } = useAuth();
   const { formatPrice } = useCurrency();
   const [activeTab, setActiveTab] = useState("Sale");
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const roleName = user?.role?.name || user?.role || user?.roleName;
+  const role = normalizeRole(roleName);
+  const isSales = role === ROLES.SALES;
+  const availableTabs = isSales ? ["Sale"] : ALL_TABS;
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -53,7 +61,6 @@ const RecentTransactions = () => {
           }
         }
         
-        // Fallback or other tabs use high-fidelity mock data
         setTransactions(MOCK_TRANSACTIONS[activeTab] || []);
       } catch (err) {
         console.error("Failed to fetch transactions:", err);
@@ -71,24 +78,24 @@ const RecentTransactions = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-50 rounded-lg text-orange-500">
+            <div className="p-2 bg-orange-50 rounded-lg text-orange-500 shrink-0">
               <Flag size={20} />
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 tracking-tight">Recent Transactions</h3>
+            <h3 className="text-xl font-semibold text-slate-900 tracking-tight truncate">Recent Transactions</h3>
           </div>
-          <Link to="/dashboard/orders" className="text-xs font-bold text-slate-500 underline hover:text-slate-800">
+          <Link to="/dashboard/orders" className="text-xs font-bold text-slate-500 underline hover:text-slate-800 shrink-0 ml-2">
             View All
           </Link>
         </div>
 
         {/* Tabs */}
         <div className="flex items-center gap-6 border-b border-slate-100 mb-6 overflow-x-auto">
-          {tabs.map((tab) => (
+          {availableTabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-3 text-sm font-medium relative whitespace-nowrap transition-colors ${
-                activeTab === tab ? "text-[#E65F2B]" : "text-slate-800 hover:text-slate-800"
+              className={`pb-3 text-sm font-bold relative whitespace-nowrap transition-colors ${
+                activeTab === tab ? "text-[#E65F2B]" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               {tab}

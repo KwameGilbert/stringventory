@@ -5,6 +5,8 @@ import KPICards from "../../../components/dashboard/Dashboard/KPICards";
 import QuickLists from "../../../components/dashboard/Dashboard/QuickLists";
 import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
 import { productService } from "../../../services/business/productService";
+import { useAuth } from "../../../providers/AuthContext";
+import { normalizeRole, ROLES } from "../../../utils/accessControl";
 
 const PaymentDistribution = lazy(() => import("../../../components/dashboard/Dashboard/PaymentDistribution"));
 const RecentTransactions = lazy(() => import("../../../components/dashboard/Dashboard/RecentTransactions"));
@@ -87,8 +89,13 @@ const LowStockAlert = ({ products = [] }) => {
 };
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const { filter, setPreset } = useDashboardDateFilter();
   const [lowStockProducts, setLowStockProducts] = useState([]);
+
+  const roleName = user?.role?.name || user?.role || user?.roleName;
+  const role = normalizeRole(roleName);
+  const isSales = role === ROLES.SALES;
   
   const effectiveDateRange =
     filter.type === "custom"
@@ -133,18 +140,20 @@ export default function Dashboard() {
         </div>
         
         {/* Row 1: Sales & Expenses Trend & Overall Information */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
-          <div className="xl:col-span-2">
-            <Suspense fallback={<ChartPlaceholder height="h-[420px]" />}>
-              <SalesExpensesChart dateRange={effectiveDateRange} />
-            </Suspense>
+        {!isSales && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
+            <div className="xl:col-span-2">
+              <Suspense fallback={<ChartPlaceholder height="h-[420px]" />}>
+                <SalesExpensesChart dateRange={effectiveDateRange} />
+              </Suspense>
+            </div>
+            <div>
+              <Suspense fallback={<ChartPlaceholder height="h-[420px]" />}>
+                <OverallInformation dateRange={effectiveDateRange} />
+              </Suspense>
+            </div>
           </div>
-          <div>
-            <Suspense fallback={<ChartPlaceholder height="h-[420px]" />}>
-              <OverallInformation dateRange={effectiveDateRange} />
-            </Suspense>
-          </div>
-        </div>
+        )}
 
         {/* Row 2: Top Products & Top Customers - 2 columns */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -157,17 +166,19 @@ export default function Dashboard() {
         </div>
 
         {/* Row 3: Recent Transactions & Payment Distribution */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
-          <div className="xl:col-span-2">
+        <div className={`grid grid-cols-1 ${isSales ? 'xl:grid-cols-1' : 'xl:grid-cols-3'} gap-6 items-stretch`}>
+          <div className={isSales ? '' : 'xl:col-span-2'}>
             <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
               <RecentTransactions />
             </Suspense>
           </div>
-          <div>
-            <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
-              <PaymentDistribution dateRange={effectiveDateRange} />
-            </Suspense>
-          </div>
+          {!isSales && (
+            <div>
+              <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
+                <PaymentDistribution dateRange={effectiveDateRange} />
+              </Suspense>
+            </div>
+          )}
         </div>
       </div>
 
