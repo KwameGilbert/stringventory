@@ -14,9 +14,9 @@ const DashboardHeader = ({ dateRange, setDateRange }) => {
   const { user } = useAuth();
   
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 animate-fade-in">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-4 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
+        <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">
           Welcome, {user?.firstName || "Admin"}
         </h1>
         <p className="text-slate-500 mt-1">
@@ -26,7 +26,7 @@ const DashboardHeader = ({ dateRange, setDateRange }) => {
 
       <div className="flex items-center gap-3 w-full md:w-auto">
         <div className="relative flex-1 md:flex-none">
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-emerald-500 transition-colors cursor-pointer group">
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-md shadow-sm hover:border-emerald-500 transition-colors cursor-pointer group">
             <Calendar size={18} className="text-slate-400 group-hover:text-emerald-500 transition-colors" />
             <select
               value={dateRange}

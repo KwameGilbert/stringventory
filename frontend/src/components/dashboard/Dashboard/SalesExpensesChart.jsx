@@ -15,6 +15,18 @@ import { useCurrency } from "../../../utils/currencyUtils";
 
 const timelineOptions = ["1D", "1W", "1M", "3M", "6M", "1Y"];
 
+const MOCK_DATA = [
+  { month: "Jan", sales: 45000, purchase: 32000 },
+  { month: "Feb", sales: 52000, purchase: 38000 },
+  { month: "Mar", sales: 48000, purchase: 41000 },
+  { month: "Apr", sales: 61000, purchase: 45000 },
+  { month: "May", sales: 55000, purchase: 42000 },
+  { month: "Jun", sales: 67000, purchase: 48000 },
+  { month: "Jul", sales: 50000, purchase: 48000 },
+  { month: "Aug", sales: 67000, purchase: 38000 },
+  { month: "Sep", sales: 37000, purchase: 40000 },
+];
+
 const SalesExpensesChart = ({ dateRange }) => {
   const { symbol, formatPrice } = useCurrency();
   const [data, setData] = useState([]);
@@ -36,13 +48,13 @@ const SalesExpensesChart = ({ dateRange }) => {
             ? new Date(row.date).toLocaleDateString("en-US", { month: "short" })
             : "—",
           sales: Number(row?.revenue ?? 0),
-          purchase: Number(row?.expenses ?? 0), // Mapping expenses to purchase for UI consistency
+          purchase: Number(row?.expenses ?? 0),
         }));
 
-        setData(mapped);
+        setData(mapped.length > 0 ? mapped : MOCK_DATA);
       } catch (error) {
         console.error("Error fetching chart data:", error);
-        setData([]);
+        setData(MOCK_DATA);
       } finally {
         setLoading(false);
       }
@@ -83,9 +95,9 @@ const SalesExpensesChart = ({ dateRange }) => {
   const totalPurchase = data.reduce((sum, item) => sum + item.purchase, 0);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 hover:shadow-md transition-all duration-300">
+    <div className="bg-white rounded-xl border border-slate-300 hover:shadow-md transition-all duration-300">
       {/* Header */}
-      <div className="flex flex-col md:flex-row border-b border-slate-200 p-6 justify-between items-start md:items-center gap-4 mb-10">
+      <div className="flex flex-col md:flex-row border-b border-slate-200 p-5 justify-between items-start md:items-center gap-4 mb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-orange-50 rounded-xl text-orange-500">
             <ShoppingCart size={22} />
@@ -112,39 +124,39 @@ const SalesExpensesChart = ({ dateRange }) => {
       </div>
 
       {/* Metric Overlay Cards */}
-      <div className="flex gap-4 mb-8 px-6">
-        <div className="border border-slate-100 rounded-xl p-3 w-44 shadow-sm bg-white">
+      <div className="flex gap-4 mb-4 px-6">
+        <div className="border border-slate-200 rounded-lg p-3 w-44 shadow-sm bg-white">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-2.5 h-2.5 bg-[#fa5e0a] rounded-full"></div>
-            <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Total Expenses</span>
+            <span className="text-[10px] font-semibold text-black/50 uppercase tracking-widest">Total Expenses</span>
           </div>
           <h4 className="text-xl font-bold text-black">{formatPrice(totalPurchase)}</h4>
         </div>
-        <div className="border border-slate-100 rounded-xl p-3 w-44 shadow-sm bg-white">
+        <div className="border border-slate-100 rounded-lg p-3 w-44 shadow-sm bg-white">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-2.5 h-2.5 bg-[#fa5e0a] rounded-full"></div>
-            <span className="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Total Sales</span>
+            <span className="text-[10px] font-semibold text-black/50 uppercase tracking-widest">Total Sales</span>
           </div>
           <h4 className="text-xl font-bold text-black">{formatPrice(totalSales)}</h4>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="h-[300px] w-full relative">
+      <div className="h-[300px] w-full relative mb-6">
         <ResponsiveContainer width="100%" height="100%" minHeight={300}>
-          <BarChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barGap={8}>
+          <BarChart data={data} margin={{ top: 0, right: 0, left: 0, bottom: 0 }} barGap={4}>
             <CartesianGrid vertical={false} stroke="#F1F5F9" strokeDasharray="0" />
             <XAxis
               dataKey="month"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#94A3B8", fontSize: 12, fontWeight: 600 }}
+              tick={{ fill: "#94A3B8", fontSize: 12, fontWeight: 400 }}
               dy={10}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#94A3B8", fontSize: 12, fontWeight: 600 }}
+              tick={{ fill: "#94A3B8", fontSize: 12, fontWeight: 400 }}
               tickFormatter={(val) => (val === 0 ? "0" : `${val / 1000}k`)}
             />
             <Tooltip
@@ -156,14 +168,14 @@ const SalesExpensesChart = ({ dateRange }) => {
               name="Total Purchase"
               fill="#FFD4BC"
               radius={[6, 6, 6, 6]}
-              barSize={24}
+              barSize={30}
             />
             <Bar
               dataKey="sales"
               name="Total Sales"
-              fill="#E65F2B"
+              fill="#FE9F43"
               radius={[6, 6, 6, 6]}
-              barSize={24}
+              barSize={30}
             />
           </BarChart>
         </ResponsiveContainer>

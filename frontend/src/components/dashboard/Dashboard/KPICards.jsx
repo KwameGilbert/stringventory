@@ -73,7 +73,7 @@ const SecondaryCard = ({ kpi, Icon }) => {
     <div className="bg-white rounded-lg p-6 border border-slate-200 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between h-full group">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-2xl font-bold text-slate-900 mb-0.5">{kpi.value}</h3>
+          <h3 className="text-lg font-bold text-slate-900 mb-0.5">{kpi.value}</h3>
           <p className="text-slate-500 text-sm font-medium">{kpi.title}</p>
         </div>
         <div className={`p-2.5 rounded-xl ${getIconColor(kpi.color)} group-hover:scale-110 transition-transform duration-300`}>
@@ -247,6 +247,16 @@ const KPICards = ({ dateRange }) => {
         icon: Clock,
         color: "rose",
         link: "/dashboard/products",
+      },
+      {
+        id: "totalProducts",
+        title: "Total Products",
+        value: formatNumber(metrics?.totalProducts?.value || metrics?.totalProducts),
+        change: "Active items",
+        trend: "neutral",
+        icon: Package,
+        color: "blue",
+        link: "/dashboard/inventory",
       },
     ];
 

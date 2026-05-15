@@ -10,6 +10,15 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import analyticsService from "../../../services/business/analyticsService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
+import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
+
+const dateOptions = [
+  { label: "Today", value: "today" },
+  { label: "Last 7 Days", value: "7days" },
+  { label: "Last 30 Days", value: "30days" },
+  { label: "Last 90 Days", value: "90days" },
+  { label: "This Year", value: "year" },
+];
 
 const MetricCard = ({ title, value, Icon, colorClass }) => {
   const displayValue = typeof value === 'object' && value !== null ? (value.value ?? "0") : (value ?? "0");
@@ -26,8 +35,11 @@ const MetricCard = ({ title, value, Icon, colorClass }) => {
 };
 
 const OverallInformation = ({ dateRange }) => {
+  const { filter, setPreset } = useDashboardDateFilter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const currentFilterLabel = dateOptions.find(opt => opt.value === (filter.type === 'preset' ? filter.preset : ''))?.label || "This Month";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,17 +79,17 @@ const OverallInformation = ({ dateRange }) => {
   const metrics = data?.metrics || {};
 
   return (
-    <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm h-full flex flex-col">
+    <div className="bg-white rounded-xl border border-slate-300 shadow-xs h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-2 bg-blue-50 rounded-lg text-blue-500">
+      <div className="flex items-center gap-3 mb-4 border-b border-slate-300 p-4">
+        <div className="p-2 bg-blue-100 rounded-lg text-blue-500">
           <Info size={20} />
         </div>
         <h3 className="text-xl font-semibold text-slate-800 tracking-tight">Overall Information</h3>
       </div>
 
       {/* Top Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-3 gap-4 mb-5 p-4">
         <MetricCard 
           title="Suppliers" 
           value={metrics?.totalSuppliers || "0"} 
@@ -98,16 +110,26 @@ const OverallInformation = ({ dateRange }) => {
         />
       </div>
 
-      <div className="h-px bg-slate-50 mb-8"></div>
+      <div className="h-px bg-slate-50 mb-4"></div>
 
-      {/* Customers Overview Section */}
-      <div className="flex-1">
+      {/* Inventory Status Section */}
+      <div className="flex-1 p-4">
         <div className="flex justify-between items-center mb-6">
-          <h4 className="font-semibold text-slate-800">Customers Overview</h4>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100 cursor-pointer">
-            <Calendar size={14} className="text-slate-400" />
-            <span className="text-xs font-bold text-slate-600">Today</span>
-            <ChevronDown size={12} className="text-slate-400" />
+          <h4 className="font-semibold text-slate-800">Inventory Status</h4>
+          <div className="relative group">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100 group-hover:border-emerald-400 transition-colors cursor-pointer">
+              <Calendar size={14} className="text-slate-400" />
+              <select 
+                value={filter.type === 'preset' ? filter.preset : ''}
+                onChange={(e) => setPreset(e.target.value)}
+                className="bg-transparent border-none focus:outline-none text-xs font-bold text-slate-600 cursor-pointer appearance-none pr-4"
+              >
+                {dateOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <ChevronDown size={12} className="text-slate-400 absolute right-2 pointer-events-none" />
+            </div>
           </div>
         </div>
 
@@ -117,7 +139,10 @@ const OverallInformation = ({ dateRange }) => {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={customerData}
+                  data={[
+                    { name: "In Stock", value: (metrics?.totalProducts || 100) - (metrics?.lowStockItems || 20), color: "#10B981" },
+                    { name: "Low Stock", value: metrics?.lowStockItems || 20, color: "#E65F2B" },
+                  ]}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
@@ -125,9 +150,8 @@ const OverallInformation = ({ dateRange }) => {
                   paddingAngle={8}
                   dataKey="value"
                 >
-                  {customerData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
-                  ))}
+                  <Cell fill="#10B981" stroke="none" />
+                  <Cell fill="#E65F2B" stroke="none" />
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
@@ -136,17 +160,19 @@ const OverallInformation = ({ dateRange }) => {
           {/* Details */}
           <div className="flex-1 flex justify-around">
             <div className="text-center">
-              <h5 className="text-2xl font-bold text-slate-800">5.5K</h5>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-2">First Time</p>
+              <h5 className="text-2xl font-bold text-slate-800">
+                {metrics?.totalProducts ? (metrics.totalProducts - (metrics.lowStockItems || 0)) : "80"}
+              </h5>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-2">In Stock</p>
               <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-md flex items-center justify-center gap-0.5">
-                <TrendingUp size={10} /> 25%
+                Healthy
               </span>
             </div>
             <div className="text-center">
-              <h5 className="text-2xl font-bold text-slate-800">3.5K</h5>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-2">Return</p>
-              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-md flex items-center justify-center gap-0.5">
-                <TrendingUp size={10} /> 21%
+              <h5 className="text-2xl font-bold text-slate-800">{metrics?.lowStockItems || "20"}</h5>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-2">Low Stock</p>
+              <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-[10px] font-bold rounded-md flex items-center justify-center gap-0.5">
+                Warning
               </span>
             </div>
           </div>

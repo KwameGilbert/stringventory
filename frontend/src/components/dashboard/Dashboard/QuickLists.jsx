@@ -1,9 +1,19 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Package, TrendingDown, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import orderService from "../../../services/business/orderService";
 import { productService } from "../../../services/business/productService";
 import { useCurrency } from "../../../utils/currencyUtils";
+
+const ProductImage = ({ src, alt, fallbackIcon: Icon }) => (
+  <div className="w-10 h-10 rounded-lg overflow-hidden bg-white border border-gray-100 flex-shrink-0 flex items-center justify-center">
+    {src ? (
+      <img src={src} alt={alt} className="w-full h-full object-cover" />
+    ) : (
+      <Icon size={18} className="text-gray-300" />
+    )}
+  </div>
+);
 
 const QuickLists = () => {
   const [recentOrders, setRecentOrders] = useState([]);
@@ -46,6 +56,7 @@ const QuickLists = () => {
           totalAmount: Number(order.total || 0),
           status: order.status || "pending",
           currency: order.currency || ordersCurrency,
+          image: order.items?.[0]?.product?.image || order.items?.[0]?.image || order.image,
         }));
 
         setRecentOrders(mappedOrders);
@@ -55,6 +66,7 @@ const QuickLists = () => {
           sku: item.sku || item.code || "—",
           currentStock: Number(item.currentStock ?? item.quantity ?? 0),
           reorderLevel: Number(item.reorderLevel ?? item.reorderThreshold ?? 0),
+          image: item.image || item.imageUrl || item.product?.image,
         })));
 
         setExpiring(expiringItems.slice(0, 5).map((item) => {
@@ -72,6 +84,7 @@ const QuickLists = () => {
             batchNumber: item.batchNumber || item.batch || "—",
             daysUntilExpiry,
             quantity: Number(item.quantity ?? item.currentStock ?? 0),
+            image: item.image || item.imageUrl || item.product?.image,
           };
         }));
       } catch (error) {
@@ -102,8 +115,6 @@ const QuickLists = () => {
       </div>
     );
   }
-
-  // Replaced local formatCurrency with useCurrency's formatPrice logic
 
   const getStatusColor = (status) => {
     const colors = {
@@ -143,20 +154,21 @@ const QuickLists = () => {
             {recentOrders.map((order, index) => (
               <div
                 key={`order-${order.id}-${index}`}
-                className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
               >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
+                <ProductImage src={order.image} alt={order.orderNumber} fallbackIcon={Package} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
                     {order.orderNumber}
                   </p>
-                  <p className="text-xs text-gray-500">{order.customerName}</p>
+                  <p className="text-xs text-gray-500 truncate">{order.customerName}</p>
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <p className="text-sm font-semibold text-gray-900">
                     {formatPrice(order.totalAmount, order.currency)}
                   </p>
                   <span
-                    className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                    className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${getStatusColor(
                       order.status
                     )}`}
                   >
@@ -172,14 +184,14 @@ const QuickLists = () => {
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <TrendingDown className="w-5 h-5 text-red-600" />
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <TrendingDown className="w-5 h-5 text-amber-600" />
               </div>
               <h3 className="font-semibold text-gray-900">Low Stock</h3>
             </div>
             <Link
               to="/dashboard/inventory"
-              className="text-xs font-medium text-red-600 hover:text-red-700"
+              className="text-xs font-medium text-amber-600 hover:text-amber-700"
             >
               View All
             </Link>
@@ -189,16 +201,17 @@ const QuickLists = () => {
             {lowStock.map((item, index) => (
               <div
                 key={`stock-${item.id}-${index}`}
-                className="flex items-center justify-between p-3 rounded-xl bg-red-50 hover:bg-red-100 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-xl bg-amber-50 hover:bg-amber-100 transition-colors"
               >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
+                <ProductImage src={item.image} alt={item.productName} fallbackIcon={TrendingDown} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
                     {item.productName}
                   </p>
-                  <p className="text-xs text-gray-500">SKU: {item.sku}</p>
+                  <p className="text-xs text-gray-500 truncate">SKU: {item.sku}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-red-600">
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-semibold text-amber-600">
                     {item.currentStock} units
                   </p>
                   <p className="text-xs text-gray-500">
@@ -231,17 +244,18 @@ const QuickLists = () => {
             {expiring.map((item, index) => (
               <div
                 key={`expiring-${item.id}-${index}`}
-                className="flex items-center justify-between p-3 rounded-xl bg-amber-50 hover:bg-amber-100 transition-colors"
+                className="flex items-center gap-3 p-3 rounded-xl bg-amber-50 hover:bg-amber-100 transition-colors"
               >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
+                <ProductImage src={item.image} alt={item.productName} fallbackIcon={Clock} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">
                     {item.productName}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 truncate">
                     Batch: {item.batchNumber}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <p className="text-sm font-semibold text-amber-600">
                     {item.daysUntilExpiry} days
                   </p>
