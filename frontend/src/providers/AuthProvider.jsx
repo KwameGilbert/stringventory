@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext.js";
 import authService from "../services/auth/authService";
 import { getAccessToken, clearTokens } from "../services/api/client";
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
         subscriptionStatus: authUser?.subscriptionStatus,
         // isSuperAdmin: true if role is CEO (superadmin, admin, etc.) OR if the API
         // explicitly returns isSuperAdmin: true on the user/payload object
-        isSuperAdmin: normalizedRole === ROLES.CEO ||
+        isSuperAdmin: normalizedRole === ROLES.SUPERADMIN ||
           !!authUser?.isSuperAdmin ||
           !!payload?.isSuperAdmin,
         avatar: `https://ui-avatars.com/api/?name=${firstName || "User"}+${lastName || ""}&background=random&color=fff`,

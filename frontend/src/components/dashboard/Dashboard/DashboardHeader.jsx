@@ -1,4 +1,5 @@
 import { Calendar, ChevronDown } from "lucide-react";
+import { useAuth } from "../../../providers/AuthContext";
 
 const dateOptions = [
   { label: "Today", value: "today" },
@@ -10,33 +11,40 @@ const dateOptions = [
 ];
 
 const DashboardHeader = ({ dateRange, setDateRange }) => {
+  const { user } = useAuth();
+  
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 text-sm">Overview of your business performance</p>
+        <h1 className="text-3xl font-semibold text-slate-900 tracking-tight">
+          Welcome, {user?.firstName || "Admin"}
+        </h1>
+        <p className="text-slate-500 mt-1">
+          Overview of your business performance
+        </p>
       </div>
 
-      {/* Date Filter */}
-      <div className="relative">
-        <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm">
-          <Calendar size={16} className="text-gray-500" />
-          <select
-            value={dateRange}
-            onChange={(e) => {
-              if (e.target.value !== "custom") {
-                setDateRange(e.target.value);
-              }
-            }}
-            className="bg-transparent border-none focus:outline-none text-sm font-medium text-gray-700 cursor-pointer pr-6 appearance-none"
-          >
-            {dateOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown size={14} className="text-gray-400 absolute right-3" />
+      <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="relative flex-1 md:flex-none">
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-emerald-500 transition-colors cursor-pointer group">
+            <Calendar size={18} className="text-slate-400 group-hover:text-emerald-500 transition-colors" />
+            <select
+              value={dateRange}
+              onChange={(e) => {
+                if (e.target.value !== "custom") {
+                  setDateRange(e.target.value);
+                }
+              }}
+              className="bg-transparent border-none focus:outline-none text-sm font-semibold text-slate-700 cursor-pointer pr-8 appearance-none"
+            >
+              {dateOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={14} className="text-slate-400 absolute right-4 pointer-events-none" />
+          </div>
         </div>
       </div>
     </div>
