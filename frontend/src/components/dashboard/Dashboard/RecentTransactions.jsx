@@ -33,12 +33,12 @@ const RecentTransactions = () => {
       setLoading(true);
       try {
         if (activeTab === "Sale") {
-          const res = await orderService.getOrders({ limit: 5 });
+          const res = await orderService.getOrders({ limit: 3 });
           const payload = res?.data || res || {};
           const orderList = Array.isArray(payload) ? payload : payload.orders || [];
 
           if (orderList.length > 0) {
-            const mapped = orderList.slice(0, 5).map((order, idx) => ({
+            const mapped = orderList.slice(0, 3).map((order, idx) => ({
               id: order.id || idx,
               date: order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "24 May 2025",
               customer: order.customer?.name || order.customerName || "Unknown Customer",
@@ -114,7 +114,7 @@ const RecentTransactions = () => {
           ) : transactions.length === 0 ? (
             <div className="py-8 text-center text-xs text-slate-400 font-medium">No transactions found</div>
           ) : (
-            transactions.map((tx) => (
+            transactions.slice(0, 3).map((tx) => (
               <div key={tx.id} className="grid grid-cols-12 items-center gap-2 py-2.5 px-4 rounded-xl hover:bg-slate-50 transition-colors">
                 {/* Date */}
                 <div className="col-span-3 text-xs font-medium text-slate-500">{tx.date}</div>
