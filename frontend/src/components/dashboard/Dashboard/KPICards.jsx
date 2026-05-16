@@ -23,11 +23,10 @@ import { useCurrency } from "../../../utils/currencyUtils";
 const PrimaryCard = ({ kpi, Icon }) => {
   const getBgColor = (color) => {
     const colors = {
-      emerald: "bg-[#10B981]",
-      blue: "bg-[#2176FF]",
-      orange: "bg-[#FF9F43]",
-      navy: "bg-[#1B283F]",
-     
+      emerald: "bg-gradient-to-br from-emerald-600 to-teal-700 shadow-emerald-500/20 border border-emerald-500/30",
+      blue: "bg-gradient-to-br from-blue-600 to-indigo-700 shadow-blue-500/20 border border-blue-500/30",
+      orange: "bg-gradient-to-br from-amber-500 to-orange-600 shadow-orange-500/20 border border-orange-500/30",
+      navy: "bg-gradient-to-br from-slate-900 to-slate-950 shadow-slate-900/30 border border-slate-800/80",
     };
     return colors[color] || colors.emerald;
   };
@@ -36,17 +35,17 @@ const PrimaryCard = ({ kpi, Icon }) => {
   const displayChange = kpi.change ? kpi.change : "0.0%";
   
   return (
-    <div className={`relative ${getBgColor(kpi.color)} rounded-xl p-5 shadow-lg flex items-center gap-4 transition-all duration-300 hover:scale-[1.02] overflow-hidden group`}>
+    <div className={`relative ${getBgColor(kpi.color)} rounded-2xl p-6 shadow-lg flex items-center gap-4.5 transition-all duration-300 hover:scale-[1.02] overflow-hidden group`}>
       <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
-      <div className="bg-white p-2.5 rounded-lg shadow-sm z-10 shrink-0">
-        <Icon className={`w-5 h-5 ${kpi.color === 'navy' ? 'text-[#1B283F]' : 'text-slate-800'}`} />
+      <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shadow-sm z-10 shrink-0">
+        <Icon className="w-6 h-6 text-white" />
       </div>
       <div className="flex-1 z-10 min-w-0">
-        <p className="text-white/90 text-xs font-bold mb-1 uppercase tracking-wider">{kpi.title}</p>
+        <p className="text-white/80 text-[11px] font-bold mb-1 uppercase tracking-wider">{kpi.title}</p>
         <h3 className="text-2xl font-bold text-white tracking-tight truncate">{kpi.value}</h3>
       </div>
       {kpi.trend !== 'alert' && (
-        <div className={`z-10 px-2 py-1 rounded-lg flex items-center gap-0.5 backdrop-blur-xs ${isUp ? 'bg-white/25 text-white' : 'bg-black/15 text-white'}`}>
+        <div className={`z-10 px-2.5 py-1 rounded-lg flex items-center gap-1 backdrop-blur-md shadow-2xs ${isUp ? 'bg-white/25 text-white' : 'bg-black/25 text-white'}`}>
           {isUp ? <ArrowUpRight className="w-3.5 h-3.5 shrink-0" /> : <ArrowDownRight className="w-3.5 h-3.5 shrink-0" />}
           <span className="text-[11px] font-bold tracking-wider">{displayChange}</span>
         </div>

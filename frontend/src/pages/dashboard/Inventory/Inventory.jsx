@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Package, DollarSign, Clock } from "lucide-react";
 import InventoryHeader from "../../../components/dashboard/Inventory/InventoryHeader";
 import InventoryTable from "../../../components/dashboard/Inventory/InventoryTable";
@@ -38,6 +38,7 @@ export default function Inventory() {
   const [adjustModalOpen, setAdjustModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [responseCurrency, setResponseCurrency] = useState("GHS");
+  const [viewMode, setViewMode] = useState("list");
 
   const { formatPrice } = useCurrency();
 
@@ -271,67 +272,68 @@ export default function Inventory() {
         totalItems={inventory.length}
         onExportExcel={handleExportExcel}
         onExportPDF={handleExportPDF}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
       />
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Entries */}
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-blue-50">
-              <Package className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Batches</p>
-              <p className="text-2xl font-semibold text-gray-900">{totalEntries}</p>
-            </div>
+        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 border border-blue-500/30 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
+          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
+            <Package className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1 z-10">
+            <p className="text-[11px] font-bold text-blue-100/90 uppercase tracking-wider mb-1">Total Batches</p>
+            <p className="text-2xl font-bold text-white truncate tracking-tight">{totalEntries}</p>
           </div>
         </div>
 
         {/* Total Units */}
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-emerald-50">
-              <Package className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Stock</p>
-              <p className="text-2xl font-semibold text-gray-900">{totalUnits.toLocaleString()}</p>
-            </div>
+        <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-6 border border-emerald-500/30 shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
+          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
+            <Package className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1 z-10">
+            <p className="text-[11px] font-bold text-emerald-100/90 uppercase tracking-wider mb-1">Total Stock</p>
+            <p className="text-2xl font-bold text-white truncate tracking-tight">{totalUnits.toLocaleString()}</p>
           </div>
         </div>
 
         {/* Total Value */}
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-emerald-50">
-              <DollarSign className="w-5 h-5 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Value</p>
-              <p className="text-2xl font-semibold text-gray-900">{formatCurrency(totalValue)}</p>
-            </div>
+        <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-6 border border-purple-500/30 shadow-lg shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
+          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
+            <DollarSign className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1 z-10">
+            <p className="text-[11px] font-bold text-purple-100/90 uppercase tracking-wider mb-1">Total Value</p>
+            <p className="text-2xl font-bold text-white truncate tracking-tight">{formatCurrency(totalValue)}</p>
           </div>
         </div>
 
         {/* Expiring Soon */}
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm transition-all hover:shadow-md">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-amber-50">
-              <Clock className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Expiring Soon</p>
-              <p className="text-2xl font-semibold text-gray-900">{expiringCount} <span className="text-xs font-bold text-gray-400 italic">batches</span></p>
-            </div>
+        <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-6 border border-orange-500/30 shadow-lg shadow-orange-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
+          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
+            <Clock className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1 z-10">
+            <p className="text-[11px] font-bold text-amber-100/90 uppercase tracking-wider mb-1">Expiring Soon</p>
+            <p className="text-2xl font-bold text-white truncate tracking-tight">
+              {expiringCount} <span className="text-xs font-semibold text-amber-100/80 font-normal ml-1">batches</span>
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Inventory Table */}
+      {/* Inventory Table / Grid */}
       <InventoryTable 
         inventory={filteredInventory} 
         onAdjust={handleOpenAdjustment}
+        viewMode={viewMode}
       />
 
       {/* Adjustment Modal */}

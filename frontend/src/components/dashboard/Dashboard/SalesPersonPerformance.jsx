@@ -94,10 +94,10 @@ const SalesPersonPerformance = ({ dateRange }) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 h-full flex flex-col">
-        <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
-          <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
-          <div className="h-8 bg-gray-200 rounded w-20 animate-pulse"></div>
+      <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 h-full flex flex-col">
+        <div className="flex justify-between items-center mb-6 border-b border-slate-200 pb-4">
+          <div className="h-6 bg-slate-100 rounded w-32 animate-pulse"></div>
+          <div className="h-8 bg-slate-100 rounded w-20 animate-pulse"></div>
         </div>
         <div className="space-y-6 flex-1">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -121,10 +121,10 @@ const SalesPersonPerformance = ({ dateRange }) => {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden h-full flex flex-col">
+    <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white">
-        <h3 className="text-xl font-bold text-slate-900 tracking-tight">Best Seller</h3>
+      <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-white">
+        <h3 className="text-lg font-semibold text-slate-900 tracking-tight">Best Seller</h3>
         <Link 
           to="/dashboard/users" 
           className="px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-2xs"
@@ -142,13 +142,13 @@ const SalesPersonPerformance = ({ dateRange }) => {
                 <img src={rep.avatar} alt={rep.name} className="w-full h-full object-cover" />
               </div>
               <div className="min-w-0 ml-4 flex-1">
-                <h4 className="font-bold text-sm text-slate-900 truncate group-hover:text-emerald-600 transition-colors">{rep.name}</h4>
+                <h4 className="font-semibold text-sm text-slate-900 truncate group-hover:text-emerald-600 transition-colors">{rep.name}</h4>
                 <p className="text-xs font-medium text-slate-500 mt-0.5">{formatPrice(rep.revenue)}</p>
               </div>
             </div>
             <div className="text-right shrink-0 ml-2">
               <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block mb-0.5">Sales</span>
-              <span className="text-sm font-bold text-slate-900 block">{rep.salesCount}</span>
+              <span className="text-sm font-semibold text-slate-900 block">{rep.salesCount}</span>
             </div>
           </div>
         ))}
