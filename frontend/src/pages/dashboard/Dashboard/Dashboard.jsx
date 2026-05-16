@@ -13,6 +13,9 @@ const RecentTransactions = lazy(() => import("../../../components/dashboard/Dash
 const SalesExpensesChart = lazy(() => import("../../../components/dashboard/Dashboard/SalesExpensesChart"));
 const TopProductsChart = lazy(() => import("../../../components/dashboard/Dashboard/TopProductsChart"));
 const TopCustomers = lazy(() => import("../../../components/dashboard/Dashboard/TopCustomers"));
+const SalesPersonPerformance = lazy(() => import("../../../components/dashboard/Dashboard/SalesPersonPerformance"));
+const TopCategories = lazy(() => import("../../../components/dashboard/Dashboard/TopCategories"));
+const OrderStatistics = lazy(() => import("../../../components/dashboard/Dashboard/OrderStatistics"));
 const OverallInformation = lazy(() => import("../../../components/dashboard/Dashboard/OverallInformation"));
 
 const ChartPlaceholder = ({ height = "h-[400px]" }) => (
@@ -40,17 +43,15 @@ const LowStockAlert = ({ products = [] }) => {
   const hasMultiple = products.length > 1;
 
   return (
-    <div className="bg-amber-50 border border-amber-100 rounded-lg p-4 flex items-center justify-between mb-4 animate-slide-up shadow-xs group">
-      <div className="flex items-center gap-3 overflow-hidden">
-        <div className="bg-amber-500/10 p-2 rounded-lg text-amber-600 shrink-0">
-          <AlertCircle size={20} />
+    <div className="bg-amber-50/70 border border-amber-50 rounded-lg p-2 flex items-center justify-between mb-4 animate-slide-up shadow-xs group">
+      <div className="flex items-center gap-1 overflow-hidden">
+        <div className="bg-amber-500/10 p-1 rounded-lg text-amber-600 shrink-0">
+          <AlertCircle size={18} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-slate-700 font-medium text-sm md:text-base truncate">
-            Your Product <span className="text-amber-600 font-semibold">{product?.name || "Product"}</span> is running Low, already below {product?.minStockThreshold || 5} Pcs., 
-            <button className="ml-2 text-amber-600 font-bold underline hover:text-amber-700 transition-colors inline-flex items-center gap-1">
-              Add Stock <ExternalLink size={14} />
-            </button>
+          <p className="text-slate-700 font-medium text-xs md:text-sm truncate">
+            Your Product <span className="text-amber-600 font-semibold">{product?.name || "Product"}</span> is running Low, already below {product?.minStockThreshold || 5} Pcs.
+           
           </p>
         </div>
       </div>
@@ -156,7 +157,7 @@ export default function Dashboard() {
         )}
 
         {/* Row 2: Top Products & Top Customers - 2 columns */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
           <Suspense fallback={<ChartPlaceholder />}>
             <TopProductsChart dateRange={effectiveDateRange} />
           </Suspense>
@@ -165,21 +166,40 @@ export default function Dashboard() {
           </Suspense>
         </div>
 
-        {/* Row 3: Recent Transactions & Payment Distribution */}
-        <div className={`grid grid-cols-1 ${isSales ? 'xl:grid-cols-1' : 'xl:grid-cols-3'} gap-6 items-stretch`}>
-          <div className={isSales ? '' : 'xl:col-span-2'}>
+        {/* Row 3: Recent Transactions & Salesperson Performance */}
+        <div className={`grid grid-cols-1 ${isSales ? 'xl:grid-cols-2' : 'xl:grid-cols-3'} gap-6 items-stretch`}>
+          <div className="xl:col-span-2">
             <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
               <RecentTransactions />
             </Suspense>
           </div>
-          {!isSales && (
-            <div>
+          <div className="xl:col-span-1">
+            <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
+              <SalesPersonPerformance dateRange={effectiveDateRange} />
+            </Suspense>
+          </div>
+        </div>
+
+        {/* Row 4: Payment Distribution, Top Categories, & Order Statistics */}
+        {!isSales && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 items-stretch">
+            <div className="xl:col-span-1">
               <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
                 <PaymentDistribution dateRange={effectiveDateRange} />
               </Suspense>
             </div>
-          )}
-        </div>
+            <div className="xl:col-span-1">
+              <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
+                <TopCategories dateRange={effectiveDateRange} />
+              </Suspense>
+            </div>
+            <div className="xl:col-span-1">
+              <Suspense fallback={<ChartPlaceholder height="h-[400px]" />}>
+                <OrderStatistics dateRange={effectiveDateRange} />
+              </Suspense>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick Access Lists */}
