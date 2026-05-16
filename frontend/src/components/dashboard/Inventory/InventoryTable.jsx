@@ -67,80 +67,91 @@ const InventoryTable = ({ inventory, onAdjust, viewMode = "list" }) => {
   return (
     <div className="space-y-6">
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in">
           {paginatedInventory.map((item) => (
-            <div key={item.id} className="bg-white rounded-2xl shadow-xs border border-slate-200 p-5 space-y-4 transition-all hover:shadow-md group flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3.5 min-w-0 pr-2">
-                    <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
-                      {item.image ? (
-                        <img src={item.image} alt={item.productName} className="w-full h-full object-cover" />
-                      ) : (
-                        <Package className="w-6 h-6 text-slate-400" />
-                      )}
-                    </div>
-                    <div className="space-y-0.5 min-w-0 flex-1">
-                      <p className="font-bold text-slate-900 text-sm truncate group-hover:text-blue-600 transition-colors" title={item.productName}>
-                        {item.productName}
-                      </p>
-                      <p className="text-[11px] text-slate-400 font-semibold tracking-wider uppercase truncate">{item.category}</p>
-                    </div>
+            <div key={item.id} className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden transition-all hover:shadow-md group flex flex-col justify-between">
+              {/* Full-width Image Header */}
+              <div className="h-36 w-full bg-slate-100 relative overflow-hidden shrink-0">
+                {item.image ? (
+                  <img src={item.image} alt={item.productName} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 text-slate-400">
+                    <Package className="w-10 h-10 mb-2 stroke-1 text-slate-300" />
+                    <span className="text-xs font-medium text-slate-400">{item.category}</span>
                   </div>
+                )}
+
+                {/* Absolute Floating Badges on top of Image */}
+                <div className="absolute top-3 left-3 right-3 flex justify-between items-start pointer-events-none">
+                  <span className="bg-white/90 backdrop-blur-md text-slate-800 text-[11px] font-semibold px-2.5 py-1 rounded-lg shadow-sm border border-white/20">
+                    {item.category}
+                  </span>
                   {item.expiryDate && (
-                    <span className={`inline-block whitespace-nowrap text-[10px] font-bold font-mono uppercase tracking-wide px-2.5 py-1 rounded-md border shadow-2xs shrink-0 ${
+                    <span className={`text-[10px] font-semibold font-mono uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-sm border border-white/20 ${
                       isExpired(item.expiryDate)
-                        ? "bg-rose-50 text-rose-700 border-rose-200"
+                        ? "bg-rose-600 text-white"
                         : isExpiringSoon(item.expiryDate)
-                        ? "bg-amber-50 text-amber-700 border-amber-200"
-                        : "bg-slate-50 text-slate-600 border-slate-200"
+                        ? "bg-amber-500 text-white"
+                        : "bg-slate-900/80 text-white backdrop-blur-md"
                     }`}>
-                      {formatDate(item.expiryDate).toUpperCase()}
+                      {isExpired(item.expiryDate) ? "Expired" : `Exp: ${formatDate(item.expiryDate)}`}
                     </span>
                   )}
                 </div>
-
-                <div className="grid grid-cols-2 gap-3 py-3 border-y border-slate-100 my-2">
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Batch #</p>
-                    <p className="text-sm font-mono font-bold text-slate-800">{item.batchNumber}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Stock Level</p>
-                    <p className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                      {item.quantity} <span className="text-xs font-normal text-slate-500">units</span>
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Unit Cost</p>
-                    <p className="text-sm font-semibold text-slate-700">{formatCurrency(item.unitCost, item.currency)}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Value</p>
-                    <p className="text-sm font-bold text-emerald-600">{formatCurrency(item.totalValue, item.currency)}</p>
-                  </div>
-                </div>
               </div>
 
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center gap-2">
-                  <Link
-                    to={`/dashboard/inventory/${item.id}`}
-                    className="p-2.5 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 transition-all font-semibold text-xs flex items-center gap-1.5 shadow-2xs"
-                  >
-                    <Eye size={16} />
-                    Details
-                  </Link>
-                  <button
-                    onClick={() => onAdjust && onAdjust(item)}
-                    className="p-2.5 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 border border-blue-200 transition-all font-semibold text-xs px-4 shadow-2xs"
-                  >
-                    Adjust
-                  </button>
+              {/* Card Body & Details */}
+              <div className="p-5 flex-1 flex flex-col justify-between space-y-2">
+                <div>
+                  <div className="mb-2">
+                    <p className="font-semibold text-slate-900 text-base leading-tight group-hover:text-blue-600 transition-colors line-clamp-1" title={item.productName}>
+                      {item.productName}
+                    </p>
+                    <p className="text-xs text-slate-500 font-medium mt-1 truncate">Supplier: <span className="text-slate-700 font-semibold">{item.supplier}</span></p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 py-3 border-y border-slate-100 mt-4 mb-1">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Batch #</p>
+                      <p className="text-xs font-mono font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded w-fit">{item.batchNumber}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Stock Level</p>
+                      <p className="text-sm font-semibold text-slate-900 flex items-center gap-1">
+                        {item.quantity} <span className="text-xs font-normal text-slate-500">units</span>
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Unit Cost</p>
+                      <p className="text-sm font-semibold text-slate-700">{formatCurrency(item.unitCost, item.currency)}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Total Value</p>
+                      <p className="text-sm font-semibold text-emerald-600">{formatCurrency(item.totalValue, item.currency)}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Entry Date</p>
-                  <p className="text-xs text-slate-600 font-semibold">{formatDate(item.entryDate)}</p>
+
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/dashboard/inventory/${item.id}`}
+                      className="p-2.5 rounded-xl bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 transition-all font-semibold text-xs flex items-center gap-1.5 shadow-2xs"
+                    >
+                      <Eye size={16} />
+                      Details
+                    </Link>
+                    <button
+                      onClick={() => onAdjust && onAdjust(item)}
+                      className="p-2.5 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 border border-blue-200 transition-all font-semibold text-xs px-4 shadow-2xs"
+                    >
+                      Adjust
+                    </button>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Entry Date</p>
+                    <p className="text-xs text-slate-600 font-semibold">{formatDate(item.entryDate)}</p>
+                  </div>
                 </div>
               </div>
             </div>

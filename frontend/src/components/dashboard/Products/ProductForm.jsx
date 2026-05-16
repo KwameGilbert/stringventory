@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Save, Upload, Package, X, Check, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import categoryService from "../../../services/business/categoryService";
@@ -137,41 +137,40 @@ const ProductForm = ({
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-4xl mx-auto pb-12 animate-fade-in space-y-6">
       {/* Back Button */}
       <button
         onClick={() => navigate("/dashboard/products")}
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-6 group"
+        className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-all group"
       >
-        <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
-          <ArrowLeft size={18} />
+        <div className="p-2 rounded-xl bg-white border border-slate-200 shadow-2xs group-hover:border-slate-300 transition-all">
+          <ArrowLeft size={16} />
         </div>
-        <span className="font-medium">Back to Products</span>
+        <span className="font-semibold text-sm">Back to Products Catalog</span>
       </button>
 
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 shadow-lg shadow-blue-200">
-          <Package className="w-6 h-6 text-white" />
+      {/* Header Banner */}
+      <div className="flex items-center gap-4 p-6 bg-white rounded-2xl border border-slate-200 shadow-xs">
+        <div className="p-3.5 rounded-2xl bg-slate-900 shadow-sm shadow-slate-900/20 text-white flex items-center justify-center shrink-0">
+          <Package className="w-7 h-7" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-          <p className="text-gray-500 text-sm">{subTitle}</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
+          <p className="text-slate-500 font-medium text-sm mt-0.5">{subTitle}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Information Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="font-semibold text-gray-900">Basic Information</h3>
-            <p className="text-sm text-gray-500">Enter the product details</p>
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-blue-100 bg-blue-100 flex items-center justify-between">
+            <h3 className="font-semibold text-blue-950 text-sm uppercase tracking-wider">Basic Information</h3>
           </div>
 
-          <div className="p-6 space-y-5">
+          <div className="p-6 sm:p-8 space-y-6">
             {/* Product Name */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
                 Product Name <span className="text-rose-500">*</span>
               </label>
               <input
@@ -179,16 +178,16 @@ const ProductForm = ({
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                placeholder="e.g., Coca-Cola Classic"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all font-semibold text-slate-900 shadow-2xs"
+                placeholder="e.g., Ultra-Durable Steel Cable 10m"
                 required
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Category */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
                   Category <span className="text-rose-500">*</span>
                 </label>
                 <select
@@ -196,7 +195,7 @@ const ProductForm = ({
                   value={formData.categoryId}
                   onChange={handleChange}
                   disabled={categoriesLoading}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all bg-white font-medium text-slate-900 shadow-2xs cursor-pointer appearance-none truncate"
                   required
                 >
                   <option value="">
@@ -209,13 +208,13 @@ const ProductForm = ({
                   ))}
                 </select>
                 {categoriesLoading ? (
-                  <p className="text-xs text-gray-400">Loading categories...</p>
+                  <p className="text-xs text-slate-400 font-medium mt-1">Loading categories...</p>
                 ) : categoriesError ? (
-                  <p className="text-xs text-rose-500">
+                  <p className="text-xs text-rose-500 font-semibold mt-1">
                     Could not load categories. Please refresh and try again.
                   </p>
                 ) : categories.length === 0 ? (
-                  <p className="text-xs text-amber-600">
+                  <p className="text-xs text-amber-600 font-semibold mt-1">
                     No active categories found. Create a category first.
                   </p>
                 ) : null}
@@ -223,14 +222,14 @@ const ProductForm = ({
 
               {/* Supplier */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
                   Supplier <span className="text-rose-500">*</span>
                 </label>
                 <select
                   name="supplierId"
                   value={formData.supplierId}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all bg-white font-medium text-slate-900 shadow-2xs cursor-pointer appearance-none truncate"
                   required
                 >
                   <option value="">Select a supplier</option>
@@ -245,7 +244,7 @@ const ProductForm = ({
 
             {/* Description */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
                 Description (Optional)
               </label>
               <textarea
@@ -253,21 +252,21 @@ const ProductForm = ({
                 value={formData.description}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none"
-                placeholder="Briefly describe this product..."
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all resize-none font-medium text-slate-900 shadow-2xs"
+                placeholder="Briefly describe this product, specifications, or special storage notes..."
               />
             </div>
 
             {/* Unit of Measure */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
                 Unit of Measure <span className="text-rose-500">*</span>
               </label>
               <select
                 name="unitOfMeasurementId"
                 value={formData.unitOfMeasurementId || ""}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all bg-white font-medium text-slate-900 shadow-2xs cursor-pointer appearance-none truncate"
                 required
               >
                 <option value="">Select Unit</option>
@@ -282,18 +281,17 @@ const ProductForm = ({
         </div>
 
         {/* Pricing Information Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="font-semibold text-gray-900">Pricing Information</h3>
-            <p className="text-sm text-gray-500">Configure cost and selling prices</p>
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-emerald-100 bg-emerald-100 flex items-center justify-between">
+            <h3 className="font-semibold text-emerald-950 text-sm uppercase tracking-wider">Pricing Information</h3>
           </div>
 
-          <div className="p-6 space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="p-6 sm:p-8 space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Cost Price */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Cost Price <span className="text-gray-400 mt-1">({symbol})</span>
+                <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
+                  Cost Price <span className="text-slate-400 font-mono">({symbol})</span>
                 </label>
                 <input
                   type="number"
@@ -302,7 +300,7 @@ const ProductForm = ({
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all font-semibold text-slate-900 font-mono shadow-2xs"
                   placeholder="0.00"
                   required
                 />
@@ -310,8 +308,8 @@ const ProductForm = ({
 
               {/* Selling Price */}
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700">
-                  Selling Price <span className="text-gray-400 mt-1">({symbol})</span>
+                <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
+                  Selling Price <span className="text-slate-400 font-mono">({symbol})</span>
                 </label>
                 <input
                   type="number"
@@ -320,7 +318,7 @@ const ProductForm = ({
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all font-semibold text-slate-900 font-mono shadow-2xs"
                   placeholder="0.00"
                   required
                 />
@@ -330,39 +328,38 @@ const ProductForm = ({
         </div>
 
         {/* Product Image Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="font-semibold text-gray-900">Product Image</h3>
-            <p className="text-sm text-gray-500">Upload an image (optional)</p>
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-purple-100 bg-purple-100 flex items-center justify-between">
+            <h3 className="font-semibold text-purple-950 text-sm uppercase tracking-wider">Product Image</h3>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-6 sm:p-8 space-y-5">
             {imagePreview && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Preview</p>
-                <div className="flex items-center justify-center">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Preview</p>
+                <div className="flex items-center justify-center p-2 bg-slate-50 rounded-2xl border border-slate-200/60 shadow-2xs">
                   <img
                     src={imagePreview}
                     alt="Product preview"
-                    className="max-w-xs h-auto rounded-lg border border-gray-200 object-cover"
+                    className="max-w-xs h-48 rounded-xl border border-slate-200 object-cover shadow-sm"
                   />
                 </div>
               </div>
             )}
             <div className="flex items-center justify-center w-full">
-              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-200 border-dashed rounded-xl cursor-pointer bg-gray-50/50 hover:bg-gray-50 hover:border-gray-300 transition-all group">
-                <div className="flex flex-col items-center justify-center py-4">
-                  <div className="p-2.5 bg-white rounded-full shadow-sm mb-2 group-hover:scale-110 transition-transform border border-gray-100">
-                    <Upload className="w-5 h-5 text-gray-400" />
+              <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-slate-200 border-dashed rounded-2xl cursor-pointer bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-all group">
+                <div className="flex flex-col items-center justify-center py-5 text-center">
+                  <div className="p-3 bg-white rounded-xl shadow-xs mb-3 group-hover:scale-110 transition-transform border border-slate-200/80">
+                    <Upload className="w-6 h-6 text-slate-500" />
                   </div>
-                  <p className="text-sm text-gray-500">
-                    <span className="font-medium text-gray-700">
+                  <p className="text-sm text-slate-600 font-medium">
+                    <span className="font-semibold text-slate-900">
                       Click to upload
                     </span>{" "}
                     or drag and drop
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    PNG, JPG up to 2MB
+                  <p className="text-xs text-slate-400 font-medium mt-1">
+                    PNG, JPG, WEBP up to 2MB
                   </p>
                 </div>
                 <input
@@ -378,31 +375,30 @@ const ProductForm = ({
         </div>
 
         {/* Stock Controls Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="font-semibold text-gray-900">Product Controls</h3>
-            <p className="text-sm text-gray-500">Configure stock settings</p>
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-amber-100 bg-amber-100 flex items-center justify-between">
+            <h3 className="font-semibold text-amber-950 text-sm uppercase tracking-wider">Product Controls</h3>
           </div>
 
-          <div className="p-6 space-y-5">
+          <div className="p-6 sm:p-8 space-y-6">
             {/* Status */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
-                Status
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
+                Catalog Status
               </label>
-              <div className="flex gap-3">
+              <div className="flex gap-3.5">
                 <button
                   type="button"
                   onClick={() =>
                     setFormData((prev) => ({ ...prev, status: "active" }))
                   }
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border transition-all font-semibold text-sm shadow-2xs ${
                     formData.status === "active"
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                      : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-800 shadow-xs"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
                   }`}
                 >
-                  <Check size={16} />
+                  <Check size={18} className={formData.status === "active" ? "text-emerald-600" : ""} />
                   Active
                 </button>
                 <button
@@ -410,13 +406,13 @@ const ProductForm = ({
                   onClick={() =>
                     setFormData((prev) => ({ ...prev, status: "inactive" }))
                   }
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border transition-all font-semibold text-sm shadow-2xs ${
                     formData.status === "inactive"
-                      ? "border-gray-500 bg-gray-100 text-gray-700"
-                      : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                      ? "border-slate-400 bg-slate-100 text-slate-800 shadow-xs"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
                   }`}
                 >
-                  <X size={16} />
+                  <X size={18} className={formData.status === "inactive" ? "text-slate-600" : ""} />
                   Inactive
                 </button>
               </div>
@@ -424,7 +420,7 @@ const ProductForm = ({
 
             {/* Reorder Level */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-semibold text-slate-700 uppercase tracking-wider text-[11px]">
                 Reorder Level <span className="text-rose-500">*</span>
               </label>
               <input
@@ -433,28 +429,28 @@ const ProductForm = ({
                 value={formData.reorderLevel}
                 onChange={handleChange}
                 min="0"
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 transition-all font-semibold text-slate-900 shadow-2xs"
                 required
               />
-              <p className="text-xs text-gray-400">
-                You'll be alerted when stock falls below this level
+              <p className="text-xs text-slate-400 font-medium mt-1.5">
+                You'll be alerted when stock falls below this level threshold.
               </p>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex items-center justify-end gap-3.5 pt-4">
           <Link
             to="/dashboard/products"
-            className="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors"
+            className="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:text-slate-900 transition-all shadow-2xs text-sm"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-lg bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium shadow-sm transition-all flex items-center gap-2"
+            className="px-8 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 text-white font-semibold shadow-sm transition-all flex items-center justify-center gap-2 text-sm"
           >
             <Save size={18} />
             {isSubmitting ? "Saving..." : isEdit ? "Update Product" : "Create Product"}

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Package, CheckCircle, AlertTriangle } from "lucide-react";
 import ProductsHeader from "../../../components/dashboard/Products/ProductsHeader";
@@ -49,6 +49,7 @@ export default function Products() {
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [viewMode, setViewMode] = useState("list");
   const [loading, setLoading] = useState(true);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const canManage = canManageCatalog(user?.role || user?.normalizedRole);
@@ -231,48 +232,55 @@ export default function Products() {
         canManage={canManage}
         onExportExcel={handleExportExcel}
         onExportPDF={handleExportPDF}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
       />
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Total Products */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-blue-50">
-              <Package className="w-5 h-5 text-blue-600" />
+      {/* Premium Gradient Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+        {/* Total Products Card */}
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-1 group">
+          <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="p-3.5 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner border border-white/20 flex items-center justify-center">
+              <Package className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Total Products</p>
-              <p className="text-2xl font-bold text-gray-900">{totalProducts}</p>
+              <p className="text-xs font-semibold text-blue-100 uppercase tracking-wider opacity-90">Total Catalog</p>
+              <p className="text-3xl font-semibold mt-0.5 tracking-tight">{totalProducts}</p>
             </div>
           </div>
         </div>
 
-        {/* Active Products */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-emerald-50">
-              <CheckCircle className="w-5 h-5 text-emerald-600" />
+        {/* Active Products Card */}
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-1 group">
+          <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="p-3.5 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner border border-white/20 flex items-center justify-center">
+              <CheckCircle className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Active Products</p>
-              <p className="text-2xl font-bold text-gray-900">{activeProducts}</p>
+              <p className="text-xs font-semibold text-emerald-100 uppercase tracking-wider opacity-90">Active Products</p>
+              <p className="text-3xl font-semibold mt-0.5 tracking-tight">{activeProducts}</p>
             </div>
           </div>
         </div>
 
-        {/* Low Stock */}
-        <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-amber-50">
-              <AlertTriangle className="w-5 h-5 text-amber-600" />
+        {/* Low Stock Items Card */}
+        <div className="rounded-2xl p-6 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-1 group sm:col-span-2 lg:col-span-1">
+          <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="p-3.5 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner border border-white/20 flex items-center justify-center">
+              <AlertTriangle className="w-7 h-7 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Low Stock Items</p>
-              <div className="flex items-baseline gap-2">
-                <p className="text-2xl font-bold text-gray-900">{lowStockProducts}</p>
+              <p className="text-xs font-semibold text-amber-100 uppercase tracking-wider opacity-90">Stock Warnings</p>
+              <div className="flex items-baseline gap-2 mt-0.5">
+                <p className="text-3xl font-semibold tracking-tight">{lowStockProducts}</p>
                 {outOfStock > 0 && (
-                  <span className="text-xs text-rose-600 font-medium">+{outOfStock} out of stock</span>
+                  <span className="text-xs bg-white/20 backdrop-blur-md text-white font-semibold px-2.5 py-1 rounded-full border border-white/20 shadow-xs">
+                    {outOfStock} out of stock
+                  </span>
                 )}
               </div>
             </div>
@@ -280,8 +288,8 @@ export default function Products() {
         </div>
       </div>
 
-      {/* Products Table */}
-      <ProductsTable products={filteredProducts} onDelete={handleDelete} canManage={canManage} />
+      {/* Products Table / Grid View */}
+      <ProductsTable products={filteredProducts} onDelete={handleDelete} canManage={canManage} viewMode={viewMode} />
     </div>
   );
 }

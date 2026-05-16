@@ -40,7 +40,7 @@ const DashboardLayout = ({ children }) => {
           />
 
           {/* Page Content */}
-          <main className="pt-24 px-4 sm:px-6 pb-12 min-h-screen">
+          <main className="pt-24 px-14 pb-12 min-h-screen">
             {children}
           </main>
 
