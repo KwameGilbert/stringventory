@@ -61,7 +61,7 @@ const TopCategories = ({ dateRange }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-slate-900 text-white p-2.5 rounded-lg text-xs font-bold shadow-xl border border-slate-700">
+        <div className="bg-slate-900 text-white p-2.5 rounded-lg text-xs font-semibold shadow-xl border border-slate-700">
           <p className="text-orange-400">{data.name}</p>
           <p className="text-slate-200 mt-0.5">{data.sales} Sales ({data.percentage}%)</p>
         </div>
@@ -74,18 +74,18 @@ const TopCategories = ({ dateRange }) => {
     <div className="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between">
       <div>
         {/* Header */}
-        <div className="flex items-center justify-between pb-5 border-b border-slate-100 mb-6">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-pink-50 rounded-xl text-pink-500 shrink-0 shadow-xs">
+            <div className="p-2 bg-pink-100 rounded-xl text-pink-600 shrink-0 shadow-xs">
               <Layers size={20} />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Top Categories</h3>
+            <h3 className="text-lg font-semibold text-slate-900 tracking-tight">Top Categories</h3>
           </div>
           <div className="relative shrink-0">
             <select
               value={timeframe}
               onChange={(e) => setTimeframe(e.target.value)}
-              className="appearance-none bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 pr-8 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20 cursor-pointer"
+              className="appearance-none bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 pr-8 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 cursor-pointer"
             >
               <option value="Weekly">Weekly</option>
               <option value="Monthly">Monthly</option>
@@ -96,7 +96,7 @@ const TopCategories = ({ dateRange }) => {
         </div>
 
         {/* Chart & Legend Row */}
-        <div className="grid grid-cols-12 items-center gap-4 mb-8">
+        <div className="grid grid-cols-12 items-center gap-4 mb-4">
           <div className="col-span-7 h-48 relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -119,13 +119,13 @@ const TopCategories = ({ dateRange }) => {
             </ResponsiveContainer>
             
             {/* Percentage Badges hovering */}
-            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-full shadow-md text-[11px] font-extrabold text-slate-700 animate-pulse">
+            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-lg shadow-md text-[11px] font-semibold text-slate-700 animate-pulse">
               16%
             </div>
-            <div className="absolute bottom-12 right-2 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-full shadow-md text-[11px] font-extrabold text-slate-700">
+            <div className="absolute bottom-12 right-2 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-lg shadow-md text-[11px] font-semibold text-slate-700">
               24%
             </div>
-            <div className="absolute bottom-6 left-2 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-full shadow-md text-[11px] font-extrabold text-slate-700">
+            <div className="absolute bottom-6 left-2 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-lg shadow-md text-[11px] font-semibold text-slate-700">
               50%
             </div>
           </div>
@@ -134,11 +134,11 @@ const TopCategories = ({ dateRange }) => {
           <div className="col-span-5 space-y-4">
             {data.map((item, idx) => (
               <div key={idx} className="flex items-start gap-2.5">
-                <div className="w-1.5 h-4 rounded-full mt-0.5 shrink-0" style={{ backgroundColor: item.color }} />
+                <div className="w-1 h-4 rounded-full mt-0.5 shrink-0" style={{ backgroundColor: item.color }} />
                 <div>
-                  <p className="text-xs font-bold text-slate-500">{item.name}</p>
-                  <p className="text-sm font-extrabold text-slate-900 mt-0.5">
-                    {item.sales} <span className="text-xs font-medium text-slate-400">Sales</span>
+                  <p className="text-xs font-medium text-slate-800">{item.name}</p>
+                  <p className="text-sm font-semibold text-slate-900 mt-0.5">
+                    {item.sales} <span className="text-xs font-medium text-slate-700">Sales</span>
                   </p>
                 </div>
               </div>
@@ -148,21 +148,21 @@ const TopCategories = ({ dateRange }) => {
 
         {/* Statistics Box */}
         <div>
-          <h4 className="text-xs font-extrabold text-slate-900 mb-3 tracking-wide">Category Statistics</h4>
+          <h4 className="text-xs font-bold text-slate-900 mb-3 tracking-wide">Category Statistics</h4>
           <div className="border border-slate-100 rounded-2xl bg-slate-50/50 p-4 space-y-3 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
               <div className="flex items-center gap-2.5">
                 <div className="w-2 h-2 rounded-full bg-blue-600" />
-                <span className="text-xs font-bold text-slate-600">Total Number Of Categories</span>
+                <span className="text-xs font-bold text-slate-800">Total Number Of Categories</span>
               </div>
-              <span className="text-sm font-extrabold text-slate-900">{stats.totalCategories}</span>
+              <span className="text-sm font-bold text-slate-900">{stats.totalCategories}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-2 h-2 rounded-full bg-orange-600" />
-                <span className="text-xs font-bold text-slate-600">Total Number Of Products</span>
+                <span className="text-xs font-bold text-slate-800">Total Number Of Products</span>
               </div>
-              <span className="text-sm font-extrabold text-slate-900">{stats.totalProducts}</span>
+              <span className="text-sm font-bold text-slate-900">{stats.totalProducts}</span>
             </div>
           </div>
         </div>

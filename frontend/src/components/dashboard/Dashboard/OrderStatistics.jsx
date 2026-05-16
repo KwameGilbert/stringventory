@@ -42,13 +42,13 @@ const OrderStatistics = ({ dateRange }) => {
             <div className="p-2 bg-blue-50 rounded-xl text-blue-600 shrink-0 shadow-xs">
               <Package size={20} />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight">Order Statistics</h3>
+            <h3 className="text-lg font-semibold text-slate-900 tracking-tight">Order Statistics</h3>
           </div>
           <div className="relative shrink-0">
             <select
               value={timeframe}
               onChange={(e) => setTimeframe(e.target.value)}
-              className="appearance-none bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 pr-8 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20 cursor-pointer"
+              className="appearance-none bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 pr-8 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 cursor-pointer"
             >
               <option value="Weekly">Weekly</option>
               <option value="Monthly">Monthly</option>
@@ -62,7 +62,7 @@ const OrderStatistics = ({ dateRange }) => {
         <div className="relative pt-4 pb-2">
           {/* Active cell popup tooltip */}
           {activeCell && (
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-20 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-extrabold shadow-xl border border-slate-700 flex items-center gap-1.5 animate-bounce">
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-20 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-xl border border-slate-800 flex items-center gap-1.5 animate-bounce">
               <span>{activeCell.count} Orders</span>
               <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 rotate-45 border-r border-b border-slate-700"></div>
             </div>
@@ -70,7 +70,7 @@ const OrderStatistics = ({ dateRange }) => {
 
           <div className="flex gap-3">
             {/* Y-Axis Time Labels */}
-            <div className="flex flex-col justify-between py-1 text-[11px] font-bold text-slate-400 shrink-0 space-y-2.5">
+            <div className="flex flex-col justify-between py-1 text-[11px] font-medium text-slate-700 shrink-0 space-y-2.5">
               {TIMES.map((time, idx) => (
                 <div key={idx} className="h-6 flex items-center justify-end pr-1">
                   {time}
@@ -104,7 +104,7 @@ const OrderStatistics = ({ dateRange }) => {
 
           {/* X-Axis Day Labels */}
           <div className="flex pl-12 pt-3">
-            <div className="flex-1 grid grid-cols-7 gap-1.5 text-center text-xs font-bold text-slate-500">
+            <div className="flex-1 grid grid-cols-7 gap-1.5 text-center text-xs font-medium text-slate-700">
               {DAYS.map((day, idx) => (
                 <div key={idx} className="truncate">{day}</div>
               ))}
