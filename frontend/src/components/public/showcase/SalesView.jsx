@@ -144,7 +144,7 @@ const SalesView = () => (
                                  </div>
                               </td>
                               <td className="px-6 py-4 text-xs font-bold text-slate-600">{item.price}</td>
-                              <td className="px-6 py-4 text-xs font-extrabold text-slate-900">{item.total}</td>
+                              <td className="px-6 py-4 text-xs font-bold text-slate-900">{item.total}</td>
                               <td className="px-6 py-4 text-right">
                                  <button className="p-2 text-rose-100 hover:text-rose-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                               </td>

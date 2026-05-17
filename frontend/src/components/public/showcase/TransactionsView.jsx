@@ -130,7 +130,7 @@ const TransactionsView = () => (
                   </td>
                   <td className="px-6 py-6 text-[11px] font-bold text-slate-500 text-center">{tx.date}</td>
                   <td className="px-6 py-6 text-xs font-bold text-slate-500 text-center">{tx.payment}</td>
-                  <td className={`px-6 py-6 text-[13px] font-extrabold text-center ${tx.isNegative ? 'text-rose-500' : 'text-emerald-500'}`}>
+                  <td className={`px-6 py-6 text-[13px] font-bold text-center ${tx.isNegative ? 'text-rose-500' : 'text-emerald-500'}`}>
                      {tx.amount}
                   </td>
                   <td className="px-6 py-6 text-center">

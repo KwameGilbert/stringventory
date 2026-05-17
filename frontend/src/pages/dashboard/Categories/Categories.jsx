@@ -179,12 +179,12 @@ export default function Categories() {
   }
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6">
+    <div className="pb-8 animate-fade-in space-y-2">
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Total Categories Card */}
-        <div className="p-6 rounded-2xl bg-linear-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
+        <div className="p-3 rounded-2xl bg-linear-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute -right-6 -bottom-6 w-22 h-22 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="flex items-center justify-between relative z-10">
             <span className="text-blue-100 font-semibold text-sm uppercase tracking-wider">Total Categories</span>
             <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
@@ -198,8 +198,8 @@ export default function Categories() {
         </div>
 
         {/* Total Products Assigned Card */}
-        <div className="p-6 rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
+        <div className="p-3 rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute -right-6 -bottom-6 w-22 h-22 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="flex items-center justify-between relative z-10">
             <span className="text-emerald-100 font-semibold text-sm uppercase tracking-wider">Total Products</span>
             <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
@@ -213,8 +213,8 @@ export default function Categories() {
         </div>
 
         {/* Active Status Breakdown Card */}
-        <div className="p-6 rounded-2xl bg-linear-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
+        <div className="p-3 rounded-2xl bg-linear-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute -right-6 -bottom-6 w-22 h-22 bg-white/10 rounded-full blur-xl pointer-events-none" />
           <div className="flex items-center justify-between relative z-10">
             <span className="text-amber-100 font-semibold text-sm uppercase tracking-wider">Catalog Status</span>
             <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">

@@ -115,7 +115,7 @@ const InventoryView = () => (
                   <td className="px-6 py-4 text-[10px] font-bold text-slate-500 max-w-[120px] truncate">{item.sup}</td>
                   <td className="px-6 py-4 text-xs font-bold text-slate-800">{item.cost}</td>
                   <td className="px-6 py-4 text-xs font-bold text-slate-900">{item.qty}</td>
-                  <td className="px-6 py-4 text-xs font-extrabold text-emerald-600">{item.total}</td>
+                  <td className="px-6 py-4 text-xs font-bold text-emerald-600">{item.total}</td>
                   <td className="px-6 py-4 text-[10px] font-bold text-slate-500">{item.entry}</td>
                   <td className="px-6 py-4">
                      <div className={`text-[9px] font-bold uppercase ${
