@@ -1,4 +1,5 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { FolderTree, Package, CheckCircle2 } from "lucide-react";
 import CategoryHeader from "../../../components/dashboard/Categories/CategoryHeader";
 import CategoryGrid from "../../../components/dashboard/Categories/CategoryGrid";
 import CategoryList from "../../../components/dashboard/Categories/CategoryList";
@@ -48,6 +49,7 @@ export default function Categories() {
   const { user } = useAuth();
   const [view, setView] = useState('list');
   const [categories, setCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const canManage = canManageCatalog(user?.role || user?.normalizedRole);
 
@@ -112,11 +114,15 @@ export default function Categories() {
     }
   };
 
-  const handleExportExcel = () => {
-    if (categories.length === 0) return;
+  const filteredCategories = categories.filter((cat) =>
+    cat.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cat.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    // Format data for Excel
-    const dataToExport = categories.map((cat) => ({
+  const handleExportExcel = () => {
+    if (filteredCategories.length === 0) return;
+
+    const dataToExport = filteredCategories.map((cat) => ({
       ID: cat.id,
       Name: cat.name,
       Description: cat.description || "N/A",
@@ -130,11 +136,11 @@ export default function Categories() {
   };
 
   const handleExportPDF = async () => {
-    if (categories.length === 0) return;
+    if (filteredCategories.length === 0) return;
 
     const tableData = {
       headers: ["ID", "Name", "Description", "Status", "Products"],
-      rows: categories.map(cat => [
+      rows: filteredCategories.map(cat => [
         cat.id,
         cat.name,
         cat.description || "N/A",
@@ -154,30 +160,95 @@ export default function Categories() {
     }
   };
 
+  const totalCategories = categories.length;
+  const totalProducts = categories.reduce((sum, cat) => sum + (cat.productsCount || 0), 0);
+  const activeCategories = categories.filter((c) => c.status === "active").length;
+
   if (loading) {
     return (
       <div className="animate-fade-in space-y-6">
-        <div className="h-16 bg-gray-200 rounded-xl animate-pulse"></div>
-        <div className="h-96 bg-gray-200 rounded-xl animate-pulse"></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="h-32 bg-slate-200 rounded-2xl animate-pulse"></div>
+          <div className="h-32 bg-slate-200 rounded-2xl animate-pulse"></div>
+          <div className="h-32 bg-slate-200 rounded-2xl animate-pulse"></div>
+        </div>
+        <div className="h-16 bg-slate-200 rounded-2xl animate-pulse"></div>
+        <div className="h-96 bg-slate-200 rounded-2xl animate-pulse"></div>
       </div>
     );
   }
 
   return (
     <div className="pb-8 animate-fade-in space-y-6">
+      {/* KPI Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Total Categories Card */}
+        <div className="p-6 rounded-2xl bg-linear-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between relative z-10">
+            <span className="text-blue-100 font-semibold text-sm uppercase tracking-wider">Total Categories</span>
+            <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
+              <FolderTree className="w-6 h-6 text-white" />
+            </div>
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-3xl font-semibold tracking-tight">{totalCategories}</h3>
+            <p className="text-blue-100/80 text-xs font-medium mt-1">Structured product classification</p>
+          </div>
+        </div>
+
+        {/* Total Products Assigned Card */}
+        <div className="p-6 rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between relative z-10">
+            <span className="text-emerald-100 font-semibold text-sm uppercase tracking-wider">Total Products</span>
+            <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
+              <Package className="w-6 h-6 text-white" />
+            </div>
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-3xl font-semibold tracking-tight">{totalProducts}</h3>
+            <p className="text-emerald-100/80 text-xs font-medium mt-1">Items cataloged across groups</p>
+          </div>
+        </div>
+
+        {/* Active Status Breakdown Card */}
+        <div className="p-6 rounded-2xl bg-linear-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
+          <div className="flex items-center justify-between relative z-10">
+            <span className="text-amber-100 font-semibold text-sm uppercase tracking-wider">Catalog Status</span>
+            <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
+              <CheckCircle2 className="w-6 h-6 text-white" />
+            </div>
+          </div>
+          <div className="relative z-10 flex items-baseline justify-between">
+            <div>
+              <h3 className="text-3xl font-semibold tracking-tight">{activeCategories}</h3>
+              <p className="text-amber-100/80 text-xs font-medium mt-1">Active categories</p>
+            </div>
+            <div className="text-right">
+              <span className="text-lg font-semibold text-white/90">{totalCategories - activeCategories}</span>
+              <p className="text-amber-100/80 text-xs font-medium mt-1">Inactive</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <CategoryHeader 
         view={view} 
         setView={setView} 
-        totalCategories={categories.length} 
+        totalCategories={filteredCategories.length} 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
         canManage={canManage} 
         onExportExcel={handleExportExcel}
         onExportPDF={handleExportPDF}
       />
       
       {view === 'grid' ? (
-        <CategoryGrid categories={categories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} canManage={canManage} />
+        <CategoryGrid categories={filteredCategories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} canManage={canManage} />
       ) : (
-        <CategoryList categories={categories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} canManage={canManage} />
+        <CategoryList categories={filteredCategories} onToggleStatus={handleToggleStatus} onDelete={handleDelete} canManage={canManage} />
       )}
     </div>
   );

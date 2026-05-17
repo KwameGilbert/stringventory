@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Save, Upload, ArrowLeft, Check, X, Image } from "lucide-react";
+import { Save, Upload, ArrowLeft, Check, X, Image, FolderTree, Sliders, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmitting = false }) => {
@@ -21,7 +21,6 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmittin
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Create preview URL
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -37,32 +36,38 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmittin
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto pb-12 animate-fade-in space-y-6">
       {/* Back Button */}
       <button
         type="button"
         onClick={() => navigate("/dashboard/categories")}
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-6 group"
+        className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors group cursor-pointer"
       >
-        <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
-          <ArrowLeft size={18} />
-        </div>
-        <span className="font-medium">Back to Categories</span>
       </button>
 
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-        <p className="text-gray-500 text-sm">{subTitle}</p>
+      {/* Header Banner */}
+      <div className="flex items-center gap-4 p-6 bg-white rounded-2xl border border-slate-200 shadow-xs">
+        <div className="p-3.5 rounded-2xl bg-slate-900 shadow-sm shadow-slate-900/20 text-white flex items-center justify-center shrink-0">
+          <FolderTree className="w-7 h-7 text-white" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">{title}</h1>
+          <p className="text-slate-500 font-medium text-sm mt-0.5">{subTitle}</p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Main Form Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 space-y-5">
+        {/* General Information Card */}
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-blue-100 bg-blue-100 flex items-center gap-2.5">
+            <Info className="w-4 h-4 text-blue-700" />
+            <h3 className="font-semibold text-blue-950 text-sm uppercase tracking-wider">General Information</h3>
+          </div>
+
+          <div className="p-6 sm:p-8 space-y-6">
             {/* Category Name */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
                 Category Name <span className="text-rose-500">*</span>
               </label>
               <input
@@ -70,52 +75,64 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmittin
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all text-sm"
-                placeholder="e.g., Beverages"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 focus:bg-white transition-all shadow-2xs"
+                placeholder="e.g., Guitars, Percussion, Accessories"
                 required
               />
             </div>
 
             {/* Description */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
-                Description <span className="text-gray-400 font-normal">(Optional)</span>
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                Description <span className="text-slate-400 font-normal lowercase">(optional)</span>
               </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                rows={3}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all resize-none text-sm"
-                placeholder="Briefly describe what products this category contains..."
+                rows={4}
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-400 focus:bg-white transition-all shadow-2xs resize-none leading-relaxed"
+                placeholder="Briefly describe what products this classification encompasses..."
               />
             </div>
+          </div>
+        </div>
 
+        {/* Media & Controls Card */}
+        <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-purple-100 bg-purple-100 flex items-center gap-2.5">
+            <Sliders className="w-4 h-4 text-purple-700" />
+            <h3 className="font-semibold text-purple-950 text-sm uppercase tracking-wider">Media & Controls</h3>
+          </div>
+
+          <div className="p-6 sm:p-8 space-y-6">
             {/* Category Image */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">
-                Category Image <span className="text-gray-400 font-normal">(Optional)</span>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                Category Thumbnail <span className="text-slate-400 font-normal lowercase">(optional)</span>
               </label>
-              <div className="flex items-start gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-slate-50/50 rounded-2xl border border-slate-200/60 shadow-2xs">
                 {/* Image Preview */}
-                <div className="w-20 h-20 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <div className="w-24 h-24 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden shadow-xs relative">
                   {imagePreview ? (
-                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover relative z-10" />
                   ) : (
-                    <Image className="w-6 h-6 text-gray-400" />
+                    <Image className="w-8 h-8 text-slate-300 absolute" />
                   )}
                 </div>
                 
                 {/* Upload Area */}
-                <div className="flex-1">
-                  <label className="flex flex-col items-center justify-center w-full h-20 border-2 border-gray-200 border-dashed rounded-lg cursor-pointer bg-gray-50/50 hover:bg-gray-50 hover:border-gray-300 transition-all">
-                    <div className="flex items-center gap-2">
-                      <Upload className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-500">
-                        <span className="font-medium text-gray-700">Click to upload</span>
+                <div className="flex-1 w-full">
+                  <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer bg-white hover:bg-slate-50 hover:border-slate-300 transition-all group">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 bg-slate-100 rounded-lg group-hover:scale-110 transition-transform shadow-2xs">
+                        <Upload className="w-4 h-4 text-slate-600" />
+                      </div>
+                      <span className="text-sm font-medium text-slate-600">
+                        <span className="font-semibold text-slate-900">Click to upload</span> or drag and drop
                       </span>
                     </div>
-                    <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 2MB</p>
+                    <p className="text-xs font-medium text-slate-400 mt-1">PNG, JPG, WEBP up to 2MB</p>
                     <input 
                       type="file" 
                       className="hidden" 
@@ -128,53 +145,53 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmittin
             </div>
 
             {/* Status */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700">Status</label>
-              <div className="flex gap-3">
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Status</label>
+              <div className="flex gap-3.5">
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, status: "active" }))}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border transition-all text-sm ${
+                  className={`flex-1 flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border transition-all font-semibold text-sm shadow-2xs cursor-pointer ${
                     formData.status === "active"
-                      ? "border-emerald-500 bg-emerald-50 text-emerald-700"
-                      : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-800 shadow-xs"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
                   }`}
                 >
-                  <Check size={16} />
-                  Active
+                  <Check size={18} />
+                  <span>Active</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, status: "inactive" }))}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border transition-all text-sm ${
+                  className={`flex-1 flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl border transition-all font-semibold text-sm shadow-2xs cursor-pointer ${
                     formData.status === "inactive"
-                      ? "border-gray-500 bg-gray-100 text-gray-700"
-                      : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                      ? "border-slate-300 bg-slate-100 text-slate-700 shadow-xs"
+                      : "border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
                   }`}
                 >
-                  <X size={16} />
-                  Inactive
+                  <X size={18} />
+                  <span>Inactive</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center justify-end gap-3">
+        {/* Actions Footer */}
+        <div className="flex items-center justify-end gap-3.5 pt-4">
           <Link
             to="/dashboard/categories"
-            className="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors text-sm"
+            className="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 hover:text-slate-900 transition-all text-xs shadow-2xs active:scale-95"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-lg bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium transition-all flex items-center gap-2 text-sm"
+            className="px-8 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-semibold transition-all flex items-center gap-2 text-xs shadow-sm shadow-slate-900/20 active:scale-95 cursor-pointer"
           >
             <Save size={16} />
-            {isSubmitting ? "Saving..." : "Save Category"}
+            <span>{isSubmitting ? "Saving..." : "Save Category"}</span>
           </button>
         </div>
       </form>
@@ -183,5 +200,3 @@ const CategoryForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmittin
 };
 
 export default CategoryForm;
-
-
