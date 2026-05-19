@@ -16,6 +16,11 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: '/v1/auth/password/reset',
     VERIFY_EMAIL: (email, token) =>
       `/v1/auth/verify-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`,
+    ME: '/v1/auth/me',
+    UPDATE_PROFILE: '/v1/auth/me',
+    CHANGE_PASSWORD: '/v1/auth/password/change',
+    ACTIVITY_LOG: '/v1/auth/activity-logs',
+    UPLOAD_AVATAR: '/v1/auth/avatar',
   },
 
   // User Management

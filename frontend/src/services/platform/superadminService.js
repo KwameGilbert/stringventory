@@ -82,6 +82,30 @@ export const superadminService = {
   updateSettings: async (payload) => {
     return await apiClient.put(API_ENDPOINTS.SUPERADMIN.SETTINGS.UPDATE, payload);
   },
+
+  // ─── Profile Management ────────────────────────────────────────────────────
+
+  getProfile: async () => {
+    return await apiClient.get(API_ENDPOINTS.AUTH.ME);
+  },
+
+  updateProfile: async (payload) => {
+    return await apiClient.put(API_ENDPOINTS.AUTH.UPDATE_PROFILE, payload);
+  },
+
+  changePassword: async (payload) => {
+    return await apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, payload);
+  },
+
+  getActivityLog: async (params = {}) => {
+    return await apiClient.get(API_ENDPOINTS.AUTH.ACTIVITY_LOG, { params });
+  },
+
+  uploadAvatar: async (formData) => {
+    return await apiClient.post(API_ENDPOINTS.AUTH.UPLOAD_AVATAR, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
 };
 
 export default superadminService;
