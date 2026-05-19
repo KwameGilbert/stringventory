@@ -3,7 +3,7 @@
  * Centralized endpoint paths for all API calls
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://stringventory-api.kantatech.io';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://stringventory-sass-api.onrender.com/';
 
 export const API_ENDPOINTS = {
   // Authentication
@@ -192,13 +192,13 @@ export const API_ENDPOINTS = {
   // Superadmin - Businesses
   SUPERADMIN: {
     BUSINESSES: {
-      LIST: '/superadmin/businesses',
-      GET: (id) => `/superadmin/businesses/${id}`,
-      CREATE: '/superadmin/businesses',
-      UPDATE: (id) => `/superadmin/businesses/${id}`,
-      DELETE: (id) => `/superadmin/businesses/${id}`,
-      SUSPEND: (id) => `/superadmin/businesses/${id}/suspend`,
-      REACTIVATE: (id) => `/superadmin/businesses/${id}/reactivate`,
+      LIST: '/v1/businesses',
+      GET: (id) => `/v1/businesses/${id}`,
+      CREATE: '/v1/businesses',
+      UPDATE: (id) => `/v1/businesses/${id}`,
+      DELETE: (id) => `/v1/businesses/${id}`,
+      SUSPEND: (id) => `/v1/businesses/${id}/suspend`,
+      REACTIVATE: (id) => `/v1/businesses/${id}/reactivate`,
     },
     PRICING_PLANS: {
       LIST: '/superadmin/pricing-plans',
