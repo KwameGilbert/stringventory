@@ -201,12 +201,12 @@ export const API_ENDPOINTS = {
       REACTIVATE: (id) => `/v1/businesses/${id}/reactivate`,
     },
     PRICING_PLANS: {
-      LIST: '/superadmin/pricing-plans',
-      GET: (id) => `/superadmin/pricing-plans/${id}`,
-      CREATE: '/superadmin/pricing-plans',
-      UPDATE: (id) => `/superadmin/pricing-plans/${id}`,
-      DELETE: (id) => `/superadmin/pricing-plans/${id}`,
-      COMPARE: '/superadmin/pricing-plans/comparison',
+      LIST: '/v1/plans',
+      GET: (id) => `/v1/plans/${id}`,
+      CREATE: '/v1/plans',
+      UPDATE: (id) => `/v1/plans/${id}`,
+      DELETE: (id) => `/v1/plans/${id}`,
+      COMPARE: '/v1/plans/comparison',
     },
     ANALYTICS: {
       PLATFORM: '/superadmin/analytics/platform',

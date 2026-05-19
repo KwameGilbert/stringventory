@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
-import { Edit, Users, DollarSign, TrendingUp, Check, X, Plus } from 'lucide-react';
+import { Edit, Users, DollarSign, TrendingUp, Check, X, Plus, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import superadminService from '../../../services/platform/superadminService';
 import { showError } from '../../../utils/alerts';
@@ -13,6 +13,7 @@ export default function PricingPlans() {
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalSubscribers: 0,
     totalMRR: 0,
@@ -26,55 +27,70 @@ export default function PricingPlans() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [plansRes, analyticsRes] = await Promise.all([
-          superadminService.getPricingPlans(),
-          superadminService.getPlatformAnalytics(),
-        ]);
-
+        setLoading(true);
+        
+        // Fetch plans
+        const plansRes = await superadminService.getPricingPlans();
+        console.log('Plans Response:', plansRes);
+        
         const fetchedPlans = extractPlans(plansRes).map(normalizePlan);
+        console.log('Fetched & Normalized Plans:', fetchedPlans);
+        
         setPlans(fetchedPlans);
 
-        const analytics = extractAnalytics(analyticsRes);
-        const planStats = analytics?.planStats || {};
+        // Fetch analytics (non-critical)
+        try {
+          const analyticsRes = await superadminService.getPlatformAnalytics();
+          const analytics = extractAnalytics(analyticsRes);
+          const planStats = analytics?.planStats || {};
 
-        const totalSubscribers =
-          Number(analytics?.totalSubscribers) ||
-          fetchedPlans.reduce((sum, plan) => {
-            const fromStats = Number(planStats?.[plan.id]?.subscribers);
-            return sum + (fromStats || Number(plan.subscribers) || 0);
-          }, 0);
+          const totalSubscribers =
+            Number(analytics?.totalSubscribers) ||
+            fetchedPlans.reduce((sum, plan) => {
+              const fromStats = Number(planStats?.[plan.id]?.subscribers);
+              return sum + (fromStats || Number(plan.subscribers) || 0);
+            }, 0);
 
-        const totalMRR =
-          Number(analytics?.totalMRR) ||
-          fetchedPlans.reduce((sum, plan) => {
-            const subscribers = Number(planStats?.[plan.id]?.subscribers) || Number(plan.subscribers) || 0;
-            return sum + subscribers * (Number(plan.priceMonthly) || 0);
-          }, 0);
+          const totalMRR =
+            Number(analytics?.totalMRR) ||
+            fetchedPlans.reduce((sum, plan) => {
+              const subscribers = Number(planStats?.[plan.id]?.subscribers) || Number(plan.subscribers) || 0;
+              return sum + subscribers * (Number(plan.priceMonthly) || 0);
+            }, 0);
 
-        const avgRevenuePerUser = totalSubscribers ? totalMRR / totalSubscribers : 0;
+          const avgRevenuePerUser = totalSubscribers ? totalMRR / totalSubscribers : 0;
 
-        setStats({
-          totalSubscribers,
-          totalMRR,
-          activePlans: fetchedPlans.length,
-          avgRevenuePerUser,
-          planStats,
-        });
+          setStats({
+            totalSubscribers,
+            totalMRR,
+            activePlans: fetchedPlans.length,
+            avgRevenuePerUser,
+            planStats,
+          });
+        } catch (analyticsError) {
+          console.warn('Analytics fetch failed, using defaults:', analyticsError);
+          setStats({
+            totalSubscribers: 0,
+            totalMRR: 0,
+            activePlans: fetchedPlans.length,
+            avgRevenuePerUser: 0,
+            planStats: {},
+          });
+        }
 
-        // Fetch comparison data
-        const comparisonRes = await superadminService.getPlanComparison();
-        setComparisonData(comparisonRes?.data || []);
+        // Fetch comparison data (non-critical)
+        try {
+          const comparisonRes = await superadminService.getPlanComparison();
+          setComparisonData(comparisonRes?.data || []);
+        } catch (comparisonError) {
+          console.warn('Comparison data fetch failed:', comparisonError);
+        }
       } catch (error) {
-        console.error('Error fetching pricing stats:', error);
+        console.error('Error fetching pricing plans:', error);
         showError(error?.message || 'Failed to load pricing plans');
         setPlans([]);
-        setStats({
-          totalSubscribers: 0,
-          totalMRR: 0,
-          activePlans: 0,
-          avgRevenuePerUser: 0,
-          planStats: {},
-        });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -112,7 +128,7 @@ export default function PricingPlans() {
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
-        <nav className="flex space-x-8">
+        <nav className="flex space-x-4">
           <button
             onClick={() => setActiveTab('overview')}
             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
@@ -193,7 +209,16 @@ export default function PricingPlans() {
 
       {/* Pricing Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {plans.map((plan) => {
+        {loading ? (
+          <div className="col-span-full flex justify-center items-center py-12">
+            <div className="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
+          </div>
+        ) : plans.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <p className="text-gray-500">No pricing plans found</p>
+          </div>
+        ) : (
+          plans.map((plan) => {
           const subscribers = getSubscriberCount(plan.id);
           const revenue = getMonthlyRevenue(plan.id);
 
@@ -207,7 +232,14 @@ export default function PricingPlans() {
               {/* Plan Header */}
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                    {plan.isPopular && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
+                        <Star className="w-3 h-3" /> Popular
+                      </span>
+                    )}
+                  </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -231,6 +263,11 @@ export default function PricingPlans() {
                     </>
                   )}
                 </div>
+                {plan.trialDays > 0 && (
+                  <p className="text-xs text-emerald-600 font-medium mt-2">
+                    {plan.trialDays}-day free trial
+                  </p>
+                )}
               </div>
 
               {/* Stats */}
@@ -295,11 +332,28 @@ export default function PricingPlans() {
                           : `${plan.limits?.maxStorageMB} MB`}
                     </span>
                   </div>
+                  {plan.limits?.maxOrdersPerMonth > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Orders/Month</span>
+                      <span className="font-medium text-gray-900">
+                        {plan.limits?.maxOrdersPerMonth === -1 ? 'Unlimited' : (plan.limits?.maxOrdersPerMonth || 0).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  {plan.limits?.maxLocations > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Locations</span>
+                      <span className="font-medium text-gray-900">
+                        {plan.limits?.maxLocations === -1 ? 'Unlimited' : plan.limits?.maxLocations}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           );
-        })}
+        })
+        )}
       </div>
     </>
   ) : (
