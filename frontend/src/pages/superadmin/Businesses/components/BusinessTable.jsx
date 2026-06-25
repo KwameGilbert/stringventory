@@ -1,7 +1,7 @@
-import React from 'react';
+﻿import React from 'react';
 import { Eye, Edit, Trash2 } from 'lucide-react';
-import PlanBadge from '../../../../components/shared/PlanBadge';
-import StatusBadge from '../../../../components/shared/StatusBadge';
+import PlanBadge from '../../../../components/ui/PlanBadge';
+import StatusBadge from '../../../../components/ui/StatusBadge';
 
 export default function BusinessTable({ 
   businesses, 
@@ -40,6 +40,9 @@ export default function BusinessTable({
                   Business
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Domain
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Plan
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -67,6 +70,9 @@ export default function BusinessTable({
                       <p className="text-sm font-medium text-gray-900">{business.name}</p>
                       <p className="text-xs text-gray-500">{business.email}</p>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <p className="text-sm text-gray-900">{business.domain || '-'}</p>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <PlanBadge plan={business.subscription_plan} size="sm" />

@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+﻿import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Building2, 
@@ -8,22 +8,24 @@ import {
   ChevronRight,
   MessageSquare,
   X,
-  Package
+  Package,
+  LogOut,
+  User
 } from 'lucide-react';
+import { useAuth } from '../../../providers/AuthContext';
 
 export default function SuperadminSidebar({ onClose }) {
   const location = useLocation();
-
-  // Mock unread messages count - in production, this would come from a context or API
-  const unreadMessages = 3;
+  const { logout } = useAuth();
 
   const navigation = [
     { name: 'Dashboard', href: '/superadmin', icon: LayoutDashboard, exact: true },
     { name: 'Businesses', href: '/superadmin/businesses', icon: Building2 },
     { name: 'Pricing Plans', href: '/superadmin/pricing-plans', icon: CreditCard },
     { name: 'Analytics', href: '/superadmin/analytics', icon: BarChart3 },
-    { name: 'Messaging', href: '/superadmin/messaging', icon: MessageSquare, badge: unreadMessages },
+    { name: 'Messaging', href: '/superadmin/messaging', icon: MessageSquare },
     { name: 'Settings', href: '/superadmin/settings', icon: Settings },
+    { name: 'Profile', href: '/superadmin/profile', icon: User },
   ];
 
   const isActive = (item) => {
@@ -99,8 +101,19 @@ export default function SuperadminSidebar({ onClose }) {
 
       {/* Footer */}
       <div className="p-4 border-t border-slate-800">
-        <div className="text-xs text-gray-500 text-center">
-          Platform v1.0.0
+        <div className="flex flex-col gap-2">
+          {/* Logout Button */}
+          <button
+            onClick={logout}
+            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-slate-800 hover:bg-red-500/10 text-gray-400 hover:text-red-400 rounded-xl transition-colors group"
+          >
+            <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            <span className="font-medium text-sm">Secure Logout</span>
+          </button>
+          
+          <div className="text-xs text-gray-500 text-center mt-2">
+            Platform v1.0.0
+          </div>
         </div>
       </div>
     </div>

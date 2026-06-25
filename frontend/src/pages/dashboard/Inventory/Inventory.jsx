@@ -1,0 +1,349 @@
+import { useState, useEffect } from "react";
+import { Package, DollarSign, Clock } from "lucide-react";
+import InventoryHeader from "../../../components/dashboard/Inventory/InventoryHeader";
+import InventoryTable from "../../../components/dashboard/Inventory/InventoryTable";
+import inventoryService from "../../../services/business/inventoryService";
+import { productService } from "../../../services/business/productService";
+import categoryService from "../../../services/business/categoryService";
+import supplierService from "../../../services/business/supplierService";
+import { showError, showSuccess, showInfo } from "../../../utils/alerts";
+import { exportToExcel } from "../../../utils/exportUtils";
+import { exportToPDF } from "../../../utils/pdfUtils";
+import { isProductApproved } from "../../../utils/productApproval";
+import { resolveApiMediaUrl } from "../../../utils/mediaUrl";
+import { useCurrency } from "../../../utils/currencyUtils";
+
+import StockAdjustmentModal from "../../../components/dashboard/Inventory/StockAdjustmentModal";
+
+const extractList = (response, key) => {
+  const payload = response?.data || response || {};
+
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload[key])) return payload[key];
+  if (Array.isArray(payload.items)) return payload.items;
+  if (Array.isArray(payload.results)) return payload.results;
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.data?.[key])) return payload.data[key];
+
+  return [];
+};
+
+export default function Inventory() {
+  const [inventory, setInventory] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  
+  const [adjustModalOpen, setAdjustModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [responseCurrency, setResponseCurrency] = useState("GHS");
+  const [viewMode, setViewMode] = useState("list");
+
+  const { formatPrice } = useCurrency();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [inventoryRes, categoriesRes, suppliersRes] = await Promise.all([
+          inventoryService.getInventory(),
+          categoryService.getCategories(),
+          supplierService.getSuppliers(),
+        ]);
+
+        const fetchedInventory = extractList(inventoryRes, "inventory");
+        const fetchedCategories = extractList(categoriesRes, "categories");
+        const fetchedSuppliers = extractList(suppliersRes, "suppliers");
+        
+        const currency = inventoryRes?.currency || inventoryRes?.data?.currency || "GHS";
+        setResponseCurrency(currency);
+
+        const normalizedInventory = fetchedInventory.map((item) => {
+          const product = item.product || {};
+          const category = fetchedCategories.find((c) => String(c.id) === String(product?.categoryId));
+          const supplier = fetchedSuppliers.find((s) => String(s.id) === String(product?.supplierId));
+
+          const unitCost = Number(item.unitCost ?? product?.costPrice ?? product?.cost ?? 0);
+          const quantity = Number(item.quantity ?? item.currentStock ?? 0);
+
+          return {
+            ...item,
+            productName: item.productName || product?.name || "Unknown Product",
+            image: resolveApiMediaUrl(
+              item.image ||
+              item.imageUrl ||
+              item.image_url ||
+              product?.image ||
+              product?.imageUrl ||
+              product?.image_url ||
+              null
+            ),
+            category: item.category || item.categoryName || product?.categoryName || category?.name || "Uncategorized",
+            batchNumber: item.batchNumber || item.reference || `BATCH-${item.id}`,
+            supplier: item.supplier || item.supplierName || product?.supplierName || supplier?.name || "Unknown Supplier",
+            unitCost,
+            quantity,
+            totalValue: Number(item.totalValue ?? quantity * unitCost),
+            entryDate: item.createdAt || item.lastUpdated || item.lastStockCheck || new Date().toISOString(),
+            expiryDate: item.soonestExpiryDate || item.expiryDate || null,
+            productId: item.productId || item.product_id || item.product?.id || product?.id,
+            currency: currency
+          };
+        }).filter((item) => {
+          return isProductApproved(item.product || { id: item.productId });
+        });
+
+        setInventory(normalizedInventory);
+        setCategories(fetchedCategories);
+      } catch (error) {
+        console.error("Error loading data", error);
+        showError(error?.message || "Failed to load inventory");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Calculate stats
+  const totalEntries = inventory.length;
+  const totalValue = inventory.reduce((sum, item) => sum + item.totalValue, 0);
+  const totalUnits = inventory.reduce((sum, item) => sum + item.quantity, 0);
+  
+  const today = new Date();
+  const expiringCount = inventory.filter(item => {
+    if (!item.expiryDate) return false;
+    const expiry = new Date(item.expiryDate);
+    const daysUntil = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+    return daysUntil <= 30 && daysUntil > 0;
+  }).length;
+
+  // Filter inventory
+  const filteredInventory = inventory.filter((item) => {
+    const matchesSearch =
+      String(item.productName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(item.batchNumber || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(item.supplier || "").toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory =
+      !categoryFilter || item.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleOpenAdjustment = (item) => {
+    setSelectedItem(item);
+    setAdjustModalOpen(true);
+  };
+
+  const handleConfirmAdjustment = async ({ itemId, type, reason, quantity, notes }) => {
+    const currentItem = inventory.find((item) => String(item.id) === String(itemId));
+    if (!currentItem) {
+      throw new Error("Inventory item not found");
+    }
+
+    const resolvedProductId =
+      currentItem.productId || currentItem.product_id || currentItem.product?.id;
+    if (!resolvedProductId) {
+      throw new Error("Product ID is missing for this inventory item");
+    }
+
+    const absoluteQuantity = Number(quantity);
+    const adjustmentValue = type === "decrease" ? -absoluteQuantity : absoluteQuantity;
+    const operation = type === "increase" ? "add" : "subtract";
+
+    try {
+      await inventoryService.adjustInventory({
+        productId: resolvedProductId,
+        product_id: resolvedProductId,
+        product: resolvedProductId,
+        productID: resolvedProductId,
+        adjustmentValue,
+        adjustment_value: adjustmentValue,
+        adjustment: absoluteQuantity,
+        value: absoluteQuantity,
+        quantity: absoluteQuantity,
+        delta: adjustmentValue,
+        adjustmentType: type,
+        operation,
+        action: operation,
+        direction: type,
+        type,
+        reason,
+        notes,
+      });
+
+      setInventory((prev) =>
+        prev.map((item) => {
+          if (String(item.id) !== String(itemId)) return item;
+          const newQuantity = type === 'increase'
+            ? item.quantity + absoluteQuantity
+            : Math.max(0, item.quantity - absoluteQuantity);
+          return {
+            ...item,
+            quantity: newQuantity,
+            totalValue: newQuantity * item.unitCost,
+          };
+        })
+      );
+
+      showSuccess(`Stock ${type}d successfully`);
+    } catch (error) {
+      console.error("Failed to adjust stock", error);
+      showError(error?.message || "Failed to adjust stock");
+      throw error;
+    }
+  };
+
+  const handleExportExcel = () => {
+    if (filteredInventory.length === 0) return;
+
+    const dataToExport = filteredInventory.map((item) => ({
+      Product: item.productName || "—",
+      Batch: item.batchNumber || "—",
+      Category: item.category || "Uncategorized",
+      Supplier: item.supplier || "—",
+      "Unit Cost": Number(item.unitCost || 0).toFixed(2),
+      Quantity: Number(item.quantity || 0),
+      "Total Value": Number(item.totalValue || 0).toFixed(2),
+      "Entry Date": item.entryDate ? new Date(item.entryDate).toLocaleDateString("en-GB") : "—",
+      "Expiry Date": item.expiryDate ? new Date(item.expiryDate).toLocaleDateString("en-GB") : "—",
+      Currency: item.currency || responseCurrency,
+    }));
+
+    exportToExcel(dataToExport, "stringventory_inventory", "Inventory");
+  };
+
+  const handleExportPDF = async () => {
+    if (filteredInventory.length === 0) return;
+
+    const tableData = {
+      headers: ["Product", "Batch", "Category", "Qty", "Value", "Expiry"],
+      rows: filteredInventory.map((item) => [
+        item.productName || "—",
+        item.batchNumber || "—",
+        item.category || "—",
+        Number(item.quantity || 0),
+        `${item.currency || responseCurrency} ${Number(item.totalValue || 0).toFixed(2)}`,
+        item.expiryDate ? new Date(item.expiryDate).toLocaleDateString("en-GB") : "—",
+      ]),
+    };
+
+    try {
+      await exportToPDF({
+        title: "Stock Intake Inventory Report",
+        subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredInventory.length} record(s)`,
+        fileName: "stringventory_inventory",
+        table: tableData,
+        totals: [
+          { label: "Total Units in Stock", value: totalUnits.toLocaleString(), bold: true },
+          { label: "Total Inventory Value", value: formatCurrency(totalValue), bold: true, color: 'emerald' },
+        ]
+      });
+    } catch (error) {
+      console.error("PDF Export Error:", error);
+      showError("Failed to generate PDF report");
+    }
+  };
+
+  const formatCurrency = (val) => formatPrice(val, responseCurrency);
+
+  if (loading) {
+    return (
+      <div className="animate-fade-in space-y-6">
+        <div className="h-16 bg-gray-200 rounded-xl animate-pulse"></div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-24 bg-gray-200 rounded-xl animate-pulse"></div>
+          ))}
+        </div>
+        <div className="h-96 bg-gray-200 rounded-xl animate-pulse"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pb-8 animate-fade-in space-y-6 px-4 sm:px-0">
+      {/* Header */}
+      <InventoryHeader
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        categories={categories}
+        totalItems={inventory.length}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+      />
+
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Entries */}
+        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 border border-blue-500/30 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
+          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
+            <Package className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1 z-10">
+            <p className="text-[11px] font-bold text-blue-100/90 uppercase tracking-wider mb-1">Total Batches</p>
+            <p className="text-2xl font-bold text-white truncate tracking-tight">{totalEntries}</p>
+          </div>
+        </div>
+
+        {/* Total Units */}
+        <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-6 border border-emerald-500/30 shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
+          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
+            <Package className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1 z-10">
+            <p className="text-[11px] font-bold text-emerald-100/90 uppercase tracking-wider mb-1">Total Stock</p>
+            <p className="text-2xl font-bold text-white truncate tracking-tight">{totalUnits.toLocaleString()}</p>
+          </div>
+        </div>
+
+        {/* Total Value */}
+        <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-6 border border-purple-500/30 shadow-lg shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
+          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
+            <DollarSign className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1 z-10">
+            <p className="text-[11px] font-bold text-purple-100/90 uppercase tracking-wider mb-1">Total Value</p>
+            <p className="text-2xl font-bold text-white truncate tracking-tight">{formatCurrency(totalValue)}</p>
+          </div>
+        </div>
+
+        {/* Expiring Soon */}
+        <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-6 border border-orange-500/30 shadow-lg shadow-orange-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
+          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
+            <Clock className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1 z-10">
+            <p className="text-[11px] font-bold text-amber-100/90 uppercase tracking-wider mb-1">Expiring Soon</p>
+            <p className="text-2xl font-bold text-white truncate tracking-tight">
+              {expiringCount} <span className="text-xs font-semibold text-amber-100/80 font-normal ml-1">batches</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Inventory Table / Grid */}
+      <InventoryTable 
+        inventory={filteredInventory} 
+        onAdjust={handleOpenAdjustment}
+        viewMode={viewMode}
+      />
+
+      {/* Adjustment Modal */}
+      <StockAdjustmentModal 
+        key={selectedItem ? selectedItem.id : 'modal'}
+        isOpen={adjustModalOpen}
+        onClose={() => setAdjustModalOpen(false)}
+        item={selectedItem}
+        onConfirm={handleConfirmAdjustment}
+      />
+    </div>
+  );
+}

@@ -1,63 +1,19 @@
-import { useState, useEffect } from 'react';
-import { Edit, Users, DollarSign, TrendingUp, Check, X, Plus } from 'lucide-react';
+﻿import { useState, useEffect } from 'react';
+import { Edit, Users, DollarSign, TrendingUp, Check, X, Plus, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import superadminService from '../../../services/superadminService';
+import superadminService from '../../../services/platform/superadminService';
 import { showError } from '../../../utils/alerts';
 import { useCurrency } from '../../../utils/currencyUtils';
-
-const extractPlans = (response) => {
-  const payload = response?.data || response || {};
-
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload.plans)) return payload.plans;
-  if (Array.isArray(payload.items)) return payload.items;
-  if (Array.isArray(payload.results)) return payload.results;
-  if (Array.isArray(payload.data)) return payload.data;
-  if (Array.isArray(payload.data?.plans)) return payload.data.plans;
-
-  return [];
-};
-
-const extractAnalytics = (response) => {
-  const payload = response?.data || response || {};
-
-  if (payload?.analytics) return payload.analytics;
-  if (payload?.data?.analytics) return payload.data.analytics;
-  if (payload?.data && !Array.isArray(payload.data)) return payload.data;
-
-  return payload;
-};
-
-const normalizePlan = (plan) => ({
-  ...plan,
-  id: plan?.id,
-  name: plan?.name || 'Unnamed',
-  description: plan?.description || '',
-  priceMonthly: Number(plan?.priceMonthly) || Number(plan?.monthlyPrice) || Number(plan?.price) || 0,
-  features: Array.isArray(plan?.features) ? plan.features : [],
-  limits: {
-    maxUsers:
-      Number(plan?.limits?.maxUsers) ||
-      Number(plan?.maxUsers) ||
-      0,
-    maxProducts:
-      Number(plan?.limits?.maxProducts) ||
-      Number(plan?.maxProducts) ||
-      0,
-    maxStorageMB:
-      Number(plan?.limits?.maxStorageMB) ||
-      Number(plan?.maxStorageMB) ||
-      0,
-  },
-  color: plan?.color || '#10b981',
-  subscribers: Number(plan?.subscribers) || 0,
-});
+import PlanComparisonTable from '../../../components/superadmin/PricingPlans/PlanComparisonTable';
+import { extractPlans, normalizePlan } from '../../../models/plan';
+import { extractAnalytics } from '../../../models/analytics';
 
 export default function PricingPlans() {
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [plans, setPlans] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalSubscribers: 0,
     totalMRR: 0,
@@ -65,55 +21,76 @@ export default function PricingPlans() {
     avgRevenuePerUser: 0,
     planStats: {}
   });
+  const [activeTab, setActiveTab] = useState('overview');
+  const [comparisonData, setComparisonData] = useState([]);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [plansRes, analyticsRes] = await Promise.all([
-          superadminService.getPricingPlans(),
-          superadminService.getPlatformAnalytics(),
-        ]);
-
+        setLoading(true);
+        
+        // Fetch plans
+        const plansRes = await superadminService.getPricingPlans();
+        console.log('Plans Response:', plansRes);
+        
         const fetchedPlans = extractPlans(plansRes).map(normalizePlan);
+        console.log('Fetched & Normalized Plans:', fetchedPlans);
+        
         setPlans(fetchedPlans);
 
-        const analytics = extractAnalytics(analyticsRes);
-        const planStats = analytics?.planStats || {};
+        // Fetch analytics (non-critical)
+        try {
+          const analyticsRes = await superadminService.getPlatformAnalytics();
+          const analytics = extractAnalytics(analyticsRes);
+          const planStats = analytics?.planStats || {};
 
-        const totalSubscribers =
-          Number(analytics?.totalSubscribers) ||
-          fetchedPlans.reduce((sum, plan) => {
-            const fromStats = Number(planStats?.[plan.id]?.subscribers);
-            return sum + (fromStats || Number(plan.subscribers) || 0);
-          }, 0);
+          const totalSubscribers =
+            Number(analytics?.totalSubscribers) ||
+            fetchedPlans.reduce((sum, plan) => {
+              const fromStats = Number(planStats?.[plan.id]?.subscribers);
+              return sum + (fromStats || Number(plan.subscribers) || 0);
+            }, 0);
 
-        const totalMRR =
-          Number(analytics?.totalMRR) ||
-          fetchedPlans.reduce((sum, plan) => {
-            const subscribers = Number(planStats?.[plan.id]?.subscribers) || Number(plan.subscribers) || 0;
-            return sum + subscribers * (Number(plan.priceMonthly) || 0);
-          }, 0);
+          const totalMRR =
+            Number(analytics?.totalMRR) ||
+            fetchedPlans.reduce((sum, plan) => {
+              const subscribers = Number(planStats?.[plan.id]?.subscribers) || Number(plan.subscribers) || 0;
+              return sum + subscribers * (Number(plan.priceMonthly) || 0);
+            }, 0);
 
-        const avgRevenuePerUser = totalSubscribers ? totalMRR / totalSubscribers : 0;
+          const avgRevenuePerUser = totalSubscribers ? totalMRR / totalSubscribers : 0;
 
-        setStats({
-          totalSubscribers,
-          totalMRR,
-          activePlans: fetchedPlans.length,
-          avgRevenuePerUser,
-          planStats,
-        });
+          setStats({
+            totalSubscribers,
+            totalMRR,
+            activePlans: fetchedPlans.length,
+            avgRevenuePerUser,
+            planStats,
+          });
+        } catch (analyticsError) {
+          console.warn('Analytics fetch failed, using defaults:', analyticsError);
+          setStats({
+            totalSubscribers: 0,
+            totalMRR: 0,
+            activePlans: fetchedPlans.length,
+            avgRevenuePerUser: 0,
+            planStats: {},
+          });
+        }
+
+        // Fetch comparison data (non-critical)
+        try {
+          const comparisonRes = await superadminService.getPlanComparison();
+          setComparisonData(comparisonRes?.data || []);
+        } catch (comparisonError) {
+          console.warn('Comparison data fetch failed:', comparisonError);
+        }
       } catch (error) {
-        console.error('Error fetching pricing stats:', error);
+        console.error('Error fetching pricing plans:', error);
         showError(error?.message || 'Failed to load pricing plans');
         setPlans([]);
-        setStats({
-          totalSubscribers: 0,
-          totalMRR: 0,
-          activePlans: 0,
-          avgRevenuePerUser: 0,
-          planStats: {},
-        });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -149,8 +126,36 @@ export default function PricingPlans() {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* Tabs */}
+      <div className="border-b border-gray-200">
+        <nav className="flex space-x-4">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'overview' 
+                ? 'border-emerald-600 text-emerald-600' 
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Plans Overview
+          </button>
+          <button
+            onClick={() => setActiveTab('comparison')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'comparison' 
+                ? 'border-emerald-600 text-emerald-600' 
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Comparison Matrix
+          </button>
+        </nav>
+      </div>
+
+      {activeTab === 'overview' ? (
+        <>
+          {/* Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
@@ -204,7 +209,16 @@ export default function PricingPlans() {
 
       {/* Pricing Plans Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {plans.map((plan) => {
+        {loading ? (
+          <div className="col-span-full flex justify-center items-center py-12">
+            <div className="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
+          </div>
+        ) : plans.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <p className="text-gray-500">No pricing plans found</p>
+          </div>
+        ) : (
+          plans.map((plan) => {
           const subscribers = getSubscriberCount(plan.id);
           const revenue = getMonthlyRevenue(plan.id);
 
@@ -218,7 +232,14 @@ export default function PricingPlans() {
               {/* Plan Header */}
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                    {plan.isPopular && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
+                        <Star className="w-3 h-3" /> Popular
+                      </span>
+                    )}
+                  </div>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -242,6 +263,11 @@ export default function PricingPlans() {
                     </>
                   )}
                 </div>
+                {plan.trialDays > 0 && (
+                  <p className="text-xs text-emerald-600 font-medium mt-2">
+                    {plan.trialDays}-day free trial
+                  </p>
+                )}
               </div>
 
               {/* Stats */}
@@ -306,12 +332,33 @@ export default function PricingPlans() {
                           : `${plan.limits?.maxStorageMB} MB`}
                     </span>
                   </div>
+                  {plan.limits?.maxOrdersPerMonth > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Orders/Month</span>
+                      <span className="font-medium text-gray-900">
+                        {plan.limits?.maxOrdersPerMonth === -1 ? 'Unlimited' : (plan.limits?.maxOrdersPerMonth || 0).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  {plan.limits?.maxLocations > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Locations</span>
+                      <span className="font-medium text-gray-900">
+                        {plan.limits?.maxLocations === -1 ? 'Unlimited' : plan.limits?.maxLocations}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           );
-        })}
+        })
+        )}
       </div>
+    </>
+  ) : (
+    <PlanComparisonTable comparisonData={comparisonData} />
+  )}
 
       {/* Plan Details Modal (simple version) */}
       {selectedPlan && (

@@ -40,6 +40,16 @@ export const parseApiError = (error) => {
     };
   }
 
+  // Handle Network Errors (No response from server)
+  if (error.code === 'ERR_NETWORK' || error.message === 'Network Error' || error.code === 'ECONNABORTED') {
+    return {
+      message: 'Network error. Please check your internet connection.',
+      details: {},
+      code: 'NETWORK_ERROR',
+      status: 0,
+    };
+  }
+
   // If error is from our API client (already parsed)
   if (error.message && (error.code || error.status)) {
     return {

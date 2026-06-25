@@ -1,4 +1,5 @@
 export const ROLES = {
+  SUPERADMIN: 'Superadmin',
   CEO: 'CEO',
   MANAGER: 'Manager',
   SALES: 'Sales',
@@ -7,7 +8,11 @@ export const ROLES = {
 export const normalizeRole = (roleValue) => {
   const raw = String(roleValue || '').trim().toLowerCase();
 
-  if (['ceo', 'owner', 'superadmin', 'super_admin', 'admin', 'administrator'].includes(raw)) {
+  if (['superadmin', 'super_admin'].includes(raw)) {
+    return ROLES.SUPERADMIN;
+  }
+
+  if (['ceo', 'owner', 'admin', 'administrator'].includes(raw)) {
     return ROLES.CEO;
   }
 
@@ -52,6 +57,7 @@ export const getRoleMenuItems = (roleValue) => {
     'refunds',
     'transactions',
     'reports',
+    'activity-logs',
     'users',
     'messaging',
     'settings',

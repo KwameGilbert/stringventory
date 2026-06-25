@@ -1,4 +1,4 @@
-import { BASE_URL } from "../services/api.endpoints";
+﻿import { BASE_URL } from "../services/api/endpoints";
 
 const API_ORIGIN = (() => {
   try {

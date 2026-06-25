@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
-import { useTheme } from "../../contexts/ThemeContext";
+import { useTheme } from "../../providers/ThemeContext";
 
 export default function ForgotPasswordModal({ isOpen, onClose, onSuccess }) {
   const { themeColors } = useTheme();

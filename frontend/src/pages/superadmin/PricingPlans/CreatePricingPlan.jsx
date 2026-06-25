@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Save, Loader, HelpCircle } from 'lucide-react';
-import { PRICING_PLANS } from '../../../constants/plans';
+import superadminService from '../../../services/platform/superadminService';
+import { showSuccess, showError } from '../../../utils/alerts';
 
 export default function CreatePricingPlan() {
   const { id } = useParams();
@@ -33,19 +34,32 @@ export default function CreatePricingPlan() {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    if (isEditing) {
-      const plan = PRICING_PLANS.find(p => p.id === id);
-      if (plan) {
-        setFormData({
-            ...plan,
-            // Ensure limits are merged correctly if schema differs slightly, but here it matches
-            limits: { ...plan.limits },
-            features: [...plan.features], 
-            featureFlags: [...plan.featureFlags]
-        });
+    if (!isEditing) return;
+    const fetchPlan = async () => {
+      try {
+        const response = await superadminService.getPricingPlanById(id);
+        const plan = response?.data || response;
+        if (plan) {
+          setFormData({
+            name: plan.name || '',
+            description: plan.description || '',
+            priceMonthly: plan.priceMonthly ?? plan.price ?? '',
+            priceYearly: plan.priceYearly ?? '',
+            trialDays: plan.trialDays ?? 14,
+            popular: plan.popular || false,
+            color: plan.color || 'gray',
+            features: Array.isArray(plan.features) && plan.features.length > 0 ? plan.features : [''],
+            limits: { ...formData.limits, ...(plan.limits || {}) },
+            featureFlags: Array.isArray(plan.featureFlags) ? plan.featureFlags : [],
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch plan for editing:', error);
+        showError(error?.message || 'Failed to load plan details');
       }
-    }
-  }, [id, isEditing]);
+    };
+    fetchPlan();
+  }, [id, isEditing]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const colors = [
     { name: 'Gray', value: 'gray', class: 'bg-gray-500' },
@@ -143,23 +157,25 @@ export default function CreatePricingPlan() {
 
     setLoading(true);
     try {
-      // Create new plan object
-      const newPlan = {
-        id: formData.name.toLowerCase().replace(/\s+/g, '_'),
-        slug: formData.name.toLowerCase().replace(/\s+/g, '_'),
+      const payload = {
         ...formData,
         priceMonthly: Number(formData.priceMonthly),
         priceYearly: Number(formData.priceYearly),
-        features: formData.features.filter(f => f.trim() !== '')
+        features: formData.features.filter(f => f.trim() !== ''),
       };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(isEditing ? 'Updated Plan:' : 'Created Plan:', newPlan);
-      
+      if (isEditing) {
+        await superadminService.updatePricingPlan(id, payload);
+        showSuccess('Pricing plan updated successfully');
+      } else {
+        await superadminService.createPricingPlan(payload);
+        showSuccess('Pricing plan created successfully');
+      }
+
       navigate('/superadmin/pricing-plans');
     } catch (error) {
-      console.error('Error creating plan:', error);
+      console.error('Error saving plan:', error);
+      showError(error?.message || 'Failed to save pricing plan');
     } finally {
       setLoading(false);
     }

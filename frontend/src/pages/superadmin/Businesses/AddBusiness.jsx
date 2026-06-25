@@ -1,8 +1,10 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Loader } from 'lucide-react';
 import { PRICING_PLANS } from '../../../constants/plans';
 import { handleApiError } from '../../../utils/errorHandler';
+import superadminService from '../../../services/platform/superadminService';
+import { showSuccess } from '../../../utils/alerts';
 
 export default function AddBusiness() {
   const navigate = useNavigate();
@@ -46,13 +48,15 @@ export default function AddBusiness() {
     'Spain',
     'Italy',
     'Netherlands',
+    'Ghana',
+    'Nigeria',
+    'South Africa',
     'Other'
   ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -60,85 +64,37 @@ export default function AddBusiness() {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Business name is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Invalid email format';
-    }
-
-    if (!formData.owner_name.trim()) {
-      newErrors.owner_name = 'Owner name is required';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    }
-
-    if (!formData.industry) {
-      newErrors.industry = 'Industry is required';
-    }
-
-    if (!formData.country) {
-      newErrors.country = 'Country is required';
-    }
-
+    if (!formData.name.trim()) newErrors.name = 'Business name is required';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
+    if (!formData.owner_name.trim()) newErrors.owner_name = 'Owner name is required';
+    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+    if (!formData.industry) newErrors.industry = 'Industry is required';
+    if (!formData.country) newErrors.country = 'Country is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
-
     try {
-      // Get plan details
-      const plan = PRICING_PLANS.find(p => p.id === formData.subscription_plan);
-
-      // Create new business object
-      const newBusiness = {
-        id: `bus-${Date.now()}`,
-        ...formData,
-        current_usage: {
-          total_users: 0,
-          total_products: 0,
-          storage_used: 0,
-          api_calls: 0
-        },
-        usage_limits: {
-          maxUsers: plan?.limits?.maxUsers || 5,
-          maxProducts: plan?.limits?.maxProducts || 500,
-          maxStorage: plan?.limits?.maxStorageMB ? (plan.limits.maxStorageMB / 1024) : 5,
-          maxApiCalls: 10000
-        },
-        mrr: formData.status === 'trial' ? 0 : (plan?.price || 0),
-        total_revenue: 0,
-        created_at: new Date().toISOString(),
-        trial_ends_at: formData.status === 'trial' 
-          ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() 
-          : null,
-        last_payment: null,
-        next_billing_date: formData.status === 'trial' 
-          ? null 
-          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        logo_url: null
+      const payload = {
+        name: formData.name,
+        email: formData.email,
+        ownerName: formData.owner_name,
+        phone: formData.phone,
+        industry: formData.industry,
+        country: formData.country,
+        subscriptionPlan: formData.subscription_plan,
+        status: formData.status,
+        ...(formData.notes?.trim() && { notes: formData.notes }),
       };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      console.log('Created business:', newBusiness);
-      
-      // Navigate back to businesses list
+      await superadminService.createBusiness(payload);
+      showSuccess('Business created successfully');
       navigate('/superadmin/businesses');
     } catch (error) {
       console.error('Error adding business:', error);

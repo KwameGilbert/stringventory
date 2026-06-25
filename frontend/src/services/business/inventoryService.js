@@ -1,0 +1,40 @@
+/**
+ * Inventory Management API Service
+ */
+
+import { apiClient, API_ENDPOINTS } from '../api/client';
+
+export const inventoryService = {
+  getInventory: async (params = {}) => {
+    return await apiClient.get(API_ENDPOINTS.INVENTORY.LIST, { params });
+  },
+
+  getInventoryByProduct: async (productId) => {
+    return await apiClient.get(API_ENDPOINTS.INVENTORY.GET_BY_PRODUCT(productId));
+  },
+
+  addInventory: async (inventoryData) => {
+    try {
+      return await apiClient.post(API_ENDPOINTS.INVENTORY.CREATE, inventoryData);
+    } catch (error) {
+      if (API_ENDPOINTS.INVENTORY.ADD !== API_ENDPOINTS.INVENTORY.CREATE) {
+        return await apiClient.post(API_ENDPOINTS.INVENTORY.ADD, inventoryData);
+      }
+      throw error;
+    }
+  },
+
+  updateInventory: async (id, inventoryData) => {
+    return await apiClient.put(API_ENDPOINTS.INVENTORY.UPDATE(id), inventoryData);
+  },
+
+  adjustInventory: async (adjustmentData) => {
+    return await apiClient.post(API_ENDPOINTS.INVENTORY.ADJUST, adjustmentData);
+  },
+
+  transferInventory: async (transferData) => {
+    return await apiClient.post(API_ENDPOINTS.INVENTORY.TRANSFER, transferData);
+  },
+};
+
+export default inventoryService;
