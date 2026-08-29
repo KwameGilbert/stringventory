@@ -46,11 +46,11 @@ const PurchasesTable = ({
         <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
           <Package className="w-8 h-8 text-gray-400" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">No purchases found</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">No purchases found</h3>
         <p className="text-gray-500 text-sm mb-4">Try adjusting your search or filter criteria</p>
         <Link
           to="/dashboard/purchases/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
         >
           Create your first purchase
         </Link>
@@ -68,7 +68,7 @@ const PurchasesTable = ({
               <div className="space-y-1">
                 <Link
                   to={`/dashboard/purchases/${purchase.id}`}
-                  className="text-lg font-bold text-gray-900 hover:text-blue-600 font-mono flex items-center gap-2"
+                  className="text-lg font-medium text-gray-900 hover:text-blue-600 font-mono flex items-center gap-2"
                 >
                   <Hash size={16} className="text-gray-400" />
                   {purchase.waybillNumber || "No Waybill"}
@@ -78,18 +78,18 @@ const PurchasesTable = ({
                   {purchase.supplierName}
                 </div>
               </div>
-              <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-lg border ${getStatusBadge(purchase.status)}`}>
+              <span className={`text-[10px] uppercase tracking-wider font-medium px-2 py-1 rounded-xl border ${getStatusBadge(purchase.status)}`}>
                 {purchase.status}
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-4 py-3 border-y border-gray-50">
               <div className="space-y-1">
-                <p className="text-[10px] text-gray-400 uppercase font-semibold">Total Amount</p>
-                <p className="text-sm font-bold text-gray-900">{formatPrice(purchase.totalAmount)}</p>
+                <p className="text-[10px] text-gray-400 uppercase font-medium">Total Amount</p>
+                <p className="text-sm font-medium text-gray-900">{formatPrice(purchase.totalAmount)}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-[10px] text-gray-400 uppercase font-semibold">Date</p>
+                <p className="text-[10px] text-gray-400 uppercase font-medium">Date</p>
                 <p className="text-sm text-gray-700 flex items-center gap-1.5 font-medium">
                   <Calendar size={14} className="text-gray-400" />
                   {formatDate(purchase.purchaseDate)}
@@ -119,7 +119,7 @@ const PurchasesTable = ({
                 {currentUserRole === 'CEO' && purchase.status === 'pending' && onApprove && (
                   <button
                     onClick={() => onApprove(purchase.id)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-semibold border border-emerald-100 transition-all shadow-sm"
+                    className="flex items-center gap-1.5 px-4 py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-medium border border-emerald-100 transition-all shadow-sm"
                   >
                     <CheckCircle size={18} />
                     Approve
@@ -143,13 +143,13 @@ const PurchasesTable = ({
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Waybill</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Supplier</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created By</th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waybill</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -170,12 +170,12 @@ const PurchasesTable = ({
                     <span className="text-sm text-gray-600">{formatDate(purchase.purchaseDate)}</span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-sm font-medium text-gray-900">
                       {formatPrice(purchase.totalAmount)}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${getStatusBadge(purchase.status)}`}>
+                    <span className={`text-[11px] font-medium uppercase tracking-wider px-2.5 py-1 rounded-full border ${getStatusBadge(purchase.status)}`}>
                       {purchase.status}
                     </span>
                   </td>
@@ -187,7 +187,7 @@ const PurchasesTable = ({
                       {currentUserRole === 'CEO' && purchase.status === 'pending' && onApprove && (
                         <button
                           onClick={() => onApprove(purchase.id)}
-                          className="p-1.5 rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
+                          className="p-1.5 rounded-xl text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
                           title="Approve"
                         >
                           <CheckCircle size={16} />
@@ -195,7 +195,7 @@ const PurchasesTable = ({
                       )}
                       <Link
                         to={`/dashboard/purchases/${purchase.id}`}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                        className="p-1.5 rounded-xl hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
                         title="View"
                       >
                         <Eye size={16} />
@@ -203,7 +203,7 @@ const PurchasesTable = ({
                       {purchase.status === "pending" && (
                         <Link
                           to={`/dashboard/purchases/${purchase.id}/edit`}
-                          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                          className="p-1.5 rounded-xl hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
                           title="Edit"
                         >
                           <Edit2 size={16} />
@@ -211,7 +211,7 @@ const PurchasesTable = ({
                       )}
                       <button
                         onClick={() => onDelete && onDelete(purchase.id)}
-                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
+                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors"
                         title="Delete"
                       >
                         <Trash2 size={16} />
@@ -237,7 +237,7 @@ const PurchasesTable = ({
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-xl border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft size={16} className="text-gray-600" />
             </button>
@@ -245,7 +245,7 @@ const PurchasesTable = ({
               <button
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                className={`w-8 h-8 rounded-xl text-sm font-medium transition-colors ${
                   currentPage === page
                     ? 'bg-gray-900 text-white'
                     : 'hover:bg-gray-100 text-gray-600'
@@ -257,7 +257,7 @@ const PurchasesTable = ({
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-xl border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight size={16} className="text-gray-600" />
             </button>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { User, Mail, Phone, MapPin, Globe, Camera, AlertCircle } from "lucide-react";
 import { AuthContext } from "../../../providers/AuthContext";
 import { useSettings } from "../../../providers/SettingsContext";
@@ -111,10 +111,10 @@ export default function ProfileSettings() {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Business Profile</h2>
+      <h2 className="text-xl font-medium text-gray-900 mb-6">Business Profile</h2>
       
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg flex items-start gap-3 text-red-800 text-sm">
+        <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 text-red-800 text-sm">
           <AlertCircle className="flex-shrink-0 mt-0.5" size={18} />
           <p>{error}</p>
         </div>
@@ -147,7 +147,7 @@ export default function ProfileSettings() {
               </label>
             </div>
             <div className="text-center sm:text-left">
-              <h3 className="font-semibold text-gray-900">Company Logo</h3>
+              <h3 className="font-medium text-gray-900">Company Logo</h3>
               <p className="text-sm text-gray-500 mt-1">
                 Upload a logo to display on invoices and reports.<br/>
                 Recommended size: 500x500px.
@@ -165,7 +165,7 @@ export default function ProfileSettings() {
                   value={formData.businessName}
                   onChange={(e) => setFormData({...formData, businessName: e.target.value})}
                   disabled={saving}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
                   required
                 />
               </div>
@@ -180,7 +180,7 @@ export default function ProfileSettings() {
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   disabled={saving}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
                 />
               </div>
             </div>
@@ -194,7 +194,7 @@ export default function ProfileSettings() {
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
                   disabled={saving}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
                 />
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function ProfileSettings() {
                   value={formData.website}
                   onChange={(e) => setFormData({...formData, website: e.target.value})}
                   disabled={saving}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
                 />
               </div>
             </div>
@@ -222,7 +222,7 @@ export default function ProfileSettings() {
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
                   disabled={saving}
                   rows={3}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
                 />
               </div>
             </div>
@@ -232,7 +232,7 @@ export default function ProfileSettings() {
             <button
               type="submit"
               disabled={saving || loading}
-              className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium shadow-lg shadow-emerald-500/30 transition-all transform hover:-translate-y-0.5"
+              className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium shadow-lg shadow-emerald-500/30 transition-all transform hover:-translate-y-0.5"
             >
               {saving ? "Saving..." : "Save Changes"}
             </button>

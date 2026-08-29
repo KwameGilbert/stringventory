@@ -2,7 +2,7 @@
 
 > **For:** Backend Development Team  
 > **Derived From:** Full frontend codebase analysis (React + Vite)  
-> **Live API Base:** `https://stringventory-sass-api.onrender.com`  
+> **Live API Base:** `https://stringventory-api.kantatech.io`  
 > **Date:** June 25, 2026  
 > **Version:** 1.0
 
@@ -1568,4 +1568,4 @@ The frontend has code wired to these endpoints but they may not be fully impleme
 
 *This document was generated from a complete analysis of the StringVentory frontend codebase.*
 *All endpoint contracts are derived from actual frontend service calls, normalization models, and context providers.*
-*Base URL: `https://stringventory-sass-api.onrender.com`*
+*Base URL: `https://stringventory-api.kantatech.io`*

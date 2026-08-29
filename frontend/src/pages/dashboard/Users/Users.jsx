@@ -1,8 +1,7 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Search, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import UserList from "../../../components/dashboard/Users/UserList";
-import ActivityLogs from "../../../components/dashboard/Users/ActivityLogs";
 import { showSuccess, showError, confirmDelete } from "../../../utils/alerts";
 import { handleApiError } from "../../../utils/errorHandler";
 import userService from "../../../services/business/userService";
@@ -54,7 +53,6 @@ export default function Users() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
-  const [logs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -157,8 +155,7 @@ export default function Users() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="space-y-6">
           {/* Filters */}
           <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
@@ -191,11 +188,6 @@ export default function Users() {
             onEdit={handleEditUser} 
             onDelete={handleDeleteUser} 
           />
-        </div>
-
-        <div className="lg:col-span-1">
-          <ActivityLogs logs={logs} />
-        </div>
       </div>
 
     </div>

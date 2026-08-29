@@ -3,15 +3,14 @@ import { Eye, Edit2, Trash2, Repeat, Paperclip, ChevronLeft, ChevronRight, Searc
 import { Link } from "react-router-dom";
 import { useCurrency } from "../../../utils/currencyUtils";
 
-const ITEMS_PER_PAGE = 8;
-
 const ExpensesTable = ({ expenses, onDelete }) => {
   const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const totalPages = Math.ceil(expenses.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedExpenses = expenses.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(expenses.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedExpenses = expenses.slice(startIndex, startIndex + itemsPerPage);
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -31,7 +30,7 @@ const ExpensesTable = ({ expenses, onDelete }) => {
         <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
           <Search className="w-8 h-8 text-gray-400" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">No expenses found</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">No expenses found</h3>
         <p className="text-gray-500 text-sm mb-4">Add your first expense to get started</p>
         <Link
           to="/dashboard/expenses/new"
@@ -55,14 +54,14 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                   {expense.isRecurring ? <Repeat size={18} /> : <Paperclip size={18} />}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 leading-tight">
+                  <h3 className="font-medium text-gray-900 leading-tight">
                     {typeof expense.category === 'object' ? expense.category?.name : expense.category}
                   </h3>
                   <p className="text-xs text-gray-500">{formatDate(expense.date)}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-bold text-rose-600">{formatPrice(expense.amount, expense.currency)}</p>
+                <p className="font-medium text-rose-600">{formatPrice(expense.amount, expense.currency)}</p>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${
                   expense.status === 'paid' || expense.status === 'completed' || expense.status === 'successful'
                     ? 'bg-emerald-100 text-emerald-700' :
@@ -122,15 +121,15 @@ const ExpensesTable = ({ expenses, onDelete }) => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Reference</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Notes</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reference</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -147,7 +146,7 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-bold text-rose-600">{formatPrice(expense.amount, expense.currency)}</span>
+                    <span className="font-medium text-rose-600">{formatPrice(expense.amount, expense.currency)}</span>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-gray-600 text-sm">{formatDate(expense.date)}</span>
@@ -161,7 +160,7 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold ${
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium ${
                       expense.isRecurring 
                         ? "bg-blue-50 text-blue-600" 
                         : "bg-gray-100 text-gray-600"
@@ -220,66 +219,54 @@ const ExpensesTable = ({ expenses, onDelete }) => {
         </div>
         
         {/* Pagination Container */}
-        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
-          <p className="text-sm text-gray-500">
-            Showing <span className="font-medium text-gray-700">{startIndex + 1}</span> to{" "}
-            <span className="font-medium text-gray-700">{Math.min(startIndex + ITEMS_PER_PAGE, expenses.length)}</span> of{" "}
-            <span className="font-medium text-gray-700">{expenses.length}</span> entries
-          </p>
-          
-          {totalPages > 1 && (
-            <div className="flex items-center gap-1">
-              <button
+        <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+                <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+                    Showing <span className="text-slate-900 font-medium">{expenses.length === 0 ? 0 : startIndex + 1}</span> to{" "}
+                    <span className="text-slate-900 font-medium">{Math.min(startIndex + itemsPerPage, expenses.length)}</span> of{" "}
+                    <span className="text-slate-900 font-medium">{expenses.length}</span>
+                </p>
+                <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Show</span>
+                    <select
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                    }}
+                    className="text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500/30 shadow-2xs"
+                    >
+                    {[5, 10, 20, 50].map(num => (
+                        <option key={num} value={num}>{num}</option>
+                    ))}
+                    </select>
+                </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+                <button
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft size={16} className="text-gray-600" />
-              </button>
-              
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => goToPage(page)}
-                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                    currentPage === page
-                      ? 'bg-gray-900 text-white'
-                      : 'hover:bg-gray-100 text-gray-600'
-                  }`}
+                className="p-2 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm group"
                 >
-                  {page}
+                <ChevronLeft size={18} className="text-gray-600 group-hover:-translate-x-0.5 transition-transform" />
                 </button>
-              ))}
-              
-              <button
+                
+                {totalPages > 1 && (
+                  <div className="px-4 py-1.5 bg-gray-900 text-white rounded-xl text-xs font-medium shadow-lg shadow-gray-900/10">
+                      {currentPage} / {totalPages}
+                  </div>
+                )}
+                
+                <button
                 onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight size={16} className="text-gray-600" />
-              </button>
+                disabled={currentPage === totalPages || totalPages === 0}
+                className="p-2 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm group"
+                >
+                <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-0.5 transition-transform" />
+                </button>
             </div>
-          )}
         </div>
-      </div>
-
-      {/* Mobile Pagination (Visible on small screens) */}
-      <div className="md:hidden flex items-center justify-between px-2 py-4 border-t border-gray-100">
-          <button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 transition-colors"
-          >
-            <ChevronLeft size={16} />
-          </button>
-          <p className="text-xs text-gray-500 font-medium">Page {currentPage} of {totalPages}</p>
-          <button
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 transition-colors"
-          >
-            <ChevronRight size={16} />
-          </button>
       </div>
     </div>
   );

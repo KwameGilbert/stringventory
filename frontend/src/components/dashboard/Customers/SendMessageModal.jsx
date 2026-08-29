@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { X, MessageSquare, Mail, Phone, RefreshCw } from "lucide-react";
 import messagingService from "../../../services/business/messagingService";
 import { showSuccess, showError } from "../../../utils/alerts";
@@ -38,7 +38,6 @@ export default function SendMessageModal({ isOpen, onClose, customer }) {
 
   const channels = [
     { id: "sms", label: "SMS", icon: Phone, color: "blue" },
-    { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, color: "green" },
     { id: "email", label: "Email", icon: Mail, color: "emerald " }
   ];
 
@@ -78,7 +77,7 @@ export default function SendMessageModal({ isOpen, onClose, customer }) {
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Select Channel
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {channels.map((ch) => {
                 const Icon = ch.icon;
                 const isSelected = channel === ch.id;
@@ -113,7 +112,7 @@ export default function SendMessageModal({ isOpen, onClose, customer }) {
                   <span className="font-medium text-gray-900">{customer?.email}</span>
                 </>
               )}
-              {(channel === "sms" || channel === "whatsapp") && (
+              {channel === "sms" && (
                 <>
                   <Phone size={14} className="text-gray-400" />
                   <span className="font-medium text-gray-900">{customer?.phone}</span>

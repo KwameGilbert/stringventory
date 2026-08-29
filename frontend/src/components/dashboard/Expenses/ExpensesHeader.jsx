@@ -1,4 +1,4 @@
-import { Plus, Download, FileText, Search } from "lucide-react";
+import { Plus, Download, FileText, Search, DollarSign, Repeat, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCurrency } from "../../../utils/currencyUtils";
 
@@ -52,22 +52,28 @@ const ExpensesHeader = ({
 
       {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-rose-500"></div>
-          <p className="text-gray-500 text-sm mb-1">Total Expenses</p>
-          <p className="text-2xl font-bold text-rose-600">{formatPrice(totalExpenses)}</p>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-rose-500 mb-3">
+            <DollarSign size={20} />
+          </div>
+          <p className="text-sm font-medium text-slate-500 mb-1">Total Expenses</p>
+          <h3 className="text-2xl font-semibold text-slate-800">{formatPrice(totalExpenses)}</h3>
         </div>
         
-        <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
-          <p className="text-gray-500 text-sm mb-1">Recurring</p>
-          <p className="text-2xl font-bold text-gray-900">{formatPrice(recurringExpenses)}</p>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-blue-500 mb-3">
+            <Repeat size={20} />
+          </div>
+          <p className="text-sm font-medium text-slate-500 mb-1">Recurring</p>
+          <h3 className="text-2xl font-semibold text-slate-800">{formatPrice(recurringExpenses)}</h3>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm relative overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-500"></div>
-          <p className="text-gray-500 text-sm mb-1">One-time</p>
-          <p className="text-2xl font-bold text-gray-900">{formatPrice(oneTimeExpenses)}</p>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-emerald-500 mb-3">
+            <CreditCard size={20} />
+          </div>
+          <p className="text-sm font-medium text-slate-500 mb-1">One-time</p>
+          <h3 className="text-2xl font-semibold text-slate-800">{formatPrice(oneTimeExpenses)}</h3>
         </div>
       </div>
 

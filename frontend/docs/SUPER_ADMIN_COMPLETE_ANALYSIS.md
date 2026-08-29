@@ -1,6 +1,6 @@
 # Super Admin Dashboard - Complete Feature & API Payload Analysis
 
-**Base URL:** `https://stringventory-sass-api.onrender.com/`
+**Base URL:** `https://stringventory-api.kantatech.io/`
 
 **Authentication:** All endpoints require Bearer Token in Authorization header
 ```

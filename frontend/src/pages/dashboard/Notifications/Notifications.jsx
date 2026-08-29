@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bell,
   Check,
@@ -135,9 +135,9 @@ export default function Notifications() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
+          <h1 className="text-3xl font-medium text-gray-900">Notifications</h1>
           <p className="text-gray-600 mt-1">
-            You have <span className="font-semibold text-emerald-600">{unreadCount}</span> unread notifications
+            You have <span className="font-medium text-emerald-600">{unreadCount}</span> unread notifications
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -145,7 +145,7 @@ export default function Notifications() {
             onClick={handleSubscribe}
             disabled={actionLoading || isSubscribed}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm
+              flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-sm
               ${isSubscribed 
                 ? "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default" 
                 : "bg-emerald-600 text-white border border-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"}
@@ -159,7 +159,7 @@ export default function Notifications() {
             <button
               onClick={handleMarkAllAsRead}
               disabled={actionLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <CheckCheck className="w-4 h-4" />
               Mark all as read
@@ -169,7 +169,7 @@ export default function Notifications() {
             <button
               onClick={clearAll}
               disabled={actionLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white hover:bg-rose-700 rounded-xl text-sm font-medium transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Trash2 className="w-4 h-4" />
               Clear all
@@ -202,7 +202,7 @@ export default function Notifications() {
       </div>
 
       {error && (
-        <div className="p-4 rounded-lg border border-red-200 bg-red-50 text-red-700 text-sm">
+        <div className="p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm">
           {error}
         </div>
       )}
@@ -252,7 +252,7 @@ export default function Notifications() {
               <div className="flex-1 min-w-0 pt-1">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-base font-semibold text-gray-900">
+                    <h3 className="text-base font-medium text-gray-900">
                       {notification.title}
                       {!notification.read && (
                         <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">
@@ -265,34 +265,34 @@ export default function Notifications() {
                     </p>
                   </div>
 
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-col items-end gap-2 shrink-0">
                     <div className="flex items-center gap-1.5 text-xs text-gray-400 whitespace-nowrap">
                       <Clock className="w-3.5 h-3.5" />
                       {formatTime(notification.timestamp)}
                     </div>
+
+                    <div className="flex items-center gap-1 pt-1">
+                      {!notification.read && (
+                        <button
+                          onClick={() => handleMarkAsRead(notification.id)}
+                          disabled={actionLoading}
+                          className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Mark as read"
+                        >
+                          <Check className="w-4 h-4" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDelete(notification.id)}
+                        disabled={actionLoading}
+                        className="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Delete"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                {!notification.read && (
-                  <button
-                    onClick={() => handleMarkAsRead(notification.id)}
-                    disabled={actionLoading}
-                    className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Mark as read"
-                  >
-                    <Check className="w-4 h-4" />
-                  </button>
-                )}
-                <button
-                  onClick={() => handleDelete(notification.id)}
-                  disabled={actionLoading}
-                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Delete"
-                >
-                  <X className="w-4 h-4" />
-                </button>
               </div>
             </div>
           ))

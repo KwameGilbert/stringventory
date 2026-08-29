@@ -14,12 +14,12 @@ const CustomersHeader = ({
   return (
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 py-2">
       <div className="flex items-center gap-4">
-        <div className="p-3.5 bg-gray-900 rounded-2xl shadow-xl shadow-gray-900/10">
+        <div className="p-3.5 bg-gray-900 rounded-xl shadow-xl shadow-gray-900/10">
             <Users className="text-white w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Customer Database</h1>
-          <p className="text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em] leading-none mt-1">
+          <h1 className="text-2xl font-medium text-gray-900 tracking-tight">Customers</h1>
+          <p className="text-gray-400 text-[10px] font-medium uppercase tracking-[0.2em] leading-none mt-1">
             <span className="text-gray-900">{totalCustomers}</span> Registered Accounts
           </p>
         </div>
@@ -43,7 +43,7 @@ const CustomersHeader = ({
                 <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 outline-none transition-all shadow-sm appearance-none cursor-pointer hover:bg-gray-50 min-w-[140px]"
+                    className="pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-700 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 outline-none transition-all shadow-sm appearance-none cursor-pointer hover:bg-gray-50 min-w-[140px]"
                 >
                     <option value="newest">Recent First</option>
                     <option value="name_asc">Alphabetical</option>
@@ -77,7 +77,7 @@ const CustomersHeader = ({
             {canManage && (
                 <Link
                     to="/dashboard/customers/new"
-                    className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white pl-4 pr-5 py-2.5 rounded-xl transition-all font-bold text-xs shadow-xl shadow-gray-900/10 active:scale-95 ml-2"
+                    className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white pl-4 pr-5 py-2.5 rounded-xl transition-all font-medium text-xs shadow-xl shadow-gray-900/10 active:scale-95 ml-2"
                 >
                     <Plus size={18} />
                     <span className="hidden sm:inline">Add Profile</span>

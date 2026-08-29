@@ -3,21 +3,20 @@ import { Eye, Image, ChevronLeft, ChevronRight, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCurrency } from "../../../utils/currencyUtils";
 
-const ITEMS_PER_PAGE = 8;
-
 const InventoryTable = ({ inventory, onAdjust, viewMode = "list" }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const { formatPrice } = useCurrency();
 
   // Pagination logic
-  const totalPages = Math.ceil(inventory.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedInventory = inventory.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(inventory.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedInventory = inventory.slice(startIndex, startIndex + itemsPerPage);
 
   useEffect(() => {
-    const maxPage = Math.max(1, Math.ceil(inventory.length / ITEMS_PER_PAGE));
+    const maxPage = Math.max(1, Math.ceil(inventory.length / itemsPerPage));
     setCurrentPage((prev) => Math.min(prev, maxPage));
-  }, [inventory.length]);
+  }, [inventory.length, itemsPerPage]);
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -241,24 +240,24 @@ const InventoryTable = ({ inventory, onAdjust, viewMode = "list" }) => {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="">
-                  <tr className="bg-emerald-100 border-b border-slate-200">
-                    <th className="px-4 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider w-[260px] whitespace-nowrap">Product</th>
-                    <th className="px-4 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider whitespace-nowrap">Batch #</th>
-                    <th className="px-4 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider whitespace-nowrap">Supplier</th>
-                    <th className="px-4 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider whitespace-nowrap">Unit Cost</th>
-                    <th className="px-4 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider whitespace-nowrap">Qty</th>
-                    <th className="px-4 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider whitespace-nowrap">Total Value</th>
-                    <th className="px-4 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider whitespace-nowrap">Entry</th>
-                    <th className="px-4 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider whitespace-nowrap">Expiry</th>
-                    <th className="px-5 py-3.5 text-left text-[13px] font-semibold text-black uppercase tracking-wider whitespace-nowrap">Actions</th>
+                  <tr className="bg-emerald-50 border-b border-slate-200">
+                    <th className="px-3 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider w-[260px] whitespace-nowrap">Product</th>
+                    <th className="px-3 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider whitespace-nowrap">Batch #</th>
+                    <th className="px-3 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider whitespace-nowrap">Supplier</th>
+                    <th className="px-3 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider whitespace-nowrap">Unit Cost</th>
+                    <th className="px-3 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider whitespace-nowrap">Qty</th>
+                    <th className="px-3 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider whitespace-nowrap">Total Value</th>
+                    <th className="px-3 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider whitespace-nowrap">Entry</th>
+                    <th className="px-3 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider whitespace-nowrap">Expiry</th>
+                    <th className="px-4 py-2.5 text-left text-[13px] font-medium text-slate-700 uppercase tracking-wider whitespace-nowrap">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {paginatedInventory.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50/60 transition-colors group">
-                      <td className="px-4 py-3.5 whitespace-nowrap">
-                        <div className="flex items-center gap-3.5">
-                          <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center shrink-0 overflow-hidden">
                             {item.image ? (
                               <img src={item.image} alt={item.productName} className="w-full h-full object-cover" />
                             ) : (
@@ -266,38 +265,38 @@ const InventoryTable = ({ inventory, onAdjust, viewMode = "list" }) => {
                             )}
                           </div>
                           <div className="max-w-[180px] min-w-0 flex-1">
-                            <p className="font-semibold text-slate-900 text-sm truncate group-hover:text-blue-600 transition-colors" title={item.productName}>
+                            <p className="font-medium text-slate-900 text-sm truncate group-hover:text-blue-600 transition-colors" title={item.productName}>
                               {item.productName}
                             </p>
-                            <p className="text-[13px] text-slate-400 font-semibold truncate uppercase tracking-wider mt-0.5">
+                            <p className="text-[12px] text-slate-400 font-medium truncate uppercase tracking-wider mt-0.5">
                               {item.category}
                             </p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-3.5 whitespace-nowrap">
-                        <span className="inline-block whitespace-nowrap text-xs font-mono font-semibold text-slate-700 bg-slate-100/80 border border-slate-200/60 px-2.5 py-1 rounded-md">
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        <span className="inline-block whitespace-nowrap text-xs font-mono font-medium text-slate-700 bg-slate-100/80 border border-slate-200/60 px-2 py-0.5 rounded-md">
                           {item.batchNumber}
                         </span>
                       </td>
-                      <td className="px-3 py-3.5 whitespace-nowrap">
-                        <span className="text-sm text-slate-700 font-medium">{item.supplier}</span>
+                      <td className="px-3 py-2.5 whitespace-nowrap">
+                        <span className="text-sm text-slate-600 font-medium">{item.supplier}</span>
                       </td>
-                      <td className="px-3 py-3.5 text-left whitespace-nowrap">
-                        <span className="text-sm font-semibold text-slate-700">{formatCurrency(item.unitCost, item.currency)}</span>
+                      <td className="px-3 py-2.5 text-left whitespace-nowrap">
+                        <span className="text-sm font-medium text-slate-700">{formatCurrency(item.unitCost, item.currency)}</span>
                       </td>
-                      <td className="px-3 py-3.5 text-left whitespace-nowrap">
-                        <span className="text-sm font-semibold text-slate-900">{item.quantity}</span>
+                      <td className="px-3 py-2.5 text-left whitespace-nowrap">
+                        <span className="text-sm font-medium text-slate-900">{item.quantity}</span>
                       </td>
-                      <td className="px-3 py-3.5 text-left whitespace-nowrap">
-                        <span className="text-sm font-semibold text-emerald-600">{formatCurrency(item.totalValue, item.currency)}</span>
+                      <td className="px-3 py-2.5 text-left whitespace-nowrap">
+                        <span className="text-sm font-medium text-emerald-600">{formatCurrency(item.totalValue, item.currency)}</span>
                       </td>
-                      <td className="px-3 py-3.5 text-left whitespace-nowrap">
-                        <span className="text-xs text-black font-medium">{formatDate(item.entryDate)}</span>
+                      <td className="px-3 py-2.5 text-left whitespace-nowrap">
+                        <span className="text-xs text-slate-600 font-medium">{formatDate(item.entryDate)}</span>
                       </td>
-                      <td className="px-3 py-3.5 text-left whitespace-nowrap">
+                      <td className="px-3 py-2.5 text-left whitespace-nowrap">
                         {item.expiryDate ? (
-                          <span className={`inline-block whitespace-nowrap text-xs font-semibold font-mono uppercase tracking-wide px-2 py-1 rounded-md border shadow-2xs ${
+                          <span className={`inline-block whitespace-nowrap text-[11px] font-medium font-mono uppercase tracking-wide px-2 py-0.5 rounded-md border shadow-2xs ${
                             isExpired(item.expiryDate)
                               ? "bg-rose-50 text-rose-700 border-rose-200"
                               : isExpiringSoon(item.expiryDate)
@@ -307,24 +306,24 @@ const InventoryTable = ({ inventory, onAdjust, viewMode = "list" }) => {
                             {formatDate(item.expiryDate).toUpperCase()}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-400 font-semibold">—</span>
+                          <span className="text-xs text-slate-400 font-medium">—</span>
                         )}
                       </td>
-                      <td className="px-3 py-3.5 text-left whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <td className="px-3 py-2.5 text-left whitespace-nowrap">
+                        <div className="flex items-center justify-start gap-1">
                           <button
                             onClick={() => onAdjust && onAdjust(item)}
-                            className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100"
+                            className="p-1.5 rounded-md text-blue-600 hover:bg-blue-50 hover:text-blue-700 transition-colors border border-transparent hover:border-blue-100"
                             title="Adjust Stock"
                           >
-                            <Package size={18} />
+                            <Package size={16} />
                           </button>
                           <Link
                             to={`/dashboard/inventory/${item.id}`}
-                            className="p-2 rounded-lg text-black hover:bg-slate-50 hover:text-slate-900 transition-colors border border-transparent hover:border-slate-200"
+                            className="p-1.5 rounded-md text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors border border-transparent hover:border-slate-200"
                             title="View Details"
                           >
-                            <Eye size={18} />
+                            <Eye size={16} />
                           </Link>
                         </div>
                       </td>
@@ -339,11 +338,28 @@ const InventoryTable = ({ inventory, onAdjust, viewMode = "list" }) => {
 
       {/* Unified Pagination Footer */}
       <div className="px-6 py-4 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-xs font-semibold text-black uppercase tracking-wider">
-          Showing <span className="text-slate-900 font-semibold">{startIndex + 1}</span> to{" "}
-          <span className="text-slate-900 font-semibold">{Math.min(startIndex + ITEMS_PER_PAGE, inventory.length)}</span> of{" "}
-          <span className="text-slate-900 font-semibold">{inventory.length}</span> entries
-        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            Showing <span className="text-slate-900 font-bold">{inventory.length === 0 ? 0 : startIndex + 1}</span> to{" "}
+            <span className="text-slate-900 font-bold">{Math.min(startIndex + itemsPerPage, inventory.length)}</span> of{" "}
+            <span className="text-slate-900 font-bold">{inventory.length}</span> entries
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Show</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-emerald-500/30"
+            >
+              {[5, 10, 20, 50].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+        </div>
         
         {totalPages > 1 && (
           <div className="flex items-center gap-1.5">

@@ -3,8 +3,6 @@ import { Eye, ChevronLeft, ChevronRight, RefreshCw, Clock, CheckCircle, XCircle,
 import { Link } from "react-router-dom";
 import { useCurrency } from "../../../utils/currencyUtils";
 
-const ITEMS_PER_PAGE = 8;
-
 const statusConfig = {
   pending: {
     label: "Pending",
@@ -29,10 +27,11 @@ const statusConfig = {
 const RefundsTable = ({ refunds }) => {
   const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const totalPages = Math.ceil(refunds.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedRefunds = refunds.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(refunds.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedRefunds = refunds.slice(startIndex, startIndex + itemsPerPage);
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -66,13 +65,13 @@ const RefundsTable = ({ refunds }) => {
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
-              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Refund ID</th>
-              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Customer</th>
-              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Order #</th>
-              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</th>
-              <th className="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Amount</th>
-              <th className="px-6 py-4 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</th>
-              <th className="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Action</th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Refund ID</th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Customer</th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Order #</th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Date</th>
+              <th className="px-6 py-4 text-right text-[10px] font-medium text-gray-400 uppercase tracking-widest">Amount</th>
+              <th className="px-6 py-4 text-center text-[10px] font-medium text-gray-400 uppercase tracking-widest">Status</th>
+              <th className="px-6 py-4 text-right text-[10px] font-medium text-gray-400 uppercase tracking-widest">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50 text-sm">
@@ -107,7 +106,7 @@ const RefundsTable = ({ refunds }) => {
                     <span className="text-gray-600 font-medium">{formatDate(refund.createdAt)}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <span className="font-bold text-gray-900">{formatPrice(refund.refundAmount, refund.currency)}</span>
+                    <span className="font-medium text-gray-900">{formatPrice(refund.refundAmount, refund.currency)}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider ${status.bg} ${status.text} border-2 border-transparent`}>
@@ -144,10 +143,10 @@ const RefundsTable = ({ refunds }) => {
                     <span className="font-mono text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded w-fit">
                         #{refund.id}
                     </span>
-                    <span className="font-bold text-gray-900 text-lg tracking-tight">
+                    <span className="font-medium text-gray-900 text-lg tracking-tight">
                         {refund.customer?.firstName ? `${refund.customer.firstName} ${refund.customer.lastName || ''}`.trim() : "Unknown"}
                     </span>
-                    <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">
+                    <p className="text-[10px] uppercase font-medium text-gray-400 tracking-widest">
                         Order <Link to={`/dashboard/orders/${refund.orderId}`} className="text-blue-600">#{refund.order?.orderNumber || refund.orderId}</Link>
                     </p>
                 </div>
@@ -159,11 +158,11 @@ const RefundsTable = ({ refunds }) => {
 
               <div className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Amount</span>
+                  <span className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Amount</span>
                   <span className="text-lg font-semibold text-rose-600">{formatPrice(refund.refundAmount, refund.currency)}</span>
                 </div>
                 <div className="text-right flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</span>
+                  <span className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Date</span>
                   <span className="text-sm font-semibold text-gray-700">{formatDate(refund.createdAt)}</span>
                 </div>
               </div>
@@ -171,7 +170,7 @@ const RefundsTable = ({ refunds }) => {
               <div className="flex items-center gap-2">
                 <Link
                   to={`/dashboard/refunds/${refund.id}`}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold text-sm shadow-sm active:scale-95 transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium text-sm shadow-sm active:scale-95 transition-all"
                 >
                   <Eye size={16} />
                   View Details
@@ -183,13 +182,30 @@ const RefundsTable = ({ refunds }) => {
       </div>
       
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-            Showing <span className="text-gray-900">{startIndex + 1}</span> -{" "}
-            <span className="text-gray-900">{Math.min(startIndex + ITEMS_PER_PAGE, refunds.length)}</span> of{" "}
-            <span className="text-gray-900">{refunds.length}</span>
-            </p>
+      {/* Pagination */}
+      <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+            Showing <span className="text-slate-900 font-semibold">{refunds.length === 0 ? 0 : startIndex + 1}</span> to{" "}
+            <span className="text-slate-900 font-semibold">{Math.min(startIndex + itemsPerPage, refunds.length)}</span> of{" "}
+            <span className="text-slate-900 font-semibold">{refunds.length}</span>
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Show</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500/30 shadow-2xs"
+            >
+              {[5, 10, 20, 50].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+        </div>
             
             <div className="flex items-center gap-2">
                 <button
@@ -200,20 +216,21 @@ const RefundsTable = ({ refunds }) => {
                 <ChevronLeft size={18} className="text-gray-600 group-hover:-translate-x-0.5 transition-transform" />
                 </button>
                 
-                <div className="px-4 py-1.5 bg-gray-900 text-white rounded-xl text-xs font-semibold shadow-lg shadow-gray-900/10">
-                    {currentPage} / {totalPages}
-                </div>
+                {totalPages > 1 && (
+                  <div className="px-4 py-1.5 bg-gray-900 text-white rounded-xl text-xs font-semibold shadow-lg shadow-gray-900/10">
+                      {currentPage} / {totalPages}
+                  </div>
+                )}
                 
                 <button
                 onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || totalPages === 0}
                 className="p-2 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-sm group"
                 >
                 <ChevronRight size={18} className="text-gray-600 group-hover:translate-x-0.5 transition-transform" />
                 </button>
             </div>
         </div>
-      )}
     </div>
   );
 };

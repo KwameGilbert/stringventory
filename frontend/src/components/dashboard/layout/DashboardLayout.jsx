@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
@@ -32,7 +32,7 @@ const DashboardLayout = ({ children }) => {
 
       {/* Main Content Area - responsive margin */}
       <DashboardDateFilterProvider>
-        <div className={`flex-1 transition-all duration-300 min-h-screen flex flex-col ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
+        <div className={`flex-1 transition-all duration-300 min-h-screen flex flex-col min-w-0 ${isSidebarExpanded ? "lg:ml-64" : "lg:ml-20"}`}>
           {/* Header with mobile menu toggle */}
           <Header 
             onMenuToggle={toggleMobileSidebar} 
@@ -40,7 +40,7 @@ const DashboardLayout = ({ children }) => {
           />
 
           {/* Page Content */}
-          <main className="pt-24 px-14 pb-12 min-h-screen">
+          <main className="pt-24 px-10 pb-12 min-h-screen">
             {children}
           </main>
 

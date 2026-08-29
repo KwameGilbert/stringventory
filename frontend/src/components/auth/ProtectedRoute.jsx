@@ -1,4 +1,4 @@
-﻿import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../providers/AuthContext.js";
 
 export default function ProtectedRoute({ children }) {
@@ -12,7 +12,7 @@ export default function ProtectedRoute({ children }) {
 
   if (!user) {
     // Redirect to login if not authenticated
-    return <Navigate to="/" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   if (user.mustChangePassword && location.pathname !== "/force-password-change") {

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ExpensesHeader from "../../../components/dashboard/Expenses/ExpensesHeader";
 import ExpensesTable from "../../../components/dashboard/Expenses/ExpensesTable";
 import expenseService from "../../../services/business/expenseService";
@@ -20,7 +20,7 @@ const Expenses = () => {
   const fetchExpenses = async () => {
     try {
       setLoading(true);
-      const response = await expenseService.getAllExpenses();
+      const response = await expenseService.getExpenses();
       const data = response.data || response;
       setExpenses(Array.isArray(data) ? data : []);
     } catch (error) {

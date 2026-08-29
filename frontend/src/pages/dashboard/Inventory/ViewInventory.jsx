@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -204,15 +204,15 @@ export default function ViewInventory() {
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+                  <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">
                     {item.productName}
                   </h1>
                   {item.status === "in_stock" ? (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
                       In Stock
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold bg-rose-100 text-rose-700 border border-rose-200">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-semibold bg-rose-100 text-rose-700 border border-rose-200">
                       {item.status?.replace("_", " ")}
                     </span>
                   )}
@@ -255,7 +255,7 @@ export default function ViewInventory() {
           {/* Stock Metrics Card */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-gray-50/50 to-white">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                 <History className="w-4 h-4 text-blue-500" />
                 Current Stock Profile
               </h3>
@@ -272,7 +272,7 @@ export default function ViewInventory() {
                       <Package className="w-5 h-5 text-blue-600" />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-semibold text-gray-900">
                     {item.quantity.toLocaleString()}
                   </p>
                   <p className="text-xs text-gray-400 mt-1 uppercase font-medium">
@@ -290,7 +290,7 @@ export default function ViewInventory() {
                       <DollarSign className="w-5 h-5 text-emerald-600" />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-semibold text-gray-900">
                     {formatCurrency(item.unitCost)}
                   </p>
                   <p className="text-xs text-gray-400 mt-1 uppercase font-medium">
@@ -321,18 +321,18 @@ export default function ViewInventory() {
           {/* Batches Table Section */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-linear-to-r from-gray-50/50 to-white flex items-center justify-between">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                 <ShoppingCart className="w-4 h-4 text-orange-500" />
                 Inventory Batches
               </h3>
-              <span className="px-2.5 py-1 rounded-lg bg-orange-50 text-orange-600 text-[10px] font-bold uppercase">
+              <span className="px-2.5 py-1 rounded-lg bg-orange-50 text-orange-600 text-[10px] font-semibold uppercase">
                 {item.batches?.length || 0} Batches Tracked
               </span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-gray-50/50 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                  <tr className="bg-gray-50/50 text-[10px] font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100">
                     <th className="px-6 py-3">Batch ID / PO</th>
                     <th className="px-6 py-3">Quantity</th>
                     <th className="px-6 py-3">Cost/Selling</th>
@@ -349,7 +349,7 @@ export default function ViewInventory() {
                       >
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
-                            <span className="font-bold text-gray-900 text-sm">
+                            <span className="font-semibold text-gray-900 text-sm">
                               {batch.batchNumber}
                             </span>
                             <span className="text-[10px] text-gray-400 font-mono">
@@ -359,7 +359,7 @@ export default function ViewInventory() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
-                            <span className="font-bold text-gray-900 text-sm">
+                            <span className="font-semibold text-gray-900 text-sm">
                               {batch.remainingQuantity} / {batch.quantity}
                             </span>
                             <div className="w-24 h-1.5 bg-gray-100 rounded-full mt-1.5 overflow-hidden">
@@ -380,7 +380,7 @@ export default function ViewInventory() {
                               </span>{" "}
                               {formatCurrency(batch.costPrice)}
                             </span>
-                            <span className="text-xs text-emerald-600 font-bold">
+                            <span className="text-xs text-emerald-600 font-semibold">
                               <span className="text-gray-400 font-medium">
                                 Sell:
                               </span>{" "}
@@ -396,7 +396,7 @@ export default function ViewInventory() {
                               {formatDate(batch.purchase?.purchaseDate)}
                             </div>
                             <div
-                              className={`flex items-center gap-1.5 text-[10px] font-bold ${getDaysUntilExpiry(batch.expiryDate) < 30 ? "text-amber-600" : "text-gray-500"}`}
+                              className={`flex items-center gap-1.5 text-[10px] font-semibold ${getDaysUntilExpiry(batch.expiryDate) < 30 ? "text-amber-600" : "text-gray-500"}`}
                             >
                               <Clock className="w-3 h-3" />
                               Expiry: {formatDate(batch.expiryDate)}
@@ -407,14 +407,14 @@ export default function ViewInventory() {
                           {batch.remainingQuantity > 0 ? (
                             <div className="flex items-center gap-1.5 text-emerald-600">
                               <CheckCircle2 size={14} />
-                              <span className="text-[10px] font-bold uppercase">
+                              <span className="text-[10px] font-semibold uppercase">
                                 Active
                               </span>
                             </div>
                           ) : (
                             <div className="flex items-center gap-1.5 text-gray-400">
                               <XCircle size={14} />
-                              <span className="text-[10px] font-bold uppercase">
+                              <span className="text-[10px] font-semibold uppercase">
                                 Depleted
                               </span>
                             </div>
@@ -457,7 +457,7 @@ export default function ViewInventory() {
                   <p className="text-xs text-gray-400 font-medium uppercase">
                     Source Carrier
                   </p>
-                  <p className="text-lg font-bold text-gray-900 leading-tight">
+                  <p className="text-lg font-semibold text-gray-900 leading-tight">
                     {item.supplier}
                   </p>
                 </div>
@@ -481,7 +481,7 @@ export default function ViewInventory() {
                   <p className="text-[10px] text-gray-400 font-medium uppercase italic">
                     System Trace ID
                   </p>
-                  <p className="text-sm font-bold text-gray-900">
+                  <p className="text-sm font-semibold text-gray-900">
                     #INV-{String(item.id).padStart(5, "0")}
                   </p>
                 </div>
@@ -495,7 +495,7 @@ export default function ViewInventory() {
                   <p className="text-[10px] text-gray-400 font-medium uppercase italic">
                     Last Activity Log
                   </p>
-                  <p className="text-sm font-bold text-gray-900">
+                  <p className="text-sm font-semibold text-gray-900">
                     {formatDate(item.entryDate)}
                   </p>
                 </div>
@@ -525,7 +525,7 @@ export default function ViewInventory() {
                       <p className="text-[10px] text-gray-400 font-medium uppercase italic">
                         Soonest Batch Expiry
                       </p>
-                      <p className="text-sm font-bold text-gray-900">
+                      <p className="text-sm font-semibold text-gray-900">
                         {formatDate(item.expiryDate)}
                       </p>
                     </div>
@@ -537,7 +537,7 @@ export default function ViewInventory() {
                     {getDaysUntilExpiry(item.expiryDate) <= 30 && (
                       <AlertTriangle className="w-5 h-5 animate-pulse" />
                     )}
-                    <span className="text-sm font-bold uppercase tracking-widest">
+                    <span className="text-sm font-semibold uppercase tracking-widest">
                       {expiryStatus.label}
                     </span>
                   </div>
@@ -547,7 +547,7 @@ export default function ViewInventory() {
                   <div className="p-3 rounded-full bg-gray-50 inline-block mb-3 border border-gray-100">
                     <Clock className="w-6 h-6 text-gray-300" />
                   </div>
-                  <p className="text-gray-400 text-xs font-bold uppercase">
+                  <p className="text-gray-400 text-xs font-semibold uppercase">
                     No Perishable Risk Detected
                   </p>
                 </div>

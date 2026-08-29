@@ -82,11 +82,11 @@ export default function UserList({ users, onEdit, onDelete }) {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {user.lastLoginAt ? (
+                    {(user.lastLogin || user.lastLoginAt) ? (
                       <>
-                        {new Date(user.lastLoginAt).toLocaleDateString()}
+                        {new Date(user.lastLogin || user.lastLoginAt).toLocaleDateString()}
                         <span className="text-xs text-gray-400 ml-1">
-                          {new Date(user.lastLoginAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                          {new Date(user.lastLogin || user.lastLoginAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                         </span>
                       </>
                     ) : (

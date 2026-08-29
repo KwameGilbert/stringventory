@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FileText, Package, AlertCircle, CheckCircle } from "lucide-react";
 import PurchasesHeader from "../../../components/dashboard/Purchases/PurchasesHeader";
 import PurchasesTable from "../../../components/dashboard/Purchases/PurchasesTable";
@@ -248,12 +248,12 @@ export default function Purchases() {
         {/* Total Purchases */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-blue-50">
+            <div className="p-2.5 rounded-xl bg-blue-50">
               <FileText className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <p className="text-sm text-gray-500">Total Purchases</p>
-              <p className="text-2xl font-bold text-gray-900">{totalPurchases}</p>
+              <p className="text-2xl font-medium text-gray-900">{totalPurchases}</p>
             </div>
           </div>
         </div>
@@ -261,12 +261,12 @@ export default function Purchases() {
         {/* Pending */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-gray-50">
+            <div className="p-2.5 rounded-xl bg-gray-50">
               <AlertCircle className="w-5 h-5 text-gray-600" />
             </div>
             <div>
               <p className="text-sm text-gray-500">Pending</p>
-              <p className="text-2xl font-bold text-gray-900">{pendingPurchases}</p>
+              <p className="text-2xl font-medium text-gray-900">{pendingPurchases}</p>
             </div>
           </div>
         </div>
@@ -274,12 +274,12 @@ export default function Purchases() {
         {/* Partial */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-amber-50">
+            <div className="p-2.5 rounded-xl bg-amber-50">
               <Package className="w-5 h-5 text-amber-600" />
             </div>
             <div>
               <p className="text-sm text-gray-500">Partial</p>
-              <p className="text-2xl font-bold text-gray-900">{partialPurchases}</p>
+              <p className="text-2xl font-medium text-gray-900">{partialPurchases}</p>
             </div>
           </div>
         </div>
@@ -287,12 +287,12 @@ export default function Purchases() {
         {/* Received */}
         <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-emerald-50">
+            <div className="p-2.5 rounded-xl bg-emerald-50">
               <CheckCircle className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <p className="text-sm text-gray-500">Received</p>
-              <p className="text-2xl font-bold text-gray-900">{receivedPurchases}</p>
+              <p className="text-2xl font-medium text-gray-900">{receivedPurchases}</p>
             </div>
           </div>
         </div>

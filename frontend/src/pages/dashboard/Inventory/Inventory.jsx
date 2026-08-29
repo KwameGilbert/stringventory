@@ -261,7 +261,7 @@ export default function Inventory() {
   }
 
   return (
-    <div className="pb-8 animate-fade-in space-y-6 px-4 sm:px-0">
+    <div className="pb-8 animate-fade-in space-y-6 max-w-[1600px] mx-auto px-2 md:px-4 overflow-x-hidden">
       {/* Header */}
       <InventoryHeader
         searchQuery={searchQuery}
@@ -277,55 +277,37 @@ export default function Inventory() {
       />
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Total Entries */}
-        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl p-6 border border-blue-500/30 shadow-lg shadow-blue-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
-          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
-            <Package className="w-6 h-6" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#4F46E5] mb-3">
+            <Package className="w-4 h-4" />
           </div>
-          <div className="min-w-0 flex-1 z-10">
-            <p className="text-[11px] font-bold text-blue-100/90 uppercase tracking-wider mb-1">Total Batches</p>
-            <p className="text-2xl font-bold text-white truncate tracking-tight">{totalEntries}</p>
-          </div>
+          <h3 className="text-[22px] font-semibold text-slate-900 tracking-tight leading-none mb-0.5">{totalEntries}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Batches</p>
         </div>
 
-        {/* Total Units */}
-        <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-6 border border-emerald-500/30 shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
-          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
-            <Package className="w-6 h-6" />
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#00C49F] mb-3">
+            <Package className="w-4 h-4" />
           </div>
-          <div className="min-w-0 flex-1 z-10">
-            <p className="text-[11px] font-bold text-emerald-100/90 uppercase tracking-wider mb-1">Total Stock</p>
-            <p className="text-2xl font-bold text-white truncate tracking-tight">{totalUnits.toLocaleString()}</p>
-          </div>
+          <h3 className="text-[22px] font-semibold text-slate-900 tracking-tight leading-none mb-0.5">{totalUnits.toLocaleString()}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Stock</p>
         </div>
 
-        {/* Total Value */}
-        <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-6 border border-purple-500/30 shadow-lg shadow-purple-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
-          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
-            <DollarSign className="w-6 h-6" />
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#8B5CF6] mb-3">
+            <DollarSign className="w-4 h-4" />
           </div>
-          <div className="min-w-0 flex-1 z-10">
-            <p className="text-[11px] font-bold text-purple-100/90 uppercase tracking-wider mb-1">Total Value</p>
-            <p className="text-2xl font-bold text-white truncate tracking-tight">{formatCurrency(totalValue)}</p>
-          </div>
+          <h3 className="text-[22px] font-semibold text-slate-900 tracking-tight leading-none mb-0.5">{formatCurrency(totalValue)}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Value</p>
         </div>
 
-        {/* Expiring Soon */}
-        <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl p-6 border border-orange-500/30 shadow-lg shadow-orange-500/20 transition-all duration-300 hover:scale-[1.02] flex items-center gap-4.5 overflow-hidden relative group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-500"></div>
-          <div className="p-3.5 rounded-xl bg-white/20 backdrop-blur-md text-white shrink-0 z-10 shadow-sm">
-            <Clock className="w-6 h-6" />
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#E11D48] mb-3">
+            <Clock className="w-4 h-4" />
           </div>
-          <div className="min-w-0 flex-1 z-10">
-            <p className="text-[11px] font-bold text-amber-100/90 uppercase tracking-wider mb-1">Expiring Soon</p>
-            <p className="text-2xl font-bold text-white truncate tracking-tight">
-              {expiringCount} <span className="text-xs font-semibold text-amber-100/80 font-normal ml-1">batches</span>
-            </p>
-          </div>
+          <h3 className="text-[22px] font-semibold text-slate-900 tracking-tight leading-none mb-0.5">{expiringCount}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Expiring Soon</p>
         </div>
       </div>
 

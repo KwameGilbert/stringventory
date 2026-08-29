@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { CreditCard, RefreshCw } from "lucide-react";
 import {
   PieChart,
@@ -7,8 +7,6 @@ import {
   ResponsiveContainer,
   Tooltip
 } from "recharts";
-import analyticsService from "../../../services/business/analyticsService";
-import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 import { useCurrency } from "../../../utils/currencyUtils";
 
 const MOCK_PAYMENT_DATA = [
@@ -18,58 +16,30 @@ const MOCK_PAYMENT_DATA = [
   { paymentMethod: "Bank Transfer", revenue: 8900 },
 ];
 
-const PaymentDistribution = ({ dateRange }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+const PaymentDistribution = ({ dashboardData, dashboardLoading, dateRange }) => {
   const { formatPrice } = useCurrency();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const params = getDashboardDateParams(dateRange);
-        const response = await analyticsService.getDashboardOverview(params);
-        const payload = response?.data || response || {};
-        const dashboardData = payload?.data || payload;
-        
-        const rawDistribution = dashboardData?.charts?.revenueByPaymentMethod || [];
-        const distribution = rawDistribution.length > 0 ? rawDistribution : MOCK_PAYMENT_DATA;
-
-        const normalizedData = distribution.map(item => {
-          const rawMethod = item.paymentMethod || "Unknown";
-          const name = String(rawMethod).replace(/_/g, " ").trim();
-          return {
-            name: name.charAt(0).toUpperCase() + name.slice(1),
-            value: Math.abs(Number(item.revenue || 0)),
-          };
-        });
-
-        const colors = ["#10b981", "#6366f1", "#f59e0b", "#ec4899", "#8b5cf6", "#3b82f6"];
-        const enhancedData = normalizedData.map((item, index) => ({
-          ...item,
-          color: colors[index % colors.length]
-        }));
-        setData(enhancedData);
-      } catch (err) {
-        console.error("Error fetching payment distribution analytics", err);
-        const fallback = MOCK_PAYMENT_DATA.map((item, idx) => ({
-          name: item.paymentMethod,
-          value: item.revenue,
-          color: ["#10b981", "#6366f1", "#f59e0b", "#ec4899"][idx]
-        }));
-        setData(fallback);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [dateRange]);
+  // Derive payment breakdown from shared dashboardData prop — no separate fetch needed
+  const data = useMemo(() => {
+    const rawDistribution = dashboardData?.charts?.revenueByPaymentMethod || [];
+    const distribution = rawDistribution.length > 0 ? rawDistribution : MOCK_PAYMENT_DATA;
+    const colors = ["#10b981", "#6366f1", "#f59e0b", "#ec4899", "#8b5cf6", "#3b82f6"];
+    return distribution.map((item, index) => {
+      const rawMethod = item.paymentMethod || "Unknown";
+      const name = String(rawMethod).replace(/_/g, " ").trim();
+      return {
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        value: Math.abs(Number(item.revenue || 0)),
+        color: colors[index % colors.length],
+      };
+    });
+  }, [dashboardData]);
 
   const totalValue = data.reduce((acc, item) => acc + item.value, 0);
 
   // Replaced local formatCurrency with useCurrency's formatPrice logic
 
-  if (loading) {
+  if (dashboardLoading) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-6 h-[400px] flex items-center justify-center shadow-xs">
         <RefreshCw className="w-8 h-8 text-slate-300 animate-spin" />

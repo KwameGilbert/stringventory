@@ -2,9 +2,6 @@ import { useState } from "react";
 import { Eye, Edit2, Trash2, Package, AlertTriangle, Image, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCurrency } from "../../../utils/currencyUtils";
-
-const ITEMS_PER_PAGE = 5;
-
 const renderText = (value, fallback = "—") => {
   if (typeof value === "string" || typeof value === "number") return String(value);
   if (value && typeof value === "object") {
@@ -16,11 +13,12 @@ const renderText = (value, fallback = "—") => {
 const ProductsTable = ({ products, onDelete, canManage = true, viewMode = "list" }) => {
   const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Pagination logic
-  const totalPages = Math.ceil(products.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedProducts = products.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedProducts = products.slice(startIndex, startIndex + itemsPerPage);
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -373,11 +371,28 @@ const ProductsTable = ({ products, onDelete, canManage = true, viewMode = "list"
       
       {/* Universal Pagination Footer */}
       <div className="bg-white rounded-2xl shadow-xs border border-slate-200 p-4 flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-        <p className="text-sm font-medium text-slate-500">
-          Showing <span className="font-semibold text-slate-800">{products.length === 0 ? 0 : startIndex + 1}</span> to{" "}
-          <span className="font-semibold text-slate-800">{Math.min(startIndex + ITEMS_PER_PAGE, products.length)}</span> of{" "}
-          <span className="font-semibold text-slate-800">{products.length}</span> products
-        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            Showing <span className="text-slate-900 font-bold">{products.length === 0 ? 0 : startIndex + 1}</span> to{" "}
+            <span className="text-slate-900 font-bold">{Math.min(startIndex + itemsPerPage, products.length)}</span> of{" "}
+            <span className="text-slate-900 font-bold">{products.length}</span> products
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Show</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500/30"
+            >
+              {[5, 10, 20, 50].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+        </div>
         
         {totalPages > 1 && (
           <div className="flex items-center gap-1.5 shadow-2xs p-1 bg-slate-50 rounded-xl border border-slate-200/80">

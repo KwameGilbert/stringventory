@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Search, Mail, MessageSquare, ExternalLink, Calendar, CheckCircle, AlertCircle, Clock } from "lucide-react";
 import messagingService from "../../../services/business/messagingService";
 import { showError } from "../../../utils/alerts";
@@ -97,7 +97,7 @@ export default function MessageHistory({ onViewDetails }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 h-full flex flex-col">
       <div className="p-6 border-b border-gray-100">
-        <h2 className="font-bold text-gray-900 text-lg mb-4">Message History</h2>
+        <h2 className="font-medium text-gray-900 text-lg mb-4">Message History</h2>
         
         <div className="flex gap-4">
           <div className="relative flex-1">
@@ -126,12 +126,12 @@ export default function MessageHistory({ onViewDetails }) {
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-50/50 sticky top-0 z-10 w-full">
             <tr>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Message</th>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">Type</th>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">Recipients</th>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">Status</th>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">Date</th>
-              <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider w-20"></th>
+              <th className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+              <th className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Type</th>
+              <th className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Recipients</th>
+              <th className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Status</th>
+              <th className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Date</th>
+              <th className="px-6 py-4 text-xs font-medium text-gray-500 uppercase tracking-wider w-20"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -146,7 +146,7 @@ export default function MessageHistory({ onViewDetails }) {
                     {msg.type.split(',').map((type, idx) => {
                       const cleanType = type.trim().toUpperCase();
                       return (
-                        <span key={idx} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        <span key={idx} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
                           cleanType === 'SMS' ? 'bg-indigo-50 text-indigo-700' : 'bg-orange-50 text-orange-700'
                         }`}>
                           {cleanType === 'SMS' ? <MessageSquare size={10} /> : <Mail size={10} />}

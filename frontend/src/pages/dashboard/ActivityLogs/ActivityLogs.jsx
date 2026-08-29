@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Activity } from 'lucide-react';
 import ActivityLogsDashboard from '../../../components/dashboard/Dashboard/ActivityLogsDashboard';
 
@@ -13,8 +13,8 @@ export default function ActivityLogs() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 rounded-lg">
+          <h1 className="text-3xl font-medium text-gray-900 flex items-center gap-3">
+            <div className="p-2 bg-emerald-100 rounded-xl">
               <Activity size={28} className="text-emerald-600" />
             </div>
             Activity Logs

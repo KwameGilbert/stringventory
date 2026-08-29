@@ -236,55 +236,37 @@ export default function Products() {
         setViewMode={setViewMode}
       />
 
-      {/* Premium Gradient Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-        {/* Total Products Card */}
-        <div className="rounded-2xl p-6 bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-1 group">
-          <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="p-3.5 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner border border-white/20 flex items-center justify-center">
-              <Package className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-blue-100 uppercase tracking-wider opacity-90">Total Catalog</p>
-              <p className="text-3xl font-semibold mt-0.5 tracking-tight">{totalProducts}</p>
-            </div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in">
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#4F46E5] mb-3">
+            <Package className="w-4 h-4" />
           </div>
+          <h3 className="text-[22px] font-semibold text-slate-900 tracking-tight leading-none mb-0.5">{totalProducts}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Catalog</p>
         </div>
 
-        {/* Active Products Card */}
-        <div className="rounded-2xl p-6 bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-1 group">
-          <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="p-3.5 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner border border-white/20 flex items-center justify-center">
-              <CheckCircle className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-emerald-100 uppercase tracking-wider opacity-90">Active Products</p>
-              <p className="text-3xl font-semibold mt-0.5 tracking-tight">{activeProducts}</p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#00C49F] mb-3">
+            <CheckCircle className="w-4 h-4" />
           </div>
+          <h3 className="text-[22px] font-semibold text-slate-900 tracking-tight leading-none mb-0.5">{activeProducts}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Active Products</p>
         </div>
 
-        {/* Low Stock Items Card */}
-        <div className="rounded-2xl p-6 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/30 hover:-translate-y-1 group sm:col-span-2 lg:col-span-1">
-          <div className="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="p-3.5 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner border border-white/20 flex items-center justify-center">
-              <AlertTriangle className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-amber-100 uppercase tracking-wider opacity-90">Stock Warnings</p>
-              <div className="flex items-baseline gap-2 mt-0.5">
-                <p className="text-3xl font-semibold tracking-tight">{lowStockProducts}</p>
-                {outOfStock > 0 && (
-                  <span className="text-xs bg-white/20 backdrop-blur-md text-white font-semibold px-2.5 py-1 rounded-full border border-white/20 shadow-xs">
-                    {outOfStock} out of stock
-                  </span>
-                )}
-              </div>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#F59E0B] mb-3">
+            <AlertTriangle className="w-4 h-4" />
           </div>
+          <div className="flex items-baseline gap-2 mb-0.5">
+            <h3 className="text-[22px] font-semibold text-slate-900 tracking-tight leading-none">{lowStockProducts}</h3>
+            {outOfStock > 0 && (
+              <span className="text-[10px] font-bold uppercase bg-rose-100 text-rose-700 px-2 py-0.5 rounded-md border border-rose-200">
+                {outOfStock} out of stock
+              </span>
+            )}
+          </div>
+          <p className="text-sm font-medium text-slate-700 mb-1">Stock Warnings</p>
         </div>
       </div>
 

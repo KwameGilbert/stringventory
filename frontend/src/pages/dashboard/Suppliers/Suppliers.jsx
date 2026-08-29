@@ -154,57 +154,37 @@ export default function Suppliers() {
 
   return (
     <div className="pb-8 animate-fade-in space-y-6">
-      {/* KPI Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Total Suppliers Card */}
-        <div className="p-3 rounded-2xl bg-linear-to-br from-emerald-600 to-teal-700 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute -right-6 -bottom-6 w-22 h-22 bg-white/10 rounded-full blur-xl pointer-events-none" />
-          <div className="flex items-center justify-between relative z-10">
-            <span className="text-emerald-100 font-semibold text-sm uppercase tracking-wider">Total Suppliers</span>
-            <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
-              <Truck className="w-6 h-6 text-white" />
-            </div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in">
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#00C49F] mb-3">
+            <Truck className="w-4 h-4" />
           </div>
-          <div className="relative z-10">
-            <h3 className="text-3xl font-semibold tracking-tight">{totalSuppliers}</h3>
-            <p className="text-emerald-100/80 text-xs font-medium mt-1">Partners & distributors</p>
-          </div>
+          <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none mb-0.5">{totalSuppliers}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Suppliers</p>
         </div>
 
-        {/* Active Partners Card */}
-        <div className="p-3 rounded-2xl bg-linear-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-500/20 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute -right-6 -bottom-6 w-22 h-22 bg-white/10 rounded-full blur-xl pointer-events-none" />
-          <div className="flex items-center justify-between relative z-10">
-            <span className="text-blue-100 font-semibold text-sm uppercase tracking-wider">Active Partners</span>
-            <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
-              <CheckCircle2 className="w-6 h-6 text-white" />
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#4F46E5] mb-3">
+            <CheckCircle2 className="w-4 h-4" />
           </div>
-          <div className="relative z-10 flex items-baseline justify-between">
-            <div>
-              <h3 className="text-3xl font-semibold tracking-tight">{activeSuppliers}</h3>
-              <p className="text-blue-100/80 text-xs font-medium mt-1">Active trading accounts</p>
-            </div>
-            <div className="text-right">
-              <span className="text-lg font-semibold text-white/90">{totalSuppliers - activeSuppliers}</span>
-              <p className="text-blue-100/80 text-xs font-medium mt-1">Inactive</p>
-            </div>
+          <div className="flex items-baseline gap-2 mb-0.5">
+            <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none">{activeSuppliers}</h3>
+            {totalSuppliers - activeSuppliers > 0 && (
+              <span className="text-[10px] font-medium uppercase bg-rose-100 text-rose-700 px-2 py-0.5 rounded-md border border-rose-200">
+                {totalSuppliers - activeSuppliers} Inactive
+              </span>
+            )}
           </div>
+          <p className="text-sm font-medium text-slate-700 mb-1">Active Partners</p>
         </div>
 
-        {/* Managed Products Card */}
-        <div className="p-3 rounded-2xl bg-linear-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute -right-6 -bottom-6 w-22 h-22 bg-white/10 rounded-full blur-xl pointer-events-none" />
-          <div className="flex items-center justify-between relative z-10">
-            <span className="text-amber-100 font-semibold text-sm uppercase tracking-wider">Supplied Products</span>
-            <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
-              <Package className="w-6 h-6 text-white" />
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#F59E0B] mb-3">
+            <Package className="w-4 h-4" />
           </div>
-          <div className="relative z-10">
-            <h3 className="text-3xl font-semibold tracking-tight">{totalProducts}</h3>
-            <p className="text-amber-100/80 text-xs font-medium mt-1">Catalog items supplied</p>
-          </div>
+          <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none mb-0.5">{totalProducts}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Supplied Products</p>
         </div>
       </div>
 

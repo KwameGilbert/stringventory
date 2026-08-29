@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Activity,
   Settings,
@@ -196,18 +196,18 @@ export default function ActivityLogsDashboard() {
     <div className="space-y-6">
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
           <p className="text-sm text-gray-600 font-medium">Active Users</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{data.summary.activeUsers}</p>
+          <p className="text-3xl font-medium text-gray-900 mt-2">{data.summary.activeUsers}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
           <p className="text-sm text-gray-600 font-medium">Total Actions</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{data.summary.totalActions.toLocaleString()}</p>
+          <p className="text-3xl font-medium text-gray-900 mt-2">{data.summary.totalActions.toLocaleString()}</p>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
           <p className="text-sm text-gray-600 font-medium">Most Active User</p>
           <div className="mt-2">
-            <p className="font-semibold text-gray-900">{data.summary.mostActiveUser?.name || 'N/A'}</p>
+            <p className="font-medium text-gray-900">{data.summary.mostActiveUser?.name || 'N/A'}</p>
             <p className="text-xs text-gray-600 mt-1">
               {data.summary.mostActiveUser?.actionCount} actions • {data.summary.mostActiveUser?.primaryModule}
             </p>
@@ -216,7 +216,7 @@ export default function ActivityLogsDashboard() {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+      <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
         <div className="flex flex-col md:flex-row gap-3">
           {/* Search Input */}
           <div className="flex-1 relative">
@@ -227,14 +227,14 @@ export default function ActivityLogsDashboard() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
           {/* Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <Settings size={16} />
             Filters
@@ -244,7 +244,7 @@ export default function ActivityLogsDashboard() {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
+            className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors"
           >
             Search
           </button>
@@ -252,14 +252,14 @@ export default function ActivityLogsDashboard() {
 
         {/* Advanced Filters */}
         {showFilters && (
-          <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-1 md:grid-cols-4 gap-3">
             {/* Module Filter */}
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Module</label>
               <select
                 value={filters.module}
                 onChange={(e) => handleFilterChange('module', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">All Modules</option>
                 <option value="Inventory">Inventory</option>
@@ -278,7 +278,7 @@ export default function ActivityLogsDashboard() {
               <select
                 value={filters.severity}
                 onChange={(e) => handleFilterChange('severity', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">All Severity</option>
                 <option value="info">Info</option>
@@ -294,7 +294,7 @@ export default function ActivityLogsDashboard() {
                 type="date"
                 value={filters.startDate}
                 onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
@@ -305,7 +305,7 @@ export default function ActivityLogsDashboard() {
                 type="date"
                 value={filters.endDate}
                 onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
@@ -313,7 +313,7 @@ export default function ActivityLogsDashboard() {
             <div className="flex items-end">
               <button
                 onClick={resetFilters}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Reset
               </button>
@@ -323,10 +323,10 @@ export default function ActivityLogsDashboard() {
       </div>
 
       {/* Activity Logs Table */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+            <h3 className="font-medium text-gray-900 flex items-center gap-2">
               <Activity size={18} className="text-emerald-600" />
               Activity Logs
             </h3>
@@ -368,14 +368,14 @@ export default function ActivityLogsDashboard() {
         {!loading && !error && data.logs.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Time</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Module</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Action</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Details</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Severity</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700">Time</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700">User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700">Module</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700">Action</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700">Details</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700">Severity</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -424,7 +424,7 @@ export default function ActivityLogsDashboard() {
 
         {/* Pagination */}
         {!loading && !error && data.logs.length > 0 && (
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
             <div className="text-sm text-gray-600">
               Page {data.pagination.page} of {Math.ceil(data.pagination.total / data.pagination.limit)}
             </div>
@@ -432,14 +432,14 @@ export default function ActivityLogsDashboard() {
               <button
                 onClick={() => handlePagination(data.pagination.page - 1)}
                 disabled={data.pagination.page === 1}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-2 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Previous
               </button>
               <button
                 onClick={() => handlePagination(data.pagination.page + 1)}
                 disabled={data.pagination.page >= Math.ceil(data.pagination.total / data.pagination.limit)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-2 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

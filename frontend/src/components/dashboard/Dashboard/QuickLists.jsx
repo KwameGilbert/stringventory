@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Package, TrendingDown, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import orderService from "../../../services/business/orderService";
+
 import { productService } from "../../../services/business/productService";
 import { useCurrency } from "../../../utils/currencyUtils";
 
@@ -15,51 +15,48 @@ const ProductImage = ({ src, alt, fallbackIcon: Icon }) => (
   </div>
 );
 
-const QuickLists = () => {
-  const [recentOrders, setRecentOrders] = useState([]);
+const QuickLists = ({ recentOrders: recentOrdersProp = [] }) => {
   const [lowStock, setLowStock] = useState([]);
   const [expiring, setExpiring] = useState([]);
   const [loading, setLoading] = useState(true);
   const { formatPrice } = useCurrency();
 
+  // Map orders from the shared prop passed in from Dashboard.jsx
+  const recentOrders = useMemo(() => {
+    return recentOrdersProp.slice(0, 5).map((order) => ({
+      id: order.id,
+      orderNumber: order.orderNumber || order.id,
+      customerName: order.customer?.name || order.customerName || "Unknown Customer",
+      totalAmount: Number(order.total || 0),
+      status: order.status || "pending",
+      currency: order.currency || "GHS",
+      image: order.items?.[0]?.product?.image || order.items?.[0]?.image || order.image,
+    }));
+  }, [recentOrdersProp]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [ordersRes, stockRes, expiringRes] = await Promise.all([
-          orderService.getOrders({ limit: 5, sortBy: "date", sortOrder: "desc" }),
+        // Only fetch stock and expiring data — orders arrive via prop from Dashboard.jsx
+        const [stockRes, expiringRes] = await Promise.all([
           productService.getLowStockProducts({ limit: 5 }),
           productService.getExpiringProducts({ limit: 5 }),
         ]);
 
         const extractList = (response, key) => {
           const payload = response?.data || response || {};
-
           if (Array.isArray(payload)) return payload;
           if (Array.isArray(payload[key])) return payload[key];
           if (Array.isArray(payload.items)) return payload.items;
           if (Array.isArray(payload.results)) return payload.results;
           if (Array.isArray(payload.data)) return payload.data;
           if (Array.isArray(payload.data?.[key])) return payload.data[key];
-
           return [];
         };
 
-        const orders = extractList(ordersRes, "orders");
         const lowStockItems = extractList(stockRes, "products");
         const expiringItems = extractList(expiringRes, "products");
 
-        const ordersCurrency = ordersRes?.currency || ordersRes?.data?.currency || "GHS";
-        const mappedOrders = orders.slice(0, 5).map(order => ({
-          id: order.id,
-          orderNumber: order.orderNumber || order.id,
-          customerName: order.customer?.name || order.customerName || "Unknown Customer",
-          totalAmount: Number(order.total || 0),
-          status: order.status || "pending",
-          currency: order.currency || ordersCurrency,
-          image: order.items?.[0]?.product?.image || order.items?.[0]?.image || order.image,
-        }));
-
-        setRecentOrders(mappedOrders);
         setLowStock(lowStockItems.slice(0, 5).map((item) => ({
           ...item,
           productName: item.productName || item.name || "Product",
@@ -77,7 +74,6 @@ const QuickLists = () => {
             const target = new Date(expiryDate);
             daysUntilExpiry = Math.max(0, Math.ceil((target - now) / (1000 * 60 * 60 * 24)));
           }
-
           return {
             ...item,
             productName: item.productName || item.name || "Product",
@@ -89,7 +85,6 @@ const QuickLists = () => {
         }));
       } catch (error) {
         console.error("Error fetching quick lists:", error);
-        setRecentOrders([]);
         setLowStock([]);
         setExpiring([]);
       } finally {

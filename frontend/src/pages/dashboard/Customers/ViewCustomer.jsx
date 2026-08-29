@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, Edit2, Trash2, User, Phone, Mail, MapPin, Building2, 
@@ -107,22 +107,22 @@ export default function ViewCustomer() {
         <div className="p-2 rounded-xl bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
           <ArrowLeft size={18} />
         </div>
-        <span className="font-bold text-xs uppercase tracking-widest">Back to Directory</span>
+        <span className="font-medium text-xs uppercase tracking-widest">Back to Directory</span>
       </button>
 
       {/* Main Profile Header */}
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 relative overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50/50 rounded-bl-full -mr-20 -mt-20 blur-3xl opacity-50"></div>
         
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="flex items-start gap-6">
-                <div className={`w-24 h-24 rounded-3xl bg-linear-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white text-3xl font-semibold shadow-2xl shadow-blue-500/20`}>
+                <div className={`w-24 h-24 rounded-xl bg-linear-to-br from-blue-500 to-cyan-600 flex items-center justify-center text-white text-3xl font-medium shadow-2xl shadow-blue-500/20`}>
                     {getInitials(customer.name)}
                 </div>
                 <div>
                     <div className="flex flex-wrap items-center gap-3 mb-2">
-                        <h1 className="text-3xl font-semibold text-gray-900 tracking-tight">{customer.name}</h1>
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
+                        <h1 className="text-3xl font-medium text-gray-900 tracking-tight">{customer.name}</h1>
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-medium uppercase tracking-widest ${
                             customer.status === 'active' 
                             ? 'bg-emerald-100 text-emerald-700' 
                             : 'bg-gray-100 text-gray-500'
@@ -130,7 +130,7 @@ export default function ViewCustomer() {
                             {customer.status || 'active'}
                         </span>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-500 font-bold tracking-tight uppercase">
+                    <div className="flex items-center gap-4 text-sm text-gray-500 font-medium tracking-tight uppercase">
                         <span className="flex items-center gap-2"><MapPin size={14} className="text-gray-400" /> {customer.city || 'Primary Region'}</span>
                         <span className="flex items-center gap-2"><Calendar size={14} className="text-gray-400" /> Member since {new Date(customer.createdAt).getFullYear()}</span>
                     </div>
@@ -140,14 +140,14 @@ export default function ViewCustomer() {
             <div className="flex items-center gap-3">
                 <Link
                     to={`/dashboard/customers/${id}/edit`}
-                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-2xl transition-all font-bold text-sm shadow-xl shadow-gray-900/10 active:scale-95"
+                    className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl transition-all font-medium text-sm shadow-xl shadow-gray-900/10 active:scale-95"
                 >
                     <Edit2 size={16} />
                     Update Profile
                 </Link>
                 <button
                     onClick={handleDelete}
-                    className="p-3 border border-rose-100 text-rose-600 hover:bg-rose-50 rounded-2xl transition-all active:scale-95 shadow-sm shadow-rose-500/5"
+                    className="p-3 border border-rose-100 text-rose-600 hover:bg-rose-50 rounded-xl transition-all active:scale-95 shadow-sm shadow-rose-500/5"
                     title="Terminate Profile"
                 >
                     <Trash2 size={20} />
@@ -162,36 +162,36 @@ export default function ViewCustomer() {
         <div className="lg:col-span-2 space-y-6">
             {/* Impact Metrics */}
             <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600">
+                        <div className="p-3 rounded-xl bg-indigo-50 text-indigo-600">
                             <ShoppingBag className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Conversion</p>
-                            <p className="text-2xl font-semibold text-gray-900 tracking-tight leading-none">{customer.totalOrders} <span className="text-xs font-bold text-gray-400">Orders</span></p>
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-1">Total Conversion</p>
+                            <p className="text-2xl font-medium text-gray-900 tracking-tight leading-none">{customer.totalOrders} <span className="text-xs font-medium text-gray-400">Orders</span></p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+                <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
+                        <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600">
                             <DollarSign className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Lifetime Value</p>
-                            <p className="text-2xl font-semibold text-emerald-600 tracking-tight leading-none">{formatPrice(customer.totalSpent, responseCurrency)}</p>
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-1">Lifetime Value</p>
+                            <p className="text-2xl font-medium text-emerald-600 tracking-tight leading-none">{formatPrice(customer.totalSpent, responseCurrency)}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Order History Detail */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-8 py-5 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900 uppercase text-xs tracking-widest">Global Order History</h3>
-                    <div className="px-3 py-1 bg-white border border-gray-200 rounded-full text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                    <h3 className="font-medium text-gray-900 uppercase text-xs tracking-widest">Global Order History</h3>
+                    <div className="px-3 py-1 bg-white border border-gray-200 rounded-full text-[10px] font-medium text-gray-500 uppercase tracking-widest">
                         {orders.length} Cumulative
                     </div>
                 </div>
@@ -201,17 +201,17 @@ export default function ViewCustomer() {
                         {orders.slice(0, 8).map((order) => (
                             <div key={order.id} className="px-8 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors group">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 rounded-2xl bg-gray-50 text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                                    <div className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
                                         <Clock size={18} />
                                     </div>
                                     <div>
-                                        <p className="font-mono text-sm font-semibold text-gray-900 tracking-tighter uppercase mb-0.5">#{order.orderNumber || order.id}</p>
-                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-tight">{order.orderDate ? formatDate(order.orderDate) : "—"}</p>
+                                        <p className="font-mono text-sm font-medium text-gray-900 tracking-tighter uppercase mb-0.5">#{order.orderNumber || order.id}</p>
+                                        <p className="text-xs font-medium text-gray-400 uppercase tracking-tight">{order.orderDate ? formatDate(order.orderDate) : "—"}</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-lg font-semibold text-gray-900 tracking-tighter mb-0.5">{formatPrice(order.total ?? 0, order.currency)}</p>
-                                    <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                                    <p className="text-lg font-medium text-gray-900 tracking-tighter mb-0.5">{formatPrice(order.total ?? 0, order.currency)}</p>
+                                    <span className={`text-[10px] font-medium uppercase tracking-widest ${
                                         order.status === 'fulfilled' ? 'text-emerald-600' :
                                         order.status === 'pending' ? 'text-amber-600' :
                                         'text-gray-400'
@@ -225,7 +225,7 @@ export default function ViewCustomer() {
                 ) : (
                     <div className="py-20 text-center">
                         <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-gray-100" />
-                        <p className="text-gray-400 font-bold text-sm uppercase tracking-widest">No Activity Record Established</p>
+                        <p className="text-gray-400 font-medium text-sm uppercase tracking-widest">No Activity Record Established</p>
                     </div>
                 )}
             </div>
@@ -234,66 +234,66 @@ export default function ViewCustomer() {
         {/* Profiles Sidebar: Meta & Contact */}
         <div className="space-y-6">
             {/* Contact Intelligence */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-50 bg-gray-50/30">
-                    <h3 className="font-bold text-gray-900 uppercase text-[10px] tracking-widest">Connect Points</h3>
+                    <h3 className="font-medium text-gray-900 uppercase text-[10px] tracking-widest">Connect Points</h3>
                 </div>
                 <div className="p-6 space-y-6">
                     <div className="flex items-start gap-4">
-                        <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+                        <div className="p-3 rounded-xl bg-blue-50 text-blue-600">
                             <Phone size={18} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Direct Line</p>
-                            <p className="text-sm font-semibold text-gray-900 tracking-tight">{customer.phone || 'NO PHONE SAVED'}</p>
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-1">Direct Line</p>
+                            <p className="text-sm font-medium text-gray-900 tracking-tight">{customer.phone || 'NO PHONE SAVED'}</p>
                         </div>
                     </div>
 
                     <div className="flex items-start gap-4">
-                        <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600">
+                        <div className="p-3 rounded-xl bg-indigo-50 text-indigo-600">
                             <Mail size={18} />
                         </div>
                         <div className="min-w-0">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Email Node</p>
-                            <p className="text-sm font-bold text-gray-900 tracking-tight truncate">{customer.email || 'DIRECTIVE_PENDING'}</p>
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-1">Email Node</p>
+                            <p className="text-sm font-medium text-gray-900 tracking-tight truncate">{customer.email || 'DIRECTIVE_PENDING'}</p>
                         </div>
                     </div>
 
                     <div className="flex items-start gap-4">
-                        <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+                        <div className="p-3 rounded-xl bg-amber-50 text-amber-600">
                             <MapPin size={18} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Physical Location</p>
-                            <p className="text-sm font-bold text-gray-900 tracking-tight leading-snug">{customer.address || 'UNDEFINED LOCATION'}</p>
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-1">Physical Location</p>
+                            <p className="text-sm font-medium text-gray-900 tracking-tight leading-snug">{customer.address || 'UNDEFINED LOCATION'}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Lifecycle Audit */}
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-50 bg-gray-50/30">
-                    <h3 className="font-bold text-gray-900 uppercase text-[10px] tracking-widest">Lifecycle Audit</h3>
+                    <h3 className="font-medium text-gray-900 uppercase text-[10px] tracking-widest">Lifecycle Audit</h3>
                 </div>
                 <div className="p-6 space-y-6">
                     <div className="flex items-start gap-4">
-                        <div className="p-3 rounded-2xl bg-gray-50 text-gray-400">
+                        <div className="p-3 rounded-xl bg-gray-50 text-gray-400">
                             <Calendar size={18} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Onboarding Date</p>
-                            <p className="text-xs font-semibold text-gray-900 tracking-widest">{customer.createdAt ? formatDate(customer.createdAt) : 'UNTRACKED'}</p>
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-1">Onboarding Date</p>
+                            <p className="text-xs font-medium text-gray-900 tracking-widest">{customer.createdAt ? formatDate(customer.createdAt) : 'UNTRACKED'}</p>
                         </div>
                     </div>
 
                     <div className="flex items-start gap-4">
-                        <div className="p-3 rounded-2xl bg-gray-50 text-gray-400">
+                        <div className="p-3 rounded-xl bg-gray-50 text-gray-400">
                             <TrendingUp size={18} />
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Last Interaction</p>
-                            <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest leading-none">
+                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-1">Last Interaction</p>
+                            <p className="text-xs font-medium text-indigo-600 uppercase tracking-widest leading-none">
                                 {customer.lastOrderDate ? formatDate(customer.lastOrderDate) : 'No recent activity'}
                             </p>
                         </div>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   RefreshCw,
   Download,
@@ -215,59 +215,32 @@ export default function Transactions() {
         </div>
       </div>
 
-      {/* Immersive Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in-up">
-        {/* Inflow */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-emerald-50 rounded-2xl group-hover:scale-110 transition-transform">
-              <TrendingUp className="text-emerald-600 w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">
-                Total Inflow
-              </p>
-              <p className="text-2xl font-bold text-gray-900 tracking-tight">
-                {formatPrice(Math.abs(summary.totalInflow), responseCurrency)}
-              </p>
-            </div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in-up">
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#00C49F] mb-3">
+            <TrendingUp className="w-4 h-4" />
           </div>
+          <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none mb-0.5">{formatPrice(Math.abs(summary.totalInflow), responseCurrency)}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Inflow</p>
         </div>
 
-        {/* Outflow */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-rose-50 rounded-2xl group-hover:scale-110 transition-transform">
-              <TrendingDown className="text-rose-600 w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">
-                Total Outflow
-              </p>
-              <p className="text-2xl font-bold text-gray-900 tracking-tight">
-                {formatPrice(Math.abs(summary.totalOutflow), responseCurrency)}
-              </p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#F43F5E] mb-3">
+            <TrendingDown className="w-4 h-4" />
           </div>
+          <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none mb-0.5">{formatPrice(Math.abs(summary.totalOutflow), responseCurrency)}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Outflow</p>
         </div>
 
-        {/* Net */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-blue-50 rounded-2xl group-hover:scale-110 transition-transform">
-              <DollarSign className="text-blue-600 w-6 h-6" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">
-                Net Balance
-              </p>
-              <p
-                className={`text-2xl font-bold tracking-tight truncate ${summary.netProfitLoss >= 0 ? "text-gray-900" : "text-rose-600"}`}
-              >
-                {formatPrice(Math.abs(summary.netProfitLoss), responseCurrency)}
-              </p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#4F46E5] mb-3">
+            <DollarSign className="w-4 h-4" />
           </div>
+          <h3 className={`text-[22px] font-medium tracking-tight leading-none mb-0.5 truncate ${summary.netProfitLoss >= 0 ? "text-slate-900" : "text-rose-600"}`}>
+            {formatPrice(Math.abs(summary.netProfitLoss), responseCurrency)}
+          </h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Net Balance</p>
         </div>
       </div>
 

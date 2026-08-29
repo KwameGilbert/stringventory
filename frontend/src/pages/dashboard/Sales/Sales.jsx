@@ -1,9 +1,8 @@
-﻿import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Search, ShoppingCart, Plus, Minus, Trash2, CreditCard, DollarSign, Package, CheckCircle } from "lucide-react";
 import Swal from "sweetalert2";
 import { productService } from "../../../services/business/productService";
 import { isProductApproved } from "../../../utils/productApproval";
-import { useCurrency } from "../../../utils/currencyUtils";
 
 export default function Sales() {
   const [products, setProducts] = useState([]);
@@ -14,10 +13,9 @@ export default function Sales() {
   // Checkout State
   const [discount, setDiscount] = useState(0);
   const [taxRate, setTaxRate] = useState(0);
-  const [responseCurrency, setResponseCurrency] = useState("GHS");
 
-  const { formatPrice } = useCurrency();
-  const formatCurrency = (val) => formatPrice(val, responseCurrency);
+  // Force Ghana Cedis (GHS) for the POS page
+  const formatCurrency = (val) => new Intl.NumberFormat('en-GH', { style: 'currency', currency: 'GHS' }).format(Number(val) || 0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +31,6 @@ export default function Sales() {
               : [];
 
         const currency = payload.currency || payload.data?.currency || "GHS";
-        setResponseCurrency(currency);
 
         setProducts(
           list
@@ -127,13 +124,13 @@ export default function Sales() {
       {/* Left Column: Product Grid */}
       <div className="flex-1 flex flex-col border-r border-gray-200 bg-gray-50/50">
         {/* Search Header */}
-        <div className="p-4 bg-white border-b border-gray-200">
+        <div className="p-4 bg-white border-b border-gray-100">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -152,16 +149,16 @@ export default function Sales() {
                 <button
                   key={product.id}
                   onClick={() => addToCart(product)}
-                  className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-200 transition-all text-left flex flex-col h-full group"
+                  className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all text-left flex flex-col h-full group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <Package size={20} />
                   </div>
                   <h3 className="font-medium text-gray-900 line-clamp-2 mb-1">{product.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{product.sku || "SKU-???"}</p>
+                  <p className="text-sm font-medium text-gray-500 mb-2">{product.sku || "SKU-???"}</p>
                   <div className="mt-auto flex items-center justify-between">
                     <span className="font-bold text-gray-900">{formatCurrency(product.price || 5)}</span>
-                    <div className="w-6 h-6 rounded-full bg-gray-50 text-gray-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                    <div className="w-6 h-6 rounded-full bg-gray-50 text-gray-400 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                       <Plus size={14} />
                     </div>
                   </div>
@@ -221,24 +218,24 @@ export default function Sales() {
            {/* Controls */}
            <div className="grid grid-cols-2 gap-3 mb-2">
              <div>
-                <label className="text-xs text-gray-500 block mb-1">Discount</label>
+                <label className="text-xs font-medium text-gray-500 block mb-1">Discount</label>
                 <div className="relative">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-medium">GH₵</span>
                   <input 
                     type="number" 
                     value={discount} 
                     onChange={(e) => setDiscount(parseFloat(e.target.value) || 0)}
-                    className="w-full pl-5 pr-2 py-1.5 text-sm border border-gray-200 rounded-lg"
+                    className="w-full pl-6 pr-3 py-2 text-sm font-medium border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                   />
                 </div>
              </div>
              <div>
-                <label className="text-xs text-gray-500 block mb-1">Tax (%)</label>
+                <label className="text-xs font-medium text-gray-500 block mb-1">Tax (%)</label>
                 <input 
                     type="number" 
                     value={taxRate} 
                     onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
-                    className="w-full px-2 py-1.5 text-sm border border-gray-200 rounded-lg"
+                    className="w-full px-3 py-2 text-sm font-medium border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
                   />
              </div>
            </div>

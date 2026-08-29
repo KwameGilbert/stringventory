@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Plus, Edit2, Trash2, Mail, MessageSquare, Save, X, Sparkles } from "lucide-react";
 import messagingService from "../../../services/business/messagingService";
 import { showSuccess, showError, showLoading, closeLoading, confirmAction } from "../../../utils/alerts";
@@ -74,13 +74,13 @@ export default function TemplateManager({ templates, onUpdate }) {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Message Templates</h2>
+          <h2 className="text-xl font-medium text-gray-900">Message Templates</h2>
           <p className="text-gray-500 text-sm">Create and manage your campaign content</p>
         </div>
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-bold text-sm shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-medium text-sm shadow-sm"
           >
             <Plus size={18} />
             New Template
@@ -89,9 +89,9 @@ export default function TemplateManager({ templates, onUpdate }) {
       </div>
 
       {isAdding ? (
-        <form onSubmit={handleSubmit} className="bg-white border border-emerald-100 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
+        <form onSubmit={handleSubmit} className="bg-white border border-emerald-100 rounded-xl p-6 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-gray-900 flex items-center gap-2">
+            <h3 className="font-medium text-gray-900 flex items-center gap-2">
               <Sparkles size={18} className="text-amber-500" />
               {editingId ? "Edit Template" : "New Campaign Template"}
             </h3>
@@ -103,7 +103,7 @@ export default function TemplateManager({ templates, onUpdate }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Template Name</label>
+                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Template Name</label>
                 <input
                   required
                   type="text"
@@ -115,14 +115,14 @@ export default function TemplateManager({ templates, onUpdate }) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Preferred Channel</label>
+                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Preferred Channel</label>
                 <div className="flex gap-2">
                   {['email', 'sms', 'multi'].map(ch => (
                     <button
                       key={ch}
                       type="button"
                       onClick={() => setFormData({...formData, channel: ch})}
-                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-medium transition-all ${
                         formData.channel === ch 
                           ? "bg-emerald-50 border-emerald-200 text-emerald-700" 
                           : "bg-white border-gray-200 text-gray-400 hover:border-gray-300"
@@ -138,7 +138,7 @@ export default function TemplateManager({ templates, onUpdate }) {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Subject Line (Optional)</label>
+                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Subject Line (Optional)</label>
                 <input
                   type="text"
                   placeholder="Subject for email campaigns..."
@@ -150,7 +150,7 @@ export default function TemplateManager({ templates, onUpdate }) {
             </div>
 
             <div className="flex flex-col">
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Message Body</label>
+              <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 ml-1">Message Body</label>
               <textarea
                 required
                 placeholder="Support placeholders like {{firstName}}..."
@@ -168,13 +168,13 @@ export default function TemplateManager({ templates, onUpdate }) {
             <button
               type="button"
               onClick={resetForm}
-              className="px-6 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all font-bold text-sm"
+              className="px-6 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all font-medium text-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-8 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-bold text-sm shadow-lg shadow-emerald-200"
+              className="px-8 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-medium text-sm shadow-lg shadow-emerald-200"
             >
               <Save size={18} className="inline mr-2" />
               {editingId ? "Update Template" : "Save Template"}
@@ -184,13 +184,13 @@ export default function TemplateManager({ templates, onUpdate }) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {templates.map((template) => (
-            <div key={template.id} className="bg-white border border-gray-100 rounded-2xl p-5 hover:border-emerald-200 transition-all group flex flex-col shadow-sm">
+            <div key={template.id} className="bg-white border border-gray-100 rounded-xl p-5 hover:border-emerald-200 transition-all group flex flex-col shadow-sm">
               <div className="flex justify-between items-start mb-3">
                 <div className="flex items-center gap-2">
                   <div className={`p-2 rounded-lg ${template.channel === 'sms' ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'}`}>
                     {template.channel === 'sms' ? <MessageSquare size={16} /> : <Mail size={16} />}
                   </div>
-                  <h4 className="font-bold text-gray-900 group-hover:text-emerald-700 transition-colors">
+                  <h4 className="font-medium text-gray-900 group-hover:text-emerald-700 transition-colors">
                     {template.name}
                   </h4>
                 </div>
@@ -215,10 +215,10 @@ export default function TemplateManager({ templates, onUpdate }) {
               </p>
               
               <div className="flex items-center justify-between pt-3 border-t border-gray-50">
-                <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded uppercase">
+                <span className="text-[10px] font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded uppercase">
                   {template.channel || 'Email'}
                 </span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${template.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${template.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                   {template.isActive ? 'Active' : 'Inactive'}
                 </span>
               </div>
@@ -226,9 +226,9 @@ export default function TemplateManager({ templates, onUpdate }) {
           ))}
 
           {templates.length === 0 && (
-            <div className="col-span-full py-12 text-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100">
+            <div className="col-span-full py-12 text-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-100">
                <p className="text-gray-400 font-medium">No templates configured yet.</p>
-               <button onClick={() => setIsAdding(true)} className="text-emerald-600 font-bold text-sm mt-2 hover:underline">
+               <button onClick={() => setIsAdding(true)} className="text-emerald-600 font-medium text-sm mt-2 hover:underline">
                  Create your first template
                </button>
             </div>

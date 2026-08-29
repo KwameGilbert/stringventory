@@ -1,11 +1,10 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { MessageCircle, Clock, Send, Sparkles } from "lucide-react";
 import CustomerSelector from "../../../components/dashboard/Messaging/CustomerSelector";
 import Composer from "../../../components/dashboard/Messaging/Composer";
 import MessageHistory from "../../../components/dashboard/Messaging/MessageHistory";
 import MessageDetails from "../../../components/dashboard/Messaging/MessageDetails";
 import TemplateManager from "../../../components/dashboard/Messaging/TemplateManager";
-import SupportChat from "./components/SupportChat";
 import { showError, showSuccess, showLoading, closeLoading } from "../../../utils/alerts";
 import customerService from "../../../services/business/customerService";
 import messagingService from "../../../services/business/messagingService";
@@ -37,7 +36,7 @@ const normalizeCustomer = (customer) => {
 };
 
 export default function Messaging() {
-  const [activeTab, setActiveTab] = useState("support");
+  const [activeTab, setActiveTab] = useState("compose");
   
   // Campaign Logic
   const [customers, setCustomers] = useState([]);
@@ -45,9 +44,6 @@ export default function Messaging() {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [templates, setTemplates] = useState([]);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
-
-  // Support Chat Logic
-  const [isOnline] = useState(true);
 
   const [stagedTemplate, setStagedTemplate] = useState({ body: "", subject: "", channels: ["email"] });
 
@@ -139,28 +135,17 @@ export default function Messaging() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Messaging Center</h1>
+          <h1 className="text-2xl font-medium text-gray-900">Messaging Center</h1>
           <p className="text-gray-500 text-sm">Manage campaigns, templates and support</p>
         </div>
         
         {/* Tabs */}
         <div className="flex p-1 bg-gray-100 rounded-xl">
-           <button
-            onClick={() => setActiveTab("support")}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
-              activeTab === "support" 
-                ? "bg-white text-gray-900 shadow-sm" 
-                : "text-gray-500 hover:text-gray-900"
-            }`}
-          >
-            <MessageCircle size={18} />
-            Support Chat
-          </button>
           <button
             onClick={() => setActiveTab("compose")}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
               activeTab === "compose" 
-                ? "bg-white text-gray-900 shadow-sm" 
+                ? "bg-emerald-600 text-white shadow-md" 
                 : "text-gray-500 hover:text-gray-900"
             }`}
           >
@@ -171,7 +156,7 @@ export default function Messaging() {
             onClick={() => setActiveTab("templates")}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
               activeTab === "templates" 
-                ? "bg-white text-gray-900 shadow-sm" 
+                ? "bg-emerald-600 text-white shadow-md" 
                 : "text-gray-500 hover:text-gray-900"
             }`}
           >
@@ -182,7 +167,7 @@ export default function Messaging() {
             onClick={() => setActiveTab("history")}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
               activeTab === "history" 
-                ? "bg-white text-gray-900 shadow-sm" 
+                ? "bg-emerald-600 text-white shadow-md" 
                 : "text-gray-500 hover:text-gray-900"
             }`}
           >
@@ -193,11 +178,7 @@ export default function Messaging() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        {activeTab === "support" && (
-            <SupportChat isOnline={isOnline} />
-        )}
-
+      <div className="flex-1 min-h-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {activeTab === "compose" && (
           <div className="grid grid-cols-12 gap-6 h-full p-6 min-h-0 bg-gray-50/30">
             {/* Pane 1: Audience */}
@@ -223,9 +204,9 @@ export default function Messaging() {
 
             {/* Pane 3: Templates Sidebar */}
             <div className="col-span-12 lg:col-span-3 h-full min-h-0 flex flex-col gap-4">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col h-full overflow-hidden">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col h-full overflow-hidden">
                 <div className="mb-6">
-                  <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                  <h3 className="font-medium text-gray-900 text-lg flex items-center gap-2">
                     <Sparkles size={20} className="text-amber-500" />
                     Library
                   </h3>
@@ -245,13 +226,13 @@ export default function Messaging() {
                         <button
                           key={template.id}
                           onClick={() => handleSelectTemplate(template)}
-                          className="w-full text-left p-4 rounded-2xl border border-gray-100 bg-white hover:border-emerald-200 hover:bg-emerald-50/30 transition-all group scale-100 active:scale-95"
+                          className="w-full text-left p-4 rounded-xl border border-gray-100 bg-white hover:border-emerald-200 hover:bg-emerald-50/30 transition-all group scale-100 active:scale-95"
                         >
                           <div className="flex justify-between items-start mb-2">
-                            <p className="text-sm font-bold text-gray-900 group-hover:text-emerald-700 truncate">
+                            <p className="text-sm font-medium text-gray-900 group-hover:text-emerald-700 truncate">
                               {template.name}
                             </p>
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 bg-gray-50 px-2 py-0.5 rounded group-hover:bg-emerald-100 group-hover:text-emerald-600">
+                            <span className="text-[10px] font-medium uppercase tracking-widest text-gray-400 bg-gray-50 px-2 py-0.5 rounded group-hover:bg-emerald-100 group-hover:text-emerald-600">
                               {template.channel === 'multi' ? 'Omni' : template.channel}
                             </span>
                           </div>
@@ -262,7 +243,7 @@ export default function Messaging() {
                       ))}
                     </div>
                   ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-center p-6 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                    <div className="h-full flex flex-col items-center justify-center text-center p-6 bg-gray-50 rounded-xl border border-dashed border-gray-200">
                       <Sparkles size={32} className="text-gray-200 mb-2" />
                       <p className="text-xs text-gray-400 font-medium">No templates available</p>
                     </div>

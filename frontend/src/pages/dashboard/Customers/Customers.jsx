@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Users, DollarSign, ShoppingBag, TrendingUp } from "lucide-react";
 import CustomersHeader from "../../../components/dashboard/Customers/CustomersHeader";
 import CustomersTable from "../../../components/dashboard/Customers/CustomersTable";
@@ -172,55 +172,39 @@ export default function Customers() {
       {/* Immersive Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up">
         {/* Total Customers */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-blue-50 rounded-2xl group-hover:scale-110 transition-transform">
-              <Users className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Total Profiles</p>
-              <p className="text-2xl font-bold text-gray-900 tracking-tight">{totalCustomers}</p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-blue-500 mb-3">
+            <Users size={20} />
           </div>
+          <p className="text-sm font-medium text-slate-500 mb-1">Total Customers</p>
+          <h3 className="text-2xl font-semibold text-slate-800">{totalCustomers}</h3>
         </div>
 
         {/* Active Customers */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-emerald-50 rounded-2xl group-hover:scale-110 transition-transform">
-              <TrendingUp className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Active Status</p>
-              <p className="text-2xl font-bold text-gray-900 tracking-tight">{activeCustomers}</p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-emerald-500 mb-3">
+            <TrendingUp size={20} />
           </div>
+          <p className="text-sm font-medium text-slate-500 mb-1">Active Customers</p>
+          <h3 className="text-2xl font-semibold text-slate-800">{activeCustomers}</h3>
         </div>
 
         {/* Total Orders */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-indigo-50 rounded-2xl group-hover:scale-110 transition-transform">
-              <ShoppingBag className="w-6 h-6 text-indigo-600" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Engagement</p>
-              <p className="text-2xl font-bold text-gray-900 tracking-tight"><span className="text-indigo-600">{totalOrders}</span> <span className="text-sm">Trans.</span></p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-indigo-500 mb-3">
+            <ShoppingBag size={20} />
           </div>
+          <p className="text-sm font-medium text-slate-500 mb-1">Total Orders</p>
+          <h3 className="text-2xl font-semibold text-slate-800">{totalOrders}</h3>
         </div>
 
         {/* Lifetime Revenue */}
-        <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-4 bg-emerald-50 rounded-2xl group-hover:scale-110 transition-transform">
-              <DollarSign className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Lifetime Revenue</p>
-              <p className="text-2xl font-bold text-emerald-600 tracking-tight">{formatCurrency(totalRevenue)}</p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-rose-500 mb-3">
+            <DollarSign size={20} />
           </div>
+          <p className="text-sm font-medium text-slate-500 mb-1">Total Revenue</p>
+          <h3 className="text-2xl font-semibold text-slate-800">{formatCurrency(totalRevenue)}</h3>
         </div>
       </div>
 

@@ -117,17 +117,17 @@ const OrdersTable = ({ orders }) => {
             <div key={order.id} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm space-y-4">
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-medium shrink-0">
                     {customerInitials}
                   </div>
                   <div>
-                    <Link to={`/dashboard/orders/${order.id}`} className="font-mono text-sm font-bold text-gray-900 bg-gray-100 px-2 py-0.5 rounded hover:bg-gray-200 transition-colors">
+                    <Link to={`/dashboard/orders/${order.id}`} className="font-mono text-sm font-medium text-gray-900 bg-gray-100 px-2 py-0.5 rounded hover:bg-gray-200 transition-colors">
                       {order.orderNumber}
                     </Link>
                     <p className="text-sm font-semibold text-gray-900 mt-0.5">{customerName}</p>
                   </div>
                 </div>
-                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${status.bg} ${status.text}`}>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${status.bg} ${status.text}`}>
                   <StatusIcon size={10} />
                   {status.label}
                 </span>
@@ -135,13 +135,13 @@ const OrdersTable = ({ orders }) => {
 
               <div className="grid grid-cols-2 gap-4 py-3 border-y border-gray-50">
                 <div>
-                  <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Date</p>
+                  <p className="text-[10px] text-gray-400 uppercase font-medium tracking-widest">Date</p>
                   <p className="text-sm font-medium text-gray-700">{formatDate(order.orderDate)}</p>
                   <p className="text-xs text-gray-400">{formatTime(order.orderDate)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Total Amount</p>
-                  <p className="text-sm font-bold text-gray-900">{formatCurrency(order.total, order.currency)}</p>
+                  <p className="text-[10px] text-gray-400 uppercase font-medium tracking-widest">Total Amount</p>
+                  <p className="text-sm font-medium text-gray-900">{formatCurrency(order.total, order.currency)}</p>
                   {order.discountAmount > 0 && (
                     <p className="text-[10px] text-emerald-600">-{formatCurrency(order.discountAmount, order.currency)}</p>
                   )}
@@ -150,20 +150,20 @@ const OrdersTable = ({ orders }) => {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                   <span className="text-[10px] items-center flex gap-1 font-bold text-gray-400 uppercase tracking-widest">
+                   <span className="text-[10px] items-center flex gap-1 font-medium text-gray-400 uppercase tracking-widest">
                      <CreditCard size={12} /> {String(order?.paymentMethod || "cash").replace("_", " ")}
                    </span>
                    <span className="text-gray-300">•</span>
-                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                   <span className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">
                      {order.itemCount} items
                    </span>
                 </div>
                 <Link
                   to={`/dashboard/orders/${order.id}`}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-gray-50 text-gray-600 rounded-lg text-xs font-bold hover:bg-gray-100 transition-colors"
+                  className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all border border-gray-200/80 shadow-2xs"
+                  title="View Details"
                 >
-                  <Eye size={14} />
-                  View Details
+                  <Eye size={16} />
                 </Link>
               </div>
             </div>
@@ -177,14 +177,14 @@ const OrdersTable = ({ orders }) => {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
-                <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Order</th>
-                <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Customer</th>
-                <th className="px-4 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</th>
-                <th className="px-4 py-4 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Items</th>
-                <th className="px-4 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total</th>
-                <th className="px-4 py-4 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Payment</th>
-                <th className="px-4 py-4 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</th>
-                <th className="px-4 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Action</th>
+                <th className="px-4 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Order</th>
+                <th className="px-4 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Customer</th>
+                <th className="px-4 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Date</th>
+                <th className="px-4 py-4 text-center text-[10px] font-medium text-gray-400 uppercase tracking-widest">Items</th>
+                <th className="px-4 py-4 text-right text-[10px] font-medium text-gray-400 uppercase tracking-widest">Total</th>
+                <th className="px-4 py-4 text-center text-[10px] font-medium text-gray-400 uppercase tracking-widest">Payment</th>
+                <th className="px-4 py-4 text-center text-[10px] font-medium text-gray-400 uppercase tracking-widest">Status</th>
+                <th className="px-4 py-4 text-right text-[10px] font-medium text-gray-400 uppercase tracking-widest">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -206,7 +206,7 @@ const OrdersTable = ({ orders }) => {
                   <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                     {/* Order ID */}
                     <td className="px-4 py-4">
-                      <span className="font-mono text-sm font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded">
+                      <span className="font-mono text-sm font-medium text-gray-900 bg-gray-100 px-2 py-1 rounded">
                         {order.orderNumber}
                       </span>
                     </td>
@@ -214,11 +214,11 @@ const OrdersTable = ({ orders }) => {
                     {/* Customer */}
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                        <div className="w-9 h-9 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-xs font-medium shadow-sm">
                           {customerInitials}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-gray-900">{customerName}</p>
+                          <p className="text-sm font-medium text-gray-900">{customerName}</p>
                           <p className="text-xs text-gray-400 tracking-tight">{customerPhone}</p>
                         </div>
                       </div>
@@ -232,20 +232,20 @@ const OrdersTable = ({ orders }) => {
 
                     {/* Items Count */}
                     <td className="px-4 py-4 text-center">
-                      <span className="text-sm font-bold text-gray-900">{order.itemCount}</span>
+                      <span className="text-sm font-medium text-gray-900">{order.itemCount}</span>
                     </td>
 
                     {/* Total */}
                     <td className="px-4 py-4 text-right">
-                      <span className="text-sm font-bold text-gray-900">{formatCurrency(order.total, order.currency)}</span>
+                      <span className="text-sm font-medium text-gray-900">{formatCurrency(order.total, order.currency)}</span>
                       {order.discountAmount > 0 && (
-                        <p className="text-[10px] text-emerald-600 font-bold">-{formatCurrency(order.discountAmount, order.currency)} discount</p>
+                        <p className="text-[10px] text-emerald-600 font-medium">-{formatCurrency(order.discountAmount, order.currency)} discount</p>
                       )}
                     </td>
 
                     {/* Payment Method */}
                     <td className="px-4 py-4 text-center">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-50 text-gray-600 rounded-full text-xs font-bold capitalize border border-gray-100">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-50 text-gray-600 rounded-full text-xs font-medium capitalize border border-gray-100">
                         <CreditCard size={12} className="text-gray-400" />
                         {paymentMethodLabel}
                       </span>
@@ -253,7 +253,7 @@ const OrdersTable = ({ orders }) => {
 
                     {/* Status */}
                     <td className="px-4 py-4 text-center">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${status.bg} ${status.text}`}>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${status.bg} ${status.text}`}>
                         <StatusIcon size={12} />
                         {status.label}
                       </span>
@@ -261,13 +261,15 @@ const OrdersTable = ({ orders }) => {
 
                     {/* Actions */}
                     <td className="px-4 py-4 text-right whitespace-nowrap">
-                      <Link
-                        to={`/dashboard/orders/${order.id}`}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all border border-transparent hover:border-gray-200"
-                      >
-                        <Eye size={14} />
-                        View Details
-                      </Link>
+                      <div className="flex items-center justify-end">
+                        <Link
+                          to={`/dashboard/orders/${order.id}`}
+                          className="p-2 rounded-xl bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all border border-gray-200/80 shadow-2xs"
+                          title="View Details"
+                        >
+                          <Eye size={16} />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -279,7 +281,7 @@ const OrdersTable = ({ orders }) => {
       
       {/* Pagination */}
       <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-widest">
           Showing <span className="text-gray-900">{startIndex + 1}</span> to{" "}
           <span className="text-gray-900">{Math.min(startIndex + ITEMS_PER_PAGE, orders.length)}</span> of{" "}
           <span className="text-gray-900">{orders.length}</span> sales

@@ -1,10 +1,12 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTheme } from "../../../providers/ThemeContext";
 import { Search, ChevronDown, Calendar, Bell, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
 import { useNotifications } from "../../../providers/NotificationContext";
 import { useSettings } from "../../../providers/SettingsContext";
+import { useAuth } from "../../../providers/AuthContext";
+import { normalizeRole, ROLES } from "../../../utils/accessControl";
 import NotificationDropdown from "./NotificationDropdown";
 
 const Header = ({ onMenuToggle, isSidebarExpanded }) => {
@@ -14,11 +16,23 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const { filter, setCustomRange } = useDashboardDateFilter();
+  const { user } = useAuth();
   
   const notificationRef = useRef(null);
   const currencyRef = useRef(null);
 
-  const currencies = ["GHS", "GBP", "USD", "EUR"];
+  const roleName = user?.role?.name || user?.role || user?.roleName;
+  const role = normalizeRole(roleName);
+  const isSalesUser = role === ROLES.SALES;
+
+  const currencies = isSalesUser ? ["GHS"] : ["GHS", "GBP", "USD", "EUR"];
+
+  // Force Sales users to GHS
+  useEffect(() => {
+    if (isSalesUser && settings.currency !== "GHS") {
+      updateSettings({ currency: "GHS" });
+    }
+  }, [isSalesUser, settings.currency, updateSettings]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -58,9 +72,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
             <input
               type="text"
               placeholder="Search..."
-              className={`w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg 
-                       text-gray-700 placeholder-gray-400 focus:outline-none 
-                       ${themeColors.focusRing} focus:border-transparent transition-all`}
+              className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
             />
           </div>
         </div>
@@ -75,20 +87,20 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
           {/* Currency Selector - hidden on small screens */}
           <div className="relative hidden md:block" ref={currencyRef}>
             <button
-              onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-              className={`flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-200 
-                       rounded-lg hover:bg-gray-50 transition-all focus:outline-none 
-                       ${themeColors.focusRing}`}
+              onClick={() => !isSalesUser && setShowCurrencyDropdown(!showCurrencyDropdown)}
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-100 
+                       rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500
+                       ${isSalesUser ? 'cursor-default opacity-80' : 'hover:bg-gray-50'}`}
             >
-              <span className="font-medium text-gray-700 text-sm">{settings.currency}</span>
-              <ChevronDown className="w-4 h-4 text-gray-500" />
+              <span className="font-medium text-gray-700 text-sm">{isSalesUser ? "GHS" : settings.currency}</span>
+              {!isSalesUser && <ChevronDown className="w-4 h-4 text-gray-500" />}
             </button>
 
             {/* Currency Dropdown */}
             {showCurrencyDropdown && (
               <div
-                className="absolute top-full mt-2 right-0 w-32 bg-white border border-gray-200 
-                            rounded-lg shadow-lg overflow-hidden z-50 transform origin-top animate-in fade-in slide-in-from-top-1 duration-150"
+                className="absolute top-full mt-2 right-0 w-32 bg-white border border-gray-100 
+                            rounded-xl shadow-lg overflow-hidden z-50 transform origin-top animate-in fade-in slide-in-from-top-1 p-1"
               >
                 {currencies.map((curr) => (
                   <button
@@ -97,10 +109,10 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
                       updateSettings({ currency: curr });
                       setShowCurrencyDropdown(false);
                     }}
-                    className={`w-full px-4 py-2 text-left hover:bg-emerald-50 transition-colors
+                    className={`w-full px-4 py-2 text-left hover:bg-emerald-50 rounded-lg transition-colors
                               ${
                                 curr === settings.currency
-                                  ? `${themeColors.selectionBg} ${themeColors.selectionText} font-medium`
+                                  ? `bg-emerald-50 text-emerald-700 font-medium`
                                   : "text-gray-700 font-medium"
                               }`}
                   >
@@ -120,9 +132,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
                 type="date"
                 value={filter.startDate}
                 onChange={(e) => setCustomRange(e.target.value, filter.endDate)}
-                className={`pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
-                         text-gray-700 focus:outline-none ${themeColors.focusRing} 
-                         focus:border-transparent transition-all w-40 text-sm font-medium`}
+                className="pl-10 pr-4 py-2 bg-white border border-gray-100 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all w-40 text-sm font-medium"
               />
             </div>
 
@@ -137,9 +147,7 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
                 value={filter.endDate}
                 min={filter.startDate}
                 onChange={(e) => setCustomRange(filter.startDate, e.target.value)}
-                className={`pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg 
-                         text-gray-700 focus:outline-none ${themeColors.focusRing} 
-                         focus:border-transparent transition-all w-40 text-sm font-medium`}
+                className="pl-10 pr-4 py-2 bg-white border border-gray-100 rounded-xl text-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all w-40 text-sm font-medium"
               />
             </div>
           </div>

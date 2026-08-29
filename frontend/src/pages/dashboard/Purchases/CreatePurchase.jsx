@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import purchaseService from "../../../services/business/purchaseService";
@@ -130,7 +130,7 @@ export default function CreatePurchase() {
         onClick={() => navigate("/dashboard/purchases")}
         className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-6 group"
       >
-        <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
+        <div className="p-2 rounded-xl bg-white border border-gray-200 shadow-sm group-hover:border-gray-300 transition-colors">
           <ArrowLeft size={18} />
         </div>
         <span className="font-medium">Back to Purchases</span>
@@ -138,7 +138,7 @@ export default function CreatePurchase() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Create Purchase Order</h1>
+        <h1 className="text-2xl font-medium text-gray-900">Create Purchase Order</h1>
         <p className="text-sm text-gray-500 mt-1">Create a new purchase order and add items</p>
       </div>
 
@@ -146,7 +146,7 @@ export default function CreatePurchase() {
         {/* Purchase Details Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="font-semibold text-gray-900">Purchase Details</h3>
+            <h3 className="font-medium text-gray-900">Purchase Details</h3>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -157,7 +157,7 @@ export default function CreatePurchase() {
                 type="text"
                 value={formData.waybillNumber}
                 onChange={(e) => setFormData({ ...formData, waybillNumber: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                 required
               />
             </div>
@@ -169,7 +169,7 @@ export default function CreatePurchase() {
               <select
                 value={formData.supplierId}
                 onChange={(e) => setFormData({ ...formData, supplierId: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                 required
               >
                 <option value="">Select supplier</option>
@@ -187,7 +187,7 @@ export default function CreatePurchase() {
                 type="date"
                 value={formData.purchaseDate}
                 onChange={(e) => setFormData({ ...formData, purchaseDate: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                 required
               />
             </div>
@@ -200,7 +200,7 @@ export default function CreatePurchase() {
                 type="text"
                 value={formData.batchNumber}
                 onChange={(e) => setFormData({ ...formData, batchNumber: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                 placeholder="e.g. BATCH-001"
               />
             </div>
@@ -213,7 +213,7 @@ export default function CreatePurchase() {
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                 placeholder="Add any notes or special instructions..."
               />
             </div>
@@ -223,11 +223,11 @@ export default function CreatePurchase() {
         {/* Purchase Items Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">Purchase Items</h3>
+            <h3 className="font-medium text-gray-900">Purchase Items</h3>
             <button
               type="button"
               onClick={addItem}
-              className="flex items-center gap-2 px-3 py-1.5 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               <Plus size={16} />
               Add Item
@@ -235,7 +235,7 @@ export default function CreatePurchase() {
           </div>
           <div className="p-6 space-y-4">
             {items.map((item, index) => (
-              <div key={index} className="p-4 border border-gray-200 rounded-lg relative">
+              <div key={index} className="p-4 border border-gray-200 rounded-xl relative">
                 {items.length > 1 && (
                   <button
                     type="button"
@@ -253,7 +253,7 @@ export default function CreatePurchase() {
                     <select
                       value={item.productId}
                       onChange={(e) => updateItem(index, 'productId', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                     >
                       <option value="">Select product...</option>
                       {products.map((product) => (
@@ -270,7 +270,7 @@ export default function CreatePurchase() {
                       type="number"
                       value={item.quantity}
                       onChange={(e) => updateItem(index, 'quantity', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                       min="1"
                     />
                   </div>
@@ -283,7 +283,7 @@ export default function CreatePurchase() {
                       type="number"
                       value={item.costPrice}
                       onChange={(e) => updateItem(index, 'costPrice', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                       step="0.01"
                       min="0"
                     />
@@ -297,7 +297,7 @@ export default function CreatePurchase() {
                       type="number"
                       value={item.sellingPrice}
                       onChange={(e) => updateItem(index, 'sellingPrice', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                       step="0.01"
                       min="0"
                     />
@@ -311,7 +311,7 @@ export default function CreatePurchase() {
                       type="date"
                       value={item.expiryDate}
                       onChange={(e) => updateItem(index, 'expiryDate', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900/10"
                     />
                   </div>
                 </div>
@@ -325,14 +325,14 @@ export default function CreatePurchase() {
           <button
             type="button"
             onClick={() => navigate("/dashboard/purchases")}
-            className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+            className="px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
           >
             {loading ? "Creating..." : "Create Purchase"}
           </button>

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RefreshCw, DollarSign, Clock, CheckCircle, AlertCircle, FileText, Download } from "lucide-react";
 import refundService from "../../../services/business/refundService";
@@ -175,60 +175,38 @@ export default function Refunds() {
         </div>
       </div>
 
-      {/* Immersive Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up">
-        {/* Total Requests */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-blue-50 text-blue-600 group-hover:scale-110 transition-transform">
-              <RefreshCw className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Total Requests</p>
-              <p className="text-2xl font-semibold text-gray-900 tracking-tight">{stats.total}</p>
-            </div>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 animate-fade-in-up">
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#4F46E5] mb-3">
+            <RefreshCw className="w-4 h-4" />
           </div>
+          <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none mb-0.5">{stats.total}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Requests</p>
         </div>
 
-        {/* Pending */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
-              <Clock className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Pending</p>
-              <p className="text-2xl font-semibold text-gray-900 tracking-tight">{stats.pending}</p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#F59E0B] mb-3">
+            <Clock className="w-4 h-4" />
           </div>
+          <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none mb-0.5">{stats.pending}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Pending</p>
         </div>
 
-        {/* Completed */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
-              <CheckCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Completed</p>
-              <p className="text-2xl font-semibold text-gray-900 tracking-tight">{stats.completed}</p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#00C49F] mb-3">
+            <CheckCircle className="w-4 h-4" />
           </div>
+          <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none mb-0.5">{stats.completed}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Completed</p>
         </div>
 
-        {/* Total Refunded */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-rose-50 text-rose-600 group-hover:scale-110 transition-transform">
-              <DollarSign className="w-6 h-6" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Total Refunded</p>
-              <p className="text-2xl font-semibold text-gray-900 tracking-tight truncate">
-                {formatCurrency(stats.totalAmount)}
-              </p>
-            </div>
+        <div className="rounded-xl p-4 shadow-sm border bg-white border-slate-100 flex flex-col items-start transition-all duration-300 hover:shadow-md">
+          <div className="p-2 rounded-lg text-white bg-[#F43F5E] mb-3">
+            <DollarSign className="w-4 h-4" />
           </div>
+          <h3 className="text-[22px] font-medium text-slate-900 tracking-tight leading-none mb-0.5 truncate">{formatCurrency(stats.totalAmount)}</h3>
+          <p className="text-sm font-medium text-slate-700 mb-1">Total Refunded</p>
         </div>
       </div>
 

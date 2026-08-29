@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   ArrowLeft, Edit2, Trash2, DollarSign, Calendar, FileText, 
@@ -118,7 +118,7 @@ export default function ViewExpense() {
     return (
       <div className="max-w-4xl mx-auto py-8 animate-pulse">
         <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-        <div className="bg-white rounded-2xl p-8 h-96 shadow-sm border border-gray-100"></div>
+        <div className="bg-white rounded-xl p-8 h-96 shadow-sm border border-gray-100"></div>
       </div>
     );
   }
@@ -129,7 +129,7 @@ export default function ViewExpense() {
         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <FileText className="w-10 h-10 text-gray-400" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900">Expense Not Found</h2>
+        <h2 className="text-2xl font-medium text-gray-900">Expense Not Found</h2>
         <p className="text-gray-500 mt-2">The expense record you're looking for doesn't exist or has been deleted.</p>
         <Link to="/dashboard/expenses" className="mt-6 inline-flex items-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors">
           <ArrowLeft size={18} />
@@ -156,17 +156,17 @@ export default function ViewExpense() {
       </button>
 
       {/* Header Card */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
         <div className="px-8 py-6 border-b border-gray-100">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-lg shadow-rose-200">
+              <div className="w-16 h-16 rounded-xl bg-linear-to-br from-rose-500 to-pink-600 flex items-center justify-center shadow-lg shadow-rose-200">
                 <DollarSign className="w-8 h-8 text-white" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-2xl font-bold text-gray-900 capitalize">{expense.name || expense.categoryName}</h1>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${status.bg} ${status.text} border ${status.border}`}>
+                  <h1 className="text-2xl font-medium text-gray-900 capitalize">{expense.name || expense.categoryName}</h1>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${status.bg} ${status.text} border ${status.border}`}>
                     <StatusIcon size={14} />
                     {status.label}
                   </span>
@@ -208,9 +208,9 @@ export default function ViewExpense() {
         {/* Main Details Column */}
         <div className="md:col-span-2 space-y-8">
           {/* Financials & Type */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+              <h3 className="font-medium text-gray-900 flex items-center gap-2">
                 <Activity size={18} className="text-gray-400" />
                 Financial Overview
               </h3>
@@ -243,15 +243,15 @@ export default function ViewExpense() {
           </div>
 
           {/* Description / Notes */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+              <h3 className="font-medium text-gray-900 flex items-center gap-2">
                 <FileText size={18} className="text-gray-400" />
                 Notes & Description
               </h3>
             </div>
             <div className="p-8">
-              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 text-gray-700 leading-relaxed italic">
+              <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 text-gray-700 leading-relaxed italic">
                 {expense.notes || "No additional description or notes were provided for this expense."}
               </div>
             </div>
@@ -261,10 +261,10 @@ export default function ViewExpense() {
         {/* Sidebar Column */}
         <div className="space-y-8">
           {/* Creator Information */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
               <User size={18} className="text-gray-400" />
-              <h3 className="font-bold text-gray-900">Recorded By</h3>
+              <h3 className="font-medium text-gray-900">Recorded By</h3>
             </div>
             <div className="p-6">
               <div className="flex items-center gap-4">
@@ -272,7 +272,7 @@ export default function ViewExpense() {
                   <Shield size={24} />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900 leading-tight">{expense.creatorName}</p>
+                  <p className="font-medium text-gray-900 leading-tight">{expense.creatorName}</p>
                   <p className="text-xs text-gray-500 mt-1 uppercase font-semibold tracking-wider">{expense.creatorRole}</p>
                 </div>
               </div>
@@ -280,10 +280,10 @@ export default function ViewExpense() {
           </div>
 
           {/* Evidence / Attachments */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
               <Paperclip size={18} className="text-gray-400" />
-              <h3 className="font-bold text-gray-900">Attachments</h3>
+              <h3 className="font-medium text-gray-900">Attachments</h3>
             </div>
             <div className="p-6">
               {expense.hasAttachment ? (
@@ -291,15 +291,15 @@ export default function ViewExpense() {
                   <div className="p-4 rounded-xl bg-linear-to-br from-blue-50 to-indigo-50 border border-blue-100 flex items-center gap-3">
                     <FileText className="text-blue-600" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-blue-900 truncate">Expense_Evidence_{id}</p>
-                      <p className="text-[10px] text-blue-600 uppercase font-bold tracking-tight">Attached Document</p>
+                      <p className="text-sm font-medium text-blue-900 truncate">Expense_Evidence_{id}</p>
+                      <p className="text-[10px] text-blue-600 uppercase font-medium tracking-tight">Attached Document</p>
                     </div>
                   </div>
                   <a 
                     href={expense.attachmentUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 py-3 bg-white border-2 border-blue-200 text-blue-600 rounded-xl text-sm font-bold hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm"
+                    className="w-full flex items-center justify-center gap-2 py-3 bg-white border-2 border-blue-200 text-blue-600 rounded-xl text-sm font-medium hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm"
                   >
                     View Document
                   </a>
@@ -316,20 +316,22 @@ export default function ViewExpense() {
           </div>
 
           {/* Additional Meta */}
-          <div className="bg-gray-900 rounded-2xl p-6 text-white shadow-xl shadow-gray-200">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">System Details</h4>
-            <div className="space-y-4">
-              <div className="flex justify-between items-end border-b border-gray-800 pb-2">
-                <span className="text-xs text-gray-500">Record ID</span>
-                <span className="text-sm font-mono text-gray-300">#{id}</span>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                <h4 className="text-xs font-medium uppercase tracking-widest text-gray-400">System Details</h4>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="flex justify-between items-end border-b border-gray-100 pb-3">
+                <span className="text-xs font-medium text-gray-500">Record ID</span>
+                <span className="text-sm font-mono font-medium text-gray-900">#{id}</span>
               </div>
-              <div className="flex justify-between items-end border-b border-gray-800 pb-2">
-                <span className="text-xs text-gray-500">Added On</span>
-                <span className="text-sm text-gray-300">{formatDate(expense.createdAt)}</span>
+              <div className="flex justify-between items-end border-b border-gray-100 pb-3">
+                <span className="text-xs font-medium text-gray-500">Added On</span>
+                <span className="text-sm font-medium text-gray-900">{formatDate(expense.createdAt)}</span>
               </div>
               <div className="flex justify-between items-end">
-                <span className="text-xs text-gray-500">Category</span>
-                <span className="text-sm text-rose-400 font-bold uppercase">{expense.categoryName}</span>
+                <span className="text-xs font-medium text-gray-500">Category</span>
+                <span className="text-sm text-rose-600 font-medium uppercase">{expense.categoryName}</span>
               </div>
             </div>
           </div>

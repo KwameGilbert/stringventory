@@ -1,13 +1,13 @@
-﻿import React, { Suspense } from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Providers from "./providers/Providers";
 import PageLoader from "./components/ui/PageLoader";
 
 // Route modules
-import publicRoutes from "./router/publicRoutes";
+// import publicRoutes from "./router/publicRoutes"; // Public site — commented out
 import authRoutes from "./router/authRoutes";
 import dashboardRoutes from "./router/dashboardRoutes";
-import superadminRoutes from "./router/superadminRoutes";
+// import superadminRoutes from "./router/superadminRoutes"; // Superadmin portal — commented out
 
 export default function App() {
   return (
@@ -15,16 +15,19 @@ export default function App() {
       <Router>
         <Suspense fallback={<PageLoader />}>
           <Routes>
-            {/* Public Website */}
-            {publicRoutes}
+            {/* Public Website — commented out */}
+            {/* {publicRoutes} */}
 
             {/* Authentication */}
             {authRoutes}
 
-            {/* Superadmin Portal */}
-            {superadminRoutes}
-            <Route path="/super-admin" element={<Navigate to="/superadmin" replace />} />
-            <Route path="/super-admin/*" element={<Navigate to="/superadmin" replace />} />
+            {/* Root → redirect to Login */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+
+            {/* Superadmin Portal — commented out */}
+            {/* {superadminRoutes} */}
+            {/* <Route path="/super-admin" element={<Navigate to="/superadmin" replace />} /> */}
+            {/* <Route path="/super-admin/*" element={<Navigate to="/superadmin" replace />} /> */}
 
             {/* Business Dashboard */}
             {dashboardRoutes}

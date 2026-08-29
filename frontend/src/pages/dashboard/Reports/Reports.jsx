@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   BarChart3,
@@ -414,7 +414,7 @@ export default function Reports() {
               <div className="p-2 rounded-lg bg-linear-to-br from-gray-800 to-gray-900">
                 <BarChart3 className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">Reports</h1>
+              <h1 className="text-2xl font-medium text-gray-900">Reports</h1>
             </div>
             <p className="text-gray-500 text-sm ml-11">Business insights and analytics dashboard</p>
           </div>
@@ -460,7 +460,7 @@ export default function Reports() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-5 py-3 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
                     ? "bg-linear-to-r from-gray-800 to-gray-900 text-white shadow-lg shadow-gray-900/20"
                     : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
@@ -487,7 +487,7 @@ export default function Reports() {
 
           {/* Sales Chart */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Sales Revenue</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Monthly Sales Revenue</h3>
             <div className="w-full h-80 relative min-h-0">
               <ResponsiveContainer width="100%" height="100%">
                  <AreaChart data={data?.salesReport?.monthlySales}>
@@ -512,7 +512,7 @@ export default function Reports() {
             {/* Top Products */}
             <div className="xl:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 className="font-semibold text-gray-900">Top Products</h3>
+                <h3 className="font-medium text-gray-900">Top Products</h3>
               </div>
               <div className="divide-y divide-gray-50">
                 {data?.salesReport?.topProducts.map((product, idx) => (
@@ -522,7 +522,7 @@ export default function Reports() {
                       <p className="text-xs text-gray-500">{product.units} units sold</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-emerald-600 text-sm">{formatPrice(product.revenue)}</p>
+                      <p className="font-medium text-emerald-600 text-sm">{formatPrice(product.revenue)}</p>
                     </div>
                   </div>
                 ))}
@@ -532,7 +532,7 @@ export default function Reports() {
             {/* Top Customers */}
             <div className="xl:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 className="font-semibold text-gray-900">Top Customers</h3>
+                <h3 className="font-medium text-gray-900">Top Customers</h3>
               </div>
               <div className="divide-y divide-gray-50">
                 {data?.salesReport?.topCustomers.map((customer, idx) => (
@@ -542,7 +542,7 @@ export default function Reports() {
                       <p className="text-xs text-gray-500">{customer.orders} orders</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-blue-600 text-sm">{formatPrice(customer.spent)}</p>
+                      <p className="font-medium text-blue-600 text-sm">{formatPrice(customer.spent)}</p>
                     </div>
                   </div>
                 ))}
@@ -552,7 +552,7 @@ export default function Reports() {
             {/* Payment Methods */}
             <div className="xl:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 className="font-semibold text-gray-900">Payment Methods</h3>
+                <h3 className="font-medium text-gray-900">Payment Methods</h3>
               </div>
               <div className="p-6">
                 <div className="h-64">
@@ -595,7 +595,7 @@ export default function Reports() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Category Valuation Chart */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-w-0">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Inventory Valuation by Category</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Inventory Valuation by Category</h3>
               <div className="w-full h-80 relative min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data?.inventoryReport?.categoryValuation}>
@@ -612,7 +612,7 @@ export default function Reports() {
             {/* Category Breakdown List */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 className="font-semibold text-gray-900">Category Breakdown</h3>
+                <h3 className="font-medium text-gray-900">Category Breakdown</h3>
               </div>
               <div className="divide-y divide-gray-50 max-h-[360px] overflow-y-auto">
                 {data?.inventoryReport?.categoryValuation.map((cat, idx) => (
@@ -622,7 +622,7 @@ export default function Reports() {
                       <p className="text-xs text-gray-500">{cat.productCount} products • {cat.quantity} units</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-gray-900 text-sm">{formatPrice(cat.value)}</p>
+                      <p className="font-medium text-gray-900 text-sm">{formatPrice(cat.value)}</p>
                     </div>
                   </div>
                 ))}
@@ -634,7 +634,7 @@ export default function Reports() {
           {data?.inventoryReport?.lowStockList?.length > 0 && (
             <div className="bg-white rounded-xl shadow-sm border border-rose-100 overflow-hidden">
               <div className="px-6 py-4 border-b border-rose-100 bg-rose-50/50">
-                <h3 className="font-semibold text-rose-900 flex items-center gap-2">
+                <h3 className="font-medium text-rose-900 flex items-center gap-2">
                   <AlertTriangle size={18} className="text-rose-500" />
                   Low Stock Watchlist
                 </h3>
@@ -655,10 +655,10 @@ export default function Reports() {
                       <tr key={idx}>
                         <td className="px-6 py-3 font-medium text-gray-900">{item.name}</td>
                         <td className="px-6 py-3 text-gray-500">{item.sku}</td>
-                        <td className="px-6 py-3 text-center font-bold text-rose-600">{item.stock}</td>
+                        <td className="px-6 py-3 text-center font-medium text-rose-600">{item.stock}</td>
                         <td className="px-6 py-3 text-center text-gray-400">{item.threshold}</td>
                         <td className="px-6 py-3 text-right">
-                          <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold uppercase">Critical</span>
+                          <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-medium uppercase">Critical</span>
                         </td>
                       </tr>
                     ))}
@@ -683,7 +683,7 @@ export default function Reports() {
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
              {/* Monthly Expenses Chart */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Expenses</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Monthly Expenses</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                    <AreaChart data={data?.expenseReport?.monthlyExpenses}>
@@ -705,7 +705,7 @@ export default function Reports() {
 
             {/* Expenses by Category Chart */}
              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Expenses by Category</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Expenses by Category</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                    <PieChart>
@@ -746,12 +746,12 @@ export default function Reports() {
              {/* Income vs Expenses Breakdown */}
              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                 <h3 className="font-semibold text-gray-900">Financial Breakdown</h3>
+                 <h3 className="font-medium text-gray-900">Financial Breakdown</h3>
                </div>
                <div className="p-6 space-y-6">
                   {/* Income Section */}
                   <div>
-                    <h4 className="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-3">Income / Revenue</h4>
+                    <h4 className="text-xs font-medium text-emerald-600 uppercase tracking-widest mb-3">Income / Revenue</h4>
                     <div className="space-y-2">
                        <div className="flex justify-between text-sm">
                          <span className="text-gray-500">Total Sales</span>
@@ -761,7 +761,7 @@ export default function Reports() {
                          <span className="text-gray-500">Other Income</span>
                          <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.income?.other)}</span>
                        </div>
-                       <div className="flex justify-between text-sm py-2 border-t border-gray-100 font-bold">
+                       <div className="flex justify-between text-sm py-2 border-t border-gray-100 font-medium">
                          <span className="text-emerald-700">Total Revenue</span>
                          <span className="text-emerald-700">{formatPrice(data?.profitAndLoss?.income?.total)}</span>
                        </div>
@@ -770,7 +770,7 @@ export default function Reports() {
 
                   {/* Expenses Section */}
                   <div>
-                    <h4 className="text-xs font-bold text-rose-600 uppercase tracking-widest mb-3">Cost & Expenses</h4>
+                    <h4 className="text-xs font-medium text-rose-600 uppercase tracking-widest mb-3">Cost & Expenses</h4>
                     <div className="space-y-2">
                        <div className="flex justify-between text-sm">
                          <span className="text-gray-500">Cost of Goods Sold (COGS)</span>
@@ -784,7 +784,7 @@ export default function Reports() {
                          <span className="text-gray-500">Other Expenses</span>
                          <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.expenses?.other)}</span>
                        </div>
-                       <div className="flex justify-between text-sm py-2 border-t border-gray-100 font-bold">
+                       <div className="flex justify-between text-sm py-2 border-t border-gray-100 font-medium">
                          <span className="text-gray-900">Total Deductions</span>
                          <span className="text-rose-600">{formatPrice(data?.profitAndLoss?.expenses?.total)}</span>
                        </div>
@@ -795,7 +795,7 @@ export default function Reports() {
 
              {/* P&L Performance Chart */}
              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 min-w-0">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">P&L Performance Trend</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">P&L Performance Trend</h3>
               <div className="w-full h-80 relative min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
                    <AreaChart data={data?.profitAndLoss?.monthlyPnL}>
@@ -816,20 +816,20 @@ export default function Reports() {
              {data?.userActivity?.pagination && data.userActivity.pagination.total > data.userActivity.pagination.limit && (
                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
                  <p className="text-sm text-gray-500">
-                   Showing Page <span className="font-semibold text-gray-900">{data.userActivity.pagination.page}</span> of <span className="font-semibold text-gray-900">{Math.ceil(data.userActivity.pagination.total / data.userActivity.pagination.limit)}</span>
+                   Showing Page <span className="font-medium text-gray-900">{data.userActivity.pagination.page}</span> of <span className="font-medium text-gray-900">{Math.ceil(data.userActivity.pagination.total / data.userActivity.pagination.limit)}</span>
                  </p>
                  <div className="flex gap-2">
                    <button
                      onClick={() => setUserPage(prev => Math.max(1, prev - 1))}
                      disabled={userPage === 1}
-                     className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
+                     className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
                    >
                      Previous
                    </button>
                    <button
                      onClick={() => setUserPage(prev => prev + 1)}
                      disabled={userPage >= Math.ceil(data.userActivity.pagination.total / data.userActivity.pagination.limit)}
-                     className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
+                     className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
                    >
                      Next
                    </button>
@@ -851,18 +851,18 @@ export default function Reports() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Recent Stock Movements</h3>
+              <h3 className="font-medium text-gray-900">Recent Stock Movements</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Values</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Product</th>
-                    <th className="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Type</th>
-                    <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Quantity</th>
-                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Reason</th>
-                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Values</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reason</th>
+                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -878,7 +878,7 @@ export default function Reports() {
                           {move.type}
                         </span>
                       </td>
-                       <td className={`px-6 py-3 text-right font-bold ${move.quantity > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                       <td className={`px-6 py-3 text-right font-medium ${move.quantity > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                         {move.quantity > 0 ? '+' : ''}{move.quantity}
                       </td>
                       <td className="px-6 py-3 text-sm text-gray-600">{move.reason}</td>
@@ -905,10 +905,10 @@ export default function Reports() {
           {/* Activity Table */}
            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-              <h3 className="font-semibold text-gray-900">Recent User Activity</h3>
+              <h3 className="font-medium text-gray-900">Recent User Activity</h3>
               <Link 
                 to="/dashboard/activity-logs" 
-                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                className="text-xs font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1"
               >
                 View Full Logs
                 <TrendingUp size={12} />
@@ -918,11 +918,11 @@ export default function Reports() {
               <table className="w-full">
                 <thead className="bg-gray-50/50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Time</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Module</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Action</th>
-                     <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Details</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Module</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Details</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -977,7 +977,7 @@ function SummaryCard({ title, value, icon, color }) {
         </div>
         <div>
           <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className={`text-2xl font-bold ${textClasses[color] || 'text-gray-900'}`}>{value}</p>
+          <p className={`text-2xl font-medium ${textClasses[color] || 'text-gray-900'}`}>{value}</p>
         </div>
       </div>
     </div>

@@ -59,6 +59,12 @@ export const userService = {
       password_confirmation: passwordData.confirmPassword || passwordData.newPassword || passwordData.password_confirmation
     });
   },
+
+  adminResetPassword: async (userId, newPassword) => {
+    return await apiClient.post(API_ENDPOINTS.USERS.ADMIN_RESET_PASSWORD(userId), {
+      password: newPassword
+    });
+  },
 };
 
 export default userService;

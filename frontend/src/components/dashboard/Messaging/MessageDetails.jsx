@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { X, Search, CheckCircle, AlertCircle, Clock, MailOpen, User } from "lucide-react";
 import messagingService from "../../../services/business/messagingService";
 import customerService from "../../../services/business/customerService";
@@ -107,12 +107,12 @@ export default function MessageDetails({ message, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl w-full max-w-4xl h-[80vh] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-xl w-full max-w-4xl h-[80vh] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">{message.subject}</h2>
+            <h2 className="text-lg font-medium text-gray-900">{message.subject}</h2>
             <div className="flex items-center gap-2 mt-1">
                <span className="text-xs text-gray-500">Sent on {new Date(message.createdAt).toLocaleString()}</span>
                <span className="w-1 h-1 rounded-full bg-gray-300"></span>
@@ -120,7 +120,7 @@ export default function MessageDetails({ message, onClose }) {
                {String(message.type).split(',').map((type, idx) => {
                   const cleanType = type.trim().toUpperCase();
                   return (
-                    <span key={idx} className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                    <span key={idx} className={`text-[10px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1 ${
                        cleanType === 'SMS' ? 'bg-indigo-50 text-indigo-700' : 'bg-orange-50 text-orange-700'
                     }`}>
                       {cleanType === 'SMS' ? <MessageSquare size={10} /> : <Mail size={10} />}
@@ -139,25 +139,25 @@ export default function MessageDetails({ message, onClose }) {
           {/* Sidebar / Stats */}
           <div className="w-64 bg-gray-50 border-r border-gray-100 p-6 flex flex-col gap-6 overflow-y-auto">
             <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Delivery Stats</h3>
+              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Delivery Stats</h3>
               <div className="space-y-3">
                 <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
                   <p className="text-xs text-gray-500 mb-1">Total Recipients</p>
-                  <p className="text-xl font-bold text-gray-900">{message.recipientCount}</p>
+                  <p className="text-xl font-medium text-gray-900">{message.recipientCount}</p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
                   <p className="text-xs text-emerald-600 mb-1">Successful</p>
-                  <p className="text-xl font-bold text-gray-900">{message.successCount}</p>
+                  <p className="text-xl font-medium text-gray-900">{message.successCount}</p>
                 </div>
                 <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
                   <p className="text-xs text-red-600 mb-1">Failed</p>
-                  <p className="text-xl font-bold text-gray-900">{message.failureCount}</p>
+                  <p className="text-xl font-medium text-gray-900">{message.failureCount}</p>
                 </div>
               </div>
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Message Content</h3>
+              <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Message Content</h3>
               <div className="bg-white p-4 rounded-xl border border-gray-100 text-sm text-gray-600 italic">
                 "{message.body}"
               </div>
@@ -186,10 +186,10 @@ export default function MessageDetails({ message, onClose }) {
                 <table className="w-full text-left">
                   <thead className="bg-gray-50/50 sticky top-0">
                     <tr>
-                      <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Recipient</th>
-                      <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
-                      <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Time</th>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Recipient</th>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, Printer, Mail, User, Phone, CheckCircle, 
@@ -134,7 +134,7 @@ export default function ViewSale() {
               </div>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-xl font-bold text-gray-900 font-mono">{sale.id}</h1>
+                  <h1 className="text-xl font-semibold text-gray-900 font-mono">{sale.id}</h1>
                   <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${status.bg} ${status.text}`}>
                     <StatusIcon size={14} />
                     {status.label}
@@ -172,7 +172,7 @@ export default function ViewSale() {
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5 text-gray-500" />
-                <h3 className="font-semibold text-gray-900">Items Purchased</h3>
+                <h3 className="font-medium text-gray-900">Items Purchased</h3>
                 <span className="text-xs text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">{items.length} items</span>
               </div>
             </div>
@@ -189,7 +189,7 @@ export default function ViewSale() {
                     </p>
                 </div>
                 <div className="text-right">
-                    <p className="font-semibold text-gray-900">{formatPrice(item.quantity * item.unitPrice)}</p>
+                    <p className="font-medium text-gray-900">{formatPrice(item.quantity * item.unitPrice)}</p>
                 </div>
                 </div>
               ))}
@@ -197,7 +197,7 @@ export default function ViewSale() {
             
             {/* Order Summary */}
             <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 space-y-2">
-              <div className="flex justify-between text-lg font-bold pt-2">
+              <div className="flex justify-between text-lg font-semibold pt-2">
                 <span className="text-gray-900">Total</span>
                 <span className="text-gray-900">{formatPrice(sale.amount)}</span>
               </div>
@@ -210,11 +210,11 @@ export default function ViewSale() {
           {/* Customer Info */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Customer</h3>
+              <h3 className="font-medium text-gray-900">Customer</h3>
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white font-semibold">
                   {sale.customer === "Walk-in Customer" ? "W" : sale.customer.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
@@ -228,7 +228,7 @@ export default function ViewSale() {
           {/* Payment Info */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-semibold text-gray-900">Payment</h3>
+              <h3 className="font-medium text-gray-900">Payment</h3>
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-3">
@@ -247,7 +247,7 @@ export default function ViewSale() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-400">Amount Paid</p>
-                  <p className="font-bold text-gray-900 text-lg">{formatPrice(sale.amount)}</p>
+                  <p className="font-semibold text-gray-900 text-lg">{formatPrice(sale.amount)}</p>
                 </div>
               </div>
             </div>

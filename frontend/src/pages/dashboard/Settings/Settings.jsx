@@ -1,9 +1,9 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { User, Lock, Settings as SettingsIcon, CreditCard } from "lucide-react";
 import ProfileSettings from "../../../components/dashboard/Settings/ProfileSettings";
 import SecuritySettings from "../../../components/dashboard/Settings/SecuritySettings";
 import PreferenceSettings from "../../../components/dashboard/Settings/PreferenceSettings";
-import SubscriptionSettings from "../../../components/dashboard/Settings/SubscriptionSettings";
+// import SubscriptionSettings from "../../../components/dashboard/Settings/SubscriptionSettings";
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
@@ -12,14 +12,14 @@ export default function Settings() {
     { id: "profile", label: "Profile", icon: User },
     { id: "security", label: "Security", icon: Lock },
     { id: "preferences", label: "Preferences", icon: SettingsIcon },
-    { id: "subscription", label: "Subscription", icon: CreditCard },
+    // { id: "subscription", label: "Subscription", icon: CreditCard },
   ];
 
   return (
     <div className="pb-8 animate-fade-in space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+          <h1 className="text-2xl font-medium text-gray-900">Settings</h1>
           <p className="text-gray-500 text-sm">Manage your account and system configurations</p>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function Settings() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                       activeTab === tab.id
                         ? "bg-emerald-50 text-emerald-700 shadow-sm"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -55,7 +55,7 @@ export default function Settings() {
           {activeTab === "profile" && <ProfileSettings />}
           {activeTab === "security" && <SecuritySettings />}
           {activeTab === "preferences" && <PreferenceSettings />}
-          {activeTab === "subscription" && <SubscriptionSettings />}
+          {/* {activeTab === "subscription" && <SubscriptionSettings />} */}
         </div>
       </div>
     </div>

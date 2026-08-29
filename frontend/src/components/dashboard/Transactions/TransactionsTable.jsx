@@ -53,10 +53,11 @@ const transactionTypeConfig = {
 const TransactionsTable = ({ transactions = [] }) => {
   const { formatPrice } = useCurrency();
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = transactions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(transactions.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = transactions.slice(startIndex, startIndex + itemsPerPage);
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -94,13 +95,13 @@ const TransactionsTable = ({ transactions = [] }) => {
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
-              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Reference</th>
-              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Type</th>
-              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</th>
-              <th className="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Payment</th>
-              <th className="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Amount</th>
-              <th className="px-6 py-4 text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</th>
-              <th className="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Action</th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Reference</th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Type</th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Date</th>
+              <th className="px-6 py-4 text-left text-[10px] font-medium text-gray-400 uppercase tracking-widest">Payment</th>
+              <th className="px-6 py-4 text-right text-[10px] font-medium text-gray-400 uppercase tracking-widest">Amount</th>
+              <th className="px-6 py-4 text-center text-[10px] font-medium text-gray-400 uppercase tracking-widest">Status</th>
+              <th className="px-6 py-4 text-right text-[10px] font-medium text-gray-400 uppercase tracking-widest">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50/50">
@@ -113,24 +114,24 @@ const TransactionsTable = ({ transactions = [] }) => {
                 <tr key={tx.id} className="hover:bg-gray-50/50 transition-colors group">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-mono font-bold text-gray-400 mb-0.5 uppercase tracking-tighter">TX-{tx.id}</span>
+                        <span className="text-[10px] font-mono font-medium text-gray-400 mb-0.5 uppercase tracking-tighter">TX-{tx.id}</span>
                         {(tx.orderId || tx.order) && (
-                            <Link to={`/dashboard/orders/${tx.orderId || tx.order?.id}`} className="text-sm font-bold text-gray-900 hover:text-blue-600 transition-colors">
+                            <Link to={`/dashboard/orders/${tx.orderId || tx.order?.id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors">
                                 {tx.order?.orderNumber || `Order #${tx.orderId}`}
                             </Link>
                         )}
                         {(tx.refundId || tx.refund) && (
-                            <Link to={`/dashboard/refunds/${tx.refundId || tx.refund?.id}`} className="text-sm font-bold text-gray-900 hover:text-rose-600 transition-colors">
+                            <Link to={`/dashboard/refunds/${tx.refundId || tx.refund?.id}`} className="text-sm font-medium text-gray-900 hover:text-rose-600 transition-colors">
                                 {`Refund #${tx.refundId || tx.refund?.id}`}
                             </Link>
                         )}
                         {(tx.expenseId || tx.expense) && (
-                            <span className="text-sm font-bold text-gray-900">
+                            <span className="text-sm font-medium text-gray-900">
                                 {`Expense #${tx.expenseId || tx.expense?.id}`}
                             </span>
                         )}
                         {(tx.purchaseId || tx.purchase) && (
-                            <span className="text-sm font-bold text-gray-900">
+                            <span className="text-sm font-medium text-gray-900">
                                 {tx.purchase?.purchaseNumber || `Purchase #${tx.purchaseId || tx.purchase?.id}`}
                             </span>
                         )}
@@ -189,13 +190,13 @@ const TransactionsTable = ({ transactions = [] }) => {
             <div key={tx.id} className="p-4 space-y-4 hover:bg-gray-50 transition-colors">
               <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-mono font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded w-fit">
+                    <span className="text-[10px] font-mono font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded w-fit">
                         TX-{tx.id}
                     </span>
-                    <h3 className="font-bold text-gray-900 text-lg tracking-tight">
+                    <h3 className="font-medium text-gray-900 text-lg tracking-tight">
                         {tx.order?.orderNumber || tx.purchase?.purchaseNumber || tx.category || type.label}
                     </h3>
-                    <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-gray-400 tracking-widest">
+                    <div className="flex items-center gap-2 text-[10px] uppercase font-medium text-gray-400 tracking-widest">
                         <Icon size={12} className={type.color} />
                         {type.label}
                     </div>
@@ -207,13 +208,13 @@ const TransactionsTable = ({ transactions = [] }) => {
 
               <div className="flex justify-between items-center p-3 bg-gray-50/50 rounded-xl border border-gray-100">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Value</span>
-                  <span className={`text-lg font-bold ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
+                  <span className="text-[10px] font-medium text-gray-400 uppercase tracking-widest leading-none mb-1">Value</span>
+                  <span className={`text-lg font-medium ${isOutflow ? 'text-rose-600' : 'text-emerald-600'}`}>
                     {formatCurrency(Math.abs(tx.amount), tx.currency)}
                   </span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1 block">Date</span>
+                  <span className="text-[10px] font-medium text-gray-400 uppercase tracking-widest leading-none mb-1 block">Date</span>
                   <span className="text-sm font-semibold text-gray-700">{formatDate(tx.createdAt)}</span>
                 </div>
               </div>
@@ -221,7 +222,7 @@ const TransactionsTable = ({ transactions = [] }) => {
               <div className="flex items-center gap-2">
                 <Link
                   to={`/dashboard/transactions/${tx.id}`}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-900 rounded-xl font-bold text-sm shadow-sm active:scale-95 transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-900 rounded-xl font-medium text-sm shadow-sm active:scale-95 transition-all"
                 >
                   <Eye size={16} />
                   View Details
@@ -233,13 +234,29 @@ const TransactionsTable = ({ transactions = [] }) => {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-                Showing <span className="text-gray-900">{startIndex + 1}</span> -{" "}
-                <span className="text-gray-900">{Math.min(startIndex + ITEMS_PER_PAGE, transactions.length)}</span> of{" "}
-                <span className="text-gray-900">{transactions.length}</span>
-            </p>
+      <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+            Showing <span className="text-slate-900 font-semibold">{transactions.length === 0 ? 0 : startIndex + 1}</span> to{" "}
+            <span className="text-slate-900 font-semibold">{Math.min(startIndex + itemsPerPage, transactions.length)}</span> of{" "}
+            <span className="text-slate-900 font-semibold">{transactions.length}</span>
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Show</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500/30 shadow-2xs"
+            >
+              {[5, 10, 20, 50].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+        </div>
             
             <div className="flex items-center gap-2">
                 <button
@@ -263,7 +280,6 @@ const TransactionsTable = ({ transactions = [] }) => {
                 </button>
             </div>
         </div>
-      )}
     </div>
   );
 };

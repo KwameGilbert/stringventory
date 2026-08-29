@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Lock, Key, Smartphone, AlertTriangle, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react";
 import settingsService from "../../../services/business/settingsService";
 import { showSuccess, showError } from "../../../utils/alerts";
@@ -136,13 +136,13 @@ export default function SecuritySettings() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
       {/* Password Change Section */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <h2 className="text-xl font-medium text-gray-900 mb-6 flex items-center gap-2">
           <Lock size={20} className="text-emerald-600" />
           Change Password
         </h2>
         
         {passwordError && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg flex items-start gap-3 text-red-800 text-sm">
+          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 text-red-800 text-sm">
             <AlertCircle className="flex-shrink-0 mt-0.5" size={18} />
             <p>{passwordError}</p>
           </div>
@@ -159,7 +159,7 @@ export default function SecuritySettings() {
                 value={passwordData.currentPassword}
                 onChange={(e) => handlePasswordChange(e.target.value, "currentPassword")}
                 disabled={passwordSaving}
-                className="w-full pl-10 pr-12 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full pl-10 pr-12 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
               />
               <button
                 type="button"
@@ -182,7 +182,7 @@ export default function SecuritySettings() {
                 value={passwordData.newPassword}
                 onChange={(e) => handlePasswordChange(e.target.value, "newPassword")}
                 disabled={passwordSaving}
-                className="w-full pl-10 pr-12 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full pl-10 pr-12 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
               />
               <button
                 type="button"
@@ -195,7 +195,7 @@ export default function SecuritySettings() {
             </div>
             
             {passwordData.newPassword && (
-              <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-100 text-sm">
+              <div className="mt-2 p-3 bg-blue-50 rounded-xl border border-blue-100 text-sm">
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
                     passwordStrength.strength === "strong" ? "bg-emerald-100 text-emerald-700" :
@@ -223,7 +223,7 @@ export default function SecuritySettings() {
                 value={passwordData.confirmPassword}
                 onChange={(e) => handlePasswordChange(e.target.value, "confirmPassword")}
                 disabled={passwordSaving}
-                className="w-full pl-10 pr-12 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
+                className="w-full pl-10 pr-12 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:bg-gray-50 disabled:text-gray-500"
               />
               <button
                 type="button"
@@ -240,7 +240,7 @@ export default function SecuritySettings() {
             <button
               type="submit"
               disabled={passwordSaving || !passwordData.currentPassword || !passwordData.newPassword}
-              className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors"
+              className="px-6 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition-colors"
             >
               {passwordSaving ? "Updating..." : "Update Password"}
             </button>
@@ -252,7 +252,7 @@ export default function SecuritySettings() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+            <h2 className="text-xl font-medium text-gray-900 mb-2 flex items-center gap-2">
               <Smartphone size={20} className="text-blue-600" />
               Two-Factor Authentication
             </h2>
@@ -275,7 +275,7 @@ export default function SecuritySettings() {
         </div>
 
         {mfaError && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-lg flex items-start gap-3 text-red-800 text-sm">
+          <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 text-red-800 text-sm">
             <AlertCircle className="flex-shrink-0 mt-0.5" size={18} />
             <p>{mfaError}</p>
           </div>
@@ -293,7 +293,7 @@ export default function SecuritySettings() {
                   value={mfaPhone}
                   onChange={(e) => setMfaPhone(e.target.value)}
                   disabled={mfaLoading}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                 />
               </div>
               <p className="text-xs text-gray-500">Verification codes will be sent to this number</p>
@@ -302,7 +302,7 @@ export default function SecuritySettings() {
         )}
 
         {mfaEnabled && (
-          <div className="mt-6 p-4 bg-emerald-50 border border-emerald-100 rounded-lg flex items-start gap-3 text-emerald-800 text-sm">
+          <div className="mt-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-start gap-3 text-emerald-800 text-sm">
             <CheckCircle className="flex-shrink-0 mt-0.5" size={18} />
             <div>
               <p className="font-medium">Two-Factor Authentication is active</p>

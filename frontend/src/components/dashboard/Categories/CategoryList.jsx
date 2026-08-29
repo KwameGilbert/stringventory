@@ -2,15 +2,14 @@ import { useState } from "react";
 import { Edit2, Trash2, Eye, Image, ChevronLeft, ChevronRight, FolderOpen, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const ITEMS_PER_PAGE = 10;
-
 const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Pagination logic
-  const totalPages = Math.ceil(categories.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedCategories = categories.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedCategories = categories.slice(startIndex, startIndex + itemsPerPage);
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -22,12 +21,12 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
         <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4 border border-slate-200">
           <FolderOpen className="w-8 h-8 text-slate-400" />
         </div>
-        <h3 className="text-lg font-semibold text-slate-900 mb-1">No categories match your search</h3>
+        <h3 className="text-lg font-medium text-slate-900 mb-1">No categories match your search</h3>
         <p className="text-slate-500 text-sm font-medium mb-6">Create a new category or adjust your search term</p>
         {canManage && (
           <Link
             to="/dashboard/categories/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 shadow-sm shadow-slate-900/20 transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 shadow-sm shadow-slate-900/20 transition-all active:scale-95"
           >
             <Plus size={16} />
             <span>Add Category</span>
@@ -43,11 +42,11 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
         <table className="w-full min-w-[800px] whitespace-nowrap text-left">
           <thead className="bg-slate-50/80 border-b border-slate-200">
             <tr>
-              <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Category</th>
-              <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Description</th>
-              <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Products</th>
-              <th className="px-6 py-4 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Actions</th>
+              <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Category</th>
+              <th className="px-6 py-4 text-xs font-medium text-slate-500 uppercase tracking-wider">Description</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">Products</th>
+              <th className="px-6 py-4 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+              <th className="px-6 py-4 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 font-medium">
@@ -75,7 +74,7 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
                       <div>
                         <Link 
                           to={`/dashboard/categories/${category.id}`}
-                          className="font-semibold text-slate-900 hover:text-blue-600 transition-colors text-base"
+                          className="font-medium text-slate-900 hover:text-blue-600 transition-colors text-base"
                         >
                           {category.name}
                         </Link>
@@ -89,7 +88,7 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    <span className="inline-flex items-center justify-center min-w-8 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 text-xs font-semibold border border-slate-200/60 shadow-2xs">
+                    <span className="inline-flex items-center justify-center min-w-8 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-800 text-xs font-medium border border-slate-200/60 shadow-2xs">
                       {category.productsCount}
                     </span>
                   </td>
@@ -97,7 +96,7 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
                     {canManage ? (
                       <button
                         onClick={() => onToggleStatus && onToggleStatus(category.id)}
-                        className={`text-xs font-semibold px-3 py-1 rounded-lg transition-all shadow-2xs border cursor-pointer ${
+                        className={`text-xs font-medium px-3 py-1 rounded-lg transition-all shadow-2xs border cursor-pointer ${
                           isActive 
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
                             : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
@@ -106,7 +105,7 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
                         {isActive ? 'Active' : 'Inactive'}
                       </button>
                     ) : (
-                      <span className={`text-xs font-semibold px-3 py-1 rounded-lg shadow-2xs border ${
+                      <span className={`text-xs font-medium px-3 py-1 rounded-lg shadow-2xs border ${
                         isActive 
                           ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
                           : 'bg-slate-100 text-slate-600 border-slate-200'
@@ -153,11 +152,28 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
       
       {/* Table Footer with Pagination */}
       <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm text-slate-500 font-medium">
-          Showing <span className="font-semibold text-slate-900">{startIndex + 1}</span> to{" "}
-          <span className="font-semibold text-slate-900">{Math.min(startIndex + ITEMS_PER_PAGE, categories.length)}</span> of{" "}
-          <span className="font-semibold text-slate-900">{categories.length}</span> categories
-        </p>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+            Showing <span className="text-slate-900 font-semibold">{categories.length === 0 ? 0 : startIndex + 1}</span> to{" "}
+            <span className="text-slate-900 font-semibold">{Math.min(startIndex + itemsPerPage, categories.length)}</span> of{" "}
+            <span className="text-slate-900 font-semibold">{categories.length}</span> categories
+          </p>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Show</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500/30 shadow-2xs"
+            >
+              {[5, 10, 20, 50].map(num => (
+                <option key={num} value={num}>{num}</option>
+              ))}
+            </select>
+          </div>
+        </div>
         
         {totalPages > 1 && (
           <div className="flex items-center gap-1.5 bg-white p-1.5 rounded-xl border border-slate-200 shadow-2xs">
@@ -174,7 +190,7 @@ const CategoryList = ({ categories, onToggleStatus, onDelete, canManage = true }
               <button
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`w-9 h-9 rounded-lg text-xs font-semibold transition-all ${
+                className={`w-9 h-9 rounded-lg text-xs font-medium transition-all ${
                   currentPage === page
                     ? 'bg-slate-900 text-white shadow-sm'
                     : 'hover:bg-slate-50 text-slate-700'
