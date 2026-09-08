@@ -41,24 +41,22 @@ const extractAuthTokens = (source = {}) => {
 // Get tokens from localStorage
 const getAccessToken = () =>
   localStorage.getItem(
-    import.meta.env.VITE_AUTH_TOKEN_KEY || "stringventory_access_token",
+    import.meta.env.VITE_AUTH_TOKEN_KEY,
   );
 const getRefreshToken = () =>
   localStorage.getItem(
-    import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY ||
-      "stringventory_refresh_token",
+    import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY,
   );
 
 // Set tokens in localStorage
 const setTokens = (accessToken, refreshToken) => {
   localStorage.setItem(
-    import.meta.env.VITE_AUTH_TOKEN_KEY || "stringventory_access_token",
+    import.meta.env.VITE_AUTH_TOKEN_KEY,
     accessToken,
   );
   if (refreshToken) {
     localStorage.setItem(
-      import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY ||
-        "stringventory_refresh_token",
+      import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY,
       refreshToken,
     );
   }
@@ -67,21 +65,20 @@ const setTokens = (accessToken, refreshToken) => {
 // Clear tokens from localStorage
 const clearTokens = () => {
   localStorage.removeItem(
-    import.meta.env.VITE_AUTH_TOKEN_KEY || "stringventory_access_token",
+    import.meta.env.VITE_AUTH_TOKEN_KEY,
   );
   localStorage.removeItem(
-    import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY ||
-      "stringventory_refresh_token",
+    import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY,
   );
   localStorage.removeItem(
-    import.meta.env.VITE_AUTH_USER_KEY || "stringventory_user",
+    import.meta.env.VITE_AUTH_USER_KEY,
   );
 };
 
 // Create axios instance
 const apiClient = axios.create({
   baseURL: BASE_URL,
-  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || "30000"),
+  timeout: parseInt(import.meta.env.VITE_API_TIMEOUT),
   headers: {
     "Content-Type": "application/json",
   },

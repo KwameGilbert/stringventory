@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     // Single unified storage key for all user types
     const storedUser = localStorage.getItem(
-      import.meta.env.VITE_AUTH_USER_KEY || "stringventory_user"
+      import.meta.env.VITE_AUTH_USER_KEY
     );
     return storedUser ? JSON.parse(storedUser) : null;
   });
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
 
       setUser(userData);
       localStorage.setItem(
-        import.meta.env.VITE_AUTH_USER_KEY || "stringventory_user",
+        import.meta.env.VITE_AUTH_USER_KEY,
         JSON.stringify(userData)
       );
 
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem(
-        import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY || "stringventory_refresh_token"
+        import.meta.env.VITE_AUTH_REFRESH_TOKEN_KEY
       );
       if (refreshToken) {
         await authService.logout(refreshToken);
@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       clearTokens();
       localStorage.removeItem(
-        import.meta.env.VITE_AUTH_USER_KEY || "stringventory_user"
+        import.meta.env.VITE_AUTH_USER_KEY
       );
       // Also clear legacy superadmin keys from old isolated auth system
       localStorage.removeItem("stringventory_superadmin_user");
