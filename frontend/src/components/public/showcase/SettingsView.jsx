@@ -114,7 +114,7 @@ const SettingsView = () => {
                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Business Name</label>
-                         <input type="text" defaultValue="StringVentory Inc." className="w-full bg-slate-50 border-none rounded-xl px-4 py-2.5 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/10" />
+                         <input type="text" defaultValue="PinnexVentures Inc." className="w-full bg-slate-50 border-none rounded-xl px-4 py-2.5 text-xs font-semibold focus:ring-2 focus:ring-emerald-500/10" />
                       </div>
                       <div className="space-y-1.5">
                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2">Registration ID</label>

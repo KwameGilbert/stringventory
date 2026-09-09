@@ -25,7 +25,7 @@ const ContactInfoSection = () => {
     {
       icon: Mail,
       title: "Email Us",
-      value: "hello@stringventory.com",
+      value: "hello@pinnexventures.com",
       description: "Our team usually responds within 2 hours.",
       color: "bg-emerald-50 text-emerald-600"
     },

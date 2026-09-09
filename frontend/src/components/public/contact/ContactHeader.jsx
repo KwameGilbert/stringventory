@@ -19,7 +19,7 @@ const ContactHeader = () => {
           Let's Start a <span className="text-emerald-600">Conversation</span>
         </h1>
         <p className="text-slate-500 font-medium text-lg max-w-2xl mx-auto leading-relaxed">
-          Have questions about StringVentory? Whether you're a small business or an enterprise, 
+          Have questions about PinnexVentures? Whether you're a small business or an enterprise, 
           our team is here to help you scale your operations.
         </p>
       </motion.div>

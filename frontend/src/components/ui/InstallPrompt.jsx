@@ -106,7 +106,7 @@ export default function InstallPrompt() {
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 text-sm">
-                Install Stringventory
+                Install PinnexVentures
               </h3>
               <p className="text-xs text-gray-600 mt-0.5">
                 Get quick access to your business management dashboard

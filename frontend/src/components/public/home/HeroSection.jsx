@@ -124,7 +124,7 @@ const HeroSection = () => {
             >
               <img 
                 src="/dashboard.png" 
-                alt="Stringventory Dashboard" 
+                alt="PinnexVentures Dashboard" 
                 className="w-full h-full object-cover rounded-3xl"
               />
             </motion.div>

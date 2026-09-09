@@ -169,7 +169,7 @@ const FeaturesSection = () => {
               <h3 className="text-2xl font-bold text-white mb-2">Seamless Integrations</h3>
               <p className="text-slate-300 text-sm leading-relaxed">
                 Full API access and native integrations with your favorite tools. 
-                StringVentory fits perfectly into your existing ecosystem.
+                PinnexVentures fits perfectly into your existing ecosystem.
               </p>
             </div>
             <div className="relative z-10 flex-1 flex justify-center translate-y-4 group-hover:translate-y-0 transition-transform duration-500">

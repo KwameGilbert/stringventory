@@ -51,10 +51,10 @@ const UsersView = () => (
 
       <div className="grid grid-cols-2 gap-4">
          {[
-            { name: "Anthony Afriyie", role: "CEO", email: "a.afriyie@stringventory.com", status: "Online", initial: "AA", color: "bg-emerald-500" },
-            { name: "Sarah Williams", role: "Manager", email: "s.williams@stringventory.com", status: "Away", initial: "SW", color: "bg-sky-500" },
-            { name: "John Smith", role: "Admin", email: "j.smith@stringventory.com", status: "Offline", initial: "JS", color: "bg-slate-500" },
-            { name: "Kobby Kwame", role: "Accountant", email: "kobby@stringventory.com", status: "Online", initial: "KK", color: "bg-emerald-500" }
+            { name: "Anthony Afriyie", role: "CEO", email: "a.afriyie@pinnexventures.com", status: "Online", initial: "AA", color: "bg-emerald-500" },
+            { name: "Sarah Williams", role: "Manager", email: "s.williams@pinnexventures.com", status: "Away", initial: "SW", color: "bg-sky-500" },
+            { name: "John Smith", role: "Admin", email: "j.smith@pinnexventures.com", status: "Offline", initial: "JS", color: "bg-slate-500" },
+            { name: "Kobby Kwame", role: "Accountant", email: "kobby@pinnexventures.com", status: "Online", initial: "KK", color: "bg-emerald-500" }
          ].map((user, i) => (
             <div key={i} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm flex items-center justify-between group hover:border-emerald-200 transition-all">
                <div className="flex items-center gap-4">

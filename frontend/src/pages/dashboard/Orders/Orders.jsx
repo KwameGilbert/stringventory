@@ -145,7 +145,7 @@ export default function Orders() {
       "Payment Method": (o.paymentMethod || "—").toUpperCase(),
     }));
 
-    exportToExcel(dataToExport, "stringventory_sales", "Sales");
+    exportToExcel(dataToExport, "pinnexventures_sales", "Sales");
   };
 
   const handleExportPDF = async () => {
@@ -166,7 +166,7 @@ export default function Orders() {
       await exportToPDF({
         title: "Sales Transaction Report",
         subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredOrders.length} record(s)`,
-        fileName: "stringventory_sales",
+        fileName: "pinnexventures_sales",
         table: tableData,
         totals: [
           { label: "Total Revenue (Estimated)", value: formatPrice(totalRevenue, responseCurrency), bold: true, color: 'emerald' },

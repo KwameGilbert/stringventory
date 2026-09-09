@@ -53,7 +53,7 @@ const FAQSection = () => {
   const faqs = [
     {
       question: "Is there a free trial available?",
-      answer: "Yes! StringVentory offers a 14-day full-featured free trial of any plan. No credit card is required to start your trial. You can explore all features including barcode generation, advanced reports, and multi-location management without any commitment."
+      answer: "Yes! PinnexVentures offers a 14-day full-featured free trial of any plan. No credit card is required to start your trial. You can explore all features including barcode generation, advanced reports, and multi-location management without any commitment."
     },
     {
       question: "Can I upgrade or downgrade my plan later?",
@@ -64,7 +64,7 @@ const FAQSection = () => {
       answer: "Security is our top priority. We use industry-standard AES-256 encryption for all data at rest and SSL/TLS encryption for all data in transit. We also perform regular backups to ensure your records are always safe and accessible."
     },
     {
-      question: "Does StringVentory work for multiple warehouse locations?",
+      question: "Does PinnexVentures work for multiple warehouse locations?",
       answer: "Yes, our Pro and Enterprise plans are specifically designed for multi-location businesses. You can track stock across different warehouses, branches, or mobile stores in real-time, and even perform inter-location stock transfers."
     },
     {

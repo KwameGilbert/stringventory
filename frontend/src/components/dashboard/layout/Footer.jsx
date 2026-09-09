@@ -9,7 +9,7 @@ const Footer = () => {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 text-center sm:text-left">
         {/* Copyright */}
         <div>
-          <p>© {currentYear} StringVentory. All rights reserved.</p>
+          <p>© {currentYear} PinnexVentures. All rights reserved.</p>
         </div>
 
         {/* Developed by StringTech */}

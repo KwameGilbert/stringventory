@@ -100,7 +100,7 @@ export default function Transactions() {
         Reference: tx.order?.orderNumber || tx.purchase?.purchaseNumber || "—",
       }));
 
-      exportToExcel(dataToExport, "stringventory_transactions", "Transactions");
+      exportToExcel(dataToExport, "pinnexventures_transactions", "Transactions");
     } catch (error) {
       console.error("Excel Export Error:", error);
       showError("Failed to generate Excel report");
@@ -127,7 +127,7 @@ export default function Transactions() {
       await exportToPDF({
         title: "Financial Ledger Report",
         subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredTransactions.length} transaction(s)`,
-        fileName: "stringventory_transactions",
+        fileName: "pinnexventures_transactions",
         table: tableData,
         totals: [
           {

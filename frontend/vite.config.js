@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Stringventory',
-        short_name: 'Stringventory',
-        description: 'Multi-tenant SaaS inventory and business management platform',
+        name: 'PinnexVentures',
+        short_name: 'PinnexVentures',
+        description: 'Single company inventory and business management platform for PinnexVentures',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',

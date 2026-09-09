@@ -22,7 +22,7 @@ const ShowcaseSidebar = ({ menuItems, activeTab, setActiveTab }) => {
         <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
           <div className="w-4 h-4 bg-white rotate-45 rounded-sm" />
         </div>
-        <span className="text-white font-bold text-sm tracking-tight">Stringventory</span>
+        <span className="text-white font-bold text-sm tracking-tight">PinnexVentures</span>
       </div>
 
       {/* NAVIGATION MENU */}

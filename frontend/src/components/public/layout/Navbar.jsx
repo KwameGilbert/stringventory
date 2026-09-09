@@ -37,7 +37,7 @@ const Navbar = () => {
             <span className="text-white font-bold text-xl">S</span>
           </div>
           <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700">
-            StringVentory
+            PinnexVentures
           </span>
         </Link>
 

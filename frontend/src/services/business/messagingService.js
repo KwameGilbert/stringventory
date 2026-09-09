@@ -39,14 +39,14 @@ const mockTemplates = [
   {
     id: 'v-1',
     name: 'Welcome Email',
-    subject: 'Welcome to StringVentory',
+    subject: 'Welcome to PinnexVentures',
     category: 'Onboarding',
     last_used: '2026-04-16T16:20:00Z'
   },
   {
     id: 'v-2',
     name: 'Subscription Expired',
-    subject: 'Your StringVentory Subscription has Expired',
+    subject: 'Your PinnexVentures Subscription has Expired',
     category: 'Billing',
     last_used: '2026-04-15T11:45:00Z'
   },

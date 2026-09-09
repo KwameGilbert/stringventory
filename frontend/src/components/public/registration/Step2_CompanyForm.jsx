@@ -111,7 +111,7 @@ const Step2_CompanyForm = ({ formData, setFormData }) => {
         
             
             <div className="absolute right-2 flex items-center gap-2">
-              <span className="text-slate-800 text-[10px] font-bold hidden md:block">.stringventory.com</span>
+              <span className="text-slate-800 text-[10px] font-bold hidden md:block">.pinnexventures.com</span>
               <button 
                 onClick={checkAvailability}
                 disabled={isChecking || !formData.subdomain}
@@ -133,7 +133,7 @@ const Step2_CompanyForm = ({ formData, setFormData }) => {
           </div>
           {formData.subdomain && (
             <p className="text-[10px] text-slate-400 font-medium ml-1 mt-1 animate-fade-in">
-              Your site will be live at: <span className="text-slate-900 font-bold">{formData.subdomain.toLowerCase()}.stringventory.com</span>
+              Your site will be live at: <span className="text-slate-900 font-bold">{formData.subdomain.toLowerCase()}.pinnexventures.com</span>
             </p>
           )}
         </div>

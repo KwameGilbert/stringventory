@@ -8,7 +8,7 @@ import { Star, Quote } from "lucide-react";
  */
 const TestimonialsSection = () => {
   const testimonials = [
-    { name: "Akua Mansa", role: "Manager", company: "The Fashion Hub", content: "StringVentory transformed our stock tracking overnight. We reduced our waste by 30% and finally have clear margins.", stars: 5 },
+    { name: "Akua Mansa", role: "Manager", company: "The Fashion Hub", content: "PinnexVentures transformed our stock tracking overnight. We reduced our waste by 30% and finally have clear margins.", stars: 5 },
     { name: "David Chen", role: "CEO", company: "TechNexus", content: "The most intuitive inventory system I've used. The mobile app makes stocktaking a breeze.", stars: 5 },
     { name: "Sarah Jenkins", role: "Founder", company: "Artisan Boutique", content: "Ready in minutes. The customer support is lightning fast and helpful!", stars: 5 },
     { name: "Michael Kwame", role: "Director", company: "Global Logistics", content: "Managing 5 warehouses used to be a nightmare. Now, with real-time sync, it's efficient.", stars: 5 },
@@ -16,7 +16,7 @@ const TestimonialsSection = () => {
     { name: "James Wilson", role: "Strategist", company: "Retail Consult", content: "I recommend it to all my clients. The ability to scale is exactly what the industry needs.", stars: 5 },
     { name: " Kofi Boateng", role: "Owner", company: "Kofi's electronics", content: "Finally, a tool that understands the African retail landscape. Simply perfect.", stars: 5 },
     { name: "Linda Smith", role: "Ops Head", company: "Beauty Palace", content: "Stock replenishment is now automated and error-free. Highly recommended.", stars: 5 },
-    { name: "Anita Yusuf", role: "Managing Director", company: "Yusuf Fabrics", content: "The transition from spreadsheets to StringVentory was the best decision for our growth.", stars: 5 }
+    { name: "Anita Yusuf", role: "Managing Director", company: "Yusuf Fabrics", content: "The transition from spreadsheets to PinnexVentures was the best decision for our growth.", stars: 5 }
   ];
 
   // Distribute testimonials into 3 columns
@@ -77,7 +77,7 @@ const TestimonialsSection = () => {
             <span className="text-emerald-600">Across the Globe</span>
           </h2>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto font-medium">
-            StringVentory powers the growth of retailers worldwide. See what our community has to say.
+            PinnexVentures powers the growth of retailers worldwide. See what our community has to say.
           </p>
         </div>
 

@@ -52,7 +52,7 @@ export default function SuperadminSidebar({ onClose }) {
               <Package className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-white font-bold text-lg tracking-tight">StringVentory</h1>
+              <h1 className="text-white font-bold text-lg tracking-tight">PinnexVentures</h1>
               <p className="text-gray-500 text-xs">Platform Admin</p>
             </div>
           </Link>

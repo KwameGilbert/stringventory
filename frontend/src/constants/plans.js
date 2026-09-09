@@ -15,7 +15,7 @@ export const PRICING_PLANS = [
     id: 'free_trial',
     name: 'Free Trial',
     slug: 'free_trial',
-    description: 'Try StringVentory free for 14 days',
+    description: 'Try PinnexVentures free for 14 days',
     priceMonthly: 0,
     priceYearly: 0,
     trialDays: 14,

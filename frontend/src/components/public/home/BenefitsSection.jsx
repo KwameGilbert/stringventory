@@ -69,7 +69,7 @@ const BenefitsSection = () => {
               <span className="text-emerald-600 font-bold">Performance Teams</span>
             </h2>
             <p className="text-lg text-slate-600 mb-10 leading-relaxed">
-              StringVentory isn't just an inventory tool—it's a productivity multiplier.
+              PinnexVentures isn't just an inventory tool—it's a productivity multiplier.
               We've obsessed over the details so you can focus on growing your business.
             </p>
 

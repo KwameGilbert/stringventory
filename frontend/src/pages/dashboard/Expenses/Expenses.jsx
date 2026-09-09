@@ -79,7 +79,7 @@ const Expenses = () => {
         Notes: e.notes || "—",
       }));
 
-      exportToExcel(dataToExport, "stringventory_expenses", "Expenses");
+      exportToExcel(dataToExport, "pinnexventures_expenses", "Expenses");
     } catch (error) {
       console.error("Excel Export Error:", error);
       showError("Failed to generate Excel report");
@@ -104,7 +104,7 @@ const Expenses = () => {
       await exportToPDF({
         title: "Company Expense Report",
         subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredExpenses.length} expense(s)`,
-        fileName: "stringventory_expenses",
+        fileName: "pinnexventures_expenses",
         table: tableData,
         totals: [
           { label: "Total Expenditure", value: formatPrice(stats.total), bold: true },

@@ -68,7 +68,7 @@ const Step5_ConfirmationForm = ({ formData, setStep }) => {
           onEdit={() => setStep(2)}
           fields={[
             { label: 'Name', value: formData.companyName },
-            { label: 'Subdomain', value: formData.subdomain ? `${formData.subdomain}.stringventory.com` : '' },
+            { label: 'Subdomain', value: formData.subdomain ? `${formData.subdomain}.pinnexventures.com` : '' },
             { label: 'Email', value: formData.contactEmail },
             { label: 'Phone', value: `${formData.countryCode || 'GH'} ${formData.phone || ''}` },
           ]}

@@ -209,7 +209,7 @@ export default function Inventory() {
       Currency: item.currency || responseCurrency,
     }));
 
-    exportToExcel(dataToExport, "stringventory_inventory", "Inventory");
+    exportToExcel(dataToExport, "pinnexventures_inventory", "Inventory");
   };
 
   const handleExportPDF = async () => {
@@ -231,7 +231,7 @@ export default function Inventory() {
       await exportToPDF({
         title: "Stock Intake Inventory Report",
         subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredInventory.length} record(s)`,
-        fileName: "stringventory_inventory",
+        fileName: "pinnexventures_inventory",
         table: tableData,
         totals: [
           { label: "Total Units in Stock", value: totalUnits.toLocaleString(), bold: true },

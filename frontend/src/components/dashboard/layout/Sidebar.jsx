@@ -129,7 +129,7 @@ const Sidebar = ({ mobileOpen, onClose, isOpen, onToggle }) => {
           
           {isOpen && (
             <span className="text-lg font-bold text-white tracking-tight truncate max-w-[140px]">
-              {businessInfo?.name || "Stringventory"}
+              {businessInfo?.name || "PinnexVentures"}
             </span>
           )}
         </div>

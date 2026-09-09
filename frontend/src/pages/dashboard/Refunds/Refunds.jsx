@@ -73,7 +73,7 @@ export default function Refunds() {
         "Processed By": r.processedBy || "System",
       }));
 
-      exportToExcel(dataToExport, "stringventory_refunds", "Refunds");
+      exportToExcel(dataToExport, "pinnexventures_refunds", "Refunds");
     } catch (error) {
       console.error("Excel Export Error:", error);
       showError("Failed to generate Excel report");
@@ -98,7 +98,7 @@ export default function Refunds() {
       await exportToPDF({
         title: "Refund Management Report",
         subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredRefunds.length} record(s)`,
-        fileName: "stringventory_refunds",
+        fileName: "pinnexventures_refunds",
         table: tableData,
         totals: [
           { label: "Total Refunded Amount", value: formatCurrency(stats.totalAmount), bold: true, color: 'emerald' },

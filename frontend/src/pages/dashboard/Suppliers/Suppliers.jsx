@@ -98,7 +98,7 @@ export default function Suppliers() {
       Status: (s.status || "Active").toUpperCase(),
     }));
 
-    exportToExcel(dataToExport, "stringventory_suppliers", "Suppliers");
+    exportToExcel(dataToExport, "pinnexventures_suppliers", "Suppliers");
   };
 
   const handleExportPDF = async () => {
@@ -122,7 +122,7 @@ export default function Suppliers() {
       await exportToPDF({
         title: "Supplier Directory Report",
         subtitle: `Generated for ${filteredSuppliers.length} supplier(s)`,
-        fileName: "stringventory_suppliers",
+        fileName: "pinnexventures_suppliers",
         table: tableData,
         totals: [
           { label: "Total Managed Products", value: totalProductsCount.toLocaleString(), bold: true, color: "emerald" },

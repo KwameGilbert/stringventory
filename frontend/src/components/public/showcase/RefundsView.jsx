@@ -78,7 +78,7 @@ const RefundsView = () => (
 
       {/* Footer attribution matching the screenshot */}
       <div className="pt-20 flex justify-between items-center text-[10px] font-medium text-slate-400 italic">
-         <p>© 2026 StringVentory. All rights reserved.</p>
+         <p>© 2026 PinnexVentures. All rights reserved.</p>
          <p>Developed by <span className="text-emerald-500 font-bold not-italic">StringTech</span></p>
       </div>
    </motion.div>

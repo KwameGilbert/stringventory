@@ -7,7 +7,7 @@ self.addEventListener('push', function(event) {
         try {
             const data = event.data.json();
             const options = {
-                body: data.body || 'New update from Stringventory',
+                body: data.body || 'New update from PinnexVentures',
                 icon: '/favicon.ico', // Update path if needed
                 badge: '/badge.png',  // Optional small icon
                 data: {
@@ -18,16 +18,16 @@ self.addEventListener('push', function(event) {
             };
 
             event.waitUntil(
-                self.registration.showNotification(data.title || 'Stringventory Alert', options)
+                self.registration.showNotification(data.title || 'PinnexVentures Alert', options)
             );
         } catch (e) {
             // Fallback for non-JSON push
             const options = {
-                body: event.data.text() || 'New update from Stringventory',
+                body: event.data.text() || 'New update from PinnexVentures',
                 icon: '/favicon.ico'
             };
             event.waitUntil(
-                self.registration.showNotification('Stringventory Alert', options)
+                self.registration.showNotification('PinnexVentures Alert', options)
             );
         }
     }

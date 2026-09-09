@@ -49,7 +49,7 @@ const LandingFooter = () => {
                 <span className="text-white font-bold text-xl uppercase">S</span>
               </div>
               <span className="text-2xl font-bold text-slate-900 tracking-tight">
-                StringVentory
+                PinnexVentures
               </span>
             </Link>
             <p className="text-slate-500 mb-8 max-w-sm leading-relaxed">
@@ -91,7 +91,7 @@ const LandingFooter = () => {
             <ul className="space-y-6">
               <li className="flex items-start space-x-4">
                 <Mail className="w-5 h-5 text-emerald-600 mt-1" />
-                <span className="text-slate-500 text-sm font-medium">hello@stringventory.com</span>
+                <span className="text-slate-500 text-sm font-medium">hello@pinnexventures.com</span>
               </li>
               <li className="flex items-start space-x-4">
                 <MapPin className="w-5 h-5 text-emerald-600 mt-1" />
@@ -108,7 +108,7 @@ const LandingFooter = () => {
         {/* Bottom Bar */}
         <div className="pt-12 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-slate-400 text-sm font-medium">
-            © {currentYear} StringVentory Inc. All rights reserved.
+            © {currentYear} PinnexVentures Inc. All rights reserved.
           </p>
           <div className="flex items-center space-x-8 text-sm font-medium text-slate-400">
             <a href="#" className="hover:text-slate-900 transition-colors">Privacy Policy</a>

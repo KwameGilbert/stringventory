@@ -16,7 +16,7 @@ const CheckoutTrustBar = () => {
         </div>
       </div>
       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center">
-        © 2024 StringVentory Global • All Rights Reserved
+        © 2024 PinnexVentures Global • All Rights Reserved
       </p>
     </div>
   );

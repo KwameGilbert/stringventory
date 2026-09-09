@@ -59,7 +59,7 @@ export default function SuperadminLogin() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@stringventory.com"
+                  placeholder="admin@pinnexventures.com"
                   disabled={isLoading}
                   className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all outline-none"
                   required
@@ -137,7 +137,7 @@ export default function SuperadminLogin() {
 
         {/* System Footer */}
         <div className="mt-12 text-center text-slate-500 text-sm">
-          <p className="font-medium">StringVentory Orchestrator v1.0.0</p>
+          <p className="font-medium">PinnexVentures Orchestrator v1.0.0</p>
           <div className="mt-2 flex items-center justify-center gap-4">
             <span className="hover:text-emerald-600 cursor-pointer transition-colors">Security Details</span>
             <span className="w-1 h-1 bg-slate-300 rounded-full"></span>

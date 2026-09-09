@@ -51,7 +51,7 @@ const CTASection = () => {
               className="text-4xl md:text-6xl font-semibold text-white mb-4 leading-snug"
             >
               Join 2,000+ businesses <br /> 
-              growing with <span className="text-emerald-500 font-bold">StringVentory</span>
+              growing with <span className="text-emerald-500 font-bold">PinnexVentures</span>
             </motion.h2>
             
             <motion.p 
