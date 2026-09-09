@@ -5,7 +5,6 @@ import { AuthProvider } from "./AuthProvider";
 // import { SubscriptionProvider } from "./SubscriptionProvider"; // Depends on TenantProvider — commented out
 import { SettingsProvider } from "./SettingsContext";
 import { NotificationProvider } from "./NotificationContext";
-import InstallPrompt from "../components/ui/InstallPrompt";
 
 /**
  * Composes all application-level context providers into a single wrapper.
@@ -23,7 +22,6 @@ export default function Providers({ children }) {
         {/*   <SubscriptionProvider> */}
               <SettingsProvider>
                 <NotificationProvider>
-                  <InstallPrompt />
                   {children}
                 </NotificationProvider>
               </SettingsProvider>

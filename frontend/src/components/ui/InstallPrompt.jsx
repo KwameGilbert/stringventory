@@ -43,8 +43,12 @@ export default function InstallPrompt() {
       setDeferredPrompt(null);
     };
 
-    // Check if app was previously dismissed
-    const isDismissed = localStorage.getItem('pwa_install_dismissed');
+    // Check if app was previously dismissed (suppress if dismissed within last 7 days)
+    const dismissedAt = localStorage.getItem('pwa_install_dismissed');
+    const isDismissed =
+      dismissedAt &&
+      new Date().getTime() - Number(dismissedAt) < 7 * 24 * 60 * 60 * 1000;
+
     if (!isDismissed && !isInstalled) {
       setShowPrompt(true);
     }

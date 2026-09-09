@@ -1,9 +1,10 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers/AuthContext.js";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { ForgotPasswordModal, SuccessAlert } from "../../components/auth";
 import { handleApiError } from "../../utils/errorHandler";
+import InstallPrompt from "../../components/ui/InstallPrompt";
 
 export default function Login() {
   const { login } = useAuth();
@@ -242,6 +243,8 @@ export default function Login() {
         onClose={() => setShowSuccessAlert(false)}
         autoCloseDelay={3000}
       />
+
+      <InstallPrompt />
     </div>
   );
 }

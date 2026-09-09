@@ -37,7 +37,7 @@ export default function SuperadminLogin() {
             <ShieldCheck className="w-9 h-9 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">
-            String<span className="text-emerald-600">Ventory</span> 
+            Pinnex<span className="text-emerald-600">Ventures</span> 
             <span className="ml-2 px-2 py-0.5 bg-slate-200 text-slate-600 text-xs font-bold rounded uppercase tracking-widest border border-slate-300">Platform</span>
           </h1>
           <p className="text-slate-500 font-medium">Platform Administration Portal</p>
