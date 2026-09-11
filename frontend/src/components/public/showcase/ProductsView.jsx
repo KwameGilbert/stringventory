@@ -129,7 +129,7 @@ const ProductsView = () => (
                      </span>
                   </td>
                   <td className="px-8 py-4 text-right">
-                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                     <div className="flex items-center justify-end gap-1">
                         <button className="p-2 text-slate-300 hover:text-emerald-500 hover:bg-emerald-50 rounded-xl transition-all"><Eye className="w-4 h-4" /></button>
                         <button className="p-2 text-slate-300 hover:text-sky-500 hover:bg-sky-50 rounded-xl transition-all"><Pencil className="w-4 h-4" /></button>
                         <button className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"><Trash2 className="w-4 h-4" /></button>

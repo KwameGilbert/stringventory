@@ -79,7 +79,7 @@ const UsersView = () => (
                      }`}>
                      {user.status}
                   </span>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mt-4">
+                  <div className="flex items-center gap-1 mt-4">
                      <button className="p-1.5 text-slate-300 hover:text-emerald-500 rounded-lg"><Pencil className="w-4 h-4" /></button>
                      <button className="p-1.5 text-slate-300 hover:text-rose-500 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                   </div>

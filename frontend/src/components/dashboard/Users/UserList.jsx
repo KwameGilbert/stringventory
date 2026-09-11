@@ -92,7 +92,7 @@ export default function UserList({ users, onEdit, onDelete }) {
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => window.location.href = `/dashboard/users/${user.id}`}
                         className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"

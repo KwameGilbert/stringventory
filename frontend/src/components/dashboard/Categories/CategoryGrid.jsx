@@ -62,7 +62,7 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete, canManage = true }
                 ) : null}
                 
                 {/* Actions - Positioned over image */}
-                <div className="absolute top-3 right-3 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
                   {canManage ? (
                     <>
                       <Link 
