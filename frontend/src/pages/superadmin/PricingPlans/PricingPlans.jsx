@@ -114,7 +114,7 @@ export default function PricingPlans() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Pricing Plans</h1>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">Pricing Plans</h1>
           <p className="text-gray-600">Manage subscription tiers and pricing</p>
         </div>
         <button
@@ -233,7 +233,7 @@ export default function PricingPlans() {
               <div className="p-6 border-b border-gray-100">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900">{plan.name}</h3>
                     {plan.isPopular && (
                       <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
                         <Star className="w-3 h-3" /> Popular
@@ -372,7 +372,7 @@ export default function PricingPlans() {
           >
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">{selectedPlan.name} Plan</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">{selectedPlan.name} Plan</h2>
                 <button
                   onClick={() => setSelectedPlan(null)}
                   className="text-gray-500 hover:text-gray-700"

@@ -97,7 +97,7 @@ export default function AnalyticsRevenue({ data, formatCurrency }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="mb-6">
-            <h2 className="text-lg font-bold text-gray-900">Revenue by Subscription Plan</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Revenue by Subscription Plan</h2>
             <p className="text-sm text-gray-500">Breakdown by plan tier</p>
           </div>
           <div className="h-80">
@@ -125,7 +125,7 @@ export default function AnalyticsRevenue({ data, formatCurrency }) {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-           <h2 className="text-lg font-bold text-gray-900 mb-6">MRR vs ARR</h2>
+           <h2 className="text-lg font-semibold text-gray-900 mb-6">MRR vs ARR</h2>
            <div className="h-80">
              <ResponsiveContainer width="100%" height="100%">
                <BarChart data={data.revenueTrends}>

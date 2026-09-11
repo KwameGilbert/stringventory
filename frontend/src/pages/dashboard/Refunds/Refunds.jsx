@@ -129,7 +129,7 @@ export default function Refunds() {
       {/* Immersive Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Refund Management</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Refund Management</h1>
           <p className="text-gray-500 text-sm tracking-tight">{stats.total} total refund requests recorded</p>
         </div>
         

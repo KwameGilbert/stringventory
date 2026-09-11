@@ -12,18 +12,6 @@ import {
 import { TrendingUp } from "lucide-react";
 import { useCurrency } from "../../../utils/currencyUtils";
 
-const MOCK_DATA = [
-  { month: "Jan", sales: 45000, purchase: 32000 },
-  { month: "Feb", sales: 52000, purchase: 38000 },
-  { month: "Mar", sales: 48000, purchase: 41000 },
-  { month: "Apr", sales: 61000, purchase: 45000 },
-  { month: "May", sales: 55000, purchase: 42000 },
-  { month: "Jun", sales: 67000, purchase: 48000 },
-  { month: "Jul", sales: 50000, purchase: 48000 },
-  { month: "Aug", sales: 67000, purchase: 38000 },
-  { month: "Sep", sales: 37000, purchase: 40000 },
-];
-
 const SalesExpensesChart = ({ dashboardData, dashboardLoading }) => {
   const { symbol, formatPrice } = useCurrency();
 
@@ -37,7 +25,7 @@ const SalesExpensesChart = ({ dashboardData, dashboardLoading }) => {
       sales: Number(row?.revenue ?? 0),
       expenses: Number(row?.expenses ?? 0),
     }));
-    return mapped.length > 0 ? mapped : MOCK_DATA.map(d => ({ month: d.month, sales: d.sales, expenses: d.purchase }));
+    return mapped;
   }, [dashboardData]);
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -88,7 +76,7 @@ const SalesExpensesChart = ({ dashboardData, dashboardLoading }) => {
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-1.5">
           <TrendingUp className="text-[#00C49F] w-5 h-5" strokeWidth={2.5} />
-          <h3 className="text-[18px] font-bold text-slate-800 tracking-tight">Sales vs Expenses Trends</h3>
+          <h3 className="text-[18px] font-semibold text-slate-800 tracking-tight">Sales vs Expenses Trends</h3>
         </div>
         <p className="text-[13px] font-medium text-slate-500">Track your revenue and spending over time</p>
       </div>

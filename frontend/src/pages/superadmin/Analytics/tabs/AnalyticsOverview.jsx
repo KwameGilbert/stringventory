@@ -61,7 +61,7 @@ export default function AnalyticsOverview({ data, formatCurrency }) {
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Growth Overview</h2>
+              <h2 className="text-lg font-semibold text-gray-900">Growth Overview</h2>
               <p className="text-sm text-gray-500">Revenue vs User Growth</p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export default function AnalyticsOverview({ data, formatCurrency }) {
 
         {/* Top Businesses List */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Top Performers</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Performers</h2>
           <div className="space-y-4">
             {data.topBusinesses.slice(0, 5).map((biz, i) => (
               <div key={i} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">

@@ -56,7 +56,7 @@ export default function BusinessSubscription({ business }) {
       <div className="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-xl shadow-sm border border-emerald-200 p-6">
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Current Subscription</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Current Subscription</h2>
             <p className="text-gray-600">Active plan details and billing information</p>
           </div>
           <CreditCard className="w-8 h-8 text-emerald-600" />

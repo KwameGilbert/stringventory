@@ -119,7 +119,7 @@ export default function ViewUser() {
           <ArrowLeft size={20} className="text-gray-600" />
         </button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">User Profile</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">User Profile</h1>
           <p className="text-gray-500 text-sm">View user account details</p>
         </div>
         <button
@@ -142,7 +142,7 @@ export default function ViewUser() {
                 className="w-24 h-24 rounded-2xl border-4 border-white shadow-lg bg-white"
               />
               <div className="mb-1">
-                <h2 className="text-2xl font-bold text-gray-900">{user.firstName} {user.lastName}</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">{user.firstName} {user.lastName}</h2>
                 <div className="flex items-center gap-2 text-gray-500">
                   <span className="text-sm">{user.email}</span>
                   <span>•</span>

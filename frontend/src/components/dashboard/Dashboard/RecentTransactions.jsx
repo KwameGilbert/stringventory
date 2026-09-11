@@ -8,21 +8,6 @@ import { normalizeRole, ROLES } from "../../../utils/accessControl";
 
 const ALL_TABS = ["Sale", "Purchase", "Expenses"];
 
-const MOCK_TRANSACTIONS = {
-  Sale: [
-    { id: 1, date: "24 May 2025", customer: "Andrea Willer", code: "#114589", status: "Completed", statusColor: "bg-emerald-500", total: 4560, avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" },
-    { id: 2, date: "23 May 2025", customer: "Timothy Sands", code: "#114589", status: "Completed", statusColor: "bg-emerald-500", total: 3569, avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" },
-    { id: 3, date: "22 May 2025", customer: "Bonnie Rodrigues", code: "#114589", status: "Draft", statusColor: "bg-pink-500", total: 2659, avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" },
-    { id: 4, date: "21 May 2025", customer: "Randy McCree", code: "#114589", status: "Completed", statusColor: "bg-emerald-500", total: 2155, avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" },
-  ],
-  Purchase: [
-    { id: 5, date: "20 May 2025", customer: "Global Supplies Ltd", code: "#SUP-001", status: "Completed", statusColor: "bg-emerald-500", total: 12500, avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&auto=format&fit=crop&q=80" },
-    { id: 6, date: "19 May 2025", customer: "Apex Tech Importers", code: "#SUP-004", status: "Pending", statusColor: "bg-amber-500", total: 8400, avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop&q=80" },
-  ],
-  Expenses: [
-    { id: 8, date: "17 May 2025", customer: "Office Maintenance", code: "#EXP-40", status: "Paid", statusColor: "bg-emerald-500", total: 650, avatar: "https://images.unsplash.com/photo-1537511446984-935f663eb1f4?w=100&auto=format&fit=crop&q=80" },
-  ]
-};
 
 const RecentTransactions = () => {
   const { user } = useAuth();
@@ -54,17 +39,16 @@ const RecentTransactions = () => {
               status: order.status || "Completed",
               statusColor: order.status === "pending" ? "bg-amber-500" : order.status === "cancelled" ? "bg-red-500" : "bg-emerald-500",
               total: Number(order.total || 0),
-              avatar: order.customer?.avatar || MOCK_TRANSACTIONS.Sale[idx % MOCK_TRANSACTIONS.Sale.length].avatar,
+              avatar: order.customer?.avatar || "",
             }));
             setTransactions(mapped);
             return;
           }
         }
-        
-        setTransactions(MOCK_TRANSACTIONS[activeTab] || []);
+        setTransactions([]);
       } catch (err) {
         console.error("Failed to fetch transactions:", err);
-        setTransactions(MOCK_TRANSACTIONS[activeTab] || []);
+        setTransactions([]);
       } finally {
         setLoading(false);
       }

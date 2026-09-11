@@ -68,7 +68,7 @@ const LandingFooter = () => {
           {/* Links Column */}
           {footerLinks.map((column, i) => (
             <div key={i} className="lg:col-span-1">
-              <h4 className="font-bold text-slate-900 uppercase tracking-widest text-xs mb-8">
+              <h4 className="font-semibold text-slate-900 uppercase tracking-widest text-xs mb-8">
                 {column.title}
               </h4>
               <ul className="space-y-4">
@@ -85,7 +85,7 @@ const LandingFooter = () => {
 
           {/* Contact Details */}
           <div className="lg:col-span-1">
-            <h4 className="font-bold text-slate-900 uppercase tracking-widest text-xs mb-8">
+            <h4 className="font-semibold text-slate-900 uppercase tracking-widest text-xs mb-8">
               Reach Out
             </h4>
             <ul className="space-y-6">

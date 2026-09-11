@@ -15,7 +15,7 @@ export default function AnalyticsUsers({ data }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-6">User Acquisition</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">User Acquisition</h2>
           <div className="h-80">
              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.userGrowth}>
@@ -32,7 +32,7 @@ export default function AnalyticsUsers({ data }) {
         </div>
 
          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-           <h2 className="text-lg font-bold text-gray-900 mb-6">Geographic Distribution</h2>
+           <h2 className="text-lg font-semibold text-gray-900 mb-6">Geographic Distribution</h2>
            <div className="space-y-4">
               {data.geographicDistribution.map((geo, i) => (
                 <div key={i} className="space-y-2">

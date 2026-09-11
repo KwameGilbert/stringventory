@@ -192,7 +192,7 @@ export default function CreatePricingPlan() {
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{isEditing ? 'Edit Pricing Plan' : 'Create Pricing Plan'}</h1>
+            <h1 className="text-3xl font-semibold text-gray-900">{isEditing ? 'Edit Pricing Plan' : 'Create Pricing Plan'}</h1>
             <p className="text-gray-600 mt-1">{isEditing ? 'Update subscription tier details' : 'Add a new subscription tier'}</p>
           </div>
         </div>

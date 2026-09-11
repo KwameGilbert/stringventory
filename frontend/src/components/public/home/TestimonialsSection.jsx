@@ -51,7 +51,7 @@ const TestimonialsSection = () => {
                   {t.name.split(' ').map(n => n[0]).join('')}
                </div>
                <div>
-                  <h4 className="font-bold text-slate-900 text-[11px] leading-tight">{t.name}</h4>
+                  <h4 className="font-semibold text-slate-900 text-[11px] leading-tight">{t.name}</h4>
                   <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{t.role} @ {t.company}</p>
                </div>
             </div>
@@ -72,7 +72,7 @@ const TestimonialsSection = () => {
             <Quote className="w-4 h-4 text-emerald-600" />
             <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-[0.2em]">Infinite Praise</span>
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 leading-tight">
+          <h2 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-4 leading-tight">
             Trusted by Thousands <br />
             <span className="text-emerald-600">Across the Globe</span>
           </h2>

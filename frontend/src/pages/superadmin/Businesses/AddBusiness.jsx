@@ -120,7 +120,7 @@ export default function AddBusiness() {
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Add New Business</h1>
+            <h1 className="text-3xl font-semibold text-gray-900">Add New Business</h1>
             <p className="text-gray-600 mt-1">Create a new business account</p>
           </div>
         </div>

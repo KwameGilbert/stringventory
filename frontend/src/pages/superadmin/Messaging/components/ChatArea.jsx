@@ -49,7 +49,7 @@ export default function ChatArea({ activeContact, messages, onSendMessage }) {
             {activeContact.initials}
           </div>
           <div>
-            <h3 className="font-bold text-gray-900">{activeContact.name}</h3>
+            <h3 className="font-semibold text-gray-900">{activeContact.name}</h3>
             <div className="flex items-center gap-1.5 text-xs text-gray-500">
               <span className={`w-2 h-2 rounded-full ${activeContact.status === 'online' ? 'bg-green-500' : 'bg-gray-300'}`} />
               {activeContact.adminName} • {activeContact.status === 'online' ? 'Online' : 'Offline'}

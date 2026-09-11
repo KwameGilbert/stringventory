@@ -139,7 +139,7 @@ const PricingSection = () => {
             <Zap className="w-4 h-4 text-emerald-600 mr-2" />
             <span className="text-emerald-700 text-sm font-bold uppercase tracking-wider">Pricing Plans</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-[1.2]">
+          <h2 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-6 leading-[1.2]">
             Simple Pricing for <br />
             <span className="text-emerald-600 font-bold">Infinite Growth</span>
           </h2>

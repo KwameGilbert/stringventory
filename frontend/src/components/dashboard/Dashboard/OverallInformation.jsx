@@ -160,7 +160,7 @@ const OverallInformation = ({ dateRange }) => {
           {/* Details */}
           <div className="flex-1 flex justify-around">
             <div className="text-center">
-              <h5 className="text-2xl font-bold text-slate-800">
+              <h5 className="text-2xl font-semibold text-slate-800">
                 {metrics?.totalProducts ? (metrics.totalProducts - (metrics.lowStockItems || 0)) : "80"}
               </h5>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-2">In Stock</p>
@@ -169,7 +169,7 @@ const OverallInformation = ({ dateRange }) => {
               </span>
             </div>
             <div className="text-center">
-              <h5 className="text-2xl font-bold text-slate-800">{metrics?.lowStockItems || "20"}</h5>
+              <h5 className="text-2xl font-semibold text-slate-800">{metrics?.lowStockItems || "20"}</h5>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-2">Low Stock</p>
               <span className="px-2 py-0.5 bg-orange-50 text-orange-600 text-[10px] font-bold rounded-md flex items-center justify-center gap-0.5">
                 Warning

@@ -178,7 +178,7 @@ export default function Transactions() {
       {/* Immersive Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight flex items-center gap-2">
             <Landmark className="text-rose-500" />
             Financial Transactions
           </h1>

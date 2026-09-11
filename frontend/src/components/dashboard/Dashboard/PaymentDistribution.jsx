@@ -9,20 +9,12 @@ import {
 } from "recharts";
 import { useCurrency } from "../../../utils/currencyUtils";
 
-const MOCK_PAYMENT_DATA = [
-  { paymentMethod: "Mobile Money", revenue: 24500 },
-  { paymentMethod: "Cash", revenue: 15200 },
-  { paymentMethod: "Credit Card", revenue: 12400 },
-  { paymentMethod: "Bank Transfer", revenue: 8900 },
-];
-
 const PaymentDistribution = ({ dashboardData, dashboardLoading, dateRange }) => {
   const { formatPrice } = useCurrency();
 
   // Derive payment breakdown from shared dashboardData prop — no separate fetch needed
   const data = useMemo(() => {
-    const rawDistribution = dashboardData?.charts?.revenueByPaymentMethod || [];
-    const distribution = rawDistribution.length > 0 ? rawDistribution : MOCK_PAYMENT_DATA;
+    const distribution = dashboardData?.charts?.revenueByPaymentMethod || [];
     const colors = ["#10b981", "#6366f1", "#f59e0b", "#ec4899", "#8b5cf6", "#3b82f6"];
     return distribution.map((item, index) => {
       const rawMethod = item.paymentMethod || "Unknown";

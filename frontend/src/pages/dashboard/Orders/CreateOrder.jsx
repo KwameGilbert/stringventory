@@ -387,7 +387,7 @@ export default function CreateOrder() {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">New Sale</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">New Sale</h1>
         <p className="text-gray-500 text-sm">Fill in the details to create a new sale</p>
       </div>
 

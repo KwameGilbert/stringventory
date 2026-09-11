@@ -30,7 +30,7 @@ const DashboardView = () => (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-8 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-bold text-slate-900 text-sm">Monthly Performance</h3>
+          <h3 className="font-semibold text-slate-900 text-sm">Monthly Performance</h3>
           <div className="flex gap-2">
             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" /><span className="text-[10px] font-bold text-slate-500">Sales</span></div>
             <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-slate-200" /><span className="text-[10px] font-bold text-slate-500">Expenses</span></div>
@@ -45,7 +45,7 @@ const DashboardView = () => (
         </div>
       </div>
       <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col items-center justify-center">
-          <h3 className="font-bold text-slate-900 text-sm mb-4 w-full">Payment Distribution</h3>
+          <h3 className="font-semibold text-slate-900 text-sm mb-4 w-full">Payment Distribution</h3>
           <div className="relative w-32 h-32">
              <svg viewBox="0 0 100 100" className="rotate-[-90deg]">
                <circle cx="50" cy="50" r="40" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />

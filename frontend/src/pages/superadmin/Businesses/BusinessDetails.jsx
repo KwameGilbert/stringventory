@@ -278,7 +278,7 @@ export default function BusinessDetails() {
           </button>
           <div>
             <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-gray-900">{business.name}</h1>
+                <h1 className="text-3xl font-semibold text-gray-900">{business.name}</h1>
                 <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${getStatusBadge(business.status)} uppercase tracking-wide`}>
                     {business.status}
                 </span>

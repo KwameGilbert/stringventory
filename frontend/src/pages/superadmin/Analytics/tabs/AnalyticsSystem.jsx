@@ -27,7 +27,7 @@ export default function AnalyticsSystem({ data }) {
        </div>
 
        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-6">System Performance History</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">System Performance History</h2>
           <div className="h-80">
              <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.systemHealth.history}>

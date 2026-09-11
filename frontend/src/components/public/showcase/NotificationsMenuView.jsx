@@ -42,7 +42,7 @@ const NotificationsMenuView = () => (
             </div>
             <div className="flex-1 min-w-0">
                <div className="flex justify-between items-start mb-1">
-                  <h4 className="font-bold text-slate-800 text-sm tracking-tight">{note.title}</h4>
+                  <h4 className="font-semibold text-slate-800 text-sm tracking-tight">{note.title}</h4>
                   <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-300 uppercase">
                      <Clock className="w-3 h-3" /> {note.time}
                   </div>

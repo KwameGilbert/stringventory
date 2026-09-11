@@ -47,7 +47,7 @@ const MessagingView = () => (
                 </div>
                 <div className="flex-1 min-w-0">
                    <div className="flex justify-between items-start mb-0.5">
-                      <h5 className="font-bold text-slate-900 text-[11px] truncate">{chat.name}</h5>
+                      <h5 className="font-semibold text-slate-900 text-[11px] truncate">{chat.name}</h5>
                       <span className="text-[9px] text-slate-300 font-medium whitespace-nowrap">{chat.time}</span>
                    </div>
                    <p className="text-[10px] text-slate-400 font-medium truncate leading-tight">{chat.msg}</p>
@@ -66,7 +66,7 @@ const MessagingView = () => (
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
              </div>
              <div>
-                <h4 className="font-bold text-slate-900 text-sm">Support Team</h4>
+                <h4 className="font-semibold text-slate-900 text-sm">Support Team</h4>
                 <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-tighter">Online</p>
              </div>
           </div>

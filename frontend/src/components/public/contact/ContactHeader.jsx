@@ -15,7 +15,7 @@ const ContactHeader = () => {
           <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
           <span>Back to Home</span>
         </Link>
-        <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6 tracking-tight">
+        <h1 className="text-4xl md:text-6xl font-semibold text-slate-900 mb-6 tracking-tight">
           Let's Start a <span className="text-emerald-600">Conversation</span>
         </h1>
         <p className="text-slate-500 font-medium text-lg max-w-2xl mx-auto leading-relaxed">

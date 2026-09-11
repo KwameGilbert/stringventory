@@ -66,7 +66,7 @@ const InventoryView = () => (
             </div>
             <div>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">{stat.label}</p>
-               <h4 className="text-lg font-bold text-slate-900 leading-none">{stat.value}</h4>
+               <h4 className="text-lg font-semibold text-slate-900 leading-none">{stat.value}</h4>
                {stat.sub && <p className="text-[9px] font-bold text-slate-300 mt-0.5">{stat.sub}</p>}
             </div>
          </div>

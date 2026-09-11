@@ -5,7 +5,7 @@ export default function ContactList({ contacts, activeContactId, onSelectContact
   return (
     <div className="w-80 border-r border-gray-200 flex flex-col bg-gray-50">
       <div className="p-4 border-b border-gray-200 bg-white">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Messages</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Messages</h2>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input

@@ -84,7 +84,7 @@ export default function ForcePasswordChange() {
           <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-10 h-10 text-emerald-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Password Updated!</h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Password Updated!</h2>
           <p className="text-gray-600">
             Your password has been changed successfully. For security reasons, you will be logged out now. Please sign in with your new password.
           </p>
@@ -111,7 +111,7 @@ export default function ForcePasswordChange() {
            </div>
            <div className="relative z-10">
               <ShieldCheck className="w-12 h-12 text-white mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white">First Time Sign In</h2>
+              <h2 className="text-2xl font-semibold text-white">First Time Sign In</h2>
               <p className="text-emerald-100 text-sm mt-2">
                 For your security, you are required to change your password before continuing.
               </p>

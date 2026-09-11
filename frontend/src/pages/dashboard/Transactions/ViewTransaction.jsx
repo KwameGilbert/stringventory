@@ -149,7 +149,7 @@ export default function ViewTransaction() {
         <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-8 py-5 border-b border-gray-50 bg-gray-50/30 flex items-center justify-between">
-                    <h3 className="font-bold text-gray-900 tracking-tight">Financial Context</h3>
+                    <h3 className="font-semibold text-gray-900 tracking-tight">Financial Context</h3>
                     <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${type.bg} ${type.color}`}>
                         <TypeIcon size={12} />
                         {type.label}
@@ -308,7 +308,7 @@ export default function ViewTransaction() {
         <div className="space-y-6">
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-50 bg-gray-50/30">
-                    <h3 className="font-bold text-gray-900 tracking-tight">Audit Trail</h3>
+                    <h3 className="font-semibold text-gray-900 tracking-tight">Audit Trail</h3>
                 </div>
                 <div className="p-6 space-y-6">
                     <div className="flex items-start gap-4">

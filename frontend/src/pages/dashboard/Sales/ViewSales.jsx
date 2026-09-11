@@ -70,7 +70,7 @@ export default function ViewSales() {
              <Link to="/dashboard/sales" className="text-gray-400 hover:text-gray-600 transition-colors">
                 <ArrowLeft size={20} />
              </Link>
-             <h1 className="text-2xl font-bold text-gray-900">Sales History</h1>
+             <h1 className="text-2xl font-semibold text-gray-900">Sales History</h1>
            </div>
           <p className="text-gray-500 ml-7">View and manage all POS transactions</p>
         </div>

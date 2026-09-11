@@ -13,7 +13,7 @@ const InfoCard = ({ info, index }) => (
       <info.icon size={28} />
     </div>
     <div>
-      <h3 className="text-lg font-bold text-slate-900 mb-1">{info.title}</h3>
+      <h3 className="text-lg font-semibold text-slate-900 mb-1">{info.title}</h3>
       <p className="text-emerald-600 font-bold mb-1">{info.value}</p>
       <p className="text-slate-500 font-medium text-sm leading-relaxed">{info.description}</p>
     </div>

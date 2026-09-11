@@ -83,7 +83,7 @@ export default function StockAdjustmentModal({ isOpen, onClose, item, onConfirm 
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
           <div>
-            <h3 className="text-lg font-bold text-gray-900">Adjust Stock</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Adjust Stock</h3>
             <p className="text-sm text-gray-500">For {item.productName}</p>
           </div>
           <button

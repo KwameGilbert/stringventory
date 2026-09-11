@@ -4,16 +4,11 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import analyticsService from "../../../services/business/analyticsService";
 import { getDashboardDateParams } from "../../../utils/dashboardDateParams";
 
-const MOCK_CATEGORIES = [
-  { name: "Electronics", sales: 698, percentage: 50, color: "#f97316" },
-  { name: "Sports", sales: 545, percentage: 24, color: "#ea580c" },
-  { name: "Lifestyles", sales: 456, percentage: 16, color: "#0f172a" },
-];
 
 const TopCategories = ({ dateRange }) => {
   const [timeframe, setTimeframe] = useState("Weekly");
-  const [data, setData] = useState(MOCK_CATEGORIES);
-  const [stats, setStats] = useState({ totalCategories: 698, totalProducts: 7899 });
+  const [data, setData] = useState([]);
+  const [stats, setStats] = useState({ totalCategories: 0, totalProducts: 0 });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -39,17 +34,17 @@ const TopCategories = ({ dateRange }) => {
             color: colors[idx % colors.length],
           }));
 
-          setData(mapped.length > 0 ? mapped : MOCK_CATEGORIES);
+          setData(mapped);
           setStats({
-            totalCategories: Number(inventoryData?.summary?.totalCategories || byCategory.length || 698),
-            totalProducts: Number(inventoryData?.summary?.totalProducts || 7899),
+            totalCategories: Number(inventoryData?.summary?.totalCategories || byCategory.length || 0),
+            totalProducts: Number(inventoryData?.summary?.totalProducts || 0),
           });
           return;
         }
-        setData(MOCK_CATEGORIES);
+        setData([]);
       } catch (err) {
         console.error("Failed to fetch top categories:", err);
-        setData(MOCK_CATEGORIES);
+        setData([]);
       } finally {
         setLoading(false);
       }
@@ -118,16 +113,7 @@ const TopCategories = ({ dateRange }) => {
               </PieChart>
             </ResponsiveContainer>
             
-            {/* Percentage Badges hovering */}
-            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-lg shadow-md text-[11px] font-semibold text-slate-700 animate-pulse">
-              16%
-            </div>
-            <div className="absolute bottom-12 right-2 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-lg shadow-md text-[11px] font-semibold text-slate-700">
-              24%
-            </div>
-            <div className="absolute bottom-6 left-2 bg-white/90 backdrop-blur-xs border border-slate-200 px-2 py-1 rounded-lg shadow-md text-[11px] font-semibold text-slate-700">
-              50%
-            </div>
+
           </div>
 
           {/* Legend */}
@@ -148,7 +134,7 @@ const TopCategories = ({ dateRange }) => {
 
         {/* Statistics Box */}
         <div>
-          <h4 className="text-xs font-bold text-slate-900 mb-3 tracking-wide">Category Statistics</h4>
+          <h4 className="text-xs font-semibold text-slate-900 mb-3 tracking-wide">Category Statistics</h4>
           <div className="border border-slate-100 rounded-2xl bg-slate-50/50 p-4 space-y-3 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200/60">
               <div className="flex items-center gap-2.5">

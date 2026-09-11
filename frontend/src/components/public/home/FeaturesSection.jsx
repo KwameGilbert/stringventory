@@ -131,7 +131,7 @@ const FeaturesSection = () => {
             <Zap className="w-4 h-4 text-emerald-600 mr-2" />
             <span className="text-emerald-700 text-sm font-bold uppercase tracking-wider">Features</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 font-display leading-snug">
+          <h2 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-6 font-display leading-snug">
             Everything You Need to <br />
             <span className="text-emerald-600 font-semibold">Scale Your Business</span>
           </h2>
@@ -166,7 +166,7 @@ const FeaturesSection = () => {
               <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center mb-3 shadow-lg shadow-emerald-500/20">
                 <Layers className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Seamless Integrations</h3>
+              <h3 className="text-2xl font-semibold text-white mb-2">Seamless Integrations</h3>
               <p className="text-slate-300 text-sm leading-relaxed">
                 Full API access and native integrations with your favorite tools. 
                 PinnexVentures fits perfectly into your existing ecosystem.

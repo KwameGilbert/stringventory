@@ -175,7 +175,7 @@ const ProductShowcase = () => {
                    <feature.icon className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
-                   <h4 className="font-bold text-slate-900 mb-2">{feature.title}</h4>
+                   <h4 className="font-semibold text-slate-900 mb-2">{feature.title}</h4>
                    <p className="text-xs text-slate-500 leading-relaxed font-medium">{feature.desc}</p>
                 </div>
              </motion.div>

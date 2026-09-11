@@ -43,7 +43,7 @@ const UsersView = () => (
                </div>
                <div>
                   <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                  <h4 className="text-xl font-bold text-slate-900">{stat.value}</h4>
+                  <h4 className="text-xl font-semibold text-slate-900">{stat.value}</h4>
                </div>
             </div>
          ))}

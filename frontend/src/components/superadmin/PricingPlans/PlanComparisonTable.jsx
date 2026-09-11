@@ -37,7 +37,7 @@ const PlanComparisonTable = ({ comparisonData }) => {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Feature Matrix</h2>
+          <h2 className="text-xl font-semibold text-slate-900">Feature Matrix</h2>
           <p className="text-sm text-slate-500">Comparing functionality across all system plans</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full">

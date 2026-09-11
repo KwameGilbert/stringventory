@@ -149,7 +149,7 @@ export default function SalesRefund() {
       </button>
 
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+        <h1 className="text-2xl font-semibold text-gray-900 flex items-center gap-3">
             <div className="p-2 bg-rose-100 rounded-lg">
                 <RefreshCw className="w-6 h-6 text-rose-600" />
             </div>

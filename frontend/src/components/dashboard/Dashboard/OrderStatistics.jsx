@@ -7,31 +7,14 @@ const DAYS = ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"];
 // Time slots for Y-axis (matching image)
 const TIMES = ["12 mp", "12 pm", "02 pm", "12 am", "10 am", "8 am", "6 am", "4 am", "2 am"];
 
-// Mock matrix data matching the visual patterns in the user's screenshot
-const MOCK_HEATMAP = [
-  // 12 mp
-  [{ count: 24, shade: "bg-orange-200/70" }, { count: 32, shade: "bg-orange-200/70" }, { count: 45, shade: "bg-orange-200/70" }, { count: 18, shade: "bg-orange-200/70" }, { count: 12, shade: "bg-orange-200/70" }, { count: 240, shade: "bg-orange-500" }, { count: 265, shade: "bg-orange-500" }],
-  // 12 pm
-  [{ count: 30, shade: "bg-orange-200/70" }, { count: 40, shade: "bg-orange-200/70" }, { count: 297, shade: "bg-slate-900" }, { count: 25, shade: "bg-orange-200/70" }, { count: 275, shade: "bg-orange-500" }, { count: 45, shade: "bg-orange-200/70" }, { count: 35, shade: "bg-orange-200/70" }],
-  // 02 pm
-  [{ count: 45, shade: "bg-orange-200/70" }, { count: 50, shade: "bg-orange-200/70" }, { count: 35, shade: "bg-orange-200/70" }, { count: 20, shade: "bg-orange-200/70" }, { count: 15, shade: "bg-orange-200/70" }, { count: 20, shade: "bg-orange-200/70" }, { count: 30, shade: "bg-orange-200/70" }],
-  // 12 am
-  [{ count: 15, shade: "bg-orange-200/70" }, { count: 18, shade: "bg-orange-200/70" }, { count: 25, shade: "bg-orange-200/70" }, { count: 30, shade: "bg-orange-200/70" }, { count: 40, shade: "bg-orange-200/70" }, { count: 35, shade: "bg-orange-200/70" }, { count: 50, shade: "bg-orange-200/70" }],
-  // 10 am
-  [{ count: 280, shade: "bg-orange-500" }, { count: 290, shade: "bg-orange-500" }, { count: 275, shade: "bg-orange-500" }, { count: 60, shade: "bg-orange-200/70" }, { count: 45, shade: "bg-orange-200/70" }, { count: 30, shade: "bg-orange-200/70" }, { count: 20, shade: "bg-orange-200/70" }],
-  // 8 am
-  [{ count: 50, shade: "bg-orange-200/70" }, { count: 45, shade: "bg-orange-200/70" }, { count: 30, shade: "bg-orange-200/70" }, { count: 35, shade: "bg-orange-200/70" }, { count: 55, shade: "bg-orange-200/70" }, { count: 280, shade: "bg-orange-500" }, { count: 295, shade: "bg-orange-500" }],
-  // 6 am
-  [{ count: 35, shade: "bg-orange-200/70" }, { count: 40, shade: "bg-orange-200/70" }, { count: 25, shade: "bg-orange-200/70" }, { count: 30, shade: "bg-orange-200/70" }, { count: 20, shade: "bg-orange-200/70" }, { count: 25, shade: "bg-orange-200/70" }, { count: 30, shade: "bg-orange-200/70" }],
-  // 4 am
-  [{ count: 275, shade: "bg-orange-500" }, { count: 285, shade: "bg-orange-500" }, { count: 290, shade: "bg-orange-500" }, { count: 280, shade: "bg-orange-500" }, { count: 40, shade: "bg-orange-200/70" }, { count: 35, shade: "bg-orange-200/70" }, { count: 45, shade: "bg-orange-200/70" }],
-  // 2 am
-  [{ count: 260, shade: "bg-orange-500" }, { count: 270, shade: "bg-orange-500" }, { count: 280, shade: "bg-orange-500" }, { count: 30, shade: "bg-orange-200/70" }, { count: 25, shade: "bg-orange-200/70" }, { count: 20, shade: "bg-orange-200/70" }, { count: 35, shade: "bg-orange-200/70" }],
-];
+// Empty matrix for when there is no data
+const EMPTY_HEATMAP = Array.from({ length: 9 }, () =>
+  Array.from({ length: 7 }, () => ({ count: 0, shade: "bg-slate-50" }))
+);
 
 const OrderStatistics = ({ dateRange }) => {
   const [timeframe, setTimeframe] = useState("Weekly");
-  const [activeCell, setActiveCell] = useState({ rIdx: 1, cIdx: 2, count: 297 });
+  const [activeCell, setActiveCell] = useState(null);
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-md transition-all duration-300 h-full flex flex-col justify-between select-none">
@@ -83,8 +66,8 @@ const OrderStatistics = ({ dateRange }) => {
               {DAYS.map((_, dayIdx) => (
                 <div key={dayIdx} className="flex flex-col gap-1.5">
                   {TIMES.map((_, timeIdx) => {
-                    const cell = MOCK_HEATMAP[timeIdx][dayIdx];
-                    const isSelected = activeCell.rIdx === timeIdx && activeCell.cIdx === dayIdx;
+                    const cell = EMPTY_HEATMAP[timeIdx][dayIdx];
+                    const isSelected = activeCell?.rIdx === timeIdx && activeCell?.cIdx === dayIdx;
                     return (
                       <div
                         key={timeIdx}

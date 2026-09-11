@@ -50,7 +50,7 @@ const ContactForm = () => {
             <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle size={40} />
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Message Sent!</h2>
+            <h2 className="text-3xl font-semibold text-slate-900 mb-4">Message Sent!</h2>
             <p className="text-slate-500 font-medium mb-8">
               Thank you for reaching out. We've received your message and will get back to you shortly.
             </p>

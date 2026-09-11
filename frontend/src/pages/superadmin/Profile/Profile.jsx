@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../../providers/AuthContext';
 import superadminService from '../../../services/platform/superadminService';
 import { 
@@ -59,14 +59,8 @@ export default function Profile() {
       setActivityLog(Array.isArray(logs) ? logs : []);
     } catch (error) {
       console.error('Error fetching activity log:', error);
-      // Set mock data as fallback
-      setActivityLog([
-        { id: 1, action: 'Profile Updated', ip: '192.168.1.100', time: '2 hours ago' },
-        { id: 2, action: 'Password Changed', ip: '192.168.1.100', time: '1 day ago' },
-        { id: 3, action: 'Login', ip: '192.168.1.100', time: '2 days ago' },
-        { id: 4, action: 'Viewed Businesses', ip: '192.168.1.100', time: '3 days ago' },
-        { id: 5, action: 'Created Pricing Plan', ip: '192.168.1.100', time: '5 days ago' }
-      ]);
+      // No mock data fallback
+      setActivityLog([]);
     } finally {
       setLoadingActivity(false);
     }
@@ -232,7 +226,7 @@ export default function Profile() {
 
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">My Profile</h1>
+        <h1 className="text-3xl font-semibold text-slate-900 mb-2">My Profile</h1>
         <p className="text-slate-600">Manage your account settings and preferences</p>
       </div>
 
@@ -260,7 +254,7 @@ export default function Profile() {
               </label>
             </div>
             <div className="text-white">
-              <h2 className="text-3xl font-bold">{formData.name}</h2>
+              <h2 className="text-3xl font-semibold">{formData.name}</h2>
               <p className="text-emerald-400 font-medium flex items-center gap-2 mt-2">
                 <Shield className="w-4 h-4" />
                 {user?.role || 'Platform Administrator'}

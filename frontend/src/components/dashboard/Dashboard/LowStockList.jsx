@@ -53,7 +53,7 @@ const LowStockList = () => {
             <AlertTriangle className="w-5 h-5 text-red-500" />
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
           </div>
-          <h3 className="text-lg font-bold text-gray-900">Low Stock Alert</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Low Stock Alert</h3>
         </div>
         <Link 
           to="/dashboard/inventory" 

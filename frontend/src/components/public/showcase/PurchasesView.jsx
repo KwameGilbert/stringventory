@@ -69,7 +69,7 @@ const PurchasesView = () => (
             </div>
             <div>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">{stat.label}</p>
-               <h4 className="text-xl font-bold text-slate-900 leading-none">{stat.value}</h4>
+               <h4 className="text-xl font-semibold text-slate-900 leading-none">{stat.value}</h4>
             </div>
          </div>
        ))}

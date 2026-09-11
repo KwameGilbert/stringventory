@@ -8,43 +8,7 @@ const SalesPersonPerformance = ({ dateRange }) => {
   const [loading, setLoading] = useState(true);
   const { formatPrice } = useCurrency();
 
-  const getFallbackReps = () => [
-    {
-      id: "1",
-      name: "Lobar Handy",
-      revenue: 260,
-      salesCount: 6547,
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      id: "2",
-      name: "Sarah Jenkins",
-      revenue: 1474,
-      salesCount: 3474,
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      id: "3",
-      name: "Kwame Osei",
-      revenue: 8784,
-      salesCount: 1478,
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      id: "4",
-      name: "Elena Rostova",
-      revenue: 3240,
-      salesCount: 987,
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
-    },
-    {
-      id: "5",
-      name: "Marcus Aurelius",
-      revenue: 597,
-      salesCount: 784,
-      avatar: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80",
-    },
-  ];
+
 
   useEffect(() => {
     const fetchSalesReps = async () => {
@@ -55,20 +19,17 @@ const SalesPersonPerformance = ({ dateRange }) => {
         const userList = Array.isArray(payload) ? payload : (payload.users || payload.data || []);
         
         if (!userList || userList.length === 0) {
-          setReps(getFallbackReps());
+          setReps([]);
           return;
         }
-
-        const baseOrders = [6547, 3474, 1478, 987, 784, 520, 410, 312];
-        const baseRevs = [260, 1474, 8784, 3240, 597, 1250, 940, 680];
 
         const mappedReps = userList.map((u, index) => {
           const firstName = u?.firstName || "";
           const lastName = u?.lastName || "";
           const fullName = `${firstName} ${lastName}`.trim() || u?.name || u?.customerName || "Sales Representative";
           
-          const salesCount = u?.salesCount || u?.totalOrders || baseOrders[index % baseOrders.length];
-          const revenue = u?.revenue || u?.totalRevenue || baseRevs[index % baseRevs.length];
+          const salesCount = u?.salesCount || u?.totalOrders || 0;
+          const revenue = u?.revenue || u?.totalRevenue || 0;
 
           return {
             id: u?.id || `rep-${index}`,
@@ -80,10 +41,10 @@ const SalesPersonPerformance = ({ dateRange }) => {
           };
         }).sort((a, b) => b.salesCount - a.salesCount);
 
-        setReps(mappedReps.length > 0 ? mappedReps : getFallbackReps());
+        setReps(mappedReps);
       } catch (err) {
         console.error("Failed to fetch salesperson performance:", err);
-        setReps(getFallbackReps());
+        setReps([]);
       } finally {
         setLoading(false);
       }

@@ -51,7 +51,7 @@ const SupplierForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmittin
           <Truck className="w-7 h-7 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">{title}</h1>
           <p className="text-slate-500 font-medium text-sm mt-0.5">{subTitle}</p>
         </div>
       </div>
@@ -61,7 +61,7 @@ const SupplierForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmittin
         <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-blue-100 bg-blue-100 flex items-center gap-2.5">
             <Building2 className="w-4 h-4 text-blue-700" />
-            <h3 className="font-bold text-blue-950 text-sm uppercase tracking-wider">Company Details</h3>
+            <h3 className="font-semibold text-blue-950 text-sm uppercase tracking-wider">Company Details</h3>
           </div>
 
           <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -102,7 +102,7 @@ const SupplierForm = ({ initialData = {}, onSubmit, title, subTitle, isSubmittin
         <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-purple-100 bg-purple-100 flex items-center gap-2.5">
             <User className="w-4 h-4 text-purple-700" />
-            <h3 className="font-bold text-purple-950 text-sm uppercase tracking-wider">Contact Information</h3>
+            <h3 className="font-semibold text-purple-950 text-sm uppercase tracking-wider">Contact Information</h3>
           </div>
 
           <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">

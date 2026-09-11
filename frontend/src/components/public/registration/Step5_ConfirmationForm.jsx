@@ -6,7 +6,7 @@ const SummarySection = ({ title, fields, onEdit }) => (
   <div className="p-6 border border-slate-100 rounded-3xl bg-white shadow-sm relative group overflow-hidden">
     <div className="absolute inset-0 bg-slate-50/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
     <div className="relative z-10 flex justify-between items-start mb-4">
-      <h3 className="text-sm font-bold text-slate-900 tracking-tight">{title}</h3>
+      <h3 className="text-sm font-semibold text-slate-900 tracking-tight">{title}</h3>
       <button 
         onClick={onEdit}
         className="flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 transition-colors"
@@ -38,7 +38,7 @@ const Step5_ConfirmationForm = ({ formData, setStep }) => {
       className="space-y-8"
     >
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Confirm Your Details</h1>
+        <h1 className="text-3xl font-semibold text-slate-900 mb-2">Confirm Your Details</h1>
         <p className="text-slate-500 font-medium">Review everything before we get you started</p>
       </div>
 

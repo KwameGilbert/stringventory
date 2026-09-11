@@ -72,7 +72,7 @@ export default function AddCustomerModal({ isOpen, onClose, onCustomerAdded }) {
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Add New Customer</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Add New Customer</h2>
             <p className="text-sm text-gray-500">Create a quick customer profile</p>
           </div>
           <button 

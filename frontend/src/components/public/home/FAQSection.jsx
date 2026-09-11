@@ -88,7 +88,7 @@ const FAQSection = () => {
                 <HelpCircle className="w-4 h-4 text-emerald-600" />
                 <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-[0.2em]">Support FAQ</span>
               </motion.div>
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+              <h2 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-6 leading-tight">
                 Everything You <br />
                 <span className="text-emerald-600">Need to Know</span>
               </h2>
@@ -102,7 +102,7 @@ const FAQSection = () => {
                   <MessageCircle className="w-6 h-6 text-white" />
                </div>
                <div>
-                  <h4 className="text-xl font-bold mb-2">Still have questions?</h4>
+                  <h4 className="text-xl font-semibold mb-2">Still have questions?</h4>
                   <p className="text-sm text-slate-400 font-medium">Our growth specialists are available 24/7 to help you choose the best plan for your scale.</p>
                </div>
                <button className="w-full py-4 bg-white text-slate-900 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-xl active:scale-95">

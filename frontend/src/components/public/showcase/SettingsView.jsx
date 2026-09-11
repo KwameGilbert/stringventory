@@ -67,7 +67,7 @@ const SettingsView = () => {
            {activeSubTab === 'general' && (
              <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                 <div>
-                   <h4 className="font-bold text-slate-800 text-sm mb-6">General Preferences</h4>
+                   <h4 className="font-semibold text-slate-800 text-sm mb-6">General Preferences</h4>
                    <div className="space-y-4">
                       <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
                          <div>
@@ -109,7 +109,7 @@ const SettingsView = () => {
 
            {activeSubTab === 'business' && (
              <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-                <h4 className="font-bold text-slate-800 text-sm mb-6">Business Profile</h4>
+                <h4 className="font-semibold text-slate-800 text-sm mb-6">Business Profile</h4>
                 <div className="space-y-4">
                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1.5">

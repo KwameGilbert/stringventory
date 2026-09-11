@@ -81,7 +81,7 @@ const ExpiringProducts = () => {
           <div className="p-2 rounded-lg bg-linear-to-br from-rose-400 to-pink-500 shadow-lg shadow-rose-200">
             <Clock className="w-4 h-4 text-white" />
           </div>
-          <h3 className="text-lg font-bold text-gray-900">Expiring Soon</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Expiring Soon</h3>
         </div>
         <AlertCircle className="w-5 h-5 text-rose-400 animate-pulse" />
       </div>

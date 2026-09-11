@@ -140,7 +140,7 @@ export default function ForgotPasswordModal({ isOpen, onClose, onSuccess }) {
         {step === 1 && (
           <>
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Forgot Password?</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">Forgot Password?</h2>
               <p className="text-gray-600 text-sm">
                 Enter your email address and we'll send you an OTP to reset your password.
               </p>
@@ -201,7 +201,7 @@ export default function ForgotPasswordModal({ isOpen, onClose, onSuccess }) {
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 Back
               </button>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Verify OTP</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">Verify OTP</h2>
               <p className="text-gray-600 text-sm">
                 We've sent a 6-digit code to <span className="font-medium">{email}</span>
               </p>
@@ -272,7 +272,7 @@ export default function ForgotPasswordModal({ isOpen, onClose, onSuccess }) {
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 Back
               </button>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset Password</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">Reset Password</h2>
               <p className="text-gray-600 text-sm">
                 Enter your new password below
               </p>

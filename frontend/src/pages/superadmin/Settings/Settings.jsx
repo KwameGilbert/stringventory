@@ -176,7 +176,7 @@ export default function Settings() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Platform Settings</h1>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-1">Platform Settings</h1>
           <p className="text-gray-600">Global configuration for PinnexVentures platform</p>
         </div>
         <div className="flex items-center gap-3">
@@ -238,7 +238,7 @@ export default function Settings() {
                       <Globe className="w-6 h-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">General Information</h2>
+                      <h2 className="text-xl font-semibold text-gray-900">General Information</h2>
                       <p className="text-sm text-gray-500">Basic platform identity and status</p>
                     </div>
                   </div>
@@ -319,7 +319,7 @@ export default function Settings() {
                       <Palette className="w-6 h-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Platform Appearance</h2>
+                      <h2 className="text-xl font-semibold text-gray-900">Platform Appearance</h2>
                       <p className="text-sm text-gray-500">Customize the look and feel of your admin panel</p>
                     </div>
                   </div>
@@ -403,7 +403,7 @@ export default function Settings() {
                       <Eye className="w-24 h-24" />
                     </div>
                     <div className="relative z-10">
-                      <h3 className="text-lg font-bold mb-2">Live Preview</h3>
+                      <h3 className="text-lg font-semibold mb-2">Live Preview</h3>
                       <p className="text-slate-400 text-sm mb-6">This is how your dashboard buttons and accents will look.</p>
                       <div className="flex flex-wrap gap-4">
                         <button className={`px-6 py-2 rounded-lg font-bold bg-${settings.appearance.primaryColor === 'slate' ? 'white text-slate-900' : settings.appearance.primaryColor + '-500'} shadow-lg`}>
@@ -426,7 +426,7 @@ export default function Settings() {
                       <Mail className="w-6 h-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Email & SMTP</h2>
+                      <h2 className="text-xl font-semibold text-gray-900">Email & SMTP</h2>
                       <p className="text-sm text-gray-500">Configure how the platform sends transactional emails</p>
                     </div>
                   </div>
@@ -514,7 +514,7 @@ export default function Settings() {
                         <Key className="w-6 h-6 text-emerald-600" />
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold text-gray-900">API & Integrations</h2>
+                        <h2 className="text-xl font-semibold text-gray-900">API & Integrations</h2>
                         <p className="text-sm text-gray-500">Manage platform access and external connections</p>
                       </div>
                     </div>
@@ -525,7 +525,7 @@ export default function Settings() {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Active API Keys</h3>
+                    <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">Active API Keys</h3>
                     {settings.integrations?.apiKeys?.map((key) => (
                       <div key={key.id} className="flex items-center justify-between p-4 border border-gray-100 bg-gray-50 rounded-2xl group">
                         <div className="flex items-center gap-4">
@@ -562,7 +562,7 @@ export default function Settings() {
                   </div>
 
                   <div className="p-6 bg-indigo-50 border border-indigo-100 rounded-2xl">
-                    <h3 className="font-bold text-indigo-900 mb-2 flex items-center gap-2">
+                    <h3 className="font-semibold text-indigo-900 mb-2 flex items-center gap-2">
                       <RefreshCw className="w-5 h-5" />
                       Webhooks
                     </h3>
@@ -597,7 +597,7 @@ export default function Settings() {
                       )}
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900 capitalize">{activeTab} Settings</h2>
+                      <h2 className="text-xl font-semibold text-gray-900 capitalize">{activeTab} Settings</h2>
                       <p className="text-sm text-gray-500">Configure platform {activeTab} preferences</p>
                     </div>
                   </div>
@@ -657,7 +657,7 @@ export default function Settings() {
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-3">
                             <RefreshCw className="w-5 h-5 text-emerald-600" />
-                            <h3 className="font-bold text-emerald-900">Free Trial Management</h3>
+                            <h3 className="font-semibold text-emerald-900">Free Trial Management</h3>
                           </div>
                           <label className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -689,7 +689,7 @@ export default function Settings() {
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-6 bg-blue-50 border border-blue-200 rounded-2xl hover:shadow-md transition-all">
-                          <h3 className="font-bold text-blue-900 flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold text-blue-900 flex items-center gap-2 mb-2">
                             <Database className="w-5 h-5" />
                             Platform Backup
                           </h3>
@@ -699,7 +699,7 @@ export default function Settings() {
                           </button>
                         </div>
                         <div className="p-6 bg-purple-50 border border-purple-200 rounded-2xl hover:shadow-md transition-all">
-                          <h3 className="font-bold text-purple-900 flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold text-purple-900 flex items-center gap-2 mb-2">
                             <RefreshCw className="w-5 h-5" />
                             Optimize DB
                           </h3>
@@ -711,7 +711,7 @@ export default function Settings() {
                       </div>
 
                       <div className="mt-8 p-8 bg-rose-50 border border-rose-100 rounded-2xl">
-                        <h3 className="font-bold text-rose-900 text-lg mb-2 flex items-center gap-2 uppercase tracking-tight">
+                        <h3 className="font-semibold text-rose-900 text-lg mb-2 flex items-center gap-2 uppercase tracking-tight">
                           <AlertTriangle className="w-6 h-6" />
                           Critical Infrastructure Zone
                         </h3>

@@ -205,7 +205,7 @@ export default function CreateRefund() {
         <div className="lg:col-span-8 space-y-6">
              <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden group">
                 <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/30 flex justify-between items-center">
-                    <h3 className="text-[10px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
+                    <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest flex items-center gap-2">
                         <Package className="w-4 h-4" />
                         Item Selection
                     </h3>
@@ -277,7 +277,7 @@ export default function CreateRefund() {
             </div>
 
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 space-y-4">
-                <h3 className="text-[10px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
+                <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" />
                     Refund Documentation
                 </h3>

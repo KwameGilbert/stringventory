@@ -42,7 +42,7 @@ const ReportsView = () => (
          ].map((stat, i) => (
             <div key={i} className="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-               <h4 className="text-xl font-bold text-slate-900">{stat.value}</h4>
+               <h4 className="text-xl font-semibold text-slate-900">{stat.value}</h4>
                <div className={`mt-2 flex items-center gap-1 text-[10px] font-bold ${stat.ups ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {stat.ups ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                   {stat.trend} <span className="text-slate-300 font-medium ml-1">vs last period</span>

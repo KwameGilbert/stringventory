@@ -81,7 +81,7 @@ const Step1_ChoosePlan = ({ formData, setFormData }) => {
       className="space-y-8"
     >
       <div>
-        <h1 className="text-4xl font-bold text-slate-900 mb-1 tracking-tight">Choose your plan</h1>
+        <h1 className="text-4xl font-semibold text-slate-900 mb-1 tracking-tight">Choose your plan</h1>
         <p className="text-slate-500 font-medium text-md">Select the tier that best fits your business needs.</p>
       </div>
 

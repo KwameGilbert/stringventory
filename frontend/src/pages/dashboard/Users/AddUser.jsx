@@ -147,7 +147,7 @@ export default function AddUser() {
           <ArrowLeft size={20} />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Add New User</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Add New User</h1>
           <p className="text-gray-500 text-sm">Create a new team member and assign a role</p>
         </div>
       </div>

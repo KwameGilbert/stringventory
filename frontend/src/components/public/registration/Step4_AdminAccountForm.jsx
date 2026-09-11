@@ -19,7 +19,7 @@ const Step4_AdminAccountForm = ({ formData, setFormData }) => {
       className="space-y-8"
     >
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Create Your Admin Account</h1>
+        <h1 className="text-3xl font-semibold text-slate-900 mb-2">Create Your Admin Account</h1>
         <p className="text-slate-500 font-medium px-4">
           This is your master login — full control over your business data, users, and settings.
         </p>

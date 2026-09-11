@@ -70,7 +70,7 @@ export default function CreateCustomer() {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Add New Customer</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Add New Customer</h1>
         <p className="text-gray-500 text-sm">Create a new customer profile</p>
       </div>
 

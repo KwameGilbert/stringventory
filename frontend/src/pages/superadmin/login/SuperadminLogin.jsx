@@ -36,7 +36,7 @@ export default function SuperadminLogin() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-2xl mb-6 shadow-xl shadow-emerald-500/20 rotate-3">
             <ShieldCheck className="w-9 h-9 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-4xl font-semibold text-slate-900 tracking-tight mb-2">
             Pinnex<span className="text-emerald-600">Ventures</span> 
             <span className="ml-2 px-2 py-0.5 bg-slate-200 text-slate-600 text-xs font-bold rounded uppercase tracking-widest border border-slate-300">Platform</span>
           </h1>

@@ -17,7 +17,7 @@ const SuppliersHeader = ({
       {/* Top Title & Actions Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Suppliers</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Suppliers</h1>
           <p className="text-slate-500 text-sm font-medium mt-0.5">{totalSuppliers} partners and distributors registered</p>
         </div>
 

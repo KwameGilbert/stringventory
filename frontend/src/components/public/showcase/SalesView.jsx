@@ -87,7 +87,7 @@ const SalesView = () => (
                      <ShoppingCartIcon className="w-6 h-6" />
                   </div>
                   <div>
-                     <h3 className="text-slate-900 font-bold text-sm">Sale Items</h3>
+                     <h3 className="text-slate-900 font-semibold text-sm">Sale Items</h3>
                      <p className="text-[10px] text-slate-400 font-medium">Add products to the sale</p>
                   </div>
                </div>
@@ -159,7 +159,7 @@ const SalesView = () => (
          {/* RIGHT COLUMN (1/3) */}
          <div className="col-span-4 h-fit sticky top-0">
             <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-8">
-               <h3 className="text-slate-400 font-bold text-[10px] uppercase tracking-widest mb-2">Payment details and order totals</h3>
+               <h3 className="text-slate-400 font-semibold text-[10px] uppercase tracking-widest mb-2">Payment details and order totals</h3>
 
                <div className="space-y-6 mb-10">
                   <div>

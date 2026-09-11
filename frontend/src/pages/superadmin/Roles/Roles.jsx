@@ -12,16 +12,9 @@ export default function Roles() {
   };
 
   const getRoleStats = (roleId) => {
-    // Mock stats - in real app, this would come from API
-    const stats = {
-      'business_admin': 284,
-      'manager': 156,
-      'sales': 432,
-      'warehouse': 189,
-      'accountant': 95,
-      'viewer': 67
-    };
-    return stats[roleId] || 0;
+    // In real app, this would come from API
+    // Returning 0 as fallback since mock data is removed
+    return 0;
   };
 
   const handleDeleteRole = (roleId) => {
@@ -35,7 +28,7 @@ export default function Roles() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">User Roles</h1>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-2">User Roles</h1>
           <p className="text-gray-600">Manage roles and permissions for business users</p>
         </div>
         <button
@@ -174,7 +167,7 @@ export default function Roles() {
           <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-auto">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">{selectedRole.name}</h2>
+                <h2 className="text-2xl font-semibold text-gray-900">{selectedRole.name}</h2>
                 <button
                   onClick={() => setSelectedRole(null)}
                   className="text-gray-500 hover:text-gray-700"

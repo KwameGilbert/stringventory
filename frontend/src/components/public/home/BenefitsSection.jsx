@@ -64,7 +64,7 @@ const BenefitsSection = () => {
               <Zap className="w-4 h-4 text-emerald-600 mr-2" />
               <span className="text-emerald-700 text-sm font-bold uppercase tracking-wider">Benefits</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-8 leading-[1.2]">
+            <h2 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-8 leading-[1.2]">
               Designed for High <br />
               <span className="text-emerald-600 font-bold">Performance Teams</span>
             </h2>
@@ -91,7 +91,7 @@ const BenefitsSection = () => {
                     <benefit.icon className={`w-6 h-6 ${benefit.color}`} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 mb-1">{benefit.title}</h4>
+                    <h4 className="font-semibold text-slate-900 mb-1">{benefit.title}</h4>
                     <p className="text-slate-500 text-sm leading-relaxed">{benefit.description}</p>
                   </div>
                 </motion.div>
@@ -112,7 +112,7 @@ const BenefitsSection = () => {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="p-6 bg-slate-50 rounded-2xl">
                     <p className="text-slate-400 text-xs font-bold uppercase mb-2">Efficiency</p>
-                    <h3 className="text-3xl font-bold text-slate-900">94%</h3>
+                    <h3 className="text-3xl font-semibold text-slate-900">94%</h3>
                     <div className="w-full h-1.5 bg-slate-200 rounded-full mt-4 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
@@ -124,7 +124,7 @@ const BenefitsSection = () => {
                   </div>
                   <div className="p-6 bg-slate-50 rounded-2xl">
                     <p className="text-slate-400 text-xs font-bold uppercase mb-2">Growth</p>
-                    <h3 className="text-3xl font-bold text-slate-900">+42%</h3>
+                    <h3 className="text-3xl font-semibold text-slate-900">+42%</h3>
                     <div className="w-full h-1.5 bg-slate-200 rounded-full mt-4 overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
@@ -135,7 +135,7 @@ const BenefitsSection = () => {
                     </div>
                   </div>
                   <div className="col-span-2 p-8 bg-slate-900 rounded-3xl text-white">
-                    <h4 className="font-bold mb-4">Real-time Stock Accuracy</h4>
+                    <h4 className="font-semibold mb-4">Real-time Stock Accuracy</h4>
                     <div className="flex items-end gap-2 h-24">
                       {[60, 45, 75, 50, 90, 65, 85].map((h, i) => (
                         <motion.div

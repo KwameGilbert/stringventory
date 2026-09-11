@@ -598,7 +598,7 @@ export default function ViewOrder() {
             {businessSettings?.avatar && (
               <img src={businessSettings.avatar} alt="Logo" className="h-20 w-auto mb-4 grayscale" />
             )}
-            <h2 className="text-4xl font-bold uppercase tracking-tighter text-gray-900">
+            <h2 className="text-4xl font-semibold uppercase tracking-tighter text-gray-900">
               {businessSettings?.businessName || "SALE RECEIPT"}
             </h2>
             <div className="mt-4 space-y-1 text-sm font-bold text-gray-500 uppercase tracking-widest">

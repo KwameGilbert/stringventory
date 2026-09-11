@@ -130,7 +130,7 @@ export default function ViewSupplier() {
           {supplier.name ? supplier.name.charAt(0) : "S"}
         </div>
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">{supplier.name}</h1>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">{supplier.name}</h1>
           <div className="flex flex-wrap items-center gap-3 mt-2 text-xs">
             <span className="font-mono text-slate-500 font-semibold">ID: #{supplier.id}</span>
             <span

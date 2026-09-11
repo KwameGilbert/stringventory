@@ -31,7 +31,7 @@ const Step = ({ number, icon: Icon, title, description, isLast }) => {
         </div>
       </motion.div>
       
-      <h3 className="text-xl font-bold text-slate-900 mb-3 text-center">{title}</h3>
+      <h3 className="text-xl font-semibold text-slate-900 mb-3 text-center">{title}</h3>
       <p className="text-slate-600 text-center text-sm leading-relaxed max-w-[200px]">
         {description}
       </p>
@@ -97,7 +97,7 @@ const HowItWorks = () => {
           className="text-center mb-16"
         >
           <span className="text-emerald-600 font-bold uppercase tracking-widest text-sm">Our Process</span>
-          <h2 className="text-4xl font-bold text-slate-900 mt-4 mb-6">Simple Steps to Success</h2>
+          <h2 className="text-4xl font-semibold text-slate-900 mt-4 mb-6">Simple Steps to Success</h2>
           <p className="text-slate-600 max-w-2xl mx-auto">
             Get up and running in minutes. PinnexVentures is designed to be powerful 
             yet incredibly easy for your entire team to use.

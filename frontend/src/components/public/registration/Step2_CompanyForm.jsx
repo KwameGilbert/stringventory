@@ -35,12 +35,9 @@ const Step2_CompanyForm = ({ formData, setFormData }) => {
     setIsChecking(true);
     setAvailabilityStatus(null);
     
-    // Simulated API call
+    // Simulated API call - replace with actual validation
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Logic: subdomains with 'taken' in them are taken, rest are 70% available
-    const isMockAvailable = !subdomain.toLowerCase().includes('taken') && Math.random() > 0.3;
-    setAvailabilityStatus(isMockAvailable ? 'available' : 'taken');
+    setAvailabilityStatus('available');
     setIsChecking(false);
   };
 
@@ -56,7 +53,7 @@ const Step2_CompanyForm = ({ formData, setFormData }) => {
       className="space-y-8"
     >
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-slate-900 mb-1">Company Information</h1>
+        <h1 className="text-3xl font-semibold text-slate-900 mb-1">Company Information</h1>
         <p className="text-slate-500 font-medium">Tell us about your business</p>
       </div>
       <div className="space-y-5">

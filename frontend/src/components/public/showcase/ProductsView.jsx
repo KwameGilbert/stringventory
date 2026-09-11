@@ -70,7 +70,7 @@ const ProductsView = () => (
             <div>
                <p className="text-[8px] md:text-[10px] font-semibold text-slate-400 uppercase tracking-widest">{stat.label}</p>
                <div className="flex items-baseline gap-2">
-                  <h4 className="text-lg md:text-2xl font-bold text-slate-900">{stat.value}</h4>
+                  <h4 className="text-lg md:text-2xl font-semibold text-slate-900">{stat.value}</h4>
                   {stat.sub && <p className="text-[8px] md:text-[10px] font-bold text-rose-500 hidden md:block">{stat.sub}</p>}
                </div>
             </div>

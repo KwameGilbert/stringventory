@@ -141,7 +141,7 @@ export default function Profile() {
           </div>
           
           <div className="flex-1 pb-4">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-semibold text-gray-900">
               {profileData?.firstName} {profileData?.lastName}
             </h1>
             <div className="flex flex-wrap items-center gap-4 mt-2">
@@ -190,7 +190,7 @@ export default function Profile() {
           {activeTab === "general" && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-fade-in">
               <div className="px-6 py-5 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
-                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                   <User size={18} className="text-gray-400" />
                   General Information
                 </h3>
@@ -260,7 +260,7 @@ export default function Profile() {
           {activeTab === "security" && (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-fade-in">
               <div className="px-6 py-5 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
-                <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
                   <Key size={18} className="text-gray-400" />
                   Security Settings
                 </h3>

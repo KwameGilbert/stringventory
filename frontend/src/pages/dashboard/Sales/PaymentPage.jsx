@@ -63,7 +63,7 @@ export default function PaymentPage() {
 
       <div className="text-center mb-10">
         <p className="text-gray-500 font-medium uppercase tracking-wide text-sm mb-2">Total Amount Payable</p>
-        <h1 className="text-5xl font-bold text-gray-900">{formatPrice(total)}</h1>
+        <h1 className="text-5xl font-semibold text-gray-900">{formatPrice(total)}</h1>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

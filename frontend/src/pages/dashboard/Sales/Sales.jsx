@@ -173,7 +173,7 @@ export default function Sales() {
       <div className="w-full lg:w-[400px] flex flex-col bg-white h-[400px] lg:h-auto border-t lg:border-t-0 shadow-xl lg:shadow-none z-10">
         <div className="p-4 border-b border-gray-100 bg-white">
           <div className="flex items-center justify-between mb-1">
-             <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
+             <h2 className="font-semibold text-lg text-gray-900 flex items-center gap-2">
                <ShoppingCart className="w-5 h-5" />
                Current Sale
              </h2>

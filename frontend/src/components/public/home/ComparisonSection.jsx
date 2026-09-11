@@ -72,7 +72,7 @@ const ComparisonSection = () => {
             <Zap className="w-4 h-4 text-emerald-600" />
             <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-[0.2em]">Detailed Comparison</span>
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-semibold text-slate-900 mb-4">
             Pick the Perfect <span className="text-emerald-600">Scale</span>
           </h2>
           <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">

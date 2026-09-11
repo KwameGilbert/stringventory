@@ -155,7 +155,7 @@ const ProductForm = ({
           <Package className="w-7 h-7" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">{title}</h1>
           <p className="text-slate-500 font-medium text-sm mt-0.5">{subTitle}</p>
         </div>
       </div>
