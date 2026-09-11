@@ -5,7 +5,6 @@ import { showError, showSuccess } from "../../../utils/alerts";
 import { handleApiError } from "../../../utils/errorHandler";
 import userService from "../../../services/business/userService";
 import roleService from "../../../services/business/roleService";
-import { BUSINESS_ROLES } from "../../../services/business/roleService";
 
 const COUNTRY_CODES = [
   { code: "+233", flag: "🇬🇭", label: "GH" },
@@ -64,7 +63,7 @@ export default function AddUser() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [roles, setRoles] = useState(BUSINESS_ROLES);
+  const [roles, setRoles] = useState([]);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

@@ -5,7 +5,6 @@ import { showError, showSuccess } from "../../../utils/alerts";
 import { handleApiError } from "../../../utils/errorHandler";
 import userService from "../../../services/business/userService";
 import roleService from "../../../services/business/roleService";
-import { BUSINESS_ROLES } from "../../../services/business/roleService";
 
 const COUNTRY_CODES = [
   { code: "+233", flag: "🇬🇭", label: "GH" },
@@ -76,7 +75,7 @@ export default function EditUser() {
   const [submitting, setSubmitting] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [roles, setRoles] = useState(BUSINESS_ROLES);
+  const [roles, setRoles] = useState([]);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
