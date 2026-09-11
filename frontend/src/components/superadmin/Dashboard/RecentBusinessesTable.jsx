@@ -1,5 +1,5 @@
-﻿import { Link } from 'react-router-dom';
-import { Eye, Edit, MoreVertical } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Eye, Edit } from 'lucide-react';
 import PlanBadge from '../../ui/PlanBadge';
 import StatusBadge from '../../ui/StatusBadge';
 import { useCurrency } from '../../../utils/currencyUtils';
@@ -117,12 +117,6 @@ export default function RecentBusinessesTable({ businesses = [], responseCurrenc
                     >
                       <Edit className="w-4 h-4" />
                     </Link>
-                    <button
-                      className="p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
-                      title="More Actions"
-                    >
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
                   </div>
                 </td>
               </tr>

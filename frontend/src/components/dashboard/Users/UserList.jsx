@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { 
-  MoreVertical, 
   Edit, 
   Trash2, 
   Shield, 
@@ -10,7 +9,6 @@ import {
 } from "lucide-react";
 
 export default function UserList({ users, onEdit, onDelete }) {
-  const [activeMenu, setActiveMenu] = useState(null);
 
   const getRoleIcon = (roleName) => {
     switch (roleName?.toLowerCase()) {
@@ -50,7 +48,7 @@ export default function UserList({ users, onEdit, onDelete }) {
               return (
                 <tr 
                   key={user.id} 
-                  className={`hover:bg-gray-50/50 transition-colors group ${activeMenu === user.id ? 'relative z-50 bg-gray-50/50' : 'relative'}`}
+                  className="hover:bg-gray-50/50 transition-colors group relative"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -93,58 +91,30 @@ export default function UserList({ users, onEdit, onDelete }) {
                       <span className="text-gray-400 italic">Never</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="relative inline-block text-left">
-                      <button 
-                        onClick={() => setActiveMenu(activeMenu === user.id ? null : user.id)}
-                        className={`p-1 rounded-lg transition-colors ${activeMenu === user.id ? 'bg-gray-200 text-gray-900' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={() => window.location.href = `/dashboard/users/${user.id}`}
+                        className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        title="View Profile"
                       >
-                        <MoreVertical size={18} />
+                        <Eye size={18} />
                       </button>
-                      
-                      {activeMenu === user.id && (
-                        <div className={`absolute right-0 z-50 w-40 bg-white rounded-xl shadow-xl border border-gray-100 py-2 animate-in fade-in zoom-in-95 duration-100 ${isLastTwo ? 'bottom-full mb-2 origin-bottom-right' : 'top-full mt-2 origin-top-right'}`}>
-                          <button
-                            onClick={() => {
-                              window.location.href = `/dashboard/users/${user.id}`;
-                            }}
-                            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
-                          >
-                            <Eye size={16} className="text-gray-400" /> 
-                            <span className="font-medium">View Profile</span>
-                          </button>
-                          <button
-                            onClick={() => {
-                              onEdit(user);
-                              setActiveMenu(null);
-                            }}
-                            className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
-                          >
-                            <Edit size={16} className="text-gray-400" /> 
-                            <span className="font-medium">Edit Details</span>
-                          </button>
-                          <div className="my-1 border-t border-gray-50"></div>
-                          <button
-                            onClick={() => {
-                              onDelete(user.id);
-                              setActiveMenu(null);
-                            }}
-                            className="w-full text-left px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors"
-                          >
-                            <Trash2 size={16} /> 
-                            <span className="font-medium">Deactivate</span>
-                          </button>
-                        </div>
-                      )}
+                      <button
+                        onClick={() => onEdit(user)}
+                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Edit Details"
+                      >
+                        <Edit size={18} />
+                      </button>
+                      <button
+                        onClick={() => onDelete(user.id)}
+                        className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                        title={user.isActive ? "Deactivate" : "Delete"}
+                      >
+                        <Trash2 size={18} />
+                      </button>
                     </div>
-                    
-                    {/* Backdrop to close menu */}
-                    {activeMenu === user.id && (
-                      <div 
-                        className="fixed inset-0 z-40 bg-transparent" 
-                        onClick={() => setActiveMenu(null)}
-                      ></div>
-                    )}
                   </td>
                 </tr>
               );

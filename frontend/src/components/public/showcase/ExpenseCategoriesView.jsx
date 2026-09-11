@@ -7,7 +7,8 @@ import {
   Megaphone, 
   Coffee, 
   Truck,
-  MoreVertical,
+  Pencil,
+  Trash2,
   ChevronRight
 } from "lucide-react";
 
@@ -42,7 +43,10 @@ const ExpenseCategoriesView = () => (
               <div className={`w-12 h-12 rounded-xl ${cat.bg} ${cat.color} flex items-center justify-center`}>
                  <cat.icon className="w-6 h-6" />
               </div>
-              <button className="p-1.5 text-slate-300 hover:text-slate-600 rounded-lg"><MoreVertical className="w-4 h-4" /></button>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                 <button className="p-1.5 text-slate-300 hover:text-blue-500 rounded-lg"><Pencil className="w-4 h-4" /></button>
+                 <button className="p-1.5 text-slate-300 hover:text-rose-500 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+              </div>
            </div>
            
            <h4 className="font-semibold text-slate-900 text-sm mb-1">{cat.name}</h4>

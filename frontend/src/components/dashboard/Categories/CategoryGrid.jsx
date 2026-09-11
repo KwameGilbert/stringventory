@@ -1,6 +1,5 @@
-import { Edit2, Trash2, Eye, CupSoda, Cookie, Milk, Bean, Sparkles, Package, MoreVertical } from "lucide-react";
+import { Edit2, Trash2, Eye, CupSoda, Cookie, Milk, Bean, Sparkles, Package } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 
 const IconMap = {
   CupSoda: CupSoda,
@@ -20,7 +19,6 @@ const colorSchemes = [
 ];
 
 const CategoryGrid = ({ categories, onToggleStatus, onDelete, canManage = true }) => {
-  const [activeMenu, setActiveMenu] = useState(null);
 
   if (categories.length === 0) {
     return (
@@ -44,7 +42,7 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete, canManage = true }
         return (
           <div 
             key={category.id} 
-            className={`bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 transition-all overflow-hidden flex flex-col justify-between group ${activeMenu === category.id ? 'relative z-50' : 'relative'}`}
+            className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md hover:border-slate-300 transition-all overflow-hidden flex flex-col justify-between group relative"
           >
             <div>
               {/* Card Header with Full Width Image */}
@@ -63,47 +61,31 @@ const CategoryGrid = ({ categories, onToggleStatus, onDelete, canManage = true }
                   />
                 ) : null}
                 
-                {/* Actions Menu - Positioned over image */}
-                <div className="absolute top-3 right-3 z-20">
+                {/* Actions - Positioned over image */}
+                <div className="absolute top-3 right-3 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   {canManage ? (
                     <>
-                      <button 
-                        onClick={() => setActiveMenu(activeMenu === category.id ? null : category.id)}
-                        className={`p-2 backdrop-blur-md rounded-xl transition-all shadow-sm ${activeMenu === category.id ? 'bg-white text-slate-900 shadow-md' : 'text-white bg-black/30 hover:bg-black/50 border border-white/20'}`}
-                        title="Options"
+                      <Link 
+                        to={`/dashboard/categories/${category.id}`}
+                        className="p-1.5 text-white bg-black/30 backdrop-blur-md hover:bg-black/50 hover:text-blue-300 border border-white/20 rounded-xl transition-all shadow-sm"
+                        title="View Details"
                       >
-                        <MoreVertical size={16} />
+                        <Eye size={16} />
+                      </Link>
+                      <Link 
+                        to={`/dashboard/categories/${category.id}/edit`}
+                        className="p-1.5 text-white bg-black/30 backdrop-blur-md hover:bg-black/50 hover:text-emerald-300 border border-white/20 rounded-xl transition-all shadow-sm"
+                        title="Edit Category"
+                      >
+                        <Edit2 size={16} />
+                      </Link>
+                      <button
+                        onClick={() => onDelete && onDelete(category.id)}
+                        className="p-1.5 text-white bg-black/30 backdrop-blur-md hover:bg-black/50 hover:text-rose-300 border border-white/20 rounded-xl transition-all shadow-sm cursor-pointer"
+                        title="Delete Category"
+                      >
+                        <Trash2 size={16} />
                       </button>
-                      
-                      {activeMenu === category.id && (
-                        <div className="absolute right-0 top-11 bg-white rounded-2xl shadow-xl border border-slate-200/80 py-2 min-w-44 z-50 animate-in fade-in zoom-in-95 duration-150 origin-top-right">
-                          <Link 
-                            to={`/dashboard/categories/${category.id}`}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-                          >
-                            <Eye size={15} className="text-slate-400" />
-                            <span>View Details</span>
-                          </Link>
-                          <Link 
-                            to={`/dashboard/categories/${category.id}/edit`}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-                          >
-                            <Edit2 size={15} className="text-slate-400" />
-                            <span>Edit Category</span>
-                          </Link>
-                          <div className="my-1 border-t border-slate-100"></div>
-                          <button
-                            onClick={() => {
-                              onDelete && onDelete(category.id);
-                              setActiveMenu(null);
-                            }}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-colors w-full text-left cursor-pointer"
-                          >
-                            <Trash2 size={15} />
-                            <span>Delete Category</span>
-                          </button>
-                        </div>
-                      )}
                     </>
                   ) : (
                     <Link

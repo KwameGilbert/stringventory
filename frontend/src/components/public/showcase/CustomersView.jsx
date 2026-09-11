@@ -9,7 +9,8 @@ import {
   Phone, 
   Calendar,
   Eye,
-  MoreVertical,
+  Pencil,
+  Trash2,
   Award
 } from "lucide-react";
 
@@ -111,7 +112,8 @@ const CustomersView = () => (
                   <td className="px-6 py-4 text-right">
                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button className="p-1.5 text-slate-300 hover:text-emerald-500 rounded-lg"><Eye className="w-4 h-4" /></button>
-                        <button className="p-1.5 text-slate-300 hover:text-slate-600 rounded-lg"><MoreVertical className="w-4 h-4" /></button>
+                        <button className="p-1.5 text-slate-300 hover:text-blue-500 rounded-lg"><Pencil className="w-4 h-4" /></button>
+                        <button className="p-1.5 text-slate-300 hover:text-rose-500 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                      </div>
                   </td>
                </tr>
