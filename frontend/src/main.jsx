@@ -1,18 +1,19 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import AppErrorBoundary from './components/ui/AppErrorBoundary'
 
 createRoot(document.getElementById('root')).render(
-  <App />
+  <AppErrorBoundary>
+    <App />
+  </AppErrorBoundary>
 )
 
 // Register Service Worker for PWA
 // The vite-plugin-pwa will handle most of the registration,
-// but we also register our custom service worker for push notifications
-if ('serviceWorker' in navigator) {
+// but we also log active registrations for debugging.
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    // Let vite-plugin-pwa handle the main registration
-    // Our custom push notification logic is in the generated SW
     navigator.serviceWorker.getRegistrations().then(registrations => {
       console.log(`${registrations.length} service worker(s) registered`);
       registrations.forEach(registration => {
@@ -22,11 +23,14 @@ if ('serviceWorker' in navigator) {
       console.error('Error accessing service worker registrations:', error);
     });
 
-    // Request notification permission on first load
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        console.log('Notification permission:', permission);
-      });
+    // Safely check notification permission without prompting unprompted on load
+    // Browser standards require explicit user gesture to request permissions
+    if ('Notification' in window) {
+      try {
+        console.log('Current notification permission status:', Notification.permission);
+      } catch (e) {
+        // Ignore if restricted
+      }
     }
   });
 }

@@ -1,8 +1,39 @@
-﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import notificationService from '../services/business/notificationService';
 import { useAuth } from './AuthContext.js';
 
 const NotificationContext = createContext();
+
+const isNotificationSupported = () => typeof window !== 'undefined' && 'Notification' in window;
+
+const getNotificationPermission = () => {
+    if (isNotificationSupported()) {
+        try {
+            return Notification.permission;
+        } catch (e) {
+            return 'denied';
+        }
+    }
+    return 'denied';
+};
+
+const requestNotificationPermission = async () => {
+    if (!isNotificationSupported()) return 'denied';
+    try {
+        if (typeof Notification.requestPermission === 'function') {
+            const result = Notification.requestPermission();
+            if (result && typeof result.then === 'function') {
+                return await result;
+            }
+            return await new Promise((resolve) => {
+                Notification.requestPermission(resolve);
+            });
+        }
+    } catch (e) {
+        console.warn('Error requesting notification permission:', e);
+    }
+    return 'denied';
+};
 
 export const NotificationProvider = ({ children }) => {
     const { user } = useAuth();
@@ -10,7 +41,7 @@ export const NotificationProvider = ({ children }) => {
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+    const [notificationPermission, setNotificationPermission] = useState(getNotificationPermission);
 
     const loadNotifications = useCallback(async (quiet = false) => {
         if (!user) return;
@@ -25,12 +56,16 @@ export const NotificationProvider = ({ children }) => {
                     const latestOldId = prev[0]?.id || 0;
                     const newItems = newFetchedItems.filter(n => !n.isRead && n.id > latestOldId);
                     
-                    if (newItems.length > 0 && notificationPermission === 'granted') {
+                    if (newItems.length > 0 && isNotificationSupported() && notificationPermission === 'granted') {
                         newItems.forEach(item => {
-                            new Notification(item.title || 'New Notification', {
-                                body: item.message,
-                                icon: '/favicon.ico'
-                            });
+                            try {
+                                new Notification(item.title || 'New Notification', {
+                                    body: item.message,
+                                    icon: '/favicon.ico'
+                                });
+                            } catch (e) {
+                                console.warn('Failed to show desktop notification:', e);
+                            }
                         });
                     }
                 }
@@ -59,12 +94,16 @@ export const NotificationProvider = ({ children }) => {
             loadNotifications();
             const interval = setInterval(() => loadNotifications(true), 60000);
             
-            // Update permission status
-            setNotificationPermission(Notification.permission);
-            
-            // Automatically try to enable desktop alerts on login
-            if (Notification.permission === 'default' || Notification.permission === 'granted') {
-                subscribeToPush();
+            // Update permission status safely
+            if (isNotificationSupported()) {
+                const currentPerm = getNotificationPermission();
+                setNotificationPermission(currentPerm);
+                
+                // Only re-subscribe automatically if permission was ALREADY granted
+                // Browser security requires a user gesture for prompting new permissions
+                if (currentPerm === 'granted') {
+                    subscribeToPush();
+                }
             }
 
             return () => clearInterval(interval);
@@ -116,13 +155,13 @@ export const NotificationProvider = ({ children }) => {
     };
 
     const subscribeToPush = async () => {
-        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-            console.warn('Push messaging is not supported');
+        if (!isNotificationSupported() || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+            console.warn('Push messaging is not supported on this device/browser');
             return false;
         }
 
         try {
-            const permission = await Notification.requestPermission();
+            const permission = await requestNotificationPermission();
             setNotificationPermission(permission);
             
             if (permission !== 'granted') return false;

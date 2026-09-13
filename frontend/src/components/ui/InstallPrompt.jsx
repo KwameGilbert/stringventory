@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { X, Download } from 'lucide-react';
+import { X, Download, Share } from 'lucide-react';
 
 /**
  * InstallPrompt Component
  * Displays a PWA install prompt at the bottom right corner of the screen.
- * Uses the beforeinstallprompt event to trigger native install dialog.
+ * Uses beforeinstallprompt event on Chromium browsers and provides
+ * explicit "Add to Home Screen" guidance on iOS Safari.
  */
 export default function InstallPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOSDevice, setIsIOSDevice] = useState(false);
 
   useEffect(() => {
+    // Detect iOS
+    const isIOS = typeof navigator !== 'undefined' && (
+      /iPad|iPhone|iPod/.test(navigator.userAgent || '') ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    );
+    setIsIOSDevice(isIOS);
+
     // Check if app is already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
@@ -24,15 +33,10 @@ export default function InstallPrompt() {
       return;
     }
 
-    // Listen for the beforeinstallprompt event
+    // Listen for the beforeinstallprompt event (Android / Desktop Chrome)
     const handleBeforeInstallPrompt = (e) => {
-      // Prevent the default browser install prompt
       e.preventDefault();
-      
-      // Store the event for later use
       setDeferredPrompt(e);
-      
-      // Show the custom install prompt
       setShowPrompt(true);
     };
 
@@ -44,13 +48,20 @@ export default function InstallPrompt() {
     };
 
     // Check if app was previously dismissed (suppress if dismissed within last 7 days)
-    const dismissedAt = localStorage.getItem('pwa_install_dismissed');
-    const isDismissed =
-      dismissedAt &&
-      new Date().getTime() - Number(dismissedAt) < 7 * 24 * 60 * 60 * 1000;
+    let isDismissed = false;
+    try {
+      const dismissedAt = localStorage.getItem('pwa_install_dismissed');
+      isDismissed = dismissedAt && new Date().getTime() - Number(dismissedAt) < 7 * 24 * 60 * 60 * 1000;
+    } catch (e) {
+      // Ignore localStorage errors
+    }
 
     if (!isDismissed && !isInstalled) {
-      setShowPrompt(true);
+      // On iOS Safari, show after a short delay; on Chrome, beforeinstallprompt triggers it
+      if (isIOS) {
+        const timer = setTimeout(() => setShowPrompt(true), 1500);
+        return () => clearTimeout(timer);
+      }
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -67,27 +78,26 @@ export default function InstallPrompt() {
       return;
     }
 
-    // Show the install prompt
     deferredPrompt.prompt();
-
-    // Wait for user response
     const { outcome } = await deferredPrompt.userChoice;
 
     if (outcome === 'accepted') {
       setShowPrompt(false);
       setDeferredPrompt(null);
-      localStorage.removeItem('pwa_install_dismissed');
+      try {
+        localStorage.removeItem('pwa_install_dismissed');
+      } catch (e) {}
     } else {
-      // User declined
       setShowPrompt(false);
     }
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    // Remember dismissal for 7 days
-    const dismissalTime = new Date().getTime();
-    localStorage.setItem('pwa_install_dismissed', dismissalTime);
+    try {
+      const dismissalTime = new Date().getTime();
+      localStorage.setItem('pwa_install_dismissed', dismissalTime);
+    } catch (e) {}
   };
 
   // Don't show if already installed or dismissed
@@ -97,72 +107,80 @@ export default function InstallPrompt() {
 
   return (
     <div
-      className="fixed bottom-6 right-6 z-50 animate-slide-up"
+      className="fixed bottom-6 right-6 left-6 sm:left-auto sm:max-w-sm z-50 animate-slide-up"
       role="alert"
       aria-label="Install app prompt"
     >
-      <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-4">
         {/* Header */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="flex-shrink-0">
-              <Download className="w-5 h-5 text-blue-600" aria-hidden="true" />
+            <div className="flex-shrink-0 w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+              <Download className="w-5 h-5" aria-hidden="true" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 text-sm">
                 Install PinnexVentures
               </h3>
-              <p className="text-xs text-gray-600 mt-0.5">
-                Get quick access to your business management dashboard
+              <p className="text-xs text-gray-500 mt-0.5">
+                Quick access to your business management platform
               </p>
             </div>
           </div>
           <button
             onClick={handleDismiss}
-            className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+            className="flex-shrink-0 text-gray-400 hover:text-gray-600 p-1 transition-colors"
             aria-label="Dismiss install prompt"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Features list */}
-        <ul className="text-xs text-gray-600 mb-4 space-y-1 ml-8">
-          <li className="flex items-center">
-            <span className="inline-block w-1 h-1 bg-blue-600 rounded-full mr-2"></span>
-            Access offline
-          </li>
-          <li className="flex items-center">
-            <span className="inline-block w-1 h-1 bg-blue-600 rounded-full mr-2"></span>
-            Fast loading times
-          </li>
-          <li className="flex items-center">
-            <span className="inline-block w-1 h-1 bg-blue-600 rounded-full mr-2"></span>
-            Home screen icon
-          </li>
-        </ul>
+        {/* iOS vs Chrome/Android Instructions */}
+        {isIOSDevice ? (
+          <div className="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs text-gray-600 space-y-1.5">
+            <div className="flex items-center gap-2 font-medium text-gray-800">
+              <Share className="w-4 h-4 text-blue-600" />
+              <span>To install on iPhone:</span>
+            </div>
+            <p>1. Tap the <strong>Share</strong> button in Safari toolbar below.</p>
+            <p>2. Scroll down and select <strong>"Add to Home Screen"</strong>.</p>
+          </div>
+        ) : (
+          <ul className="text-xs text-gray-600 mb-4 space-y-1.5 ml-2">
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span>
+              Fast loading & offline support
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span>
+              Dedicated app icon on Home screen
+            </li>
+          </ul>
+        )}
 
         {/* Action buttons */}
         <div className="flex gap-2">
           <button
             onClick={handleDismiss}
-            className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+            className="flex-1 px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
             aria-label="Not now"
           >
-            Not now
+            {isIOSDevice ? "Dismiss" : "Not now"}
           </button>
-          <button
-            onClick={handleInstall}
-            className="flex-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors flex items-center justify-center gap-2"
-            aria-label="Install app"
-          >
-            <Download className="w-4 h-4" />
-            Install
-          </button>
+          {!isIOSDevice && deferredPrompt && (
+            <button
+              onClick={handleInstall}
+              className="flex-1 px-3 py-2 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+              aria-label="Install app"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Install
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Slide up animation */}
       <style>{`
         @keyframes slide-up {
           from {
