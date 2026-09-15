@@ -59,6 +59,14 @@ export const settingsService = {
   getSubscriptionInfo: async () => {
     return apiClient.get('/v1/settings/subscription'); // Manually added if missing in endpoints
   },
+
+  // Security Settings
+  changePassword: async (currentPassword, newPassword) => {
+    return apiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, {
+      currentPassword,
+      newPassword,
+    });
+  },
 };
 
 export default settingsService;

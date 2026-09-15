@@ -18,7 +18,7 @@ export const API_ENDPOINTS = {
       `/v1/auth/verify-email?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`,
     ME: '/v1/auth/me',
     UPDATE_PROFILE: '/v1/auth/me',
-    CHANGE_PASSWORD: '/v1/auth/password/change',
+    CHANGE_PASSWORD: '/v1/auth/change-password',
     ACTIVITY_LOG: '/v1/auth/activity-logs',
     UPLOAD_AVATAR: '/v1/auth/avatar',
   },
@@ -31,7 +31,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id) => `/v1/users/${id}`,
     DELETE: (id) => `/v1/users/${id}`,
     RESEND_VERIFICATION: (id) => `/v1/users/${id}/resend-verification`,
-    RESET_PASSWORD: (id) => `/v1/auth/password/change`,
+    RESET_PASSWORD: (id) => `/v1/auth/change-password`,
   },
 
   // Roles
