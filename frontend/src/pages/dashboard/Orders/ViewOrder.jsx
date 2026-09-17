@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowLeft, Printer, Mail, User, Phone, AtSign, Calendar, Hash,
@@ -166,9 +166,39 @@ export default function ViewOrder() {
       const newItems = [...prevItems];
       const item = newItems[index];
       // Only allow picking up to the remaining quantity
-      const newPicked = Math.max(0, Math.min(item.remainingQuantity, (item.pickedQuantity || 0) + change));
+      const newPicked = Math.max(0, Math.min(item.remainingQuantity, (Number(item.pickedQuantity) || 0) + change));
 
       newItems[index] = { ...item, pickedQuantity: newPicked };
+      return newItems;
+    });
+  };
+
+  const handleSetPicked = (index, value) => {
+    setItems(prevItems => {
+      const newItems = [...prevItems];
+      const item = newItems[index];
+      
+      if (value === "") {
+        newItems[index] = { ...item, pickedQuantity: "" };
+        return newItems;
+      }
+      
+      const parsed = parseInt(value, 10);
+      if (isNaN(parsed)) return newItems;
+
+      const newPicked = Math.max(0, Math.min(item.remainingQuantity, parsed));
+      newItems[index] = { ...item, pickedQuantity: newPicked };
+      return newItems;
+    });
+  };
+
+  const handlePickedBlur = (index) => {
+    setItems(prevItems => {
+      const newItems = [...prevItems];
+      const item = newItems[index];
+      if (item.pickedQuantity === "") {
+        newItems[index] = { ...item, pickedQuantity: 0 };
+      }
       return newItems;
     });
   };
@@ -440,9 +470,14 @@ export default function ViewOrder() {
                             >
                               -
                             </button>
-                            <div className="w-10 text-center text-lg font-semibold text-blue-600 font-mono">
-                              {picked}
-                            </div>
+                            <input
+                              type="number"
+                              value={item.pickedQuantity !== undefined ? item.pickedQuantity : 0}
+                              onChange={(e) => handleSetPicked(index, e.target.value)}
+                              onBlur={() => handlePickedBlur(index)}
+                              disabled={isSaving}
+                              className="w-14 text-center text-lg font-semibold text-blue-600 font-mono bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 py-1 shadow-inner hide-arrows"
+                            />
                             <button
                               onClick={() => handleUpdatePicked(index, 1)}
                               disabled={isSaving || picked >= item.remainingQuantity}
