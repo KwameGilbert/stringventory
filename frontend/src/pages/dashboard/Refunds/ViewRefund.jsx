@@ -121,10 +121,10 @@ export default function ViewRefund() {
           onClick={() => navigate("/dashboard/refunds")}
           className="flex items-center gap-3 text-gray-500 hover:text-gray-900 transition-all group w-fit"
         >
-          <div className="p-2.5 rounded-xl bg-white border border-gray-200 shadow-xs group-hover:border-gray-300 transition-all group-hover:-translate-x-1">
+          <div className="p-2.5 rounded-lg bg-white border border-gray-200 shadow-xs group-hover:border-gray-300 transition-all group-hover:-translate-x-1">
             <ArrowLeft size={18} />
           </div>
-          <span className="text-xs uppercase font-semibold tracking-widest">Back to Refunds</span>
+          <span className="text-xs font-medium tracking-wide">Back to Refunds</span>
         </button>
 
         {refund.refundStatus === 'pending' && (
@@ -132,7 +132,7 @@ export default function ViewRefund() {
               <button 
                 onClick={() => handleStatusUpdate('rejected')}
                 disabled={isUpdating}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 border-2 border-rose-100 text-rose-600 hover:bg-rose-50 rounded-xl transition-all font-semibold text-xs uppercase tracking-widest active:scale-95"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 border-2 border-rose-100 text-rose-600 hover:bg-rose-50 rounded-lg transition-all font-medium text-xs tracking-wide active:scale-95"
               >
                 <XCircle size={18} />
                 Reject
@@ -140,7 +140,7 @@ export default function ViewRefund() {
               <button 
                 onClick={() => handleStatusUpdate('completed')}
                 disabled={isUpdating}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white hover:bg-emerald-700 rounded-xl transition-all font-semibold text-xs uppercase tracking-widest shadow-lg shadow-emerald-600/20 active:scale-95"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg transition-all font-medium text-xs tracking-wide shadow-lg shadow-emerald-600/20 active:scale-95"
               >
                 <CheckCircle size={18} />
                 Approve & Refund
@@ -160,10 +160,10 @@ export default function ViewRefund() {
                 
                 <div className="relative z-10 space-y-4">
                     <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-mono text-xs font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                        <span className="font-mono text-xs font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-md">
                             REF-{refund.id}
                         </span>
-                        <span className={`inline-flex items-center gap-1.5 px-4 py-1 rounded-full text-[10px] font-semibold uppercase tracking-widest ${status.bg} ${status.text} border-2 border-transparent shadow-sm`}>
+                        <span className={`inline-flex items-center gap-1.5 px-4 py-1 rounded-md text-xs font-medium tracking-wide ${status.bg} ${status.text} border-2 border-transparent shadow-sm`}>
                             <StatusIcon size={14} className={refund.refundStatus === 'pending' ? 'animate-spin' : ''} />
                             {status.label}
                         </span>
@@ -182,7 +182,7 @@ export default function ViewRefund() {
             {/* Items Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-8 py-6 border-b border-gray-100 bg-gray-50/30 flex justify-between items-center">
-                    <h3 className="text-[10px] uppercase font-medium text-gray-400 tracking-widest flex items-center gap-2">
+                    <h3 className="text-xs font-medium text-gray-400 tracking-wide flex items-center gap-2">
                         <Package className="w-4 h-4" />
                         Returned Items
                     </h3>
@@ -198,18 +198,18 @@ export default function ViewRefund() {
                                     })()}
                                 </p>
                                 <div className="flex items-center gap-3">
-                                    <p className="text-[10px] uppercase font-medium text-gray-400 tracking-widest">
+                                    <p className="text-xs font-medium text-gray-400 tracking-wide">
                                         Quantity: <span className="text-gray-900">{item.quantity}</span>
                                     </p>
                                     <div className="w-1 h-1 rounded-full bg-gray-300"></div>
-                                    <p className="text-[10px] uppercase font-medium text-gray-400 tracking-widest">
+                                    <p className="text-xs font-medium text-gray-400 tracking-wide">
                                         Ref: <span className="text-gray-900 font-mono">#{item.orderItemId}</span>
                                     </p>
                                 </div>
                             </div>
                             <div className="flex sm:flex-col items-center sm:items-end gap-2">
                                 {item.restock && (
-                                    <span className="text-[9px] bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full font-semibold uppercase tracking-widest border border-emerald-100 shadow-xs">Restock Active</span>
+                                    <span className="text-xs bg-emerald-50 text-emerald-600 px-3 py-1 rounded-md font-medium tracking-wide border border-emerald-100 shadow-xs">Restock Active</span>
                                 )}
                             </div>
                         </div>
@@ -217,33 +217,33 @@ export default function ViewRefund() {
                 </div>
                 <div className="px-8 py-8 bg-rose-50/30 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <p className="text-[10px] uppercase font-semibold text-rose-400 tracking-widest mb-1">Total Refund Value</p>
+                        <p className="text-xs font-medium text-rose-400 tracking-wide mb-1">Total Refund Value</p>
                         <p className="text-4xl font-semibold text-rose-600 tracking-tighter">{formatPrice(refund.refundAmount, refund.currency)}</p>
                     </div>
-                    <div className="px-4 py-2 bg-white rounded-xl border border-rose-100 shadow-xs">
-                        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">Currency: <span className="text-gray-900">{refund.currency}</span></p>
+                    <div className="px-4 py-2 bg-white rounded-lg border border-rose-100 shadow-xs">
+                        <p className="text-xs font-medium text-gray-400 tracking-wide">Currency: <span className="text-gray-900">{refund.currency}</span></p>
                     </div>
                 </div>
             </div>
 
             {/* Analysis Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
-                <h3 className="text-[10px] uppercase font-medium text-gray-400 tracking-widest flex items-center gap-2">
+                <h3 className="text-xs font-medium text-gray-400 tracking-wide flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" />
                     Internal Analysis
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest block">Reason for Request</label>
-                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <label className="text-xs font-medium text-gray-400 tracking-wide block">Reason for Request</label>
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
                             <p className="text-sm font-medium text-gray-900 capitalize tracking-tight">
                                 {refund.refundType} Process - {refund.reason?.replace(/_/g, ' ') || 'standard_payout'}
                             </p>
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest block">System Notes</label>
-                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 italic">
+                        <label className="text-xs font-medium text-gray-400 tracking-wide block">System Notes</label>
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-100 italic">
                             <p className="text-sm text-gray-600 font-medium">
                                 {refund.notes ? `"${refund.notes}"` : "No special notes provided for this transaction."}
                             </p>
@@ -258,18 +258,18 @@ export default function ViewRefund() {
             {/* Origin Sale Card */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
                 <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-                    <h3 className="text-[10px] uppercase font-medium text-gray-400 tracking-widest flex items-center gap-2">
+                    <h3 className="text-xs font-medium text-gray-400 tracking-wide flex items-center gap-2">
                         <Hash size={14} />
                         Origin Transaction
                     </h3>
                 </div>
                 <div className="p-6 space-y-6">
                     <div className="flex items-center gap-4 group">
-                        <div className="p-3 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <div className="p-3 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all">
                             <Hash className="w-5 h-5" />
                         </div>
                         <div>
-                            <p className="text-[10px] uppercase font-medium text-gray-400 tracking-widest">Sale Reference</p>
+                            <p className="text-xs font-medium text-gray-400 tracking-wide">Sale Reference</p>
                             <Link to={`/dashboard/orders/${refund.orderId}`} className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors tracking-tight">
                                 {refund.order?.orderNumber || `SAL-${refund.orderId}`}
                             </Link>
@@ -279,11 +279,11 @@ export default function ViewRefund() {
                     {/* Customer Info */}
                     <div className="pt-6 border-t border-gray-100 space-y-4">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-xl bg-gray-50 text-gray-500">
+                            <div className="p-3 rounded-lg bg-gray-50 text-gray-500">
                                 <User className="w-5 h-5" />
                             </div>
                             <div className="min-w-0">
-                                <p className="text-[10px] uppercase font-medium text-gray-400 tracking-widest leading-none mb-1">Customer Profile</p>
+                                <p className="text-xs font-medium text-gray-400 tracking-wide leading-none mb-1">Customer Profile</p>
                                 <p className="text-lg font-medium text-gray-900 tracking-tight truncate">
                                     {refund.customer?.firstName} {refund.customer?.lastName}
                                 </p>
@@ -294,7 +294,7 @@ export default function ViewRefund() {
                         </div>
                         
                         <div className="grid grid-cols-1 gap-2 pt-2">
-                            <div className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-widest">
+                            <div className="flex items-center gap-2 text-xs font-medium text-gray-500 tracking-wide">
                                 <span className="p-1 rounded bg-gray-100"><Calendar size={10} /></span>
                                 Registered: {refund.customer?.createdAt ? new Date(refund.customer.createdAt).getFullYear() : 'N/A'}
                             </div>
@@ -304,22 +304,22 @@ export default function ViewRefund() {
                     {/* Meta Dates */}
                     <div className="pt-6 border-t border-gray-100 space-y-4">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 rounded-xl bg-gray-50 text-gray-500">
+                            <div className="p-3 rounded-lg bg-gray-50 text-gray-500">
                                 <Calendar className="w-5 h-5" />
                             </div>
                             <div>
-                                <p className="text-[10px] uppercase font-medium text-gray-400 tracking-widest">Submitted Date</p>
+                                <p className="text-xs font-medium text-gray-400 tracking-wide">Submitted Date</p>
                                 <p className="text-sm font-medium text-gray-900 tracking-tight">{formatDate(refund.createdAt)}</p>
                             </div>
                         </div>
                         
                         {refund.processedBy && (
                             <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-xl bg-gray-50 text-gray-500">
+                                <div className="p-3 rounded-lg bg-gray-50 text-gray-500">
                                     <User className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] uppercase font-medium text-gray-400 tracking-widest">Admin Handler</p>
+                                    <p className="text-xs font-medium text-gray-400 tracking-wide">Admin Handler</p>
                                     <p className="text-sm font-medium text-gray-900 tracking-tight">{refund.processedBy}</p>
                                 </div>
                             </div>
@@ -333,7 +333,7 @@ export default function ViewRefund() {
                 <div className="flex gap-4">
                     <AlertCircle className="w-6 h-6 text-amber-600 shrink-0" />
                     <div>
-                        <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-widest mb-1">Impact Warning</p>
+                        <p className="text-xs font-medium text-amber-600 tracking-wide mb-1">Impact Warning</p>
                         <p className="text-[11px] text-amber-800 font-medium leading-relaxed tracking-tight">
                             Approving this record will finalize the <span className="border-b-2 border-amber-300">financial reversal</span> and notify the customer. This action is recorded permanently.
                         </p>
