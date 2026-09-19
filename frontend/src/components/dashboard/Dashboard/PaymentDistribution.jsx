@@ -21,7 +21,7 @@ const PaymentDistribution = ({ dashboardData, dashboardLoading, dateRange }) => 
       const name = String(rawMethod).replace(/_/g, " ").trim();
       return {
         name: name.charAt(0).toUpperCase() + name.slice(1),
-        value: Math.abs(Number(item.revenue || 0)),
+        value: Math.max(0, Number(item.revenue || 0)),
         color: colors[index % colors.length],
       };
     });

@@ -8,6 +8,8 @@ import {
   Package,
   AlertTriangle,
   Clock,
+  RotateCcw,
+  Wallet,
 } from "lucide-react";
 
 
@@ -18,7 +20,7 @@ import { normalizeRole, ROLES } from "../../../utils/accessControl";
 import { useCurrency } from "../../../utils/currencyUtils";
 
 const KpiCard = ({ kpi, Icon }) => {
-  const isGrossRevenue = kpi.id === "grossRevenue";
+  const isGrossRevenue = kpi.id === "grossSales";
 
   const getIconColor = (colorId) => {
     switch (colorId) {
@@ -119,13 +121,32 @@ const KPICards = ({ dashboardData, dashboardLoading, dateRange }) => {
 
     const allMappedKpis = [
       {
-        id: "grossRevenue",
-        title: "Gross Revenue",
-        value: formatPrice(metrics?.grossRevenue?.value, responseCurrency),
-        change: formatChange(metrics?.grossRevenue?.change),
-        trend: metrics?.grossRevenue?.trend || toTrend(metrics?.grossRevenue?.change),
+        id: "grossSales",
+        title: "Gross Sales",
+        value: formatPrice(metrics?.grossSales?.value, responseCurrency),
+        change: "Before discounts & refunds",
+        trend: "neutral",
         icon: DollarSign,
         color: "emerald",
+      },
+      {
+        id: "totalRefunds",
+        title: "Total Refunds",
+        value: formatPrice(metrics?.totalRefunds?.value, responseCurrency),
+        change: "Completed refunds",
+        trend: "neutral",
+        icon: RotateCcw,
+        color: "orange",
+      },
+      {
+        id: "netRevenue",
+        title: "Net Revenue",
+        value: formatPrice(metrics?.netRevenue?.value, responseCurrency),
+        change: "After discounts & refunds",
+        trend: "neutral",
+        icon: TrendingUp,
+        color: "navy",
+        link: "/dashboard/reports",
       },
       {
         id: "totalSales",
@@ -147,11 +168,11 @@ const KPICards = ({ dashboardData, dashboardLoading, dateRange }) => {
       },
       {
         id: "netProfit",
-        title: "Net Revenue",
+        title: "Net Profit",
         value: formatPrice(metrics?.netProfit?.value, responseCurrency),
-        change: formatChange(metrics?.netProfit?.change),
-        trend: metrics?.netProfit?.trend || toTrend(metrics?.netProfit?.change),
-        icon: TrendingUp,
+        change: "After cost of goods & expenses",
+        trend: "neutral",
+        icon: Wallet,
         color: "navy",
         link: "/dashboard/reports",
       },
@@ -203,7 +224,7 @@ const KPICards = ({ dashboardData, dashboardLoading, dateRange }) => {
   if (dashboardLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-pulse">
-        {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
           <div key={i} className="h-32 bg-slate-100 rounded-xl"></div>
         ))}
       </div>

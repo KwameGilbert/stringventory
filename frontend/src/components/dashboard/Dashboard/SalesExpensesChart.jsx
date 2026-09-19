@@ -35,7 +35,7 @@ const SalesExpensesChart = ({ dashboardData, dashboardLoading }) => {
           <p className="text-sm font-bold text-slate-900 mb-3">{label}</p>
           {payload.map((entry, index) => (
             <div key={index} className="flex justify-between items-center gap-4 mb-1.5">
-              <span className={`text-[13px] font-semibold ${entry.name === 'Sales' ? 'text-[#00C49F]' : 'text-[#F59E0B]'}`}>
+              <span className={`text-[13px] font-semibold ${entry.name === 'Net Sales' ? 'text-[#00C49F]' : 'text-[#F59E0B]'}`}>
                 {entry.name}: {formatPrice(entry.value)}
               </span>
             </div>
@@ -53,7 +53,7 @@ const SalesExpensesChart = ({ dashboardData, dashboardLoading }) => {
         {payload.map((entry, index) => (
           <div key={`item-${index}`} className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }}></div>
-            <span className={`text-[13px] font-semibold ${entry.value === 'Sales' ? 'text-[#00C49F]' : 'text-[#F59E0B]'}`}>{entry.value}</span>
+            <span className={`text-[13px] font-semibold ${entry.value === 'Net Sales' ? 'text-[#00C49F]' : 'text-[#F59E0B]'}`}>{entry.value}</span>
           </div>
         ))}
       </div>
@@ -113,7 +113,7 @@ const SalesExpensesChart = ({ dashboardData, dashboardLoading }) => {
             <Line
               type="monotone"
               dataKey="sales"
-              name="Sales"
+              name="Net Sales"
               stroke="#00C49F"
               strokeWidth={2}
               dot={{ r: 4, fill: "#00C49F", strokeWidth: 0 }}

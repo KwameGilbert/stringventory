@@ -26,8 +26,8 @@ const QuickLists = ({ recentOrders: recentOrdersProp = [] }) => {
     return recentOrdersProp.slice(0, 5).map((order) => ({
       id: order.id,
       orderNumber: order.orderNumber || order.id,
-      customerName: order.customer?.name || order.customerName || "Unknown Customer",
-      totalAmount: Number(order.total || 0),
+      customerName: order.customer?.firstName + " " + order.customer?.lastName || "Unknown Customer",
+      totalAmount: Number(order.discountedTotalPrice || 0),
       status: order.status || "pending",
       currency: order.currency || "GHS",
       image: order.items?.[0]?.product?.image || order.items?.[0]?.image || order.image,
@@ -79,7 +79,7 @@ const QuickLists = ({ recentOrders: recentOrdersProp = [] }) => {
             productName: item.productName || item.name || "Product",
             batchNumber: item.batchNumber || item.batch || "—",
             daysUntilExpiry,
-            quantity: Number(item.quantity ?? item.currentStock ?? 0),
+            quantity: Number(item.currentQuantity ?? item.currentStock ?? 0),
             image: item.image || item.imageUrl || item.product?.image,
           };
         }));
@@ -126,7 +126,7 @@ const QuickLists = ({ recentOrders: recentOrdersProp = [] }) => {
       <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
         Quick Access Lists
       </h2>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Orders */}
         <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
@@ -207,7 +207,7 @@ const QuickLists = ({ recentOrders: recentOrdersProp = [] }) => {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-sm font-semibold text-amber-600">
-                    {item.currentStock} units
+                    {item.currentQuantity} units
                   </p>
                   <p className="text-xs text-gray-500">
                     Min: {item.reorderLevel}

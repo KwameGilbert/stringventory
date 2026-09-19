@@ -127,7 +127,7 @@ export default function Reports() {
             averageOrderValue: Number(salesData?.summary?.averageOrderValue ?? 0),
             totalItems: Number(salesData?.summary?.totalItems ?? 0),
             topPaymentMethod: salesData?.summary?.topPaymentMethod || "cash",
-            growth: Number(dashboardData?.metrics?.grossRevenue?.change ?? 0),
+            growth: Number(dashboardData?.metrics?.grossSales?.change ?? 0),
           },
           monthlySales: (salesData?.byDate || []).map((row) => ({
             date: row?.date,
@@ -238,7 +238,9 @@ export default function Reports() {
           expenseReport,
           profitAndLoss: {
             income: {
-              sales: Number(financialData?.income?.sales || 0),
+              grossSales: Number(financialData?.income?.grossSales || 0),
+              discounts: Number(financialData?.income?.discounts || 0),
+              refunds: Number(financialData?.income?.refunds || 0),
               other: Number(financialData?.income?.other || 0),
               total: Number(financialData?.income?.total || 0),
             },
@@ -754,15 +756,23 @@ export default function Reports() {
                     <h4 className="text-xs font-medium text-emerald-600 uppercase tracking-widest mb-3">Income / Revenue</h4>
                     <div className="space-y-2">
                        <div className="flex justify-between text-sm">
-                         <span className="text-gray-500">Total Sales</span>
-                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.income?.sales)}</span>
+                         <span className="text-gray-500">Gross Sales</span>
+                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.income?.grossSales)}</span>
+                       </div>
+                       <div className="flex justify-between text-sm">
+                         <span className="text-gray-500">Less: Discounts</span>
+                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.income?.discounts)}</span>
+                       </div>
+                       <div className="flex justify-between text-sm">
+                         <span className="text-gray-500">Less: Refunds</span>
+                         <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.income?.refunds)}</span>
                        </div>
                        <div className="flex justify-between text-sm">
                          <span className="text-gray-500">Other Income</span>
                          <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.income?.other)}</span>
                        </div>
                        <div className="flex justify-between text-sm py-2 border-t border-gray-100 font-medium">
-                         <span className="text-emerald-700">Total Revenue</span>
+                         <span className="text-emerald-700">Net Revenue</span>
                          <span className="text-emerald-700">{formatPrice(data?.profitAndLoss?.income?.total)}</span>
                        </div>
                     </div>
@@ -773,7 +783,7 @@ export default function Reports() {
                     <h4 className="text-xs font-medium text-rose-600 uppercase tracking-widest mb-3">Cost & Expenses</h4>
                     <div className="space-y-2">
                        <div className="flex justify-between text-sm">
-                         <span className="text-gray-500">Cost of Goods Sold (COGS)</span>
+                         <span className="text-gray-500">Cost of Goods Sold (net of restocked returns)</span>
                          <span className="font-medium text-gray-900">{formatPrice(data?.profitAndLoss?.expenses?.cogs)}</span>
                        </div>
                        <div className="flex justify-between text-sm">

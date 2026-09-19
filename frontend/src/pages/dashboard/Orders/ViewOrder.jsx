@@ -177,12 +177,12 @@ export default function ViewOrder() {
     setItems(prevItems => {
       const newItems = [...prevItems];
       const item = newItems[index];
-      
+
       if (value === "") {
         newItems[index] = { ...item, pickedQuantity: "" };
         return newItems;
       }
-      
+
       const parsed = parseInt(value, 10);
       if (isNaN(parsed)) return newItems;
 
@@ -349,27 +349,27 @@ export default function ViewOrder() {
         onClick={() => navigate("/dashboard/orders")}
         className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors mb-8 group"
       >
-        <div className="p-2 rounded-xl bg-white border border-gray-200 shadow-xs group-hover:border-gray-300 transition-all group-hover:-translate-x-1">
+        <div className="p-2 rounded-lg bg-white border border-gray-200 shadow-xs group-hover:border-gray-300 transition-all group-hover:-translate-x-1">
           <ArrowLeft size={18} />
         </div>
-        <span className="text-xs uppercase font-semibold tracking-widest">Back to Sales</span>
+        <span className="text-xs font-semibold tracking-wide">Back to Sales</span>
       </button>
 
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div className="flex items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
+          <div className="w-16 h-16 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
             <Receipt className="w-8 h-8 text-white" />
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-semibold text-gray-900 font-mono tracking-tighter">{order.displayRef || order.id}</h1>
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-widest ${status.bg} ${status.text} border-2 ${status.border}`}>
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide ${status.bg} ${status.text} border-2 ${status.border}`}>
                 <StatusIcon size={12} />
                 {status.label}
               </span>
             </div>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1">
+            <p className="text-gray-400 text-xs tracking-wide mt-1">
               {formatDate(order.orderDate)} • {formatTime(order.orderDate)}
             </p>
           </div>
@@ -379,38 +379,38 @@ export default function ViewOrder() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl transition-all font-bold text-xs shadow-lg shadow-gray-200 active:scale-95 disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-all font-medium text-xs shadow-lg shadow-gray-200 active:scale-95 disabled:opacity-50"
           >
             {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
-            SAVE PICKUP
+            Save Pickup
           </button>
           <button
             onClick={handlePickAll}
             disabled={isSaving || allItemsPicked}
-            className={`flex items-center gap-2 px-5 py-2.5 border-2 rounded-xl transition-all font-bold text-xs active:scale-95 disabled:opacity-50 ${allItemsPicked
+            className={`flex items-center gap-2 px-5 py-2.5 border-2 rounded-lg transition-all font-medium text-xs active:scale-95 disabled:opacity-50 ${allItemsPicked
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
                 : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
               }`}
           >
             {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle size={14} />}
-            {allItemsPicked ? 'ALL PICKED' : 'PICK ALL'}
+            {allItemsPicked ? 'All Picked' : 'Pick All'}
           </button>
 
           <div className="h-8 w-px bg-gray-200 mx-1 hidden sm:block"></div>
 
           <button
             onClick={handlePrint}
-            className="p-2.5 bg-white border-2 border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-200 rounded-xl transition-all shadow-xs active:scale-95"
+            className="p-2.5 bg-white border-2 border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-200 rounded-lg transition-all shadow-xs active:scale-95"
             title="Print Receipt"
           >
             <Printer size={18} />
           </button>
-          <button className="p-2.5 bg-white border-2 border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-200 rounded-xl transition-all shadow-xs active:scale-95">
+          <button className="p-2.5 bg-white border-2 border-gray-100 text-gray-400 hover:text-gray-900 hover:border-gray-200 rounded-lg transition-all shadow-xs active:scale-95">
             <Mail size={18} />
           </button>
           <button
             onClick={() => navigate(`/dashboard/orders/${id}/refund`)}
-            className="p-2.5 bg-white border-2 border-rose-50 text-rose-400 hover:text-rose-600 hover:border-rose-100 rounded-xl transition-all shadow-xs active:scale-95"
+            className="p-2.5 bg-white border-2 border-rose-50 text-rose-400 hover:text-rose-600 hover:border-rose-100 rounded-lg transition-all shadow-xs active:scale-95"
             title="Refund Sale"
           >
             <RefreshCw size={18} />
@@ -423,15 +423,15 @@ export default function ViewOrder() {
         {/* Main Content - Order Items */}
         <div className="flex-1 space-y-8 w-full">
           {/* Items Card */}
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-8 py-6 border-b border-gray-100 bg-gray-50/30 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-2xl bg-white shadow-xs border border-gray-100">
+                <div className="p-2.5 rounded-xl bg-white shadow-xs border border-gray-100">
                   <Package className="w-6 h-6 text-gray-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest">Sale Items</h3>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{items.length} unique products</p>
+                  <h3 className="text-sm font-semibold text-gray-900 tracking-wide">Sale Items</h3>
+                  <p className="text-xs text-gray-400 tracking-wide mt-0.5">{items.length} unique products</p>
                 </div>
               </div>
             </div>
@@ -443,7 +443,7 @@ export default function ViewOrder() {
 
                 return (
                   <div key={index} className={`px-8 py-6 flex flex-col sm:flex-row items-start sm:items-center gap-6 transition-colors ${isFullyPicked ? 'bg-emerald-50/20' : ''}`}>
-                    <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 relative shadow-xs">
+                    <div className="w-14 h-14 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 relative shadow-xs">
                       <Package className={`w-6 h-6 ${isFullyPicked ? 'text-emerald-500' : 'text-gray-400'}`} />
                       {isFullyPicked && (
                         <div className="absolute -top-2 -right-2 bg-emerald-500 text-white rounded-full p-1 border-4 border-white shadow-sm scale-110">
@@ -455,18 +455,18 @@ export default function ViewOrder() {
                       <p className="text-base font-semibold text-gray-900 truncate tracking-tight">{item.productName || "Product"}</p>
                       <div className="flex flex-col gap-3 mt-2">
                         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                          <p className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Ordered: <span className="text-gray-700">{item.quantity}</span></p>
+                          <p className="text-xs font-semibold text-gray-400 tracking-wide">Ordered: <span className="text-gray-700">{item.quantity}</span></p>
                           {item.fulfilledQuantity > 0 && (
-                            <p className="text-[10px] uppercase font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 tracking-widest">Fulfilled: {item.fulfilledQuantity}</p>
+                            <p className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 tracking-wide">Fulfilled: {item.fulfilledQuantity}</p>
                           )}
                         </div>
 
                         <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-100 shadow-xs">
+                          <div className="flex items-center gap-2 bg-gray-50 p-1.5 rounded-lg border border-gray-100 shadow-xs">
                             <button
                               onClick={() => handleUpdatePicked(index, -1)}
                               disabled={isSaving || picked <= 0}
-                              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
+                              className="w-10 h-10 flex items-center justify-center rounded-md bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
                             >
                               -
                             </button>
@@ -476,19 +476,19 @@ export default function ViewOrder() {
                               onChange={(e) => handleSetPicked(index, e.target.value)}
                               onBlur={() => handlePickedBlur(index)}
                               disabled={isSaving}
-                              className="w-14 text-center text-lg font-semibold text-blue-600 font-mono bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 py-1 shadow-inner hide-arrows"
+                              className="w-14 text-center text-lg font-semibold text-blue-600 font-mono bg-white border border-gray-200 rounded-md focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 py-1 shadow-inner hide-arrows"
                             />
                             <button
                               onClick={() => handleUpdatePicked(index, 1)}
                               disabled={isSaving || picked >= item.remainingQuantity}
-                              className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
+                              className="w-10 h-10 flex items-center justify-center rounded-md bg-white border border-gray-200 hover:border-gray-400 text-gray-900 font-semibold disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-xs active:scale-90"
                             >
                               +
                             </button>
                           </div>
                           {item.remainingQuantity > 0 && picked === 0 && (
-                            <span className="text-[10px] text-amber-600 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 font-semibold uppercase tracking-widest">
-                              {item.remainingQuantity} PENDING
+                            <span className="text-xs text-amber-600 bg-amber-50 px-3 py-1.5 rounded-md border border-amber-100 font-semibold tracking-wide">
+                              {item.remainingQuantity} pending
                             </span>
                           )}
                         </div>
@@ -496,7 +496,7 @@ export default function ViewOrder() {
                     </div>
                     <div className="w-full sm:w-auto flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1 border-t sm:border-t-0 border-gray-50 pt-4 sm:pt-0">
                       <p className="text-lg font-semibold text-gray-900 tracking-tight">{formatPrice(item.subtotal, order.currency)}</p>
-                      {isFullyPicked && <span className="text-[10px] text-emerald-600 font-semibold uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md">Fulfilled</span>}
+                      {isFullyPicked && <span className="text-xs text-emerald-600 font-semibold tracking-wide bg-emerald-50 px-2 py-0.5 rounded-md">Fulfilled</span>}
                     </div>
                   </div>
                 );
@@ -506,25 +506,25 @@ export default function ViewOrder() {
             {/* Order Summary Footer */}
             <div className="px-8 py-8 bg-gray-50/50 border-t border-gray-100 space-y-4">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Subtotal</span>
-                <span className="font-bold text-gray-900">{formatPrice(order.subtotal, order.currency)}</span>
+                <span className="text-xs text-gray-400 tracking-wide">Subtotal</span>
+                <span className="text-gray-900">{formatPrice(order.subtotal, order.currency)}</span>
               </div>
               {order.discountAmount > 0 && (
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest flex items-center gap-2">
+                  <span className="text-xs text-gray-400 tracking-wide flex items-center gap-2">
                     <Percent size={14} className="text-emerald-500" />
-                    DISCOUNT
+                    Discount
                   </span>
                   <span className="font-semibold text-emerald-600">-{formatPrice(order.discountAmount, order.currency)}</span>
                 </div>
               )}
               <div className="flex justify-between items-center text-sm">
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">TAX / VAT</span>
-                <span className="font-bold text-gray-900">{formatPrice(order.taxAmount || 0, order.currency)}</span>
+                <span className="text-xs text-gray-400 tracking-wide">Tax / VAT</span>
+                <span className="text-gray-900">{formatPrice(order.taxAmount || 0, order.currency)}</span>
               </div>
               <div className="pt-6 mt-2 border-t-2 border-dashed border-gray-200">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs uppercase font-semibold text-gray-900 tracking-widest">Grand Total</span>
+                  <span className="text-xs font-semibold text-gray-900 tracking-wide">Grand Total</span>
                   <span className="text-3xl font-semibold text-gray-900 tracking-tighter">{formatPrice(order.total, order.currency)}</span>
                 </div>
               </div>
@@ -535,13 +535,13 @@ export default function ViewOrder() {
         {/* Sidebar */}
         <div className="w-full lg:w-80 space-y-8 shrink-0">
           {/* Customer Group */}
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
-              <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Customer Information</h3>
+              <h3 className="text-xs font-semibold text-gray-400 tracking-wide">Customer Information</h3>
             </div>
             <div className="p-6 space-y-6">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-sm font-semibold shadow-lg shadow-blue-500/20">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white text-sm font-semibold shadow-lg shadow-blue-500/20">
                   {order.customer.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
@@ -551,43 +551,43 @@ export default function ViewOrder() {
 
               <div className="space-y-4 pt-2 border-t border-gray-50 text-sm">
                 <div className="flex items-center gap-4 group">
-                  <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-all">
+                  <div className="p-2.5 rounded-lg bg-gray-50 text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-all">
                     <AtSign className="w-4 h-4" />
                   </div>
-                  <span className="font-bold text-gray-600 break-all">{order.customer.email || "No Email"}</span>
+                  <span className="text-gray-600 break-all">{order.customer.email || "No Email"}</span>
                 </div>
                 <div className="flex items-center gap-4 group">
-                  <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-all">
+                  <div className="p-2.5 rounded-lg bg-gray-50 text-gray-400 group-hover:text-blue-500 group-hover:bg-blue-50 transition-all">
                     <Phone className="w-4 h-4" />
                   </div>
-                  <span className="font-bold text-gray-600">{order.customer.phone || "No Phone"}</span>
+                  <span className=" text-gray-600">{order.customer.phone || "No Phone"}</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Payment Group */}
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
-              <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Payment Data</h3>
+              <h3 className="text-xs font-semibold text-gray-400 tracking-wide">Payment Data</h3>
             </div>
             <div className="p-6 space-y-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 shadow-xs border border-emerald-100">
+                <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600 shadow-xs border border-emerald-100">
                   <CreditCard className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Method</p>
-                  <p className="font-semibold text-gray-900 uppercase text-xs tracking-wider">{order.paymentMethod.replace('_', ' ')}</p>
+                  <p className="text-xs text-gray-400 tracking-wide leading-none mb-1">Method</p>
+                  <p className="font-semibold text-gray-900 capitalize text-xs">{order.paymentMethod.replace('_', ' ')}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 pt-5 border-t border-gray-50">
-                <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 shadow-xs border border-blue-100">
+                <div className="p-3 rounded-xl bg-blue-50 text-blue-600 shadow-xs border border-blue-100">
                   <DollarSign className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Total Paid</p>
+                  <p className="text-xs text-gray-400 tracking-wide leading-none mb-1">Total Paid</p>
                   <p className="font-semibold text-gray-900 text-2xl tracking-tighter">{formatPrice(order.amountPaid || order.total, order.currency)}</p>
                 </div>
               </div>
@@ -595,29 +595,29 @@ export default function ViewOrder() {
           </div>
 
           {/* Details Group */}
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
-              <h3 className="text-[10px] uppercase font-semibold text-gray-400 tracking-widest">Metadata</h3>
+              <h3 className="text-xs font-semibold text-gray-400 tracking-wide">Metadata</h3>
             </div>
             <div className="p-6 space-y-5">
               <div className="flex items-start gap-4">
-                <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 shrink-0">
+                <div className="p-2.5 rounded-lg bg-gray-50 text-gray-400 shrink-0">
                   <Hash className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Internal Reference</p>
-                  <p className="text-[10px] font-mono font-bold text-gray-900 break-all">{order.id}</p>
+                  <p className="text-xs text-gray-400 tracking-wide leading-none mb-1">Internal Reference</p>
+                  <p className="text-[10px] font-mono text-gray-900 break-all">{order.id}</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4 pt-2">
-                <div className="p-2.5 rounded-xl bg-gray-50 text-gray-400 shrink-0">
+                <div className="p-2.5 rounded-lg bg-gray-50 text-gray-400 shrink-0">
                   <Calendar className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest leading-none mb-1">Creation Date</p>
+                  <p className="text-xs text-gray-400 tracking-wide leading-none mb-1">Creation Date</p>
                   <p className="text-sm font-semibold text-gray-900">{formatDate(order.orderDate)}</p>
-                  <p className="text-xs text-gray-400 font-bold">{formatTime(order.orderDate)}</p>
+                  <p className="text-xs text-gray-400">{formatTime(order.orderDate)}</p>
                 </div>
               </div>
             </div>
