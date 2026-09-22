@@ -245,6 +245,18 @@ export default function CreateOrder() {
 
     // Check if product already in items
     const existingIndex = formData.items.findIndex((item) => item.productId === product.id);
+    const alreadyInCart = existingIndex >= 0 ? formData.items[existingIndex].quantity : 0;
+    const remainingStock = product.currentStock - alreadyInCart;
+
+    if (quantityToAdd > remainingStock) {
+      showError(
+        remainingStock > 0
+          ? `Only ${remainingStock} unit(s) of ${product.name} left in stock`
+          : `${product.name} already has all available stock (${product.currentStock}) in this sale`
+      );
+      return;
+    }
+
     if (existingIndex >= 0) {
       // Update quantity
       const newItems = [...formData.items];
@@ -287,9 +299,26 @@ export default function CreateOrder() {
   };
 
   const updateItemQuantity = (index, quantity) => {
+    const item = formData.items[index];
+    if (!item) return;
+
+    const product = products.find((p) => String(p.id) === String(item.productId));
+    const maxQuantity = product ? product.currentStock : Infinity;
+    let nextQuantity = Math.max(1, quantity);
+
+    if (Number.isFinite(maxQuantity) && nextQuantity > maxQuantity) {
+      showError(`Only ${maxQuantity} unit(s) of ${item.productName} available in stock`);
+      nextQuantity = Math.max(1, maxQuantity);
+    }
+
     const newItems = [...formData.items];
-    newItems[index].quantity = Math.max(1, quantity);
+    newItems[index] = { ...item, quantity: nextQuantity };
     setFormData((prev) => ({ ...prev, items: newItems }));
+  };
+
+  const getItemStock = (item) => {
+    const product = products.find((p) => String(p.id) === String(item.productId));
+    return product ? product.currentStock : Infinity;
   };
 
   const handleSelectedQuantityChange = (e) => {
@@ -301,12 +330,19 @@ export default function CreateOrder() {
 
     const parsed = Number.parseInt(value, 10);
     if (Number.isNaN(parsed)) return;
-    setSelectedQuantity(String(Math.max(1, parsed)));
+    let next = Math.max(1, parsed);
+    if (selectedProductData && next > selectedProductData.currentStock) {
+      next = Math.max(1, selectedProductData.currentStock);
+    }
+    setSelectedQuantity(String(next));
   };
 
   const normalizeSelectedQuantity = () => {
     setSelectedQuantity((prev) => {
-      const normalized = Math.max(1, Number(prev) || 1);
+      let normalized = Math.max(1, Number(prev) || 1);
+      if (selectedProductData && normalized > selectedProductData.currentStock) {
+        normalized = Math.max(1, selectedProductData.currentStock);
+      }
       return String(normalized);
     });
   };
@@ -590,6 +626,7 @@ export default function CreateOrder() {
                   onFocus={(e) => e.target.select()}
                   onBlur={normalizeSelectedQuantity}
                   min="1"
+                  max={selectedProductData?.currentStock || undefined}
                   className="w-24 px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 text-sm text-center"
                   placeholder="Qty"
                 />
@@ -640,10 +677,11 @@ export default function CreateOrder() {
                               -
                             </button>
                             <span className="w-8 text-center text-sm font-bold text-gray-900">{item.quantity}</span>
-                            <button 
+                            <button
                               type="button"
                               onClick={() => updateItemQuantity(index, item.quantity + 1)}
-                              className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors font-bold"
+                              disabled={item.quantity >= getItemStock(item)}
+                              className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors font-bold disabled:opacity-30 disabled:cursor-not-allowed"
                             >
                               +
                             </button>
@@ -696,12 +734,14 @@ export default function CreateOrder() {
                                   onChange={(e) => updateItemQuantity(index, parseInt(e.target.value) || 1)}
                                   onFocus={(e) => e.target.select()}
                                   min="1"
+                                  max={getItemStock(item) === Infinity ? undefined : getItemStock(item)}
                                   className="w-14 px-1 py-2 text-center text-sm font-bold text-gray-900 bg-transparent border-none focus:outline-none"
                                 />
                                 <button
                                   type="button"
                                   onClick={() => updateItemQuantity(index, item.quantity + 1)}
-                                  className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 border border-gray-200 rounded-lg hover:bg-white transition-all shadow-xs"
+                                  disabled={item.quantity >= getItemStock(item)}
+                                  className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 border border-gray-200 rounded-lg hover:bg-white transition-all shadow-xs disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                   +
                                 </button>
