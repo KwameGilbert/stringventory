@@ -22,7 +22,12 @@ const Expenses = () => {
       setLoading(true);
       const response = await expenseService.getExpenses();
       const data = response.data || response;
-      setExpenses(Array.isArray(data) ? data : []);
+      const list = Array.isArray(data) ? data : [];
+      const normalized = list.map((expense) => ({
+        ...expense,
+        date: expense.transactionDate || expense.date || expense.createdAt,
+      }));
+      setExpenses(normalized);
     } catch (error) {
       console.error("Error fetching expenses:", error);
       showError("Failed to load expenses. Please try again.");

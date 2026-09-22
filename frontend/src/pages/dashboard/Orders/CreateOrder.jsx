@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useMemo, useRef } from "react";
-import { Save, ArrowLeft, Plus, Trash2, Package, User, DollarSign, ShoppingCart, Search, ChevronDown, Check } from "lucide-react";
+import { Save, ArrowLeft, Plus, Trash2, Package, User, DollarSign, ShoppingCart, Search, ChevronDown, Check, Footprints } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { productService } from "../../../services/business/productService";
@@ -170,6 +170,21 @@ export default function CreateOrder() {
     });
   }, [products, productSearchQuery]);
 
+  const isWalkIn = Boolean(selectedCustomer?.isWalkIn);
+
+  const handleCustomerPick = (customer) => {
+    if (customer?.isWalkIn) {
+      setSelectedCustomer(customer);
+      setFormData((prev) => ({
+        ...prev,
+        customerId: "",
+        customer: { ...prev.customer, name: "", email: "", phone: "" },
+      }));
+      return;
+    }
+    selectCustomer(customer.id);
+  };
+
   const selectCustomer = async (selectedId) => {
     if (!selectedId) {
       setFormData((prev) => ({
@@ -313,18 +328,18 @@ export default function CreateOrder() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.customerId) {
-      showError("Please select a customer or add a new one");
+    if (!isWalkIn && !formData.customerId) {
+      showError("Please select a customer, add a new one, or choose Walk-in Customer");
       return;
     }
 
     try {
       setSubmitting(true);
       const response = await orderService.createOrder({
-        customerId: formData.customerId,
-        customerName: formData.customer.name || undefined,
-        customerEmail: formData.customer.email || undefined,
-        customerPhone: formData.customer.phone || undefined,
+        customerId: isWalkIn ? null : formData.customerId,
+        customerName: isWalkIn ? "Walk-in Customer" : (formData.customer.name || undefined),
+        customerEmail: isWalkIn ? undefined : (formData.customer.email || undefined),
+        customerPhone: isWalkIn ? undefined : (formData.customer.phone || undefined),
         items: formData.items.map((item) => ({
           productId: item.productId,
           quantity: Number(item.quantity),
@@ -408,42 +423,52 @@ export default function CreateOrder() {
             </div>
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 relative z-20">
               <div className="space-y-4 relative z-50">
-                 <CustomerSelect 
+                 <CustomerSelect
                     customers={customers}
                     selectedCustomer={selectedCustomer}
-                    onSelect={(c) => selectCustomer(c.id)}
+                    onSelect={handleCustomerPick}
                     onOpenAddModal={() => setIsAddCustomerModalOpen(true)}
                     loading={loading}
                  />
               </div>
 
               <div className="space-y-4 border-t md:border-t-0 md:border-l border-gray-100 md:pl-6 pt-4 md:pt-0">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Edit Details for this Sale</p>
-                  <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">Email</label>
-                  <input
-                      type="email"
-                      name="email"
-                      value={formData.customer.email}
-                      onChange={handleCustomerChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-gray-50 hover:bg-white"
-                      placeholder="john@email.com"
-                  />
+                {isWalkIn ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center py-6">
+                    <Footprints className="w-8 h-8 mb-2 text-amber-400" />
+                    <p className="text-sm font-semibold text-gray-700">Walk-in Sale</p>
+                    <p className="text-xs text-gray-400 mt-1">No customer information is required for this sale.</p>
                   </div>
-                  <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                      Phone <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                      type="tel"
-                      name="phone"
-                      value={formData.customer.phone}
-                      onChange={handleCustomerChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-gray-50 hover:bg-white"
-                      placeholder="+233 24 123 4567"
-                      required
-                  />
-                  </div>
+                ) : (
+                  <>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Edit Details for this Sale</p>
+                    <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700 flex items-center gap-2">Email</label>
+                    <input
+                        type="email"
+                        name="email"
+                        value={formData.customer.email}
+                        onChange={handleCustomerChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-gray-50 hover:bg-white"
+                        placeholder="john@email.com"
+                    />
+                    </div>
+                    <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                        Phone <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                        type="tel"
+                        name="phone"
+                        value={formData.customer.phone}
+                        onChange={handleCustomerChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all text-sm bg-gray-50 hover:bg-white"
+                        placeholder="+233 24 123 4567"
+                        required
+                    />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -808,7 +833,7 @@ export default function CreateOrder() {
               </Link>
               <button
                 type="submit"
-                disabled={submitting || formData.items.length === 0 || !formData.customerId}
+                disabled={submitting || formData.items.length === 0 || (!isWalkIn && !formData.customerId)}
                 className="px-8 py-3 rounded-xl bg-gray-900 hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium transition-all flex items-center justify-center gap-2 text-sm shadow-lg shadow-gray-900/20"
               >
                 <Save size={18} />

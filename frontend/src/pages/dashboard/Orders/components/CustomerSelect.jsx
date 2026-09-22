@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Plus, User, Building2, Phone, Mail, ChevronDown, Check } from "lucide-react";
+import { Search, Plus, User, Building2, Phone, Mail, ChevronDown, Check, Footprints } from "lucide-react";
 
 export default function CustomerSelect({ 
     customers, 
@@ -76,7 +76,7 @@ export default function CustomerSelect({
                 </span>
                 {selectedCustomer && (
                      <span className="text-xs text-gray-500 truncate mt-0.5">
-                         {selectedCustomer.businessName || "No Business Name"}
+                         {selectedCustomer.isWalkIn ? "No customer info required" : (selectedCustomer.businessName || "No Business Name")}
                      </span>
                 )}
             </div>
@@ -101,6 +101,23 @@ export default function CustomerSelect({
                 </div>
 
                 <div className="overflow-y-auto p-1 flex-1">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            onSelect({ id: "walk-in", displayName: "Walk-in Customer", isWalkIn: true });
+                            setIsOpen(false);
+                            setSearchQuery("");
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm flex items-center justify-between transition-colors mb-1 border border-dashed ${
+                            selectedCustomer?.isWalkIn ? 'bg-amber-50 text-amber-900 border-amber-200' : 'hover:bg-gray-50 text-gray-900 border-gray-200'
+                        }`}
+                    >
+                        <div className="flex items-center gap-2">
+                            <Footprints size={14} className="text-amber-600 flex-shrink-0" />
+                            <span className="font-medium">Walk-in Customer</span>
+                        </div>
+                        {selectedCustomer?.isWalkIn && <Check size={14} className="text-amber-600 flex-shrink-0" />}
+                    </button>
                     {loading ? (
                          <div className="p-4 text-center text-xs text-gray-500">Loading customers...</div>
                     ) : filteredCustomers.length === 0 ? (
@@ -142,16 +159,23 @@ export default function CustomerSelect({
 
         {/* Selected Customer Details Preview */}
         {selectedCustomer && (
-             <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 space-y-2 mt-2">
-                 <div className="flex items-center gap-2 text-xs text-gray-600">
-                     <Mail className="w-3.5 h-3.5 text-gray-400" />
-                     <span className="truncate">{selectedCustomer.user?.email || selectedCustomer.email || "No Email Provided"}</span>
-                 </div>
-                 <div className="flex items-center gap-2 text-xs text-gray-600">
-                     <Phone className="w-3.5 h-3.5 text-gray-400" />
-                     <span>{selectedCustomer.phone || "No Phone Provided"}</span>
-                 </div>
-             </div>
+             selectedCustomer.isWalkIn ? (
+                <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mt-2 flex items-center gap-2 text-xs text-amber-700">
+                    <Footprints className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>No customer details needed — this sale will be recorded as a walk-in.</span>
+                </div>
+             ) : (
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 space-y-2 mt-2">
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <Mail className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="truncate">{selectedCustomer.user?.email || selectedCustomer.email || "No Email Provided"}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <Phone className="w-3.5 h-3.5 text-gray-400" />
+                        <span>{selectedCustomer.phone || "No Phone Provided"}</span>
+                    </div>
+                </div>
+             )
         )}
     </div>
   );

@@ -17,7 +17,10 @@ const ExpensesTable = ({ expenses, onDelete }) => {
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-GB", {
+    if (!dateString) return "—";
+    const parsed = new Date(dateString);
+    if (Number.isNaN(parsed.getTime())) return "—";
+    return parsed.toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -152,7 +155,7 @@ const ExpensesTable = ({ expenses, onDelete }) => {
                     <span className="text-gray-600 text-sm">{formatDate(expense.date)}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-gray-900 text-sm">{expense.reference}</span>
+                    <span className="text-gray-900 text-sm">{expense.reference || "—"}</span>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-gray-600 text-sm font-medium capitalize">

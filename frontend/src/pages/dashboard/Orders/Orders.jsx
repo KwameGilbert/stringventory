@@ -32,7 +32,7 @@ const normalizeOrder = (order) => {
     (customerUser?.firstName ? `${customerUser.firstName} ${customerUser.lastName || ""}`.trim() : null) ||
     customer?.name ||
     order?.customerName ||
-    "Unknown Customer";
+    (order?.customerId ? "Unknown Customer" : "Walk-in Customer");
 
   const customerEmail = customerUser?.email || customer?.email || order?.customerEmail || "";
   const customerPhone = customerUser?.phone || customer?.phone || order?.customerPhone || "";

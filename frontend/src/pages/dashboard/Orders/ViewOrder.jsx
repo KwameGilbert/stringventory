@@ -72,7 +72,7 @@ export default function ViewOrder() {
     const customerObj = rawOrder?.customer || {};
     const firstName = customerObj?.firstName || "";
     const lastName = customerObj?.lastName || "";
-    const customerName = `${firstName} ${lastName}`.trim() || customerObj?.name || rawOrder?.customerName || "Unknown Customer";
+    const customerName = `${firstName} ${lastName}`.trim() || customerObj?.name || rawOrder?.customerName || (rawOrder?.customerId ? "Unknown Customer" : "Walk-in Customer");
 
     const customer = {
       name: customerName,
@@ -714,7 +714,7 @@ export default function ViewOrder() {
 
           <div className="mt-16 text-center space-y-6">
             <div className="inline-block px-6 py-2 border border-gray-900 text-[10px] font-bold uppercase tracking-widest">
-              No Returns Without Original Receipt
+              No Returns
             </div>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
               Thank you for choosing {businessSettings?.businessName || "our store"}!
