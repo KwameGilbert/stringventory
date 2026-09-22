@@ -83,6 +83,25 @@ export default function CustomerSelect({
             <ChevronDown size={16} className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
+        {/* Quick Walk-in Customer Button */}
+        <button
+            type="button"
+            onClick={() => {
+                onSelect({ id: "walk-in", displayName: "Walk-in Customer", isWalkIn: true });
+                setIsOpen(false);
+                setSearchQuery("");
+            }}
+            className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-dashed text-xs font-semibold transition-colors ${
+                selectedCustomer?.isWalkIn
+                    ? 'bg-amber-50 text-amber-900 border-amber-300'
+                    : 'bg-white text-amber-700 border-amber-200 hover:bg-amber-50'
+            }`}
+        >
+            <Footprints size={14} />
+            {selectedCustomer?.isWalkIn ? "Walk-in Customer Selected" : "Use Walk-in Customer"}
+            {selectedCustomer?.isWalkIn && <Check size={14} className="text-amber-600" />}
+        </button>
+
         {/* Dropdown Menu */}
         {isOpen && (
             <div className="absolute top-16 left-0 right-0 z-50 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 max-h-64 flex flex-col">
