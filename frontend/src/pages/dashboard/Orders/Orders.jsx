@@ -8,6 +8,8 @@ import { showError } from "../../../utils/alerts";
 import { exportToExcel } from "../../../utils/exportUtils";
 import { exportToPDF } from "../../../utils/pdfUtils";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
+import { isWithinDateFilter } from "../../../utils/dashboardDateParams";
 
 const extractOrders = (response) => {
   const payload = response?.data || response || {};
@@ -83,7 +85,8 @@ const isForbiddenError = (error) => {
 export default function Orders() {
   const navigate = useNavigate();
   const { formatPrice } = useCurrency();
-  const [orders, setOrders] = useState([]);
+  const { filter } = useDashboardDateFilter();
+  const [allOrders, setAllOrders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [loading, setLoading] = useState(true);
@@ -97,7 +100,7 @@ export default function Orders() {
         const response = await orderService.getOrders();
         const currency = response?.currency || response?.data?.currency || "GHS";
         setResponseCurrency(currency);
-        setOrders(extractOrders(response).map(o => ({ ...normalizeOrder(o), currency })));
+        setAllOrders(extractOrders(response).map(o => ({ ...normalizeOrder(o), currency })));
       } catch (error) {
         console.error("Error loading orders", error);
         if (isForbiddenError(error)) {
@@ -111,6 +114,9 @@ export default function Orders() {
     };
     fetchData();
   }, []);
+
+  // Orders inside the header date range drive stats, table and exports
+  const orders = allOrders.filter((order) => isWithinDateFilter(order.orderDate, filter));
 
   // Calculate stats
   const totalOrders = orders.length;

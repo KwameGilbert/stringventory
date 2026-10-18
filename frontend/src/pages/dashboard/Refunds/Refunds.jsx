@@ -5,6 +5,8 @@ import refundService from "../../../services/business/refundService";
 import { showError } from "../../../utils/alerts";
 import RefundsTable from "../../../components/dashboard/Refunds/RefundsTable";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
+import { isWithinDateFilter } from "../../../utils/dashboardDateParams";
 import { exportToExcel } from "../../../utils/exportUtils";
 import { exportToPDF } from "../../../utils/pdfUtils";
 
@@ -17,7 +19,8 @@ const extractRefunds = (response) => {
 
 export default function Refunds() {
   const navigate = useNavigate();
-  const [refunds, setRefunds] = useState([]);
+  const { filter } = useDashboardDateFilter();
+  const [allRefunds, setAllRefunds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("");
   const [responseCurrency, setResponseCurrency] = useState("GHS");
@@ -31,7 +34,7 @@ export default function Refunds() {
       const response = await refundService.getRefunds();
       const currency = response?.currency || response?.data?.currency || "GHS";
       setResponseCurrency(currency);
-      setRefunds(extractRefunds(response).map(r => ({ ...r, currency })));
+      setAllRefunds(extractRefunds(response).map(r => ({ ...r, currency })));
     } catch (error) {
       console.error("Error loading refunds", error);
       showError(error?.message || "Failed to load refunds");
@@ -43,6 +46,9 @@ export default function Refunds() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Refunds inside the header date range drive stats, table and exports
+  const refunds = allRefunds.filter((refund) => isWithinDateFilter(refund.createdAt, filter));
 
   const filteredRefunds = refunds.filter((refund) => {
     if (!statusFilter) return true;

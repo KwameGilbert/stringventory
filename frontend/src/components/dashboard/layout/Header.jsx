@@ -15,7 +15,8 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
   const { unreadCount, notifications, markAsRead } = useNotifications();
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
-  const { filter, setCustomRange } = useDashboardDateFilter();
+  const { filter, setPreset, setCustomRange } = useDashboardDateFilter();
+  const isAllTime = filter.type === "preset" && filter.preset === "all";
   const { user } = useAuth();
   
   const notificationRef = useRef(null);
@@ -125,6 +126,21 @@ const Header = ({ onMenuToggle, isSidebarExpanded }) => {
 
           {/* Date Range - hidden on mobile and tablets */}
           <div className="hidden xl:flex items-center gap-2">
+            {/* All Time - clears the range so lists show every record */}
+            <button
+              type="button"
+              onClick={() => setPreset(isAllTime ? "30days" : "all")}
+              aria-pressed={isAllTime}
+              title={isAllTime ? "Showing all records - click to return to the last 30 days" : "Show records from all time"}
+              className={`px-3 py-2 rounded-xl border text-sm font-medium whitespace-nowrap transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 ${
+                isAllTime
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                  : "bg-white border-gray-100 text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              All time
+            </button>
+
             {/* Start Date Picker */}
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />

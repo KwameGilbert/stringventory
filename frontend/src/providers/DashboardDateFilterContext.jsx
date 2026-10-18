@@ -9,6 +9,10 @@ const getPresetDates = (preset) => {
   const endDate = new Date(now);
   const startDate = new Date(now);
 
+  if (preset === "all") {
+    return { startDate: "", endDate: "" };
+  }
+
   switch (preset) {
     case "today":
       break;

@@ -6,12 +6,15 @@ import { showError, showSuccess, confirmDelete } from "../../../utils/alerts";
 import { exportToExcel } from "../../../utils/exportUtils";
 import { exportToPDF } from "../../../utils/pdfUtils";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
+import { isWithinDateFilter } from "../../../utils/dashboardDateParams";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const { formatPrice } = useCurrency();
+  const { filter } = useDashboardDateFilter();
 
   useEffect(() => {
     fetchExpenses();
@@ -52,11 +55,13 @@ const Expenses = () => {
 
   const filteredExpenses = useMemo(() => {
     return expenses.filter((expense) => {
+      if (!isWithinDateFilter(expense.date, filter)) return false;
+
       const category = typeof expense.category === 'object' ? expense.category?.name : expense.category;
       const searchTarget = `${category} ${expense.reference} ${expense.notes}`.toLowerCase();
       return searchTarget.includes(searchQuery.toLowerCase());
     });
-  }, [expenses, searchQuery]);
+  }, [expenses, searchQuery, filter]);
 
   const stats = useMemo(() => {
     const total = filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount || 0), 0);

@@ -18,6 +18,7 @@ const dateOptions = [
   { label: "Last 30 Days", value: "30days" },
   { label: "Last 90 Days", value: "90days" },
   { label: "This Year", value: "year" },
+  { label: "All Time", value: "all" },
 ];
 
 const MetricCard = ({ title, value, Icon, colorClass }) => {

@@ -8,6 +8,8 @@ import { useAuth } from "../../../providers/AuthContext";
 import { exportToExcel } from "../../../utils/exportUtils";
 import { exportToPDF } from "../../../utils/pdfUtils";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
+import { getDateFilterParams, isWithinDateFilter } from "../../../utils/dashboardDateParams";
 import Swal from "sweetalert2";
 
 const extractPurchases = (response) => {
@@ -76,6 +78,8 @@ export default function Purchases() {
   const { formatPrice } = useCurrency();
   const currentUserRole = user?.role || user?.normalizedRole;
 
+  const { filter } = useDashboardDateFilter();
+  const { startDate, endDate } = filter;
   const [purchases, setPurchases] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -97,8 +101,14 @@ export default function Purchases() {
           limit: pagination.limit,
           search: searchQuery || undefined,
           status: statusFilter || undefined,
+          ...getDateFilterParams({ startDate, endDate }),
         });
-        setPurchases(extractPurchases(response).map(normalizePurchase));
+        // Also filter locally in case the API ignores the date params
+        setPurchases(
+          extractPurchases(response)
+            .map(normalizePurchase)
+            .filter((p) => isWithinDateFilter(p.purchaseDate, { startDate, endDate })),
+        );
         setPagination((prev) => ({
           ...prev,
           ...extractPagination(response),
@@ -111,11 +121,11 @@ export default function Purchases() {
       }
     };
     fetchData();
-  }, [currentPage, searchQuery, statusFilter, pagination.limit]);
+  }, [currentPage, searchQuery, statusFilter, startDate, endDate, pagination.limit]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, statusFilter]);
+  }, [searchQuery, statusFilter, startDate, endDate]);
 
   // Calculate stats
   const totalPurchases = pagination.total || purchases.length;

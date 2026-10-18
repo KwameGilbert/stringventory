@@ -15,12 +15,15 @@ import { showError } from "../../../utils/alerts";
 import { exportToExcel } from "../../../utils/exportUtils";
 import { exportToPDF } from "../../../utils/pdfUtils";
 import { useCurrency } from "../../../utils/currencyUtils";
+import { useDashboardDateFilter } from "../../../providers/DashboardDateFilterContext";
+import { isWithinDateFilter } from "../../../utils/dashboardDateParams";
 import { FileText } from "lucide-react";
 
 export default function Transactions() {
   const { formatPrice } = useCurrency();
-  const [transactions, setTransactions] = useState([]);
-  const [summary, setSummary] = useState({
+  const { filter } = useDashboardDateFilter();
+  const [allTransactions, setAllTransactions] = useState([]);
+  const [apiSummary, setApiSummary] = useState({
     totalInflow: 0,
     totalOutflow: 0,
     netProfitLoss: 0,
@@ -40,8 +43,8 @@ export default function Transactions() {
         const currency =
           response?.currency || response?.data?.currency || "GHS";
         setResponseCurrency(currency);
-        setTransactions(payload.transactions.map((t) => ({ ...t, currency })));
-        setSummary(
+        setAllTransactions(payload.transactions.map((t) => ({ ...t, currency })));
+        setApiSummary(
           payload.summary || {
             totalInflow: 0,
             totalOutflow: 0,
@@ -49,7 +52,7 @@ export default function Transactions() {
           },
         );
       } else {
-        setTransactions(Array.isArray(payload) ? payload : []);
+        setAllTransactions(Array.isArray(payload) ? payload : []);
       }
     } catch (error) {
       console.error("Error loading transactions", error);
@@ -62,6 +65,26 @@ export default function Transactions() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Transactions inside the header date range drive the table, totals and exports
+  const isDateRangeActive = Boolean(filter.startDate || filter.endDate);
+  const transactions = allTransactions.filter((tx) =>
+    isWithinDateFilter(tx.transactionDate || tx.createdAt, filter),
+  );
+
+  // The API summary covers all time; recompute it for a date range (outflows are negative)
+  const summary = isDateRangeActive
+    ? transactions.reduce(
+        (totals, tx) => {
+          const amount = Number(tx.amount || 0);
+          if (amount >= 0) totals.totalInflow += amount;
+          else totals.totalOutflow += amount;
+          totals.netProfitLoss += amount;
+          return totals;
+        },
+        { totalInflow: 0, totalOutflow: 0, netProfitLoss: 0 },
+      )
+    : apiSummary;
 
   const filteredTransactions = transactions.filter((tx) => {
     const matchesType = !filterType || tx.transactionType === filterType;
@@ -153,8 +176,6 @@ export default function Transactions() {
       showError("Failed to generate PDF report");
     }
   };
-
-  // Remove local calculation as we use summary from API
 
   if (loading) {
     return (
