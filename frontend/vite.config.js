@@ -10,47 +10,8 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-      manifest: {
-        name: 'PinnexVentures',
-        short_name: 'PinnexVentures',
-        description: 'Single company inventory and business management platform for PinnexVentures',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
-        display: 'standalone',
-        scope: '/',
-        start_url: '/',
-        icons: [
-          {
-            src: '/favicon.ico',
-            sizes: '32x32',
-            type: 'image/x-icon'
-          },
-          {
-            src: '/logo-192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: '/logo-512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ],
-        categories: ['business', 'productivity'],
-        screenshots: [
-          {
-            src: '/screenshot-540x720.png',
-            sizes: '540x720',
-            form_factor: 'narrow'
-          },
-          {
-            src: '/screenshot-1280x720.png',
-            sizes: '1280x720',
-            form_factor: 'wide'
-          }
-        ]
-      },
+      // index.html links public/manifest.json
+      manifest: false,
       workbox: {
         maximumFileSizeToCacheInBytes: 10485760, // 10 MiB
         // Only static media; HTML, JS and CSS always come from the network so deploys are never stale
