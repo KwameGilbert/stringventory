@@ -35,12 +35,12 @@
   ExpiresByType application/font-woff "access plus 1 year"
 </IfModule>
 
-# Service worker must always be revalidated so new deploys are picked up
-<Files "sw.js">
+# HTML and the service worker must always be revalidated so new deploys are picked up
+<FilesMatch "(\.html|^sw\.js)$">
   <IfModule mod_headers.c>
     Header set Cache-Control "no-cache"
   </IfModule>
-</Files>
+</FilesMatch>
 
 # Gzip compression
 <IfModule mod_deflate.c>
