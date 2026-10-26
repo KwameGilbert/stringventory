@@ -147,26 +147,12 @@ export default function Inventory() {
     }
 
     const absoluteQuantity = Number(quantity);
-    const adjustmentValue = type === "decrease" ? -absoluteQuantity : absoluteQuantity;
-    const operation = type === "increase" ? "add" : "subtract";
 
     try {
+      // The API applies `adjustment` as a signed delta: negative decreases stock
       await inventoryService.adjustInventory({
         productId: resolvedProductId,
-        product_id: resolvedProductId,
-        product: resolvedProductId,
-        productID: resolvedProductId,
-        adjustmentValue,
-        adjustment_value: adjustmentValue,
-        adjustment: absoluteQuantity,
-        value: absoluteQuantity,
-        quantity: absoluteQuantity,
-        delta: adjustmentValue,
-        adjustmentType: type,
-        operation,
-        action: operation,
-        direction: type,
-        type,
+        adjustment: type === "decrease" ? -absoluteQuantity : absoluteQuantity,
         reason,
         notes,
       });

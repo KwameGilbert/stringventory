@@ -147,8 +147,16 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Handle 401 Unauthorized (a 401 from these endpoints means bad credentials, not an expired session)
+    const isCredentialRequest = [
+      API_ENDPOINTS.AUTH.LOGIN,
+      API_ENDPOINTS.AUTH.REGISTER,
+      API_ENDPOINTS.AUTH.REFRESH_TOKEN,
+      API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+      API_ENDPOINTS.AUTH.RESET_PASSWORD,
+    ].includes(originalRequest?.url);
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isCredentialRequest) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
