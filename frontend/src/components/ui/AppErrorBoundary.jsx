@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Chrome / Safari / Firefox messages for a failed dynamic import
+const CHUNK_LOAD_ERROR = /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i;
+
 /**
  * Top-level Error Boundary to catch any unexpected runtime crashes
  * and prevent blank screens on mobile devices (iOS / Android).
@@ -23,6 +26,11 @@ export class AppErrorBoundary extends React.Component {
   };
 
   handleReset = () => {
+    // React.lazy caches a failed chunk load, so re-rendering would fail again
+    if (CHUNK_LOAD_ERROR.test(this.state.error?.message || '')) {
+      window.location.reload();
+      return;
+    }
     // Clear potentially corrupted session storage/cached state if needed
     this.setState({ hasError: false, error: null });
   };

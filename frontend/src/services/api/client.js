@@ -73,6 +73,10 @@ const clearTokens = () => {
   localStorage.removeItem(
     import.meta.env.VITE_AUTH_USER_KEY,
   );
+  // Drop the service worker's offline copy of this user's API responses
+  if (typeof caches !== "undefined") {
+    caches.delete("api-cache").catch(() => {});
+  }
 };
 
 // Create axios instance
