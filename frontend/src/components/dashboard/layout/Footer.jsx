@@ -12,7 +12,7 @@ const Footer = () => {
           <p>© {currentYear} PinnexVentures. All rights reserved.</p>
         </div>
 
-        {/* Developed by StringTech */}
+        {/* Developed by StringTech
         <div>
           <p>
             Developed by{" "}
@@ -26,6 +26,7 @@ const Footer = () => {
             </a>
           </p>
         </div>
+        */}
       </div>
     </footer>
   );

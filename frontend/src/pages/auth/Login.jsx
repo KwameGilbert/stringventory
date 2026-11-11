@@ -222,11 +222,12 @@ export default function Login() {
 
         </div>
 
-        {/* Footer */}
+        {/* Footer
         <div className="mt-8 text-center text-sm text-gray-500">
           Developed by{" "}
           <span className="text-emerald-600 font-medium">StringTech</span>
         </div>
+        */}
       </div>
 
       {/* Modals */}
