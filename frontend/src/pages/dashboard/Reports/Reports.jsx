@@ -291,7 +291,7 @@ export default function Reports() {
   const handleExport = async (type) => {
     if (!data) return;
 
-    let fileName = `pinnexventures_${activeTab}_report_${dateRange}`;
+    let fileName = `inventory_pos_${activeTab}_report_${dateRange}`;
     let title = `${activeTab.toUpperCase()} Report`;
     let tableData = { headers: [], rows: [] };
     let details = [];

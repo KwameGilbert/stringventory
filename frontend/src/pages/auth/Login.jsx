@@ -112,7 +112,7 @@ export default function Login() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-semibold italic text-emerald-600 mb-2">
-            PinnexVentures
+            Inventory POS
           </h1>
           <p className="text-gray-600 text-sm md:text-base">
             Welcome back! Please sign in to continue

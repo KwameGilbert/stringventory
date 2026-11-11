@@ -181,7 +181,7 @@ export default function Purchases() {
       "Created By": p.createdBy || "System",
     }));
 
-    exportToExcel(dataToExport, "pinnexventures_purchases", "Purchases");
+    exportToExcel(dataToExport, "inventory_pos_purchases", "Purchases");
   };
 
   const handleExportPDF = async () => {
@@ -205,7 +205,7 @@ export default function Purchases() {
       await exportToPDF({
         title: "Inventory Purchase Orders Report",
         subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${purchases.length} record(s)`,
-        fileName: "pinnexventures_purchases",
+        fileName: "inventory_pos_purchases",
         table: tableData,
         totals: [
           { label: "Total Purchases Value", value: formatPrice(totalSum, "GHS"), bold: true, color: 'emerald' },

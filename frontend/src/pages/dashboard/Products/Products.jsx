@@ -159,7 +159,7 @@ export default function Products() {
       Status: p.status.toUpperCase(),
     }));
 
-    exportToExcel(dataToExport, "pinnexventures_products", "Products");
+    exportToExcel(dataToExport, "inventory_pos_products", "Products");
   };
 
   const handleExportPDF = async () => {
@@ -180,7 +180,7 @@ export default function Products() {
     try {
       await exportToPDF({
         title: "Inventory Products Report",
-        fileName: "pinnexventures_products",
+        fileName: "inventory_pos_products",
         table: tableData,
       });
     } catch (error) {

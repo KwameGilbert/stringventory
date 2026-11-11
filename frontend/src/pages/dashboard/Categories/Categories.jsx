@@ -132,7 +132,7 @@ export default function Categories() {
       "Last Updated": cat.updatedAt ? new Date(cat.updatedAt).toLocaleDateString() : "N/A",
     }));
 
-    exportToExcel(dataToExport, "pinnexventures_categories", "Categories");
+    exportToExcel(dataToExport, "inventory_pos_categories", "Categories");
   };
 
   const handleExportPDF = async () => {
@@ -152,7 +152,7 @@ export default function Categories() {
     try {
       await exportToPDF({
         title: "Inventory Categories Report",
-        fileName: "pinnexventures_categories",
+        fileName: "inventory_pos_categories",
         table: tableData
       });
     } catch (error) {

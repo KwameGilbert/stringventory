@@ -15,9 +15,9 @@ const CheckoutTrustBar = () => {
           <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">INSTANT ACTIVATION</span>
         </div>
       </div>
-      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center">
-        © 2024 PinnexVentures Global • All Rights Reserved
-      </p>
+      {/* <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest text-center">
+        © 2024 Inventory POS Global • All Rights Reserved
+      </p> */}
     </div>
   );
 };

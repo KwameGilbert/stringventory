@@ -31,7 +31,7 @@ export default function Settings() {
 
   const [settings, setSettings] = useState({
     general: {
-      platformName: 'PinnexVentures',
+      platformName: 'Inventory POS',
       platformEmail: 'admin@pinnexventures.com',
       supportEmail: 'support@pinnexventures.com',
       companyName: 'StringTech Solutions',
@@ -53,7 +53,7 @@ export default function Settings() {
         port: '587',
         user: 'user_123',
         password: '••••••••',
-        senderName: 'PinnexVentures Admin',
+        senderName: 'Inventory POS Admin',
         senderEmail: 'noreply@pinnexventures.com',
       }
     },
@@ -177,7 +177,7 @@ export default function Settings() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold text-gray-900 mb-1">Platform Settings</h1>
-          <p className="text-gray-600">Global configuration for PinnexVentures platform</p>
+          <p className="text-gray-600">Global configuration for Inventory POS platform</p>
         </div>
         <div className="flex items-center gap-3">
           {saved && (
@@ -251,7 +251,7 @@ export default function Settings() {
                         value={settings.general.platformName}
                         onChange={(e) => updateNestedField('general', 'platformName', e.target.value)}
                         className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all outline-none"
-                        placeholder="e.g. PinnexVentures"
+                        placeholder="e.g. Inventory POS"
                       />
                     </div>
 

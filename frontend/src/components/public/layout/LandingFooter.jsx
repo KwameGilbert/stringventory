@@ -49,7 +49,7 @@ const LandingFooter = () => {
                 <span className="text-white font-bold text-xl uppercase">S</span>
               </div>
               <span className="text-2xl font-bold text-slate-900 tracking-tight">
-                PinnexVentures
+                Inventory POS
               </span>
             </Link>
             <p className="text-slate-500 mb-8 max-w-sm leading-relaxed">
@@ -107,9 +107,9 @@ const LandingFooter = () => {
 
         {/* Bottom Bar */}
         <div className="pt-12 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-slate-400 text-sm font-medium">
-            © {currentYear} PinnexVentures Inc. All rights reserved.
-          </p>
+          {/* <p className="text-slate-400 text-sm font-medium">
+            © {currentYear} Inventory POS Inc. All rights reserved.
+          </p> */}
           <div className="flex items-center space-x-8 text-sm font-medium text-slate-400">
             <a href="#" className="hover:text-slate-900 transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-slate-900 transition-colors">Cookies</a>

@@ -1,7 +1,7 @@
 {
-  "name": "PinnexVentures",
-  "short_name": "PinnexVentures",
-  "description": "Single company inventory and business management platform for PinnexVentures",
+  "name": "Inventory POS",
+  "short_name": "Inventory POS",
+  "description": "Single company inventory and business management platform for Inventory POS",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -47,14 +47,14 @@
       "sizes": "540x720",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "PinnexVentures Dashboard"
+      "label": "Inventory POS Dashboard"
     },
     {
       "src": "/screenshot-1280x720.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "PinnexVentures Dashboard"
+      "label": "Inventory POS Dashboard"
     }
   ],
   "shortcuts": [

@@ -37,7 +37,7 @@ export default function SuperadminLogin() {
             <ShieldCheck className="w-9 h-9 text-white" />
           </div>
           <h1 className="text-4xl font-semibold text-slate-900 tracking-tight mb-2">
-            Pinnex<span className="text-emerald-600">Ventures</span> 
+            Inventory <span className="text-emerald-600">POS</span> 
             <span className="ml-2 px-2 py-0.5 bg-slate-200 text-slate-600 text-xs font-bold rounded uppercase tracking-widest border border-slate-300">Platform</span>
           </h1>
           <p className="text-slate-500 font-medium">Platform Administration Portal</p>
@@ -137,7 +137,7 @@ export default function SuperadminLogin() {
 
         {/* System Footer */}
         <div className="mt-12 text-center text-slate-500 text-sm">
-          <p className="font-medium">PinnexVentures Orchestrator v1.0.0</p>
+          <p className="font-medium">Inventory POS Orchestrator v1.0.0</p>
           <div className="mt-2 flex items-center justify-center gap-4">
             <span className="hover:text-emerald-600 cursor-pointer transition-colors">Security Details</span>
             <span className="w-1 h-1 bg-slate-300 rounded-full"></span>

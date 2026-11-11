@@ -124,7 +124,7 @@ const HeroSection = () => {
             >
               <img 
                 src="/dashboard.png" 
-                alt="PinnexVentures Dashboard" 
+                alt="Inventory POS Dashboard" 
                 className="w-full h-full object-cover rounded-3xl"
               />
             </motion.div>

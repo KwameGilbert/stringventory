@@ -102,7 +102,7 @@ export default function Customers() {
         "Joined Date": c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-GB") : "—",
       }));
 
-      exportToExcel(dataToExport, "pinnexventures_customers", "Customers");
+      exportToExcel(dataToExport, "inventory_pos_customers", "Customers");
     } catch (error) {
       console.error("Excel Export Error:", error);
       showError("Failed to generate Excel report");
@@ -127,7 +127,7 @@ export default function Customers() {
       await exportToPDF({
         title: "Customer Intelligence Report",
         subtitle: `Generated on ${new Date().toLocaleDateString("en-GB")} for ${filteredCustomers.length} customer profile(s)`,
-        fileName: "pinnexventures_customers",
+        fileName: "inventory_pos_customers",
         table: tableData,
         totals: [
           { label: "Total Lifetime Revenue", value: formatCurrency(totalRevenue), bold: true, color: 'emerald' },

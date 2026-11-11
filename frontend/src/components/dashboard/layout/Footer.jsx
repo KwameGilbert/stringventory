@@ -8,9 +8,9 @@ const Footer = () => {
     <footer className="bg-white border-t border-gray-200 py-6 px-6 mt-auto">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 text-center sm:text-left">
         {/* Copyright */}
-        <div>
-          <p>© {currentYear} PinnexVentures. All rights reserved.</p>
-        </div>
+        {/* <div>
+          <p>© {currentYear} Inventory POS. All rights reserved.</p>
+        </div> */}
 
         {/* Developed by StringTech
         <div>

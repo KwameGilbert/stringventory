@@ -120,7 +120,7 @@ export default function InstallPrompt() {
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 text-sm">
-                Install PinnexVentures
+                Install Inventory POS
               </h3>
               <p className="text-xs text-gray-500 mt-0.5">
                 Quick access to your business management platform
