@@ -32,6 +32,7 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `/v1/users/${id}`,
     RESEND_VERIFICATION: (id) => `/v1/users/${id}/resend-verification`,
     RESET_PASSWORD: (id) => `/v1/auth/change-password`,
+    ADMIN_RESET_PASSWORD: (id) => `/v1/users/${id}/reset-password`,
   },
 
   // Roles
