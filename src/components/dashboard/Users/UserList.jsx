@@ -8,7 +8,7 @@ import {
   Eye
 } from "lucide-react";
 
-export default function UserList({ users, onEdit, onDelete }) {
+export default function UserList({ users, onEdit, onDelete, currentUserId }) {
 
   const getRoleIcon = (roleName) => {
     switch (roleName?.toLowerCase()) {
@@ -107,13 +107,15 @@ export default function UserList({ users, onEdit, onDelete }) {
                       >
                         <Edit size={18} />
                       </button>
-                      <button
-                        onClick={() => onDelete(user.id)}
-                        className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                        title={user.isActive ? "Deactivate" : "Delete"}
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      {String(user.id) !== String(currentUserId) && (
+                        <button
+                          onClick={() => onDelete(user.id)}
+                          className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          title={user.isActive ? "Deactivate" : "Delete"}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

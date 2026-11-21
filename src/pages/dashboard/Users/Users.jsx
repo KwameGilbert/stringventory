@@ -186,7 +186,8 @@ export default function Users() {
           <UserList 
             users={filteredUsers} 
             onEdit={handleEditUser} 
-            onDelete={handleDeleteUser} 
+            onDelete={handleDeleteUser}
+            currentUserId={user?.id}
           />
       </div>
 
